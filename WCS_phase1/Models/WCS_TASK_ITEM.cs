@@ -12,6 +12,11 @@ namespace WCS_phase1.Models
     public class WCS_TASK_ITEM
     {
         /// <summary>
+        /// ID
+        /// </summary>
+        public int ID { get; set; }
+
+        /// <summary>
         /// WCS单号
         /// </summary>
         public String WCS_NO { get; set; }

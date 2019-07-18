@@ -254,7 +254,7 @@ namespace WCS_phase1.Functions
         }
 
         /// <summary>
-        /// 获取指定区域及类型的可用设备List
+        /// 获取指定区域及类型的设备List
         /// </summary>
         /// <param name="area"></param>
         /// <param name="type"></param>
@@ -264,7 +264,7 @@ namespace WCS_phase1.Functions
             String sql;
             try
             {
-                sql = String.Format(@"select * from wcs_config_device where FLAG = 'Y' and AREA = '{0}' and TYPE = '{1}'", area, type);
+                sql = String.Format(@"select * from wcs_config_device where AREA = '{0}' and TYPE = '{1}' order by FLAG", area, type);
                 DataTable dt = mySQL.SelectAll(sql);
                 if (tools.IsNoData(dt))
                 {
@@ -272,6 +272,70 @@ namespace WCS_phase1.Functions
                 }
                 List<WCS_CONFIG_DEVICE> List = dt.ToDataList<WCS_CONFIG_DEVICE>();
                 return List;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 该设备是否锁定
+        /// </summary>
+        /// <param name="device"></param>
+        /// <returns></returns>
+        public bool IsDeviceLock(String device)
+        {
+            try
+            {
+                String sql = String.Format(@"select FLAG from wcs_config_device where DEVICE = '{0}'", device);
+                DataTable dt = mySQL.SelectAll(sql);
+                if (tools.IsNoData(dt))
+                {
+                    return true;
+                }
+                if (dt.Rows[0]["FLAG"].ToString() == "Y")
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 锁定设备
+        /// </summary>
+        /// <param name="device"></param>
+        public void DeviceLock(String device)
+        {
+            try
+            {
+                String sql = String.Format(@"update wcs_config_device set FLAG = 'L' where DEVICE = '{0}'", device);
+                mySQL.ExcuteSql(sql);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 解锁设备
+        /// </summary>
+        /// <param name="device"></param>
+        public void DeviceUnLock(String device)
+        {
+            try
+            {
+                String sql = String.Format(@"update wcs_config_device set FLAG = 'Y' where DEVICE = '{0}'", device);
+                mySQL.ExcuteSql(sql);
             }
             catch (Exception ex)
             {
@@ -396,12 +460,14 @@ namespace WCS_phase1.Functions
         /// <param name="wcs_no"></param>
         /// <param name="item_id"></param>
         /// <param name="key"></param>
-        /// <param name="value"></param>
-        public void UpdateItem(String wcs_no, String item_id, String key, String value)
+        /// <param name="oldvalue"></param>
+        /// <param name="newvalue"></param>
+        public void UpdateItem(int id, String wcs_no, String item_id, String key, String value)
         {
             try
             {
-                String sql = String.Format(@"update WCS_TASK_ITEM set {0} = '{1}',UPDATE_TIME = NOW() where WCS_NO = '{2}' and ITEM_ID = '{3}'", key, value, wcs_no, item_id);
+                String sql = String.Format(@"update WCS_TASK_ITEM set {0} = '{1}',UPDATE_TIME = NOW() where ID = {2} and WCS_NO = '{3}' and ITEM_ID = '{4}'", 
+                    key, value, id, wcs_no, item_id);
                 mySQL.ExcuteSql(sql);
             }
             catch (Exception ex)

@@ -7,6 +7,7 @@ using WCS_phase1.Models;
 using System.Data;
 using WCS_phase1.Functions;
 using WCS_phase1.Devices;
+using WCS_phase1.Socket;
 using System.Configuration;
 using System.Threading;
 
@@ -70,7 +71,7 @@ namespace WCS_phase1.Action
                 task.CreateItem(command.WCS_NO, ItemId.摆渡车定位固定辊台, ARFloc);  //生成摆渡车任务
 
                 // 运输车到摆渡车对接点
-                task.CreateItem(command.WCS_NO, ItemId.运输车复位1, ConfigurationManager.AppSettings["StandbyP1"]);  //生成运输车任务
+                task.CreateItem(command.WCS_NO, ItemId.运输车复位1, ConfigurationManager.AppSettings["StandbyR1"]);  //生成运输车任务
 
                 // 行车到运输车对接取货点
                 String ABCloc = task.GetABCTrackLoc(loc);     //获取对应行车位置
@@ -229,7 +230,7 @@ namespace WCS_phase1.Action
                 // 摆渡车于运输车对接点
                 String AR = ConfigurationManager.AppSettings["StandbyAR"];
                 // 运输车[内]待命复位点
-                String R = ConfigurationManager.AppSettings["StandbyP2"];
+                String R = ConfigurationManager.AppSettings["StandbyR2"];
                 // 运输车于运输车对接点
                 String RR = ConfigurationManager.AppSettings["StandbyRR"];
 
@@ -356,9 +357,9 @@ namespace WCS_phase1.Action
                 // 摆渡车于运输车对接点
                 String AR = ConfigurationManager.AppSettings["StandbyAR"];
                 // 运输车[外]待命复位点
-                String R1 = ConfigurationManager.AppSettings["StandbyP1"];
+                String R1 = ConfigurationManager.AppSettings["StandbyR1"];
                 // 运输车[内]待命复位点
-                String R2 = ConfigurationManager.AppSettings["StandbyP2"];
+                String R2 = ConfigurationManager.AppSettings["StandbyR2"];
                 // 运输车于运输车对接点
                 String RR = ConfigurationManager.AppSettings["StandbyRR"];
 
@@ -583,50 +584,95 @@ namespace WCS_phase1.Action
                     return;
                 }
 
+                // 分配设备
+                String device = String.Empty;
+                // 当前位置
+                String loc = String.Empty;
                 switch (item.ITEM_ID.Substring(0, 2))
                 {
                     case "01":
                         #region 摆渡车
-                        // 获取作业区域内空闲的摆渡车
-                        List<WCS_CONFIG_DEVICE> dList_ARF = task.GetDeviceList(area,DeviceType.摆渡车);
+
+                        // 获取作业区域内的摆渡车
+                        List<WCS_CONFIG_DEVICE> dList_ARF = task.GetDeviceList(area, DeviceType.摆渡车);
                         // 确认其中最适合的摆渡车
+                        String arf = GetSuitableARF(item.LOC_TO, dList_ARF);
+                        if (String.IsNullOrEmpty(arf))
+                        {
+                            return;
+                        }
+                        // 确认任务设备&位置
+                        ARF ARF = new ARF(arf);
+                        device = Convert.ToString(ARF.CurrentSite());
+                        loc = arf;
 
-                        // =>根据任务讯息获取位置允许范围可用设备
-
-                        // =>确认设备
-
-                        //更新状态
-                        task.UpdateItem(item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.请求执行);
                         #endregion
+
                         break;
                     case "02":
                         #region 运输车
-                        // =>根据任务讯息获取位置允许范围可用设备
 
-                        // =>确认设备
+                        // 获取作业区域内的运输车
+                        List<WCS_CONFIG_DEVICE> dList_RGV = task.GetDeviceList(area, DeviceType.运输车);
+                        // 确认其中最适合的摆渡车
+                        String rgv = GetSuitableRGV(item.LOC_TO, dList_RGV);
+                        if (String.IsNullOrEmpty(rgv))
+                        {
+                            return;
+                        }
+                        // 确认任务设备&位置
+                        RGV RGV = new RGV(rgv);
+                        device = Convert.ToString(RGV.GetCurrentSite());
+                        loc = rgv;
 
-                        //更新状态
-                        task.UpdateItem(item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.请求执行);
                         #endregion
+
                         break;
                     case "03":
                         #region 行车
-                        // =>根据任务讯息获取位置允许范围可用设备
 
-                        // =>确认设备
+                        // 获取作业区域内的行车
+                        List<WCS_CONFIG_DEVICE> dList_ABC = task.GetDeviceList(area, DeviceType.行车);
+                        // 确认其中最适合的行车
+                        String abc = GetSuitableABC(item.LOC_TO, dList_ABC);
+                        if (String.IsNullOrEmpty(abc))
+                        {
+                            return;
+                        }
+                        // 确认任务设备&位置
+                        ABC ABC = new ABC(abc);
+                        device = ABC.GetCurrentSite();
+                        loc = abc;
 
-                        //更新状态
-                        task.UpdateItem(item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.请求执行);
                         #endregion
+
                         break;
                     default:
                         break;
                 }
+
+                if (String.IsNullOrEmpty(device) || String.IsNullOrEmpty(loc))
+                {
+                    return;
+                }
+                // 确认设备是否锁定
+                if (task.IsDeviceLock(device))
+                {
+                    return;
+                }
+                // 确认任务设备
+                task.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.设备编号, device);
+                // 确认设备来源
+                task.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.来源位置, loc);
+                // 更新状态
+                task.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.请求执行);
+                // 锁定设备
+                task.DeviceLock(device);
             }
             catch (Exception ex)
             {
                 //初始化
-                task.UpdateItem(item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.不可执行);
+                task.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.不可执行);
                 throw ex;
             }
         }
@@ -646,34 +692,214 @@ namespace WCS_phase1.Action
                 // 终选摆渡车
                 String arf = String.Empty;
                 // 距离比较值
-                int X = 0;
-                // 摆渡车于运输车对接点值
-                int AR = Convert.ToInt32(ConfigurationManager.AppSettings["StandbyAR"]);
+                byte X = 0;
+                // 目标位置
+                int LOC = Convert.ToInt32(loc);
 
                 // 遍历比对
                 foreach (WCS_CONFIG_DEVICE d in dList)
                 {
                     // 获取摆渡车设备资讯
                     ARF = new ARF(d.DEVICE);
-                    // 命令状态为完成
-                    // 当前坐标值
-                    // 货物状态为无货
+
+                    // 当前坐标值比较目标位置
+                    if (ARF.CurrentSite() == LOC)    // 当前坐标值 = 目标位置
+                    {
+                        // 直接选取该设备
+                        arf = d.DEVICE;
+                        break;
+                    }
+                    else if (ARF.CurrentSite() < LOC) // 当前坐标值 < 目标位置
+                    {
+                        // 距离比较值 >=（目标位置 - 当前坐标值）
+                        if (X >= (LOC - ARF.CurrentSite()))
+                        {
+                            // 暂选取该设备
+                            arf = d.DEVICE;
+                            // 更新距离比较值
+                            X = (byte)(LOC - ARF.CurrentSite());
+                        }
+                    }
+                    else // 当前坐标值 > 目标位置
+                    {
+                        // 距离比较值 >=（当前坐标值 - 目标位置）
+                        if (X >= (ARF.CurrentSite() - LOC))
+                        {
+                            // 暂选取该设备
+                            arf = d.DEVICE;
+                            // 更新距离比较值
+                            X = (byte)(ARF.CurrentSite() - LOC);
+                        }
+                    }
+                    ARF = null;
                 }
-                return "";
+
+                // 检测设备是否可用
+                if (!String.IsNullOrEmpty(arf))
+                {
+                    ARF = new ARF(arf);
+                    // 命令状态不为完成, 货物状态不为无货 ==> 不可用
+                    if (ARF.CommandStatus() != ARF.CommandFinish && ARF.GoodsStatus() != ARF.GoodsNoAll && ARF.CurrentStatus() != ARF.RollerStop)
+                    {
+                        arf = String.Empty;
+                    }
+                }                
+                
+                return arf;
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
+
+        /// <summary>
+        /// 获取当前目标对应的合适运输车
+        /// </summary>
+        /// <param name="loc"></param>
+        /// <param name="device"></param>
+        /// <returns></returns>
+        public String GetSuitableRGV(String loc, List<WCS_CONFIG_DEVICE> dList)
+        {
+            try
+            {
+                // 运输车
+                RGV RGV;
+                // 终选运输车
+                String rgv = String.Empty;
+                // 目标位置
+                int LOC = Convert.ToInt32(loc);
+                // 运输车间对接点
+                int RR = Convert.ToInt32(ConfigurationManager.AppSettings["StandbyRR"]);
+
+                // 遍历比对
+                foreach (WCS_CONFIG_DEVICE d in dList)
+                {
+                    // 获取摆渡车设备资讯
+                    RGV = new RGV(d.DEVICE);
+
+                    // 比较目标位置与对接点
+                    if (LOC <= RR)
+                    {
+                        // 仅获取位置于运输车[外]运输范围内的 RGV
+                        if (RGV.GetCurrentSite() <= RR)
+                        {
+                            // 锁定设备
+                            rgv = d.DEVICE;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        // 仅获取位置于运输车[内]运输范围内的 RGV
+                        if (RGV.GetCurrentSite() > RR)
+                        {
+                            // 锁定设备
+                            rgv = d.DEVICE;
+                            break;
+                        }
+                    }
+
+                    RGV = null;
+                }
+
+                // 检测设备是否可用
+                if (!String.IsNullOrEmpty(rgv))
+                {
+                    RGV = new RGV(rgv);
+                    // 命令状态不为完成, 货物状态不为无货, 辊台状态不为停止 ==> 不可用
+                    if (RGV.CommandStatus() != RGV.CommandFinish && RGV.GoodsStatus() != RGV.GoodsNoAll && RGV.CurrentStatus() != RGV.RollerStop)
+                    {
+                        rgv = String.Empty;
+                    }
+                }
+
+                return rgv;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 获取当前目标对应的合适行车
+        /// </summary>
+        /// <param name="loc"></param>
+        /// <param name="device"></param>
+        /// <returns></returns>
+        public String GetSuitableABC(String loc, List<WCS_CONFIG_DEVICE> dList)
+        {
+            try
+            {
+                // 行车
+                ABC ABC;
+                // 终选行车
+                String abc = String.Empty;
+                // 行车中间值
+                int AA = Convert.ToInt32(ConfigurationManager.AppSettings["CenterX"]);
+                // 目标位置 X轴值
+                String[] LOC = loc.Split('-');
+                int X = Convert.ToInt32(LOC[0]);
+
+                // 遍历比对
+                foreach (WCS_CONFIG_DEVICE d in dList)
+                {
+                    // 获取行车设备资讯
+                    ABC = new ABC(d.DEVICE);
+
+                    // 比较目标X轴值与对接点
+                    if (X <= AA)
+                    {
+                        // 仅获取位置于行车[外]运输范围内的 ABC
+                        if (tools.bytesToInt(ABC.CurrentXsite(),0) <= AA)
+                        {
+                            // 锁定设备
+                            abc = d.DEVICE;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        // 仅获取位置于行车[内]运输范围内的 ABC
+                        if (tools.bytesToInt(ABC.CurrentXsite(), 0) > AA)
+                        {
+                            // 锁定设备
+                            abc = d.DEVICE;
+                            break;
+                        }
+                    }
+
+                    ABC = null;
+                }
+
+                // 检测设备是否可用
+                if (!String.IsNullOrEmpty(abc))
+                {
+                    ABC = new ABC(abc);
+                    // 命令状态不为完成, 货物状态不为无货 ==> 不可用
+                    if (ABC.CommandStatus() != ABC.CommandFinish && ABC.GoodsStatus() != ABC.GoodsNo)
+                    {
+                        abc = String.Empty;
+                    }
+                }
+
+                return abc;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         #endregion
 
 
-        #region 下发指令(除滚棒任务)
+        #region 下发指令(除对接任务)
         /// <summary>
-        /// 执行设备通讯下发指令(除滚棒任务)
+        /// 执行设备通讯下发指令(除对接任务)
         /// </summary>
-        public void Run_SendOrderNotRoller()
+        public void Run_SendOrderNotLink()
         {
             try
             {
@@ -687,7 +913,7 @@ namespace WCS_phase1.Action
                 // 遍历下发指令
                 foreach (WCS_TASK_ITEM item in itemList)
                 {
-                    WriteDeviceNotRoller(item);
+                    WriteDeviceNotLink(item);
                 }
             }
             catch (Exception ex)
@@ -697,27 +923,26 @@ namespace WCS_phase1.Action
         }
 
         /// <summary>
-        /// 下发设备指令(除滚棒任务)
+        /// 下发设备指令(除对接任务)
         /// </summary>
         /// <param name="item"></param>
-        public void WriteDeviceNotRoller(WCS_TASK_ITEM item)
+        public void WriteDeviceNotLink(WCS_TASK_ITEM item)
         {
             try
             {
-                // =>运输车[外]对接目的位置需计算
-
                 // =>组合资讯，下发指令
 
                 //更新状态
-                task.UpdateItem(item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.任务中);
+                task.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.任务中);
             }
             catch (Exception ex)
             {
                 //初始化
-                task.UpdateItem(item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.请求执行);
+                task.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.请求执行);
                 throw ex;
             }
         }
+
         #endregion
 
 
@@ -812,12 +1037,12 @@ namespace WCS_phase1.Action
                         break;
                 }
                 //摆渡车初始任务更新状态——完成
-                task.UpdateItem(item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.完成任务);
+                task.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.完成任务);
             }
             catch (Exception ex)
             {
                 //恢复
-                task.UpdateItem(item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.交接中);
+                task.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.交接中);
                 task.DeleteItem(item.WCS_NO, ItemId.固定辊台入库);
                 task.DeleteItem(item.WCS_NO, ItemId.固定辊台出库);
                 task.DeleteItem(item.WCS_NO, ItemId.摆渡车入库);
@@ -832,18 +1057,20 @@ namespace WCS_phase1.Action
         /// <param name="item"></param>
         public void CreateTask_ARF_RGV(WCS_TASK_ITEM item)
         {
+            int id_R = 0;
             String wcsno_R = "";
             String itemid_R = "";
             String device_R = "";
             try
             {
                 // 查看运输车是否到位
-                String sql_R = String.Format(@"select WCS_NO, ITEM_ID, DEVICE from WCS_TASK_ITEM where STATUS = 'R' and WCS_NO = '{0}' and ITEM_ID = '{1}'", item.WCS_NO, ItemId.运输车复位1);
+                String sql_R = String.Format(@"select ID, WCS_NO, ITEM_ID, DEVICE from WCS_TASK_ITEM where STATUS = 'R' and WCS_NO = '{0}' and ITEM_ID = '{1}'", item.WCS_NO, ItemId.运输车复位1);
                 DataTable dtitem_R = mySQL.SelectAll(sql_R);
                 if (tools.IsNoData(dtitem_R))
                 {
                     return;
                 }
+                id_R = Convert.ToInt32(dtitem_R.Rows[0]["ID"].ToString());
                 wcsno_R = dtitem_R.Rows[0]["WCS_NO"].ToString();
                 itemid_R = dtitem_R.Rows[0]["ITEM_ID"].ToString();
                 device_R = dtitem_R.Rows[0]["DEVICE"].ToString();
@@ -866,14 +1093,14 @@ namespace WCS_phase1.Action
                         break;
                 }
                 //摆渡车&运输车初始任务更新状态——完成
-                task.UpdateItem(item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.完成任务);
-                task.UpdateItem(wcsno_R, itemid_R, ItemColumnName.作业状态, ItemStatus.完成任务);
+                task.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.完成任务);
+                task.UpdateItem(id_R, wcsno_R, itemid_R, ItemColumnName.作业状态, ItemStatus.完成任务);
             }
             catch (Exception ex)
             {
                 //恢复
-                task.UpdateItem(item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.交接中);
-                task.UpdateItem(wcsno_R, itemid_R, ItemColumnName.作业状态, ItemStatus.交接中);
+                task.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.交接中);
+                task.UpdateItem(id_R, wcsno_R, itemid_R, ItemColumnName.作业状态, ItemStatus.交接中);
                 task.DeleteItem(item.WCS_NO, ItemId.运输车入库);
                 task.DeleteItem(item.WCS_NO, ItemId.摆渡车入库);
                 task.DeleteItem(item.WCS_NO, ItemId.摆渡车出库);
@@ -888,18 +1115,20 @@ namespace WCS_phase1.Action
         /// <param name="item"></param>
         public void CreateTask_RGV_RGV(WCS_TASK_ITEM item)
         {
+            int id_R = 0;
             String wcsno_R = "";
             String itemid_R = "";
             String device_R = "";
             try
             {
                 // 查看运输车是否在运输车对接待命点
-                String sql_R = String.Format(@"select WCS_NO, ITEM_ID, DEVICE from WCS_TASK_ITEM where STATUS = 'R' and WCS_NO = '{0}' and ITEM_ID = '{1}'", item.WCS_NO, ItemId.运输车复位2);
+                String sql_R = String.Format(@"select ID, WCS_NO, ITEM_ID, DEVICE from WCS_TASK_ITEM where STATUS = 'R' and WCS_NO = '{0}' and ITEM_ID = '{1}'", item.WCS_NO, ItemId.运输车复位2);
                 DataTable dtitem_R = mySQL.SelectAll(sql_R);
                 if (tools.IsNoData(dtitem_R))
                 {
                     return;
                 }
+                id_R = Convert.ToInt32(dtitem_R.Rows[0]["ID"].ToString());
                 wcsno_R = dtitem_R.Rows[0]["WCS_NO"].ToString();
                 itemid_R = dtitem_R.Rows[0]["ITEM_ID"].ToString();
                 device_R = dtitem_R.Rows[0]["DEVICE"].ToString();
@@ -922,14 +1151,14 @@ namespace WCS_phase1.Action
                         break;
                 }
                 //内外运输车初始任务更新状态——完成
-                task.UpdateItem(item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.完成任务);
-                task.UpdateItem(wcsno_R, itemid_R, ItemColumnName.作业状态, ItemStatus.完成任务);
+                task.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.完成任务);
+                task.UpdateItem(id_R, wcsno_R, itemid_R, ItemColumnName.作业状态, ItemStatus.完成任务);
             }
             catch (Exception ex)
             {
                 //恢复
-                task.UpdateItem(item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.交接中);
-                task.UpdateItem(wcsno_R, itemid_R, ItemColumnName.作业状态, ItemStatus.交接中);
+                task.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.交接中);
+                task.UpdateItem(id_R, wcsno_R, itemid_R, ItemColumnName.作业状态, ItemStatus.交接中);
                 task.DeleteItem(item.WCS_NO, ItemId.运输车入库);
                 task.DeleteItem(item.WCS_NO, ItemId.运输车出库);
                 throw ex;
@@ -942,18 +1171,20 @@ namespace WCS_phase1.Action
         /// <param name="item"></param>
         public void CreateTask_RGV_ABC(WCS_TASK_ITEM item)
         {
+            int id_R = 0;
             String wcsno_R = "";
             String itemid_R = "";
             String device_R = "";
             try
             {
                 // 查看运输车是否在运输车对接待命点
-                String sql_R = String.Format(@"select WCS_NO, ITEM_ID, DEVICE from WCS_TASK_ITEM where STATUS = 'R' and WCS_NO = '{0}' and ITEM_ID = '{1}'", item.WCS_NO, ItemId.运输车定位);
+                String sql_R = String.Format(@"select ID, WCS_NO, ITEM_ID, DEVICE from WCS_TASK_ITEM where STATUS = 'R' and WCS_NO = '{0}' and ITEM_ID = '{1}'", item.WCS_NO, ItemId.运输车定位);
                 DataTable dtitem_R = mySQL.SelectAll(sql_R);
                 if (tools.IsNoData(dtitem_R))
                 {
                     return;
                 }
+                id_R = Convert.ToInt32(dtitem_R.Rows[0]["ID"].ToString());
                 wcsno_R = dtitem_R.Rows[0]["WCS_NO"].ToString();
                 itemid_R = dtitem_R.Rows[0]["ITEM_ID"].ToString();
                 device_R = dtitem_R.Rows[0]["DEVICE"].ToString();
@@ -972,14 +1203,14 @@ namespace WCS_phase1.Action
                         break;
                 }
                 //行车&运输车初始任务更新状态——完成
-                task.UpdateItem(item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.完成任务);
-                task.UpdateItem(wcsno_R, itemid_R, ItemColumnName.作业状态, ItemStatus.完成任务);
+                task.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.完成任务);
+                task.UpdateItem(id_R, wcsno_R, itemid_R, ItemColumnName.作业状态, ItemStatus.完成任务);
             }
             catch (Exception ex)
             {
                 //恢复
-                task.UpdateItem(item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.交接中);
-                task.UpdateItem(wcsno_R, itemid_R, ItemColumnName.作业状态, ItemStatus.交接中);
+                task.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.交接中);
+                task.UpdateItem(id_R, wcsno_R, itemid_R, ItemColumnName.作业状态, ItemStatus.交接中);
                 task.DeleteItem(item.WCS_NO, ItemId.行车取货);
                 task.DeleteItem(item.WCS_NO, ItemId.行车放货);
                 throw ex;
@@ -1009,12 +1240,12 @@ namespace WCS_phase1.Action
                         break;
                 }
                 //行车&运输车初始任务更新状态——完成
-                task.UpdateItem(item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.完成任务);
+                task.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.完成任务);
             }
             catch (Exception ex)
             {
                 //恢复
-                task.UpdateItem(item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.交接中);
+                task.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.交接中);
                 task.DeleteItem(item.WCS_NO, ItemId.行车取货);
                 task.DeleteItem(item.WCS_NO, ItemId.行车放货);
                 throw ex;
@@ -1023,11 +1254,11 @@ namespace WCS_phase1.Action
         #endregion
 
 
-        #region 下发指令(对接任务)[排程触发]
+        #region 下发指令(对接任务)
         /// <summary>
-        /// 执行设备通讯下发指令(仅滚棒任务)
+        /// 执行设备通讯下发指令(对接任务)
         /// </summary>
-        public void Run_SendOrderOnlyRoller()
+        public void Run_SendOrderOnlyLink()
         {
             try
             {
@@ -1042,6 +1273,7 @@ namespace WCS_phase1.Action
                 throw ex;
             }
         }
+
         #endregion
 
     }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WCS_phase1.Action;
+using WCS_phase1.Functions;
 
 namespace WCS_phase1.Devices
 {
@@ -202,5 +202,18 @@ namespace WCS_phase1.Devices
 
         #endregion
 
+        /// <summary>
+        /// ABC 当前位置
+        /// </summary>
+        /// <returns></returns>
+        public String GetCurrentSite()
+        {
+            SimpleTools tools = new SimpleTools();
+            int x = tools.bytesToInt(CurrentXsite(), 0);
+            int y = tools.bytesToInt(CurrentYsite(), 0);
+            int z = tools.bytesToInt(CurrentZsite(), 0);
+
+            return Convert.ToString(x) +"-"+ Convert.ToString(y) + "-" + Convert.ToString(z);
+        }
     }
 }

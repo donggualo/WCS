@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WCS_phase1.Functions;
 
 namespace WCS_phase1.Devices
 {
@@ -279,5 +280,15 @@ namespace WCS_phase1.Devices
         }
 
         #endregion
+
+        /// <summary>
+        /// RGV 当前位置
+        /// </summary>
+        /// <returns></returns>
+        public int GetCurrentSite()
+        {
+            SimpleTools tools = new SimpleTools();
+            return tools.bytesToInt(new byte[] { Current1site(), Current2site(), Current3site(), Current4site() }, 0);
+        }
     }
 }

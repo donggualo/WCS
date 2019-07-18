@@ -27,7 +27,7 @@ namespace WCS_phase1.Functions
         }
 
         /// <summary>
-        /// int转byte
+        /// int 转 byte[]
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -42,7 +42,7 @@ namespace WCS_phase1.Functions
         }
 
         /// <summary>
-        /// byte转int
+        /// byte[] 转 int
         /// </summary>
         /// <param name="src"></param>
         /// <param name="offset"></param>

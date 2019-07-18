@@ -50,5 +50,32 @@ namespace WCS_phase1.Models
         /// 创建时间
         /// </summary>
         public DateTime? CREATION_TIME { get; set; }
+
+        /// <summary>
+        /// 行车坐标轴值
+        /// </summary>
+        /// <param name="site"></param>
+        /// <param name="loc"></param>
+        /// <returns></returns>
+        public String ABC_Site(String xyz, String loc)
+        {
+            String[] LOC = loc.Split('-');
+            String site = String.Empty;
+            switch (xyz)
+            {
+                case "X":
+                    site = LOC[0];
+                    break;
+                case "Y":
+                    site = LOC[1];
+                    break;
+                case "Z":
+                    site = LOC[2];
+                    break;
+                default:
+                    break;
+            }
+            return site;
+        }
     }
 }
