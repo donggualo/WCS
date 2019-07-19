@@ -78,4 +78,14 @@ namespace WCS_phase1.Models
             return site;
         }
     }
+
+    /// <summary>
+    /// X,Y,Z 轴值
+    /// </summary>
+    public class XYZSite
+    {
+        public const String X = "X";
+        public const String Y = "Y";
+        public const String Z = "Z";
+    }
 }

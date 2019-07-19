@@ -68,6 +68,8 @@ namespace WCS_phase1.Models
         public const String 摆渡车出库 = "114";
         public const String 运输车入库 = "115";
         public const String 运输车出库 = "116";
+        public const String 行车取货 = "117";
+        public const String 行车放货 = "118";
 
         public const String 摆渡车定位固定辊台 = "011";
         public const String 摆渡车定位运输车对接 = "012";
@@ -80,8 +82,6 @@ namespace WCS_phase1.Models
 
         public const String 行车轨道定位 = "031";
         public const String 行车库存定位 = "032";
-        public const String 行车取货 = "033";
-        public const String 行车放货 = "034";
     }
 
     /// <summary>

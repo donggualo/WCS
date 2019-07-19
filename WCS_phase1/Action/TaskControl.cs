@@ -102,8 +102,8 @@ namespace WCS_phase1.Action
         {
             try
             {
-                // 以wcs_no为单位提取最后一笔任务
-                DataTable dtlast = mySQL.SelectAll(@"select * from WCS_TASK_ITEM where (WCS_NO,CREATION_TIME) in 
+                // 以wcs_no为单位提取最后一笔对接任务
+                DataTable dtlast = mySQL.SelectAll(@"select * from WCS_TASK_ITEM where LEFT(ITEM_ID,2) = '11' and (WCS_NO,CREATION_TIME) in 
                                                     (select WCS_NO, MAX(CREATION_TIME) from WCS_TASK_ITEM group by WCS_NO) order by CREATION_TIME");
                 if (tools.IsNoData(dtlast))
                 {
@@ -312,12 +312,40 @@ namespace WCS_phase1.Action
                         // 默认入库时 taskid1对接运输车设备辊台②、taskid2对接运输车设备辊台①
                         // 获取当前运输车加以分配
                         String rgv = task.GetItemDeviceLast(item.WCS_NO, ItemId.运输车定位);
-                        // =>获取当前运输车资讯
-                        // =>获取有货&无货辊台各对应的WMS任务目标
+                        // 获取当前运输车资讯
+                        RGV RGV = new RGV(rgv);
+                        // 获取有货&无货辊台各对应的WMS任务目标
                         String loc_Y = "";  //有货辊台对应目标点
                         String loc_N = "";  //无货辊台对应目标点
-                        // 根据当前运输车坐标及任务目标，生成对应运输车定位/对接运输车任务
 
+                        // 根据当前运输车坐标及任务目标，生成对应运输车定位/对接运输车任务
+                        if (RGV.GoodsStatus() == RGV.GoodsYes1) // 辊台①有货
+                        {
+                            loc_Y = loc_2;
+                            loc_N = loc_1;
+                        }
+                        else if (RGV.GoodsStatus() == RGV.GoodsYes2) // 辊台②有货
+                        {
+                            loc_Y = loc_1;
+                            loc_N = loc_2;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                        // 判断是否需要对接到运输车[内]范围内作业
+                        if (Convert.ToInt32(loc_Y) >= Convert.ToInt32(R))  // 需对接运输车[内]
+                        {
+                            // 生成运输车[内]复位任务
+                            task.CreateItem(item.WCS_NO, ItemId.运输车复位2, R);    // 待分配设备
+                                                                               // 生成运输车[外]对接位任务
+                            task.CreateCustomItem(item.WCS_NO, ItemId.运输车对接定位, rgv, "", RR, ItemStatus.请求执行);
+                        }
+                        else
+                        {
+                            // 生成运输车[外]定位任务
+                            task.CreateCustomItem(item.WCS_NO, ItemId.运输车定位, rgv, "", loc_Y, ItemStatus.请求执行);
+                        }
                         // 生成行车库存定位任务
                         task.CreateCustomItem(item.WCS_NO, ItemId.行车库存定位, item.DEVICE, "", task.GetABCStockLoc(loc_N), ItemStatus.请求执行);
                         #endregion
@@ -354,6 +382,7 @@ namespace WCS_phase1.Action
             {
                 // 运输车
                 String rgv;
+                RGV RGV;
                 // 摆渡车于运输车对接点
                 String AR = ConfigurationManager.AppSettings["StandbyAR"];
                 // 运输车[外]待命复位点
@@ -395,37 +424,57 @@ namespace WCS_phase1.Action
                         #region 将运输车复位待命点 / 将运输车移至行车对接位置 && 行车库存定位
                         // 获取当前运输车加以分配
                         rgv = task.GetItemDeviceLast(item.WCS_NO, ItemId.运输车定位);
-                        // 流程上确认是先分配运输车辊台①放置货物，即现确认运输车辊台②是否有货
-                        // => 获取当前运输车资讯
-                        // => 辊台②是否有货？
+                        // 获取当前运输车资讯
+                        RGV = new RGV(rgv);
 
-                        // 有货 则将运输车复位待命点
-                        // => 当前设备位置 > 运输车[内]待命复位点 ?  运输车[内]复位 ：运输车[外]复位
-                        task.CreateCustomItem(item.WCS_NO, ItemId.运输车复位2, rgv, "", R2, ItemStatus.请求执行);
-                        task.CreateCustomItem(item.WCS_NO, ItemId.运输车复位1, rgv, "", R1, ItemStatus.请求执行);
+                        // 流程上设定是先分配运输车辊台①放置货物，即现确认运输车辊台②是否有任务/有货物
+                        // 车辊台②不存在任务直接复位 ｜｜　所有辊台都有货
+                        if (String.IsNullOrEmpty(taskid2) || RGV.GoodsStatus() == RGV.GoodsYesAll)
+                        {
+                            // 将运输车复位待命点
+                            // => 当前设备位置 >= 运输车[内]待命复位点 ?  运输车[内]复位 ：运输车[外]复位
+                            if (RGV.GetCurrentSite() >= Convert.ToInt32(R2))
+                            {
+                                // 生成运输车[内]复位任务
+                                task.CreateCustomItem(item.WCS_NO, ItemId.运输车复位2, rgv, "", R2, ItemStatus.请求执行);
+                                // 生成运输车[外]对接任务
+                                task.CreateItem(item.WCS_NO, ItemId.运输车对接定位, RR);    // 待分配设备
+                            }
+                            else
+                            {
+                                // 生成运输车[外]复位任务
+                                task.CreateCustomItem(item.WCS_NO, ItemId.运输车复位1, rgv, "", R1, ItemStatus.请求执行);
+                            }
+                        }
+                        else if (RGV.GoodsStatus() == RGV.GoodsYes1) //执行辊台②任务2
+                        {
+                            // 将运输车移至行车对接位置 && 行车库存定位
+                            // 生成运输车定位任务
+                            task.CreateCustomItem(item.WCS_NO, ItemId.运输车定位, rgv, "", loc_2, ItemStatus.请求执行);
+                            // 生成行车库存定位任务
+                            task.CreateCustomItem(item.WCS_NO, ItemId.行车库存定位, item.DEVICE, "", task.GetABCTrackLoc(loc2), ItemStatus.请求执行);
+                        }
 
-                        // 无货 则将运输车移至行车对接位置 && 行车库存定位
-                        // 生成运输车定位任务
-                        task.CreateCustomItem(item.WCS_NO, ItemId.运输车定位, rgv, "", loc_2, ItemStatus.请求执行);
-                        // 生成行车库存定位任务
-                        task.CreateCustomItem(item.WCS_NO, ItemId.行车库存定位, item.DEVICE, "", task.GetABCTrackLoc(loc2), ItemStatus.请求执行);
                         #endregion
 
                         break;
                     case ItemId.运输车出库:
                         #region 将摆渡车移至固定辊台对接点 / 将运输车移至摆渡车对接点(复位待命点1)
-                        // 获取当前运输车加以分配
-                        rgv = task.GetItemDeviceLast(item.WCS_NO, ItemId.运输车定位);
-                        // => 获取当前运输车资讯
-
-                        // => 当位置在待命点1时，判断为将货物移至摆渡车
-                        // 生成将摆渡车移至固定辊台对接点任务
-                        String ARFloc = task.GetARFLoc(frt);    //获取对应摆渡车位置
-                        task.CreateCustomItem(item.WCS_NO, ItemId.摆渡车定位固定辊台, item.LOC_TO, "", ARFloc, ItemStatus.请求执行);
-
-                        // => 当位置在待命点2时，判断为将货物移至运输车[外]
-                        // 生成将运输车复位待命点1任务
-                        task.CreateCustomItem(item.WCS_NO, ItemId.运输车复位1, item.LOC_TO, "", R1, ItemStatus.请求执行);
+                        // 获取当前对接任务的目的设备类型
+                        String type = task.GetDeviceType(item.LOC_TO);
+                        if (type == DeviceType.运输车)
+                        {
+                            // 即执行完运输车间对接作业，按流程需将货物移至摆渡车
+                            // 生成将运输车[外]复位待命点1任务
+                            task.CreateCustomItem(item.WCS_NO, ItemId.运输车复位1, item.LOC_TO, "", R1, ItemStatus.请求执行);
+                        }
+                        else if (type == DeviceType.摆渡车)
+                        {
+                            // 即执行完运输车&摆渡车对接作业，按流程需将货物移至固定辊台
+                            // 生成将摆渡车移至固定辊台对接点任务
+                            String ARFloc = task.GetARFLoc(frt);    //获取对应摆渡车位置
+                            task.CreateCustomItem(item.WCS_NO, ItemId.摆渡车定位固定辊台, item.LOC_TO, "", ARFloc, ItemStatus.请求执行);
+                        }
                         #endregion
 
                         break;
@@ -447,40 +496,161 @@ namespace WCS_phase1.Action
         /// </summary>
         public void Run_OutFollow()
         {
-            //生成出库清单号
-            String wcs_no1 = "O" + System.DateTime.Now.ToString("yyMMddHHmmss");
-            Thread.Sleep(1000);
-            String wcs_no2 = "O" + System.DateTime.Now.ToString("yyMMddHHmmss");
             try
             {
-                // 判断是否存在出库请求
-                int taskcount = mySQL.GetCount("wcs_task_info", "TASK_TYPE = '2' and SITE = 'N'");
-                if (taskcount == 0) //无则退出
+                // 获取所有作业区域
+                DataTable dtarea = mySQL.SelectAll("select distinct AREA from wcs_config_device");
+                if (tools.IsNoData(dtarea))
                 {
                     return;
                 }
+                // 遍历判断作业区域情况
+                foreach (DataRow dr in dtarea.Rows)
+                {
+                    String area = dr[0].ToString();
 
-                // 判断当前是否存在执行中的任务
-                int commandcount = mySQL.GetCount("wcs_command_master", "STEP = '3'");
-                if (commandcount > 0) //有则退出
+                    // 判断当前区域是否存在出库请求
+                    int taskcount = mySQL.GetCount("wcs_task_info", String.Format(@"TASK_TYPE = '2' and SITE = 'N' and W_D_LOC = '{0}'", area));
+                    if (taskcount == 0) //无则退出
+                    {
+                        continue;
+                    }
+
+                    // 判断当前区域是否存在执行中的任务
+                    int commandcount = mySQL.GetCount("wcs_command_master", String.Format(@"STEP = '3' and FRT in
+                                                   (select distinct DEVICE from wcs_config_device where TYPE = 'FRT' and AREA = '{0}')", area));
+                    if (commandcount > 0) //有则退出
+                    {
+                        continue;
+                    }
+
+                    // 判断当前区域是否存在满足入库条件的任务
+                    int incount = mySQL.GetCount("wcs_command_v", String.Format(@"TASK_TYPE = '1' and STEP = '2' and FRT in
+                                                  (select distinct DEVICE from wcs_config_device where TYPE = 'FRT' and AREA = '{0}')", area)); 
+                    if (incount > 0) //有则退出
+                    {
+                        continue;
+                    }
+
+                    // 处理该区域出库任务
+                    Task_OutFollow(area);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 执行出库任务（初步执行）
+        /// </summary>
+        /// <param name="abc"></param>
+        public void Task_OutFollow(String area)
+        {
+            try
+            {
+                // 获取空闲的行车资讯
+                String sql = String.Format(@"select * from wcs_config_device where TYPE = 'ABC' and AREA = '{0}'", area);
+                DataTable dtabc = mySQL.SelectAll(sql);
+                if (tools.IsNoData(dtabc))
                 {
                     return;
                 }
+                List<WCS_CONFIG_DEVICE> abcList = dtabc.ToDataList<WCS_CONFIG_DEVICE>();
 
-                // 判断是否存在满足入库条件的任务
-                int incount = mySQL.GetCount("wcs_command_v", "TASK_TYPE = '1' and STEP = '2'");
-                if (incount > 0) //有则退出
+                // 行车中间值
+                int AA = Convert.ToInt32(ConfigurationManager.AppSettings["CenterX"]);
+
+                // 遍历确认出库任务
+                foreach (WCS_CONFIG_DEVICE abc in abcList)
                 {
-                    return;
+                    // 获取当前行车资讯
+                    ABC ABC = new ABC(abc.DEVICE);
+                    // 获取当前坐标X轴值
+                    int X = tools.bytesToInt(ABC.CurrentXsite(), 0);
+                    // 任务
+                    String[] task;
+                    // 对比当前坐标X轴值与行车中间值
+                    if (X <= AA)
+                    {
+                        // 仅处理货物来源位置于行车[外]运输范围内合适的出库任务
+                        task = GetSuitableTask(1, X);
+                    }
+                    else
+                    {
+                        // 仅处理货物来源位置于行车[内]运输范围内的出库任务
+                        task = GetSuitableTask(2, X);
+                    }
+
+                    // 生成 WCS 出库清单及 ITEM 初始任务
+                    if (task == null)
+                    {
+                        continue;
+                    }
+                    CreateOutJob(task[0].ToString(), task[1].ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 获取合适的出库任务UID [range：靠外范围=1；靠内范围=2]
+        /// </summary>
+        /// <param name="range"></param>
+        /// <param name="X"></param>
+        /// <returns></returns>
+        public String[] GetSuitableTask(int range, int X)
+        {
+            try
+            {
+                // 行车中间值
+                int AA = Convert.ToInt32(ConfigurationManager.AppSettings["CenterX"]);
+                // 大小运算符号
+                String sign;
+                if (range ==1)
+                {
+                    sign = "<=";
+                }
+                else if (range == 2)
+                {
+                    sign = ">";
+                }
+                else
+                {
+                    return null;
                 }
 
-                // =>获取当前行车资讯
-                // =>生成WCS出库清单
-                String taskuid_1 = String.Empty;
-                String taskuid_2 = String.Empty;
-                CreateOutJob(taskuid_1, taskuid_2);
-                // 是否生成2笔 COMMAND - 4托货物对应4笔TASK资讯
-
+                // 获取X轴值与当前行车X轴值差值最小的任务UID
+                String sql = String.Format(@"select (case when t.X > {0} then (t.X - {0})
+						 when t.X < {0} then ({0} - t.X)
+			       else t.X end) as loc , t.TASK_UID
+  from (select a.TASK_UID, (b.STOCK_X + 0) X
+          from (select distinct TASK_UID, W_S_LOC from wcs_task_info where TASK_TYPE = '2' and SITE = 'N') a, 
+	             (select distinct WMS_LOC, SUBSTRING_INDEX(ABC_LOC_STOCK,'-',1) STOCK_X from wcs_config_loc) b
+         where a.W_S_LOC = b.WMS_LOC and (b.STOCK_X + 0) {1} {2}
+       ) t order by loc", X, sign, AA);
+                DataTable dt = mySQL.SelectAll(sql);
+                if (tools.IsNoData(dt))
+                {
+                    return null;
+                }
+                // 确认取范围内任务 1~2 个
+                String t1 = "";
+                String t2 = "";
+                if (dt.Rows.Count < 2)
+                {
+                    t1 = dt.Rows[0]["TASK_UID"].ToString();
+                }
+                else
+                {
+                    t1 = dt.Rows[0]["TASK_UID"].ToString();
+                    t2 = dt.Rows[1]["TASK_UID"].ToString();
+                }
+                return new String[] { t1, t2 };
             }
             catch (Exception ex)
             {
@@ -743,8 +913,8 @@ namespace WCS_phase1.Action
                     {
                         arf = String.Empty;
                     }
-                }                
-                
+                }
+
                 return arf;
             }
             catch (Exception ex)
@@ -852,7 +1022,7 @@ namespace WCS_phase1.Action
                     if (X <= AA)
                     {
                         // 仅获取位置于行车[外]运输范围内的 ABC
-                        if (tools.bytesToInt(ABC.CurrentXsite(),0) <= AA)
+                        if (tools.bytesToInt(ABC.CurrentXsite(), 0) <= AA)
                         {
                             // 锁定设备
                             abc = d.DEVICE;

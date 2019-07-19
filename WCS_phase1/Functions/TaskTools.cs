@@ -280,6 +280,29 @@ namespace WCS_phase1.Functions
         }
 
         /// <summary>
+        /// 获取该设备的设备类型
+        /// </summary>
+        /// <param name="device"></param>
+        /// <returns></returns>
+        public String GetDeviceType(String device)
+        {
+            try
+            {
+                String sql = String.Format(@"select distinct TYPE from wcs_config_device where DEVICE = '{0}'", device);
+                DataTable dt = mySQL.SelectAll(sql);
+                if (tools.IsNoData(dt))
+                {
+                    return "";
+                }
+                return dt.Rows[0]["TYPE"].ToString();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
         /// 该设备是否锁定
         /// </summary>
         /// <param name="device"></param>
