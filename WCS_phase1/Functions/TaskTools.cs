@@ -119,12 +119,13 @@ namespace WCS_phase1.Functions
         {
             try
             {
+                // 辊台号顺序由port口往入库方向从小到大定
                 String sql;
-                if (id == 1)    // 运输车辊台①[内]定位
+                if (id == 1)    // 运输车辊台①[外]定位
                 {
                     sql = String.Format(@"select distinct RGV_LOC_1 LOC from WCS_CONFIG_LOC where WMS_LOC = '{0}'", loc);
                 }
-                else if (id == 2)   // 运输车辊台②[外]定位
+                else if (id == 2)   // 运输车辊台②[内]定位
                 {
                     sql = String.Format(@"select distinct RGV_LOC_2 LOC from WCS_CONFIG_LOC where WMS_LOC = '{0}'", loc);
                 }

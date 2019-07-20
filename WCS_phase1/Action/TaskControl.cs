@@ -130,17 +130,21 @@ namespace WCS_phase1.Action
         {
             try
             {
-                // 任务目的比对检测
-                CheckTask(item.WCS_NO, item.LOC_TO);
-
-                // 清单是[结束]状态不作业
-                if (task.GetCommandStep(item.WCS_NO) == CommandStep.结束)
+                // Item非[完成]状态不作业
+                if (item.STATUS != ItemStatus.完成任务)
                 {
                     return;
                 }
 
-                // Item非[完成]状态不作业
-                if (item.STATUS != ItemStatus.完成任务)
+                // 当ITEM任务为出入库最后流程时
+                if (item.ITEM_ID == ItemId.行车放货 || item.ITEM_ID == ItemId.摆渡车出库)
+                {
+                    // 目的位置比对检测是否抵达——>完成任务
+                    CheckTask(item.WCS_NO, item.LOC_TO);
+                }
+
+                // 清单是[结束]状态不作业
+                if (task.GetCommandStep(item.WCS_NO) == CommandStep.结束)
                 {
                     return;
                 }
@@ -176,38 +180,37 @@ namespace WCS_phase1.Action
             try
             {
                 // 获取对应清单
-                String sql = String.Format(@"select TASK_TYPE,FRT,TASK_UID_1,LOC_TO_1,TASK_UID_2,LOC_TO_2 from wcs_command_v where STEP <>'4' and WCS_NO = '{0}'", wcs_no);
+                String sql = String.Format(@"select * from wcs_command_v where STEP <>'4' and WCS_NO = '{0}'", wcs_no);
                 DataTable dt = mySQL.SelectAll(sql);
                 if (tools.IsNoData(dt))
                 {
                     return;
                 }
-                String tasktype = dt.Rows[0]["TASK_TYPE"].ToString();
-                String frt = dt.Rows[0]["FRT"].ToString();
-                String taskid1 = dt.Rows[0]["TASK_UID_1"].ToString();
-                String loc1 = dt.Rows[0]["LOC_TO_1"].ToString();
-                String taskid2 = dt.Rows[0]["TASK_UID_2"].ToString();
-                String loc2 = dt.Rows[0]["LOC_TO_2"].ToString();
+                WCS_COMMAND_V command = dt.ToDataEntity<WCS_COMMAND_V>();
+
                 // 判断目的位置是否一致
                 // 更新Task状态(Command于数据库TRIGGER 'update_command_T' 触发更新)
-                switch (tasktype)
+                switch (command.TASK_TYPE)
                 {
                     case TaskType.入库:
-                        if (loc == task.GetABCStockLoc(loc1))
+                        if (loc == task.GetABCStockLoc(command.LOC_TO_1))
                         {
-                            task.UpdateTask(taskid1, TaskSite.完成);
+                            task.UpdateTask(command.TASK_UID_1, TaskSite.完成);
                         }
-                        if (loc == task.GetABCStockLoc(loc2))
+
+                        if (loc == task.GetABCStockLoc(command.LOC_TO_2))
                         {
-                            task.UpdateTask(taskid2, TaskSite.完成);
+                            task.UpdateTask(command.TASK_UID_2, TaskSite.完成);
                         }
+
                         break;
                     case TaskType.出库:
-                        if (loc == frt)
+                        if (loc == command.FRT)
                         {
-                            task.UpdateTask(taskid1, TaskSite.完成);
-                            task.UpdateTask(taskid2, TaskSite.完成);
+                            task.UpdateTask(command.TASK_UID_1, TaskSite.完成);
+                            task.UpdateTask(command.TASK_UID_2, TaskSite.完成);
                         }
+
                         break;
                     default:
                         break;
@@ -235,22 +238,17 @@ namespace WCS_phase1.Action
                 String RR = ConfigurationManager.AppSettings["StandbyRR"];
 
                 // 获取对应清单
-                String sql = String.Format(@"select TASK_UID_1,LOC_TO_1,SITE_1, TASK_UID_2,LOC_TO_2,SITE_2 from wcs_command_v where WCS_NO = '{0}'", item.WCS_NO);
+                String sql = String.Format(@"select * from wcs_command_v where WCS_NO = '{0}'", item.WCS_NO);
                 DataTable dt = mySQL.SelectAll(sql);
                 if (tools.IsNoData(dt))
                 {
                     return;
                 }
-                String taskid1 = dt.Rows[0]["TASK_UID_1"].ToString(); //任务1
-                String taskid2 = dt.Rows[0]["TASK_UID_2"].ToString(); //任务2
-                String site1 = dt.Rows[0]["SITE_1"].ToString(); //状态1
-                String site2 = dt.Rows[0]["SITE_2"].ToString(); //状态2
-                String loc1 = dt.Rows[0]["LOC_TO_1"].ToString(); //目标点1
-                String loc2 = dt.Rows[0]["LOC_TO_2"].ToString(); //目标点2
+                WCS_COMMAND_V command = dt.ToDataEntity<WCS_COMMAND_V>();
 
                 // 默认入库时 taskid1对接运输车设备辊台②、taskid2对接运输车设备辊台①
-                String loc_1 = task.GetRGVLoc(2, loc1); //辊台②任务1
-                String loc_2 = task.GetRGVLoc(1, loc2); //辊台①任务2
+                String loc_1 = task.GetRGVLoc(2, command.LOC_TO_1); //辊台②任务1
+                String loc_2 = task.GetRGVLoc(1, command.LOC_TO_2); //辊台①任务2
                 String loc; //执行目标
 
                 switch (item.ITEM_ID)   //根据最后的设备指令，可得货物已在流程中该设备对接的下一设备处
@@ -354,7 +352,7 @@ namespace WCS_phase1.Action
                     case ItemId.行车放货:
                         #region 行车定位
                         // 未完成的任务目标点
-                        loc = site1 == "Y" ? loc2 : loc1;
+                        loc = command.SITE_1 == "Y" ? command.LOC_TO_2 : command.LOC_TO_1;
                         // 行车到运输车对接取货点
                         String ABCloc = task.GetABCTrackLoc(loc); //获取对应行车位置
                         // 生成行车轨道定位任务
@@ -383,8 +381,6 @@ namespace WCS_phase1.Action
                 // 运输车
                 String rgv;
                 RGV RGV;
-                // 摆渡车于运输车对接点
-                String AR = ConfigurationManager.AppSettings["StandbyAR"];
                 // 运输车[外]待命复位点
                 String R1 = ConfigurationManager.AppSettings["StandbyR1"];
                 // 运输车[内]待命复位点
@@ -393,23 +389,17 @@ namespace WCS_phase1.Action
                 String RR = ConfigurationManager.AppSettings["StandbyRR"];
 
                 // 获取对应清单
-                String sql = String.Format(@"select FRT, TASK_UID_1,LOC_FROM_1,SITE_1, TASK_UID_2,LOC_FROM_2,SITE_2 from wcs_command_v where WCS_NO = '{0}'", item.WCS_NO);
+                String sql = String.Format(@"select * from wcs_command_v where WCS_NO = '{0}'", item.WCS_NO);
                 DataTable dt = mySQL.SelectAll(sql);
                 if (tools.IsNoData(dt))
                 {
                     return;
                 }
-                String frt = dt.Rows[0]["FRT"].ToString(); // 锁定固定辊台
-                String taskid1 = dt.Rows[0]["TASK_UID_1"].ToString(); //任务1
-                String taskid2 = dt.Rows[0]["TASK_UID_2"].ToString(); //任务2
-                String site1 = dt.Rows[0]["SITE_1"].ToString(); //状态1
-                String site2 = dt.Rows[0]["SITE_2"].ToString(); //状态2
-                String loc1 = dt.Rows[0]["LOC_FROM_1"].ToString(); //来源点1
-                String loc2 = dt.Rows[0]["LOC_FROM_2"].ToString(); //来源点2
+                WCS_COMMAND_V command = dt.ToDataEntity<WCS_COMMAND_V>();
 
                 // 默认出库时 taskid1对接运输车设备辊台①、taskid2对接运输车设备辊台②
-                String loc_1 = task.GetRGVLoc(1, loc1); //辊台①任务1
-                String loc_2 = task.GetRGVLoc(2, loc2); //辊台②任务2
+                String loc_1 = task.GetRGVLoc(1, command.LOC_FROM_1); //辊台①任务1
+                String loc_2 = task.GetRGVLoc(2, command.LOC_FROM_2); //辊台②任务2
 
                 switch (item.ITEM_ID)   //根据最后的设备指令，可得货物已在流程中该设备对接的下一设备处
                 {
@@ -429,7 +419,7 @@ namespace WCS_phase1.Action
 
                         // 流程上设定是先分配运输车辊台①放置货物，即现确认运输车辊台②是否有任务/有货物
                         // 车辊台②不存在任务直接复位 ｜｜　所有辊台都有货
-                        if (String.IsNullOrEmpty(taskid2) || RGV.GoodsStatus() == RGV.GoodsYesAll)
+                        if (String.IsNullOrEmpty(command.TASK_UID_2) || RGV.GoodsStatus() == RGV.GoodsYesAll)
                         {
                             // 将运输车复位待命点
                             // => 当前设备位置 >= 运输车[内]待命复位点 ?  运输车[内]复位 ：运输车[外]复位
@@ -452,7 +442,7 @@ namespace WCS_phase1.Action
                             // 生成运输车定位任务
                             task.CreateCustomItem(item.WCS_NO, ItemId.运输车定位, rgv, "", loc_2, ItemStatus.请求执行);
                             // 生成行车库存定位任务
-                            task.CreateCustomItem(item.WCS_NO, ItemId.行车库存定位, item.DEVICE, "", task.GetABCTrackLoc(loc2), ItemStatus.请求执行);
+                            task.CreateCustomItem(item.WCS_NO, ItemId.行车库存定位, item.DEVICE, "", task.GetABCTrackLoc(command.LOC_FROM_2), ItemStatus.请求执行);
                         }
 
                         #endregion
@@ -472,7 +462,7 @@ namespace WCS_phase1.Action
                         {
                             // 即执行完运输车&摆渡车对接作业，按流程需将货物移至固定辊台
                             // 生成将摆渡车移至固定辊台对接点任务
-                            String ARFloc = task.GetARFLoc(frt);    //获取对应摆渡车位置
+                            String ARFloc = task.GetARFLoc(command.FRT);    //获取对应摆渡车位置
                             task.CreateCustomItem(item.WCS_NO, ItemId.摆渡车定位固定辊台, item.LOC_TO, "", ARFloc, ItemStatus.请求执行);
                         }
                         #endregion
@@ -588,7 +578,7 @@ namespace WCS_phase1.Action
                     {
                         continue;
                     }
-                    CreateOutJob(task[0].ToString(), task[1].ToString());
+                    CreateOutJob(area, task[0].ToString(), task[1].ToString());
                 }
             }
             catch (Exception ex)
@@ -663,25 +653,44 @@ namespace WCS_phase1.Action
         /// </summary>
         /// <param name="taskuid_1"></param>
         /// <param name="taskuid_2"></param>
-        public void CreateOutJob(String taskuid_1, String taskuid_2)
+        public void CreateOutJob(String area, String taskuid_1, String taskuid_2)
         {
             //生成 WCS 清单号
-            Thread.Sleep(1000);
             String wcs_no = "O" + System.DateTime.Now.ToString("yyMMddHHmmss");
             try
             {
-                // =>生成 COMMAND
+                // 获取该区域可用的固定辊台
+                String sqlfrt = String.Format(@"select MAX(device) FRT from wcs_config_device where FLAG = 'Y' and TYPE = 'FRT' and AREA = '{0}'", area);
+                DataTable dtfrt = mySQL.SelectAll(sqlfrt);
+                if (tools.IsNoData(dtfrt))
+                {
+                    return;
+                }
+                String FRT = dtfrt.Rows[0]["FRT"].ToString();
 
-                // 生成 ITEM
+                // 默认先处理任务1：获取对应的任务1资讯
+                DataTable dttask = mySQL.SelectAll(String.Format(@"select * From wcs_task_info where task_uid = '{0}'", taskuid_1));
+                if (tools.IsNoData(dtfrt))
+                {
+                    return;
+                }
+                WCS_TASK_INFO info = dttask.ToDataEntity<WCS_TASK_INFO>();
+
+                //生成 COMMAND
+                String sql = String.Format(@"insert into wcs_command_master(WCS_NO, FRT, TASK_UID_1, TASK_UID_2) values('{0}','{1}','{2}','{3}')",
+                    wcs_no, FRT, taskuid_1, String.IsNullOrWhiteSpace(taskuid_2) ? null : taskuid_2);
+                mySQL.ExcuteSql(sql);
+
+                //生成 ITEM
                 // 生成行车库存定位任务
-                String ABCloc = ""; //获取对应库存位置
+                String ABCloc = task.GetABCStockLoc(info.W_S_LOC); //获取对应库存位置
                 task.CreateItem(wcs_no, ItemId.行车库存定位, ABCloc);  //生成行车任务
 
-                // 生成运输车对接行车任务
-                String RGVloc = ""; //获取运输车对接行车位置
+                //生成运输车对接行车任务(默认先对接运输车辊台①)
+                String RGVloc = task.GetRGVLoc(1, info.W_S_LOC); //获取运输车对接行车位置
                 task.CreateItem(wcs_no, ItemId.运输车定位, RGVloc);  //生成运输车任务
 
-                // 生成摆渡车对接运输车任务
+                //生成摆渡车对接运输车任务
                 task.CreateItem(wcs_no, ItemId.摆渡车定位运输车对接, ConfigurationManager.AppSettings["StandbyAR"]);  //生成摆渡车任务
 
                 //更新WCS COMMAND状态——执行中
