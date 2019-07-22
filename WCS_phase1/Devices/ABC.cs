@@ -215,5 +215,35 @@ namespace WCS_phase1.Devices
 
             return Convert.ToString(x) +"-"+ Convert.ToString(y) + "-" + Convert.ToString(z);
         }
+
+        #region 行车设备命令
+
+        /// <summary>
+        /// 行车—任务控制
+        /// </summary>
+        /// <param name="TaskType">任务类型</param>
+        /// <param name="ABCNum">行车号</param>
+        /// <param name="X">X轴坐标</param>
+        /// <param name="Y">Y轴坐标</param>
+        /// <param name="Z">Z轴坐标</param>
+        /// <returns></returns>
+        public static byte[] _TaskControl(byte TaskType, byte ABCNum, byte[] X, byte[] Y, byte[] Z)
+        {
+            //                     字头     设备号   控制码       X轴坐标        Y轴坐标     Z轴坐标     结束符
+            return new byte[] { 0x90, 0x02, ABCNum, TaskType, X[0], X[1], X[2], Y[0], Y[1], Z[0], Z[1], 0xFF, 0xFE };
+        }
+
+        /// <summary>
+        /// 行车—终止任务
+        /// </summary>
+        /// <param name="ABCNum">行车号</param>
+        /// <returns></returns>
+        public static byte[] _StopTask(byte ABCNum)
+        {
+            //                     字头     设备号 控制码      X轴坐标        Y轴坐标     Z轴坐标     结束符
+            return new byte[] { 0x90, 0x02, ABCNum, 0x7F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFE };
+        }
+
+        #endregion
     }
 }

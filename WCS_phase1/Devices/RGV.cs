@@ -290,5 +290,58 @@ namespace WCS_phase1.Devices
             SimpleTools tools = new SimpleTools();
             return tools.bytesToInt(new byte[] { Current1site(), Current2site(), Current3site(), Current4site() }, 0);
         }
+
+        #region 运输车设备命令
+
+        /// <summary>
+        /// 运输车—定位任务
+        /// </summary>
+        /// <param name="RGVNum">运输车号</param>
+        /// <param name="site">目标位置</param>
+        /// <returns></returns>
+        public static byte[] _Position(byte RGVNum, byte[] site)
+        {
+            //                     字头     设备号 控制码   值1      值2      值3      值4      结束符
+            return new byte[] { 0x96, 0x02, RGVNum, 0x01, site[0], site[1], site[2], site[3], 0xFF, 0xFE };
+        }
+
+        /// <summary>
+        /// 运输车—辊台控制
+        /// </summary>
+        /// <param name="RGVNum">运输车号</param>
+        /// <param name="site1">启动方式</param>
+        /// <param name="site2">启动方向</param>
+        /// <param name="site3">接送类型</param>
+        /// <param name="site4">货物数量</param>
+        /// <returns></returns>
+        public static byte[] _RollerControl(byte RGVNum, byte site1, byte site2, byte site3, byte site4)
+        {
+            //                     字头     设备号 控制码   值1    值2    值3    值4    结束符
+            return new byte[] { 0x96, 0x02, RGVNum, 0x02, site1, site2, site3, site4, 0xFF, 0xFE };
+        }
+
+        /// <summary>
+        /// 运输车—停止辊台
+        /// </summary>
+        /// <param name="RGVNum">运输车号</param>
+        /// <returns></returns>
+        public static byte[] _StopRoller(byte RGVNum)
+        {
+            //                     字头     设备号 控制码  值1   值2   值3   值4    结束符
+            return new byte[] { 0x96, 0x02, RGVNum, 0x03, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFE };
+        }
+
+        /// <summary>
+        /// 运输车—终止任务
+        /// </summary>
+        /// <param name="RGVNum">运输车号</param>
+        /// <returns></returns>
+        public static byte[] _StopTask(byte RGVNum)
+        {
+            //                     字头     设备号 控制码  值1   值2   值3   值4    结束符
+            return new byte[] { 0x96, 0x02, RGVNum, 0x7F, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFE };
+        }
+
+        #endregion
     }
 }

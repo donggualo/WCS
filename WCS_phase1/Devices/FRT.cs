@@ -243,5 +243,46 @@ namespace WCS_phase1.Devices
         }
 
         #endregion
+
+        #region 固定辊台设备指令
+
+        /// <summary>
+        /// 固定辊台—辊台控制
+        /// </summary>
+        /// <param name="FRTNum">固定辊台号</param>
+        /// <param name="site1">启动方式</param>
+        /// <param name="site2">启动方向</param>
+        /// <param name="site3">接送类型</param>
+        /// <param name="site4">货物数量</param>
+        /// <returns></returns>
+        public static byte[] _RollerControl(byte FRTNum, byte site1, byte site2, byte site3, byte site4)
+        {
+            //                     字头     设备号 控制码   值1    值2    值3    值4    结束符
+            return new byte[] { 0x92, 0x02, FRTNum, 0x02, site1, site2, site3, site4, 0xFF, 0xFE };
+        }
+
+        /// <summary>
+        /// 固定辊台—停止辊台
+        /// </summary>
+        /// <param name="FRTNum">固定辊台号</param>
+        /// <returns></returns>
+        public static byte[] _StopRoller(byte FRTNum)
+        {
+            //                     字头     设备号 控制码  值1   值2   值3   值4    结束符
+            return new byte[] { 0x92, 0x02, FRTNum, 0x03, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFE };
+        }
+
+        /// <summary>
+        /// 固定辊台—终止任务
+        /// </summary>
+        /// <param name="FRTNum">固定辊台号</param>
+        /// <returns></returns>
+        public static byte[] _StopTask(byte FRTNum)
+        {
+            //                     字头     设备号 控制码  值1   值2   值3   值4    结束符
+            return new byte[] { 0x92, 0x02, FRTNum, 0x7F, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFE };
+        }
+
+        #endregion
     }
 }
