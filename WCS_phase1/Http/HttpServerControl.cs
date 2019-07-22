@@ -19,7 +19,7 @@ namespace WCS_phase1.Http
         /// </summary>
         private int listenerPort = 8080;
         private bool isStart = false;
-        
+        Thread thread;
 
         public void StartServer()
         {
@@ -29,7 +29,7 @@ namespace WCS_phase1.Http
                 {
                     HttpServer httpServer = new HttpServer(listenerPort, Routes.GET);
 
-                    Thread thread = new Thread(new ThreadStart(httpServer.Listen));
+                    thread = new Thread(new ThreadStart(httpServer.Listen));
                     thread.Start();
                     isStart = true;
                 }
@@ -39,5 +39,12 @@ namespace WCS_phase1.Http
             }
         }
 
+        internal void StopServer()
+        {
+            if (thread != null && thread.IsAlive)
+            {
+                thread.Abort();
+            }
+        }
     }
 }

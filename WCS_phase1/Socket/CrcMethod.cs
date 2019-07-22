@@ -91,25 +91,13 @@ namespace AsyncTcp
 
         #region ToModbusCRC16
 
-
-        /// <summary>
-        /// 计算出验证码
-        /// </summary>
-        /// <param name="s"></param>
-        /// <returns></returns>
-        public static string ToModbusCRC16(string s)
-        {
-            return ToModbusCRC16(s, true);
-        }
-
-
         /// <summary>
         /// 计算出验证码
         /// </summary>
         /// <param name="s"></param>
         /// <param name="isReverse"></param>
         /// <returns></returns>
-        public static string ToModbusCRC16(string s, bool isReverse)
+        public static string ToModbusCRC16(string s, bool isReverse = false)
         {
             return ByteToString(CRC16(StringToHexByte(s)), isReverse);
         }
@@ -119,9 +107,9 @@ namespace AsyncTcp
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static byte[] ToModbusCRC16Byte(byte[] s)
+        public static byte[] ToModbusCRC16Byte(byte[] s, bool isReverse = false)
         {
-            return CRC16(s, true);
+            return CRC16(s, isReverse);
         }
 
         /// <summary>

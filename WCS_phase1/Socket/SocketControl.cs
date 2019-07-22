@@ -32,7 +32,7 @@ namespace WCS_phase1.Socket
         public SocketControl()
         {
             //测试
-            AddClient("AGV01", "127.0.0.1", 2000);
+            //AddClient("AGV01", "127.0.0.1", 2000);
 
         }
 
@@ -76,15 +76,28 @@ namespace WCS_phase1.Socket
             return false;
         }
 
-        public void CloseClient(string name)
+        public void CloseClient(string name = null)
         {
-            SocketClient client = clinets.Find(c => { return c.Name.Equals(name); });
-            if (client != null)
+            if (name == null)
             {
-                client.Close();
-                clinets.Remove(client);
+                foreach (var client in clinets)
+                {
+                    client.Close();
+                }
+                clinets.Clear();
             }
+            else
+            {
+                SocketClient client = clinets.Find(c => { return c.Name.Equals(name); });
+                if (client != null)
+                {
+                    client.Close();
+                    clinets.Remove(client);
+                }
+            }
+
         }
+
 
         /// <summary>
         /// 向指定设备发送信息

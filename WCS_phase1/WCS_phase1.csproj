@@ -98,6 +98,13 @@
     <Compile Include="Models\WCS_CONFIG_LOC.cs" />
     <Compile Include="Models\WCS_TASK_INFO.cs" />
     <Compile Include="Models\WCS_TASK_ITEM.cs" />
+    <Compile Include="LOG\Log.cs" />
+    <Compile Include="NDC\Message\_bMessage.cs" />
+    <Compile Include="NDC\Message\_sMessage.cs" />
+    <Compile Include="NDC\NDCControl.cs" />
+    <Compile Include="NDC\NDCItem.cs" />
+    <Compile Include="NDC\NDCMagic.cs" />
+    <Compile Include="NDC\NDCStatus.cs" />
     <Compile Include="Socket\AsyncTcpClient.cs" />
     <Compile Include="Socket\AsyncTcpServer.cs" />
     <Compile Include="Action\TaskControl.cs" />
@@ -145,10 +152,15 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ACINET\ACINET.csproj">
+      <Project>{7E2B7915-6CB9-432D-88B0-F635E3BF354E}</Project>
+      <Name>ACINET</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HttpServer\MHttpServer.csproj">
       <Project>{9E139539-C272-488A-BFCF-CADDF458DF9D}</Project>
       <Name>MHttpServer</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

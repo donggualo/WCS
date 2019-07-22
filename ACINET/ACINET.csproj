@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7E2B7915-6CB9-432D-88B0-F635E3BF354E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ACINET</RootNamespace>
+    <AssemblyName>ACINET</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="ACI\ACIMessageBase.cs" />
+    <Compile Include="ACI\Message_hpil.cs" />
+    <Compile Include="ACI\Message_g.cs" />
+    <Compile Include="ACI\Message_r.cs" />
+    <Compile Include="ACI\Message_p.cs" />
+    <Compile Include="ACI\Message_vpil.cs" />
+    <Compile Include="ACI\Message_w.cs" />
+    <Compile Include="ACI\Message_o.cs" />
+    <Compile Include="ACI\Message_j_extended.cs" />
+    <Compile Include="ACI\Message_j_limited.cs" />
+    <Compile Include="ACI\IACIMessage.cs" />
+    <Compile Include="ACI\MessageParser.cs" />
+    <Compile Include="ACI\Message_b.cs" />
+    <Compile Include="ACI\Message_E.cs" />
+    <Compile Include="ACI\Message_m.cs" />
+    <Compile Include="ACI\Message_n.cs" />
+    <Compile Include="ACI\Message_q.cs" />
+    <Compile Include="ACI\Message_s.cs" />
+    <Compile Include="ACI\Message_unknown.cs" />
+    <Compile Include="ACI\MsgBuffer.cs" />
+    <Compile Include="System\Diagnostic.cs" />
+    <Compile Include="VCP9412.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

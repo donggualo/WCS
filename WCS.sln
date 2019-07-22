@@ -5,10 +5,13 @@ VisualStudioVersion = 16.0.29102.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCS_phase1", "WCS_phase1\WCS_phase1.csproj", "{1D4E5334-175A-4BD7-9844-27530CDCD41B}"
 	ProjectSection(ProjectDependencies) = postProject
+		{7E2B7915-6CB9-432D-88B0-F635E3BF354E} = {7E2B7915-6CB9-432D-88B0-F635E3BF354E}
 		{9E139539-C272-488A-BFCF-CADDF458DF9D} = {9E139539-C272-488A-BFCF-CADDF458DF9D}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MHttpServer", "HttpServer\MHttpServer.csproj", "{9E139539-C272-488A-BFCF-CADDF458DF9D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACINET", "ACINET\ACINET.csproj", "{7E2B7915-6CB9-432D-88B0-F635E3BF354E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,6 +37,14 @@ Global
 		{9E139539-C272-488A-BFCF-CADDF458DF9D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9E139539-C272-488A-BFCF-CADDF458DF9D}.Release|x86.ActiveCfg = Release|x86
 		{9E139539-C272-488A-BFCF-CADDF458DF9D}.Release|x86.Build.0 = Release|x86
+		{7E2B7915-6CB9-432D-88B0-F635E3BF354E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E2B7915-6CB9-432D-88B0-F635E3BF354E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E2B7915-6CB9-432D-88B0-F635E3BF354E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7E2B7915-6CB9-432D-88B0-F635E3BF354E}.Debug|x86.Build.0 = Debug|Any CPU
+		{7E2B7915-6CB9-432D-88B0-F635E3BF354E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E2B7915-6CB9-432D-88B0-F635E3BF354E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E2B7915-6CB9-432D-88B0-F635E3BF354E}.Release|x86.ActiveCfg = Release|Any CPU
+		{7E2B7915-6CB9-432D-88B0-F635E3BF354E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

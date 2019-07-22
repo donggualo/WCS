@@ -202,13 +202,13 @@ namespace AsyncTcp
         /// <returns>异步TCP客户端</returns>
         public AsyncTcpClient Close()
         {
-            if (Connected)
-            {
+            //if (Connected)
+            //{
                 //retries = 0;
                 tcpClient.Close();
 
                 RaiseServerDisconnected(Addresses, Port);
-            }
+            //}
             return this;
         }
 

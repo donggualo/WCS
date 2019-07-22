@@ -22,13 +22,10 @@ namespace WCS_phase1
     /// </summary>
     public partial class MainWindow : Window
     {
-        DataControl dataControl;
-
         public MainWindow()
         {
             InitializeComponent();
-            dataControl = new DataControl();
-
+            DataControl.Init();
         }
 
         private void BtnTask_Click(object sender, RoutedEventArgs e)
@@ -42,6 +39,22 @@ namespace WCS_phase1
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             DataControl._mHttp.DoPost("http://10.9.31.101/wms.php");
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            DataControl._mNDCControl.DoConnectNDC();
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            DataControl._mNDCControl.DoStartOrder(ndcTB1.Text, ndcTB2.Text, ndcTB3.Text, ndcTB4.Text);//"1","1","2371","1380"
+        }
+
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            DataControl.BeforeClose();
         }
     }
 }
