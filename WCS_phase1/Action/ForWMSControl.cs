@@ -21,10 +21,9 @@ namespace WCS_phase1.Action
         {
             try
             {
-                MySQL mySQL = new MySQL();
                 String sql = String.Format(@"insert into wcs_task_info(TASK_UID, TASK_TYPE, BARCODE, W_S_LOC, W_D_LOC) values('{0}','{1}','{2}','{3}','{4}')",
                     wms.Task_UID.ToString(), wms.Task_type.ToString(), wms.Barcode.ToString(), wms.W_S_Loc.ToString(), wms.W_D_Loc.ToString());
-                mySQL.ExcuteSql(sql);
+                DataControl._mMySql.ExcuteSql(sql);
                 return true;
             }
             catch (Exception)

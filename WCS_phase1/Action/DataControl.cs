@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using WCS_phase1.Http;
 using WCS_phase1.NDC;
 using WCS_phase1.Socket;
+using WCS_phase1.Models;
+using WCS_phase1.Functions;
 
 namespace WCS_phase1.Action
 {
@@ -32,6 +34,22 @@ namespace WCS_phase1.Action
         /// </summary>
         internal static NDCControl _mNDCControl;
 
+        /// <summary>
+        /// 数据库sql执行
+        /// </summary>
+        internal static MySQL _mMySql;
+
+        /// <summary>
+        /// 简易功能
+        /// </summary>
+        internal static SimpleTools _mStools;
+
+        /// <summary>
+        /// 任务服务
+        /// </summary>
+        internal static TaskTools _mTaskTools;
+
+
         private static bool init = false;//是否已经初始化
 
         public static void Init()
@@ -45,6 +63,12 @@ namespace WCS_phase1.Action
                 _mHttp = new HttpControl();
 
                 _mNDCControl = new NDCControl();
+
+                _mMySql = new MySQL();
+
+                _mStools = new SimpleTools();
+
+                _mTaskTools = new TaskTools();
 
                 init = true;
             }

@@ -7,14 +7,12 @@ using WCS_phase1.Models;
 using System.Data;
 using WCS_phase1.Functions;
 using System.Configuration;
+using WCS_phase1.Action;
 
 namespace WCS_phase1.Functions
 {
     public class TaskTools
     {
-        MySQL mySQL = new MySQL();
-        SimpleTools tools = new SimpleTools();
-
         #region 位置点位
 
         /// <summary>
@@ -27,8 +25,8 @@ namespace WCS_phase1.Functions
             try
             {
                 String sql = String.Format(@"select distinct AREA From wcs_config_device where DEVICE = '{0}'", frt);
-                DataTable dtloc = mySQL.SelectAll(sql);
-                if (tools.IsNoData(dtloc))
+                DataTable dtloc = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dtloc))
                 {
                     return "";
                 }
@@ -50,8 +48,8 @@ namespace WCS_phase1.Functions
             try
             {
                 String sql = String.Format(@"select distinct ARF_LOC from WCS_CONFIG_LOC where FRT_LOC = '{0}'", frt);
-                DataTable dtloc = mySQL.SelectAll(sql);
-                if (tools.IsNoData(dtloc))
+                DataTable dtloc = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dtloc))
                 {
                     return "";
                 }
@@ -73,8 +71,8 @@ namespace WCS_phase1.Functions
             try
             {
                 String sql = String.Format(@"select distinct ABC_LOC_TRACK from WCS_CONFIG_LOC where WMS_LOC = '{0}'", loc);
-                DataTable dtloc = mySQL.SelectAll(sql);
-                if (tools.IsNoData(dtloc))
+                DataTable dtloc = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dtloc))
                 {
                     return "";
                 }
@@ -96,8 +94,8 @@ namespace WCS_phase1.Functions
             try
             {
                 String sql = String.Format(@"select distinct ABC_LOC_STOCK from WCS_CONFIG_LOC where WMS_LOC = '{0}'", loc);
-                DataTable dtloc = mySQL.SelectAll(sql);
-                if (tools.IsNoData(dtloc))
+                DataTable dtloc = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dtloc))
                 {
                     return "";
                 }
@@ -133,8 +131,8 @@ namespace WCS_phase1.Functions
                 {
                     return "0";
                 }
-                DataTable dtloc = mySQL.SelectAll(sql);
-                if (tools.IsNoData(dtloc))
+                DataTable dtloc = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dtloc))
                 {
                     return "0";
                 }
@@ -193,8 +191,8 @@ namespace WCS_phase1.Functions
             try
             {
                 String sql = String.Format(@"select FRT from wcs_command_master where WCS_NO = '{0}'", wcs_no);
-                DataTable dtloc = mySQL.SelectAll(sql);
-                if (tools.IsNoData(dtloc))
+                DataTable dtloc = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dtloc))
                 {
                     return "";
                 }
@@ -216,8 +214,8 @@ namespace WCS_phase1.Functions
             try
             {
                 String sql = String.Format(@"select distinct FRT_LOC from WCS_CONFIG_LOC where ARF_LOC = '{0}'", arf);
-                DataTable dtloc = mySQL.SelectAll(sql);
-                if (tools.IsNoData(dtloc))
+                DataTable dtloc = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dtloc))
                 {
                     return "";
                 }
@@ -241,8 +239,8 @@ namespace WCS_phase1.Functions
             {
                 String sql = String.Format(@"select DEVICE from WCS_TASK_ITEM where WCS_NO = '{0}' and ITEM_ID = '{1}' and (WCS_NO, ITEM_ID, CREATION_TIME) in 
                                             (select WCS_NO, ITEM_ID, MAX(CREATION_TIME) from WCS_TASK_ITEM group by WCS_NO, ITEM_ID) order by CREATION_TIME", wcs_no, item_id);
-                DataTable dt = mySQL.SelectAll(sql);
-                if (tools.IsNoData(dt))
+                DataTable dt = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dt))
                 {
                     return "";
                 }
@@ -266,8 +264,8 @@ namespace WCS_phase1.Functions
             try
             {
                 sql = String.Format(@"select * from wcs_config_device where AREA = '{0}' and TYPE = '{1}' order by FLAG", area, type);
-                DataTable dt = mySQL.SelectAll(sql);
-                if (tools.IsNoData(dt))
+                DataTable dt = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dt))
                 {
                     return new List<WCS_CONFIG_DEVICE>();
                 }
@@ -290,8 +288,8 @@ namespace WCS_phase1.Functions
             try
             {
                 String sql = String.Format(@"select distinct TYPE from wcs_config_device where DEVICE = '{0}'", device);
-                DataTable dt = mySQL.SelectAll(sql);
-                if (tools.IsNoData(dt))
+                DataTable dt = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dt))
                 {
                     return "";
                 }
@@ -313,8 +311,8 @@ namespace WCS_phase1.Functions
             try
             {
                 String sql = String.Format(@"select FLAG from wcs_config_device where DEVICE = '{0}'", device);
-                DataTable dt = mySQL.SelectAll(sql);
-                if (tools.IsNoData(dt))
+                DataTable dt = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dt))
                 {
                     return true;
                 }
@@ -342,7 +340,7 @@ namespace WCS_phase1.Functions
             try
             {
                 String sql = String.Format(@"update wcs_config_device set FLAG = 'L' where DEVICE = '{0}'", device);
-                mySQL.ExcuteSql(sql);
+                DataControl._mMySql.ExcuteSql(sql);
             }
             catch (Exception ex)
             {
@@ -359,7 +357,7 @@ namespace WCS_phase1.Functions
             try
             {
                 String sql = String.Format(@"update wcs_config_device set FLAG = 'Y' where DEVICE = '{0}'", device);
-                mySQL.ExcuteSql(sql);
+                DataControl._mMySql.ExcuteSql(sql);
             }
             catch (Exception ex)
             {
@@ -381,8 +379,8 @@ namespace WCS_phase1.Functions
             try
             {
                 String sql = String.Format(@"select distinct STEP from WCS_COMMAND_MASTER where WCS_NO = '{0}'", wcs_no);
-                DataTable dtstep = mySQL.SelectAll(sql);
-                if (tools.IsNoData(dtstep))
+                DataTable dtstep = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dtstep))
                 {
                     return "";
                 }
@@ -405,13 +403,39 @@ namespace WCS_phase1.Functions
             try
             {
                 sql = String.Format(@"select * From WCS_TASK_ITEM where STATUS = 'R' and ITEM_ID = '{0}' order by CREATION_TIME", item_id);
-                DataTable dtitem = mySQL.SelectAll(sql);
-                if (tools.IsNoData(dtitem))
+                DataTable dtitem = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dtitem))
                 {
                     return new List<WCS_TASK_ITEM>();
                 }
                 List<WCS_TASK_ITEM> itemList = dtitem.ToDataList<WCS_TASK_ITEM>();
                 return itemList;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 获取当前清单货物数量
+        /// </summary>
+        /// <param name="wcs_no"></param>
+        /// <returns></returns>
+        public int GetTaskGoodsQty(String wcs_no)
+        {
+            try
+            {
+                String sql = String.Format(@"select CASE WHEN (TASK_UID_1 is not null and SITE_1 <>'Y') 
+             AND (TASK_UID_2 is not null and SITE_1 <>'Y')
+            THEN 2 ELSE 1 END AS QTY
+ from wcs_command_v where WCS_NO = '{0}'", wcs_no);
+                DataTable dt = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dt))
+                {
+                    return 0;
+                }
+                return Convert.ToInt32(dt.Rows[0]["QTY"].ToString());
             }
             catch (Exception ex)
             {
@@ -429,7 +453,7 @@ namespace WCS_phase1.Functions
             try
             {
                 String sql = String.Format(@"update WCS_COMMAND_MASTER set STEP = '{0}',UPDATE_TIME = NOW() where WCS_NO = '{1}'", step, wcs_no);
-                mySQL.ExcuteSql(sql);
+                DataControl._mMySql.ExcuteSql(sql);
             }
             catch (Exception ex)
             {
@@ -447,7 +471,7 @@ namespace WCS_phase1.Functions
             try
             {
                 String sql = String.Format(@"update WCS_TASK_INFO set SITE = '{0}',UPDATE_TIME = NOW() where TASK_UID = '{0}'", site, task_uid);
-                mySQL.ExcuteSql(sql);
+                DataControl._mMySql.ExcuteSql(sql);
             }
             catch (Exception ex)
             {
@@ -467,7 +491,7 @@ namespace WCS_phase1.Functions
                 String sql = String.Format(@"update WCS_TASK_INFO set SITE = '{0}',UPDATE_TIME = NOW()
                                               where TASK_UID in (select TASK_UID_1 from WCS_COMMAND_MASTER where WCS_NO = '{1}')
                                                  or TASK_UID in (select TASK_UID_2 from WCS_COMMAND_MASTER where WCS_NO = '{1}')", site, wcs_no);
-                mySQL.ExcuteSql(sql);
+                DataControl._mMySql.ExcuteSql(sql);
             }
             catch (Exception ex)
             {
@@ -492,7 +516,7 @@ namespace WCS_phase1.Functions
             {
                 String sql = String.Format(@"update WCS_TASK_ITEM set {0} = '{1}',UPDATE_TIME = NOW() where ID = {2} and WCS_NO = '{3}' and ITEM_ID = '{4}'", 
                     key, value, id, wcs_no, item_id);
-                mySQL.ExcuteSql(sql);
+                DataControl._mMySql.ExcuteSql(sql);
             }
             catch (Exception ex)
             {
@@ -511,7 +535,7 @@ namespace WCS_phase1.Functions
             try
             {
                 String sql = String.Format(@"insert into WCS_TASK_ITEM(WCS_NO,ITEM_ID,LOC_TO) values('{0}','{1}','{2}')", wcs_no, item_id, loc_to);
-                mySQL.ExcuteSql(sql);
+                DataControl._mMySql.ExcuteSql(sql);
             }
             catch (Exception ex)
             {
@@ -535,7 +559,7 @@ namespace WCS_phase1.Functions
             {
                 String sql = String.Format(@"insert into WCS_TASK_ITEM(WCS_NO,ITEM_ID,DEVICE,LOC_FROM,LOC_TO,STATUS) values('{0}','{1}','{2}','{3}','{4}','{5}')",
                              wcs_no, item_id, device, loc_from, loc_to, status);
-                mySQL.ExcuteSql(sql);
+                DataControl._mMySql.ExcuteSql(sql);
             }
             catch (Exception ex)
             {
@@ -553,7 +577,7 @@ namespace WCS_phase1.Functions
             try
             {
                 String sql = String.Format(@"delete from WCS_TASK_ITEM where WCS_NO = '{0}'", wcs_no);
-                mySQL.ExcuteSql(sql);
+                DataControl._mMySql.ExcuteSql(sql);
             }
             catch (Exception ex)
             {
@@ -580,7 +604,7 @@ namespace WCS_phase1.Functions
                     sql = String.Format(@"delete from WCS_TASK_ITEM where STATUS in ('N','Q') and WCS_NO = '{0}' and ITEM_ID = '{1}'", wcs_no, item_id);
                 }
 
-                mySQL.ExcuteSql(sql);
+                DataControl._mMySql.ExcuteSql(sql);
             }
             catch (Exception ex)
             {

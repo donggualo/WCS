@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WCS_phase1.Functions;
+using WCS_phase1.Action;
 
 namespace WCS_phase1.Devices
 {
@@ -119,6 +120,34 @@ namespace WCS_phase1.Devices
         /// 2个辊台都有货
         /// </summary>
         public static byte GoodsYesAll = 0x03;
+
+        #endregion
+
+        #region 接送类型
+
+        /// <summary>
+        /// 接货
+        /// </summary>
+        public static byte GoodsReceive = 0x01;
+
+        /// <summary>
+        /// 送货
+        /// </summary>
+        public static byte GoodsDeliver = 0x02;
+
+        #endregion
+
+        #region 货物数量
+
+        /// <summary>
+        /// 货物数量为1
+        /// </summary>
+        public static byte GoodsQty1 = 0x01;
+
+        /// <summary>
+        /// 货物数量为2
+        /// </summary>
+        public static byte GoodsQty2 = 0x02;
 
         #endregion
 
@@ -287,8 +316,7 @@ namespace WCS_phase1.Devices
         /// <returns></returns>
         public int GetCurrentSite()
         {
-            SimpleTools tools = new SimpleTools();
-            return tools.bytesToInt(new byte[] { Current1site(), Current2site(), Current3site(), Current4site() }, 0);
+            return DataControl._mStools.bytesToInt(new byte[] { Current1site(), Current2site(), Current3site(), Current4site() }, 0);
         }
 
         #region 运输车设备命令

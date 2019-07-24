@@ -121,6 +121,34 @@ namespace WCS_phase1.Devices
 
         #endregion
 
+        #region 接送类型
+
+        /// <summary>
+        /// 接货
+        /// </summary>
+        public static byte GoodsReceive = 0x01;
+
+        /// <summary>
+        /// 送货
+        /// </summary>
+        public static byte GoodsDeliver = 0x02;
+
+        #endregion
+
+        #region 货物数量
+
+        /// <summary>
+        /// 货物数量为1
+        /// </summary>
+        public static byte GoodsQty1 = 0x01;
+
+        /// <summary>
+        /// 货物数量为2
+        /// </summary>
+        public static byte GoodsQty2 = 0x02;
+
+        #endregion
+
 
         #region 指令解析
 

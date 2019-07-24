@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WCS_phase1.Functions;
+using WCS_phase1.Action;
 
 namespace WCS_phase1.Devices
 {
@@ -208,10 +209,9 @@ namespace WCS_phase1.Devices
         /// <returns></returns>
         public String GetCurrentSite()
         {
-            SimpleTools tools = new SimpleTools();
-            int x = tools.bytesToInt(CurrentXsite(), 0);
-            int y = tools.bytesToInt(CurrentYsite(), 0);
-            int z = tools.bytesToInt(CurrentZsite(), 0);
+            int x = DataControl._mStools.bytesToInt(CurrentXsite(), 0);
+            int y = DataControl._mStools.bytesToInt(CurrentYsite(), 0);
+            int z = DataControl._mStools.bytesToInt(CurrentZsite(), 0);
 
             return Convert.ToString(x) +"-"+ Convert.ToString(y) + "-" + Convert.ToString(z);
         }
