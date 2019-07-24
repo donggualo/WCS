@@ -5,17 +5,59 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WCS_phase1"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Closing="Window_Closing">
+        Title="MainWindow" Height="585.743" Width="960.847" Closing="Window_Closing" ResizeMode="CanResizeWithGrip">
     <Grid>
-        <Button x:Name="BtnTask" Content="执行任务" HorizontalAlignment="Left" Margin="65,52,0,0" VerticalAlignment="Top" Width="75" Click="BtnTask_Click"/>
-        <Button Content="Test" HorizontalAlignment="Left" Margin="208,52,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
-        <Label Content="激光AGV调度" HorizontalAlignment="Left" Margin="54,197,0,0" VerticalAlignment="Top"/>
-        <Button Content="连接" HorizontalAlignment="Left" Margin="54,245,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_1"/>
-        <Button Content="开始调度" HorizontalAlignment="Left" Margin="145,366,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_2"/>
-        <TextBox Name="ndcTB1" HorizontalAlignment="Left" Height="24" Margin="54,285,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="75"/>
-        <TextBox Name="ndcTB2" HorizontalAlignment="Left" Height="23" Margin="54,314,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="75"/>
-        <TextBox Name="ndcTB3" HorizontalAlignment="Left" Height="20" Margin="54,342,0,0" TextWrapping="Wrap" Text="2371" VerticalAlignment="Top" Width="75"/>
-        <TextBox Name="ndcTB4" HorizontalAlignment="Left" Height="23" Margin="54,367,0,0" TextWrapping="Wrap" Text="1380" VerticalAlignment="Top" Width="75"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="88"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="59"/>
+        </Grid.RowDefinitions>
+        <Canvas Grid.Row="0">
+            <Button x:Name="BtnTask" Content="执行任务" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="75" Click="BtnTask_Click" Canvas.Left="10" Canvas.Top="33"/>
+            <Button Content="Test" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="Button_Click" Canvas.Left="119" Canvas.Top="33"/>
+
+        </Canvas>
+        <TabControl  Grid.Row="1">
+            <TabItem Header="整体概况">
+                <Grid Background="#FFE5E5E5">
+
+
+                </Grid>
+            </TabItem>
+            <TabItem Header="激光AGV">
+                <Grid Background="#FFE5E5E5">
+                    <Canvas>
+                        <Label Content="激光AGV调度" Canvas.Left="10" Canvas.Top="10"/>
+                        <Button Content="连接" Click="Button_Click_1" Canvas.Left="118" Canvas.Top="16" />
+                        <Button Content="开始调度" Click="Button_Click_2" Canvas.Left="108" Canvas.Top="258"/>
+                        <TextBox Name="ndcTB1"  Height="24"  TextWrapping="Wrap" Text="1" Width="75" Canvas.Left="108" Canvas.Top="75"/>
+                        <TextBox Name="ndcTB2" Height="23"  TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="75" Canvas.Left="108" Canvas.Top="118" />
+                        <TextBox Name="ndcTB3"  Height="20" TextWrapping="Wrap" Text="2371" VerticalAlignment="Top" Width="75" Canvas.Left="108" Canvas.Top="164" />
+                        <TextBox Name="ndcTB4"  Height="19" TextWrapping="Wrap" Text="1380" VerticalAlignment="Top" Canvas.Left="108" Canvas.Top="207" Width="75" />
+                        <Label Content="优先级" Canvas.Left="54" Canvas.Top="75"/>
+                        <Label Content="Ikey" Canvas.Left="60" Canvas.Top="118"/>
+                        <Label Content="接货点" Canvas.Left="54" Canvas.Top="164"/>
+                        <Label Content="卸货点" Canvas.Left="54" Canvas.Top="203"/>
+                    </Canvas>
+                </Grid>
+            </TabItem>
+            <TabItem Header="设备信息">
+                <Grid>
+                    <Canvas>
+                        <TextBox Height="23" Canvas.Left="92" TextWrapping="Wrap" Text="ABC01" Canvas.Top="92" Width="153"/>
+                        <TextBox Height="23" Canvas.Left="92" TextWrapping="Wrap" Text="192.168.6.100" Canvas.Top="155" Width="153"/>
+                        <TextBox Height="23" Canvas.Left="92" TextWrapping="Wrap" Text="2000" Canvas.Top="213" Width="153"/>
+                        <Label Content="设备连接Socket调试" Canvas.Left="30" Canvas.Top="37"/>
+                        <Label Content="名称" Canvas.Left="30" Canvas.Top="88"/>
+                        <Label Content="IP" Canvas.Left="30" Canvas.Top="151"/>
+                        <Label Content="端口" Canvas.Left="30" Canvas.Top="213"/>
+                        <Button Content="连接设备" Height="41" Width="103" Canvas.Left="92" Canvas.Top="283"/>
+
+                    </Canvas>
+                </Grid>
+            </TabItem>
+
+        </TabControl>
 
     </Grid>
 </Window>
