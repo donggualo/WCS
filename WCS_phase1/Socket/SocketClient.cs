@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-
+using WCS_phase1.LOG;
 namespace WCS_phase1.Socket
 {
     /// <summary>
@@ -24,7 +24,7 @@ namespace WCS_phase1.Socket
         public string Name;//设备名称
         private AsyncTcpClient client;//TCP连接
         private bool doCloseSocket = false;//是否是主动关闭连接/还是意外断开
-
+        private Log log;
 
         /// <summary>
         /// 构造函数
@@ -38,6 +38,8 @@ namespace WCS_phase1.Socket
             Port = port;
             Name = name;
             ConnectToService();
+
+            log = new Log(name);
         }
 
         /// <summary>
@@ -97,6 +99,7 @@ namespace WCS_phase1.Socket
         internal void Send(byte[] msg)
         {
             client.Send(msg);
+            log.LOG("S:" + CRCMethod.AllByteToString(msg));
         }
 
         /// <summary>
@@ -134,7 +137,13 @@ namespace WCS_phase1.Socket
             {
                 Bdata = e.Datagram;
                 UpDateTime = DateTime.Now;
+                log.LOG("R:" + CRCMethod.AllByteToString(e.Datagram));
             }
+            else
+            {
+                log.LOG("RN:" + CRCMethod.AllByteToString(e.Datagram));
+            }
+
         }
 
         /// <summary>

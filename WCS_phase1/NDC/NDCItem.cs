@@ -73,9 +73,9 @@ namespace WCS_phase1.NDC
 
             if (b.OrderIndex != 0)
             {
-                str.Append("S:index=" + s.OrderIndex + ",");
-                str.Append("S:CarrierId=" + s.CarrierId + ",");
-                str.Append("S:Magic1=" + s.Magic1 + ",");
+                str.Append("B:index=" + b.OrderIndex + ",");
+                str.Append("B:IKEY=" + b.IKEY + ",");
+                str.Append("B:Status=" + b.Status + ",");
             }
 
             return str.ToString();
