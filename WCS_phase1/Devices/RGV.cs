@@ -316,7 +316,7 @@ namespace WCS_phase1.Devices
         /// <returns></returns>
         public int GetCurrentSite()
         {
-            return DataControl._mStools.bytesToInt(new byte[] { Current1site(), Current2site(), Current3site(), Current4site() }, 0);
+            return DataControl._mStools.BytesToInt(new byte[] { Current1site(), Current2site(), Current3site(), Current4site() }, 0);
         }
 
         #region 运输车设备命令

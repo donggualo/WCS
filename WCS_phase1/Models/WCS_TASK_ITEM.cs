@@ -62,12 +62,12 @@ namespace WCS_phase1.Models
     /// </summary>
     public class ItemId
     {
-        public const String 固定辊台入库 = "111";
-        public const String 固定辊台出库 = "112";
-        public const String 摆渡车入库 = "113";
-        public const String 摆渡车出库 = "114";
-        public const String 运输车入库 = "115";
-        public const String 运输车出库 = "116";
+        public const String 固定辊台正向 = "111";
+        public const String 固定辊台反向 = "112";
+        public const String 摆渡车正向 = "113";
+        public const String 摆渡车反向 = "114";
+        public const String 运输车正向 = "115";
+        public const String 运输车反向 = "116";
         public const String 行车取货 = "117";
         public const String 行车放货 = "118";
 
@@ -82,6 +82,71 @@ namespace WCS_phase1.Models
 
         public const String 行车轨道定位 = "031";
         public const String 行车库存定位 = "032";
+
+        /// <summary>
+        /// 获取Item Id 对应的中文意义
+        /// </summary>
+        /// <param name="item_id"></param>
+        /// <returns></returns>
+        public static String GetItemIdName(String item_id)
+        {
+            String name = "";
+            switch (item_id)
+            {
+                case 固定辊台正向:
+                    name = "固定辊台正向滚动";
+                    break;
+                case 固定辊台反向:
+                    name = "固定辊台反向滚动";
+                    break;
+                case 摆渡车正向:
+                    name = "摆渡车辊台正向滚动";
+                    break;
+                case 摆渡车反向:
+                    name = "摆渡车辊台反向滚动";
+                    break;
+                case 运输车正向:
+                    name = "运输车辊台正向滚动";
+                    break;
+                case 运输车反向:
+                    name = "运输车辊台反向滚动";
+                    break;
+                case 行车取货:
+                    name = "行车取货";
+                    break;
+                case 行车放货:
+                    name = "行车放货";
+                    break;
+                case 摆渡车定位固定辊台:
+                    name = "摆渡车移至与固定辊台对接";
+                    break;
+                case 摆渡车定位运输车对接:
+                    name = "摆渡车移至与运输车对接";
+                    break;
+                case 摆渡车定位:
+                    name = "摆渡车定位";
+                    break;
+                case 运输车定位:
+                    name = "运输车定位";
+                    break;
+                case 运输车复位1:
+                    name = "运输车移至靠外待命点";
+                    break;
+                case 运输车复位2:
+                    name = "运输车移至靠内待命点";
+                    break;
+                case 运输车对接定位:
+                    name = "运输车移至与运输车对接";
+                    break;
+                case 行车轨道定位:
+                    name = "行车定位至运输车轨道";
+                    break;
+                case 行车库存定位:
+                    name = "行车定位至库存货位";
+                    break;
+            }
+            return name;
+        }
     }
 
     /// <summary>

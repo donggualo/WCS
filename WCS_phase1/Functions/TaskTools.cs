@@ -614,5 +614,68 @@ namespace WCS_phase1.Functions
 
         #endregion
 
+        #region 日志记录
+
+        /// <summary>
+        /// 异常日志
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="order"></param>
+        /// <param name="err"></param>
+        /// <returns></returns>
+        public String GetLogMessE(WCS_TASK_ITEM item, byte[] order, String err)
+        {
+            String message = String.Format(@"{0}（Error）：[WCS单号:{1}]，[ID:{2}]，[设备号:{3}]，[异常信息:{4}]", ItemId.GetItemIdName(item.ITEM_ID), item.WCS_NO, item.ID, item.DEVICE, err); 
+            
+            return message;
+        }
+
+        /// <summary>
+        /// 成功日志
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        public String GetLogMessS(WCS_TASK_ITEM item, byte[] order)
+        {
+            String ORDER = DataControl._mStools.BytetToString(order);
+            String message = String.Format(@"{0}（Success）：[WCS单号:{1}]，[ID:{2}]，[设备号:{3}]，[来源:{4}]，[目标:{5}]，[指令:{6}]",
+                ItemId.GetItemIdName(item.ITEM_ID), item.WCS_NO, item.ID, item.DEVICE, item.LOC_FROM, item.LOC_TO, ORDER);
+
+            return message;
+        }
+
+        /// <summary>
+        /// 待命日志
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        public String GetLogMessW(WCS_TASK_ITEM item, byte[] order)
+        {
+            String ORDER = DataControl._mStools.BytetToString(order);
+            String message = String.Format(@"{0}（WaitFor）：[WCS单号:{1}]，[ID:{2}]，[设备号:{3}]，[来源:{4}]，[目标:{5}]，[指令:{6}]",
+                ItemId.GetItemIdName(item.ITEM_ID), item.WCS_NO, item.ID, item.DEVICE, item.LOC_FROM, item.LOC_TO, ORDER);
+
+            return message;
+        }
+
+        /// <summary>
+        /// 发送命令日志
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        public String GetLogMess(WCS_TASK_ITEM item, byte[] order)
+        {
+            String ORDER = DataControl._mStools.BytetToString(order);
+            String message = String.Format(@"{0}（SendOrder）：[WCS单号:{1}]，[ID:{2}]，[设备号:{3}]，[来源:{4}]，[目标:{5}]，[指令:{6}]",
+                ItemId.GetItemIdName(item.ITEM_ID), item.WCS_NO, item.ID, item.DEVICE, item.LOC_FROM, item.LOC_TO, ORDER);
+
+            return message;
+        }
+
+        #endregion
+
     }
 }

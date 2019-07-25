@@ -31,7 +31,7 @@ namespace WCS_phase1.Functions
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public byte[] intToBytes(int value)
+        public byte[] IntToBytes(int value)
         {
             byte[] src = new byte[4];
             src[3] = (byte)((value >> 24) & 0xFF);
@@ -47,7 +47,7 @@ namespace WCS_phase1.Functions
         /// <param name="src"></param>
         /// <param name="offset"></param>
         /// <returns></returns>
-        public int bytesToInt(byte[] src, int offset)
+        public int BytesToInt(byte[] src, int offset)
         {
             int value;
             value = (int)((src[offset] & 0xFF)
@@ -55,6 +55,22 @@ namespace WCS_phase1.Functions
                     | ((src[offset + 2] & 0xFF) << 16)
                     | ((src[offset + 3] & 0xFF) << 24));
             return value;
+        }
+
+        /// <summary>
+        /// byte[] 转 String
+        /// </summary>
+        /// <param name="byteArray"></param>
+        /// <returns></returns>
+        public string BytetToString(byte[] byteArray)//byte[]转String
+        {
+            var str = new System.Text.StringBuilder();
+            for (int i = 0; i < byteArray.Length; i++)
+            {
+                str.Append(String.Format("{0:X} ", byteArray[i]));//var拼接
+            }
+            string s = str.ToString();
+            return s;
         }
     }
 }

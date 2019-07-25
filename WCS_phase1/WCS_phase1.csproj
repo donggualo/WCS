@@ -77,6 +77,7 @@
     </ApplicationDefinition>
     <Compile Include="Action\DataControl.cs" />
     <Compile Include="Action\ForWMSControl.cs" />
+    <Compile Include="Action\TaskLogic.cs" />
     <Compile Include="Devices\ABC.cs" />
     <Compile Include="Devices\AGV.cs" />
     <Compile Include="Devices\ARF.cs" />

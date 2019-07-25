@@ -49,6 +49,11 @@ namespace WCS_phase1.Action
         /// </summary>
         internal static TaskTools _mTaskTools;
 
+        /// <summary>
+        /// WCS 任务作业管理
+        /// </summary>
+        internal static TaskControler _mTaskControler;
+
 
         private static bool init = false;//是否已经初始化
 
@@ -69,6 +74,8 @@ namespace WCS_phase1.Action
                 _mStools = new SimpleTools();
 
                 _mTaskTools = new TaskTools();
+
+                _mTaskControler = new TaskControler();
 
                 init = true;
             }

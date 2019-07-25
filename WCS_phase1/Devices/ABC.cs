@@ -209,9 +209,9 @@ namespace WCS_phase1.Devices
         /// <returns></returns>
         public String GetCurrentSite()
         {
-            int x = DataControl._mStools.bytesToInt(CurrentXsite(), 0);
-            int y = DataControl._mStools.bytesToInt(CurrentYsite(), 0);
-            int z = DataControl._mStools.bytesToInt(CurrentZsite(), 0);
+            int x = DataControl._mStools.BytesToInt(CurrentXsite(), 0);
+            int y = DataControl._mStools.BytesToInt(CurrentYsite(), 0);
+            int z = DataControl._mStools.BytesToInt(CurrentZsite(), 0);
 
             return Convert.ToString(x) +"-"+ Convert.ToString(y) + "-" + Convert.ToString(z);
         }
