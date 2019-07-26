@@ -43,6 +43,11 @@ namespace WCS_phase1.Models
         public String FLAG { get; set; }
 
         /// <summary>
+        /// 锁定清单号
+        /// </summary>
+        public String LOCK_WCS_NO { get; set; }
+
+        /// <summary>
         /// 创建时间
         /// </summary>
         public DateTime? CREATION_TIME { get; set; }

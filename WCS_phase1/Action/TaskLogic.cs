@@ -19,6 +19,8 @@ namespace WCS_phase1.Action
     /// </summary>
     public class TaskLogic
     {
+        Log log = new Log("AddTaskList");
+
         #region 初步入库任务
 
         /// <summary>
@@ -73,7 +75,7 @@ namespace WCS_phase1.Action
                 DataControl._mTaskTools.CreateItem(command.WCS_NO, ItemId.运输车复位1, ConfigurationManager.AppSettings["StandbyR1"]);  //生成运输车任务
 
                 // 行车到运输车对接取货点
-                String ABCloc = DataControl._mTaskTools.GetABCTrackLoc(loc);     //获取对应行车位置
+                String ABCloc = DataControl._mTaskTools.GetABCTrackLoc(loc == loc1 ? command.LOC_TO_1 : command.LOC_TO_2);     //获取对应行车位置
                 DataControl._mTaskTools.CreateItem(command.WCS_NO, ItemId.行车轨道定位, ABCloc);     //生成行车任务
 
                 //更新WCS COMMAND状态——执行中
@@ -83,11 +85,12 @@ namespace WCS_phase1.Action
             }
             catch (Exception ex)
             {
-                //初始化
+                // 初始化
                 DataControl._mTaskTools.UpdateCommand(command.WCS_NO, CommandStep.请求执行);
                 DataControl._mTaskTools.UpdateTaskByWCSNo(command.WCS_NO, TaskSite.未执行);
                 DataControl._mTaskTools.DeleteItem(command.WCS_NO, "");
-                throw ex;
+                // 记录LOG
+                DataControl._mTaskTools.RecordLog("Task_InInitial()", "生成初始入库任务", command.WCS_NO, null, "NG", ex.ToString());
             }
         }
         #endregion
@@ -95,7 +98,7 @@ namespace WCS_phase1.Action
         #region 设备对接任务
 
         /// <summary>
-        /// 执行设备到位进行对接作业 [对接任务排程触发下发指令]
+        /// 执行设备到位进行对接作业
         /// </summary>
         public void Run_LinkDevice()
         {
@@ -194,7 +197,8 @@ namespace WCS_phase1.Action
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.固定辊台反向);
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.摆渡车正向);
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.摆渡车反向);
-                throw ex;
+                // 记录LOG
+                DataControl._mTaskTools.RecordLog("CreateTask_ARF_FRT()", "生成摆渡车&固定辊台对接任务", item.WCS_NO, null, "NG", ex.ToString());
             }
         }
 
@@ -252,7 +256,8 @@ namespace WCS_phase1.Action
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.摆渡车正向);
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.摆渡车反向);
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.运输车反向);
-                throw ex;
+                // 记录LOG
+                DataControl._mTaskTools.RecordLog("CreateTask_ARF_RGV()", "生成摆渡车&运输车对接任务", item.WCS_NO, null, "NG", ex.ToString());
             }
         }
 
@@ -308,7 +313,8 @@ namespace WCS_phase1.Action
                 DataControl._mTaskTools.UpdateItem(id_R, wcsno_R, itemid_R, ItemColumnName.作业状态, ItemStatus.交接中);
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.运输车正向);
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.运输车反向);
-                throw ex;
+                // 记录LOG
+                DataControl._mTaskTools.RecordLog("CreateTask_RGV_RGV()", "生成运输车&运输车对接任务", item.WCS_NO, null, "NG", ex.ToString());
             }
         }
 
@@ -360,7 +366,8 @@ namespace WCS_phase1.Action
                 DataControl._mTaskTools.UpdateItem(id_R, wcsno_R, itemid_R, ItemColumnName.作业状态, ItemStatus.交接中);
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.行车取货);
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.行车放货);
-                throw ex;
+                // 记录LOG
+                DataControl._mTaskTools.RecordLog("CreateTask_RGV_ABC()", "生成运输车&行车对接任务", item.WCS_NO, null, "NG", ex.ToString());
             }
         }
 
@@ -395,7 +402,8 @@ namespace WCS_phase1.Action
                 DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.交接中);
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.行车取货);
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.行车放货);
-                throw ex;
+                // 记录LOG
+                DataControl._mTaskTools.RecordLog("CreateTask_ABC()", "生成行车取放货任务", item.WCS_NO, null, "NG", ex.ToString());
             }
         }
         #endregion
@@ -437,7 +445,7 @@ namespace WCS_phase1.Action
         {
             try
             {
-                // Item非[完成]状态不作业
+                // Item非[完成]状态 => 不作业
                 if (item.STATUS != ItemStatus.完成任务)
                 {
                     return;
@@ -450,9 +458,11 @@ namespace WCS_phase1.Action
                     CheckTask(item.WCS_NO, item.LOC_TO);
                 }
 
-                // 清单是[结束]状态不作业
+                // 清单是[结束]状态 => 不作业
                 if (DataControl._mTaskTools.GetCommandStep(item.WCS_NO) == CommandStep.结束)
                 {
+                    // 解锁对应清单所有设备数据状态
+                    DataControl._mTaskTools.DeviceUnLock(item.WCS_NO);
                     return;
                 }
 
@@ -471,7 +481,8 @@ namespace WCS_phase1.Action
             }
             catch (Exception ex)
             {
-                throw ex;
+                // 记录LOG
+                DataControl._mTaskTools.RecordLog("Task_Continued()", "生成对接完成后续任务", item.WCS_NO, null, "NG", ex.ToString());
             }
         }
 
@@ -729,7 +740,7 @@ namespace WCS_phase1.Action
                         if (String.IsNullOrEmpty(command.TASK_UID_2) || RGV.GoodsStatus() == RGV.GoodsYesAll)
                         {
                             // 将运输车复位待命点
-                            // => 当前设备位置 >= 运输车[内]待命复位点 ?  运输车[内]复位 ：运输车[外]复位
+                            // 当前设备位置 >= 运输车[内]待命复位点 ?  运输车[内]复位 ：运输车[外]复位
                             if (RGV.GetCurrentSite() >= Convert.ToInt32(R2))
                             {
                                 // 生成运输车[内]复位任务
@@ -1012,7 +1023,8 @@ namespace WCS_phase1.Action
                 DataControl._mTaskTools.DeleteCommand(wcs_no);
                 DataControl._mTaskTools.UpdateTaskByWCSNo(wcs_no, TaskSite.未执行);
                 DataControl._mTaskTools.DeleteItem(wcs_no, "");
-                throw ex;
+                // 记录LOG
+                DataControl._mTaskTools.RecordLog("CreateOutJob()", "生成WCS出库清单", null, null, "NG", ex.ToString());
             }
         }
 
@@ -1088,8 +1100,8 @@ namespace WCS_phase1.Action
                         }
                         // 确认任务设备&位置
                         ARF ARF = new ARF(arf);
-                        device = Convert.ToString(ARF.CurrentSite());
-                        loc = arf;
+                        device = arf;
+                        loc = ARF.CurrentSite().ToString(); 
 
                         #endregion
 
@@ -1107,8 +1119,8 @@ namespace WCS_phase1.Action
                         }
                         // 确认任务设备&位置
                         RGV RGV = new RGV(rgv);
-                        device = Convert.ToString(RGV.GetCurrentSite());
-                        loc = rgv;
+                        device = rgv;
+                        loc = RGV.GetCurrentSite().ToString();
 
                         #endregion
 
@@ -1126,8 +1138,8 @@ namespace WCS_phase1.Action
                         }
                         // 确认任务设备&位置
                         ABC ABC = new ABC(abc);
-                        device = ABC.GetCurrentSite();
-                        loc = abc;
+                        device = abc;
+                        loc = ABC.GetCurrentSite();
 
                         #endregion
 
@@ -1136,7 +1148,7 @@ namespace WCS_phase1.Action
                         break;
                 }
 
-                if (String.IsNullOrEmpty(device) || String.IsNullOrEmpty(loc))
+                if (String.IsNullOrEmpty(device) || String.IsNullOrEmpty(loc) || loc.Equals("0"))
                 {
                     return;
                 }
@@ -1152,13 +1164,14 @@ namespace WCS_phase1.Action
                 // 更新状态
                 DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.请求执行);
                 // 锁定设备
-                DataControl._mTaskTools.DeviceLock(device);
+                DataControl._mTaskTools.DeviceLock(item.WCS_NO, device);
             }
             catch (Exception ex)
             {
                 //初始化
                 DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.不可执行);
-                throw ex;
+                // 记录LOG
+                DataControl._mTaskTools.RecordLog("ReadDevice()", "分配任务指定设备", item.WCS_NO, item.ITEM_ID, "NG", ex.ToString());
             }
         }
 
@@ -1428,10 +1441,8 @@ namespace WCS_phase1.Action
                         // 获取指令
                         order = FRT._RollerControl(frt.FRTNum(), FRT.RollerRunAll, item.ITEM_ID == ItemId.固定辊台正向 ? FRT.RunFront : FRT.RunObverse,
                             item.ITEM_ID == ItemId.固定辊台正向 ? FRT.GoodsReceive : FRT.GoodsDeliver, qty == 1 ? FRT.GoodsQty1 : FRT.GoodsQty2);
-                        //加入任务作业链表
+                        // 加入任务作业链表
                         DataControl._mTaskControler.StartTask(new FRTTack(item, DeviceType.固定辊台, order));
-                        // 更新状态
-                        DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.任务中);
 
                         break;
                     case ItemId.摆渡车正向:
@@ -1440,10 +1451,8 @@ namespace WCS_phase1.Action
                         // 获取指令
                         order = ARF._RollerControl(arf.ARFNum(), ARF.RollerRunAll, item.ITEM_ID == ItemId.固定辊台正向 ? ARF.RunFront : ARF.RunObverse,
                             item.ITEM_ID == ItemId.固定辊台正向 ? ARF.GoodsReceive : ARF.GoodsDeliver, qty == 1 ? ARF.GoodsQty1 : ARF.GoodsQty2);
-                        //加入任务作业链表
+                        // 加入任务作业链表
                         DataControl._mTaskControler.StartTask(new ARFTack(item, DeviceType.摆渡车, order));
-                        // 更新状态
-                        DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.任务中);
 
                         break;
                     case ItemId.运输车正向:
@@ -1452,10 +1461,8 @@ namespace WCS_phase1.Action
                         // 获取指令
                         order = RGV._RollerControl(rgv.RGVNum(), RGV.RollerRunAll, item.ITEM_ID == ItemId.固定辊台正向 ? RGV.RunFront : RGV.RunObverse,
                             item.ITEM_ID == ItemId.固定辊台正向 ? RGV.GoodsReceive : RGV.GoodsDeliver, qty == 1 ? RGV.GoodsQty1 : RGV.GoodsQty2);
-                        //加入任务作业链表
+                        // 加入任务作业链表
                         DataControl._mTaskControler.StartTask(new RGVTack(item, DeviceType.运输车, order));
-                        // 更新状态
-                        DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.任务中);
 
                         break;
                     case ItemId.摆渡车定位固定辊台:
@@ -1466,10 +1473,8 @@ namespace WCS_phase1.Action
                         byte arfloc = (byte)(Convert.ToInt32(item.LOC_TO));
                         // 获取指令
                         order = ARF._Position(arfMove.ARFNum(), arfloc);
-                        //加入任务作业链表
+                        // 加入任务作业链表
                         DataControl._mTaskControler.StartTask(new ARFTack(item, DeviceType.摆渡车, order));
-                        // 更新状态
-                        DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.任务中);
 
                         break;
                     case ItemId.运输车定位:
@@ -1481,10 +1486,8 @@ namespace WCS_phase1.Action
                         byte[] rgvloc = DataControl._mStools.IntToBytes(Convert.ToInt32(item.LOC_TO));
                         // 获取指令
                         order = RGV._Position(rgvMove.RGVNum(), rgvloc);
-                        //加入任务作业链表
+                        // 加入任务作业链表
                         DataControl._mTaskControler.StartTask(new RGVTack(item, DeviceType.运输车, order));
-                        // 更新状态
-                        DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.任务中);
 
                         break;
                     case ItemId.行车取货:
@@ -1515,21 +1518,71 @@ namespace WCS_phase1.Action
                         order = ABC._TaskControl(type, ABC.ABCNum(), locX, locY, locZ);
                         //加入任务作业链表
                         DataControl._mTaskControler.StartTask(new ABCTack(item, DeviceType.行车, order));
-                        // 更新状态
-                        DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.任务中);
 
                         break;
                     default:
-                        break;
+                        return;
                 }
+                // 更新状态
+                DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.任务中);
+                // 记录LOG
+                log.LOG(String.Format(@"加入 [{0}] 新任务：[WCS单号:{1}]，[ID:{2}]，[设备号:{3}]，[指令:{4}]",
+                    ItemId.GetItemIdName(item.ITEM_ID), item.WCS_NO, item.ID, item.DEVICE, DataControl._mStools.BytetToString(order)));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                // 记录LOG
+                DataControl._mTaskTools.RecordLog("CreateAndAddTaskList()", "生成并加入设备指令任务链表", item.WCS_NO, item.ITEM_ID, "NG", ex.ToString());
             }
         }
 
         #endregion
 
+    }
+
+    public class RunTask
+    {
+        // 线程
+        Thread _thread;
+        // 执行对象
+        TaskLogic _task = new TaskLogic();
+
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        public RunTask()
+        {
+            _thread = new Thread(ThreadFunc)
+            {
+                Name = "任务逻辑处理线程",
+                IsBackground = true
+            };
+
+            _thread.Start();
+        }
+
+        /// <summary>
+        /// 事务线程
+        /// </summary>
+        private void ThreadFunc()
+        {
+            while (true)
+            {
+                Thread.Sleep(500);
+                try
+                {
+                    _task.Run_InInitial();
+                    _task.Run_ItemDevice();
+                    _task.Run_LinkDevice();
+                    _task.Run_TaskContinued();
+                    _task.Run_OutFollow();
+                    _task.Run_Order();
+                }
+                catch (Exception)
+                {
+                }
+            }
+        }
     }
 
 }

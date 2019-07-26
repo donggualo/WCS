@@ -71,9 +71,9 @@ namespace WCS_phase1.Models
         public const String 行车取货 = "117";
         public const String 行车放货 = "118";
 
-        public const String 摆渡车定位固定辊台 = "011";
-        public const String 摆渡车定位运输车对接 = "012";
-        public const String 摆渡车定位 = "013";
+        public const String 摆渡车定位 = "011";
+        public const String 摆渡车定位固定辊台 = "012";
+        public const String 摆渡车定位运输车对接 = "013";
 
         public const String 运输车定位 = "021";
         public const String 运输车复位1 = "022";    // 摆渡车对接待命点
@@ -136,13 +136,13 @@ namespace WCS_phase1.Models
                     name = "运输车移至靠内待命点";
                     break;
                 case 运输车对接定位:
-                    name = "运输车移至与运输车对接";
+                    name = "运输车[外]移至与运输车[内]对接";
                     break;
                 case 行车轨道定位:
-                    name = "行车定位至运输车轨道";
+                    name = "行车定位至运输车轨道坐标";
                     break;
                 case 行车库存定位:
-                    name = "行车定位至库存货位";
+                    name = "行车定位至库存货位坐标";
                     break;
             }
             return name;

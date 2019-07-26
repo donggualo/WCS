@@ -334,12 +334,13 @@ namespace WCS_phase1.Functions
         /// <summary>
         /// 锁定设备
         /// </summary>
+        /// <param name="wcs_no"></param>
         /// <param name="device"></param>
-        public void DeviceLock(String device)
+        public void DeviceLock(String wcs_no, String device)
         {
             try
             {
-                String sql = String.Format(@"update wcs_config_device set FLAG = 'L' where DEVICE = '{0}'", device);
+                String sql = String.Format(@"update wcs_config_device set FLAG = 'L', LOCK_WCS_NO = '{0}' where DEVICE = '{1}'", wcs_no, device);
                 DataControl._mMySql.ExcuteSql(sql);
             }
             catch (Exception ex)
@@ -349,14 +350,14 @@ namespace WCS_phase1.Functions
         }
 
         /// <summary>
-        /// 解锁设备
+        /// 解锁设备(By 设备号or清单号)
         /// </summary>
         /// <param name="device"></param>
-        public void DeviceUnLock(String device)
+        public void DeviceUnLock(String devOrwcs)
         {
             try
             {
-                String sql = String.Format(@"update wcs_config_device set FLAG = 'Y' where DEVICE = '{0}'", device);
+                String sql = String.Format(@"update wcs_config_device set FLAG = 'Y', LOCK_WCS_NO = null where DEVICE = '{0}' or LOCK_WCS_NO = '{0}'", devOrwcs);
                 DataControl._mMySql.ExcuteSql(sql);
             }
             catch (Exception ex)
@@ -616,6 +617,20 @@ namespace WCS_phase1.Functions
 
         #region 日志记录
 
+        public void RecordLog(String name, String remark, String wcs_no, String item_id, String res, String mes)
+        {
+            try
+            {
+                String sql = String.Format(@"insert into wcs_function_log(FUNCTION_NAME,REMARK,WCS_NO,ITEM_ID,RESULT,MESSAGE) values('{0}','{1}','{2}','{3}','{4}','{5}')",
+                    name, remark, wcs_no, item_id, res, mes);
+                DataControl._mMySql.ExcuteSql(sql);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         /// <summary>
         /// 异常日志
         /// </summary>
@@ -639,7 +654,7 @@ namespace WCS_phase1.Functions
         public String GetLogMessS(WCS_TASK_ITEM item, byte[] order)
         {
             String ORDER = DataControl._mStools.BytetToString(order);
-            String message = String.Format(@"{0}（Success）：[WCS单号:{1}]，[ID:{2}]，[设备号:{3}]，[来源:{4}]，[目标:{5}]，[指令:{6}]",
+            String message = String.Format(@"{0}（Success）：[WCS单号:{1}]，[ID:{2}]，[设备号:{3}]，[货物来源:{4}]，[货物目标:{5}]，[指令:{6}]",
                 ItemId.GetItemIdName(item.ITEM_ID), item.WCS_NO, item.ID, item.DEVICE, item.LOC_FROM, item.LOC_TO, ORDER);
 
             return message;
@@ -654,7 +669,7 @@ namespace WCS_phase1.Functions
         public String GetLogMessW(WCS_TASK_ITEM item, byte[] order)
         {
             String ORDER = DataControl._mStools.BytetToString(order);
-            String message = String.Format(@"{0}（WaitFor）：[WCS单号:{1}]，[ID:{2}]，[设备号:{3}]，[来源:{4}]，[目标:{5}]，[指令:{6}]",
+            String message = String.Format(@"{0}（WaitFor）：[WCS单号:{1}]，[ID:{2}]，[设备号:{3}]，[货物来源:{4}]，[货物目标:{5}]，[指令:{6}]",
                 ItemId.GetItemIdName(item.ITEM_ID), item.WCS_NO, item.ID, item.DEVICE, item.LOC_FROM, item.LOC_TO, ORDER);
 
             return message;
@@ -669,13 +684,12 @@ namespace WCS_phase1.Functions
         public String GetLogMess(WCS_TASK_ITEM item, byte[] order)
         {
             String ORDER = DataControl._mStools.BytetToString(order);
-            String message = String.Format(@"{0}（SendOrder）：[WCS单号:{1}]，[ID:{2}]，[设备号:{3}]，[来源:{4}]，[目标:{5}]，[指令:{6}]",
+            String message = String.Format(@"{0}（SendOrder）：[WCS单号:{1}]，[ID:{2}]，[设备号:{3}]，[货物来源:{4}]，[货物目标:{5}]，[指令:{6}]",
                 ItemId.GetItemIdName(item.ITEM_ID), item.WCS_NO, item.ID, item.DEVICE, item.LOC_FROM, item.LOC_TO, ORDER);
 
             return message;
         }
 
         #endregion
-
     }
 }

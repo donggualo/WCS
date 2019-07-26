@@ -124,7 +124,9 @@ namespace WCS_phase1.Action
         /// 业务处理
         /// </summary>
         public override void DoWork()
-        { }
+        {
+            // 各设备重写执行逻辑
+        }
 
     }
 
@@ -171,6 +173,8 @@ namespace WCS_phase1.Action
                     {
                         // 完成任务
                         ISetTaskSuc();
+                        // 解锁设备数据状态
+                        DataControl._mTaskTools.DeviceUnLock(ITEM.DEVICE);
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
                         return;
@@ -183,6 +187,8 @@ namespace WCS_phase1.Action
                     {
                         // 完成任务
                         ISetTaskSuc();
+                        // 解锁设备数据状态
+                        DataControl._mTaskTools.DeviceUnLock(ITEM.DEVICE);
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
                         return;
@@ -271,6 +277,8 @@ namespace WCS_phase1.Action
                         {
                             // 完成任务
                             ISetTaskSuc();
+                            // 解锁设备数据状态
+                            DataControl._mTaskTools.DeviceUnLock(ITEM.DEVICE);
                             // LOG
                             log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
                             return;
@@ -415,6 +423,8 @@ namespace WCS_phase1.Action
                         {
                             // 完成任务
                             ISetTaskSuc();
+                            // 解锁设备数据状态
+                            DataControl._mTaskTools.DeviceUnLock(ITEM.DEVICE);
                             // LOG
                             log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
                             return;
@@ -523,6 +533,7 @@ namespace WCS_phase1.Action
                     // 有货则任务完成
                     if (_device.GoodsStatus() == ABC.GoodsYes)
                     {
+                        // 完成任务
                         ISetTaskSuc();
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
@@ -534,6 +545,7 @@ namespace WCS_phase1.Action
                     // 无货则任务完成
                     if (_device.GoodsStatus() == ABC.GoodsNo)
                     {
+                        // 完成任务
                         ISetTaskSuc();
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
@@ -589,7 +601,7 @@ namespace WCS_phase1.Action
         {
             _thread = new Thread(ThreadFunc)
             {
-                Name = "任务处理线程",
+                Name = "任务指令处理线程",
                 IsBackground = true
             };
 
