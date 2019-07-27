@@ -8,11 +8,86 @@ using System.Data;
 using WCS_phase1.Functions;
 using System.Configuration;
 using WCS_phase1.Action;
+using System.Windows;
 
 namespace WCS_phase1.Functions
 {
     public class TaskTools
     {
+        #region Client初始化
+
+        /// <summary>
+        /// 初始化客户端
+        /// </summary>
+        public void InitializeClient()
+        {
+            try
+            {
+                //需连接网络设备 ！！！！
+                LinkDevicesClient();
+                //需让ITEM W变为Q！！！！
+                ResetItemTask();
+            }
+            catch (Exception ex)
+            {
+                // 记录LOG
+                RecordLog("InitializeClient()", "初始化", null, null, "NG", ex.ToString());
+            }
+        }
+        
+        /// <summary>
+        /// 连接网络设备
+        /// </summary>
+        public void LinkDevicesClient()
+        {
+            try
+            {
+                // 获取设备设定档资讯
+                String sql = "select * from wcs_config_device";
+                DataTable dt = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dt))
+                {
+                    return;
+                }
+                List<WCS_CONFIG_DEVICE> devList = dt.ToDataList<WCS_CONFIG_DEVICE>();
+                // 遍历加入网络设备
+                foreach (WCS_CONFIG_DEVICE dev in devList)
+                {
+                    bool add = DataControl._mSocket.AddClient(dev.DEVICE, dev.IP, dev.PORT);
+                    if (!add) 
+                    {
+                        throw new Exception(dev.DEVICE + " 连接网络设备失败，请确认！");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // 记录LOG
+                RecordLog("LinkDevicesClient()", "连接网络设备", null, null, "NG", ex.ToString());
+                MessageBox.Show("连接网络设备发生异常："+ex.ToString(), "Error");
+                System.Environment.Exit(0);
+            }
+        }
+
+        /// <summary>
+        /// Item任务重新执行
+        /// </summary>
+        public void ResetItemTask()
+        {
+            try
+            {
+                // 将所有 [任务中] 的Item 变为 [请求执行]
+                String sql = "update wcs_task_item set STATUS = 'Q' where STATUS = 'W'";
+                DataControl._mMySql.ExcuteSql(sql);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        #endregion
+
         #region 位置点位
 
         /// <summary>
@@ -471,7 +546,7 @@ namespace WCS_phase1.Functions
         {
             try
             {
-                String sql = String.Format(@"update WCS_TASK_INFO set SITE = '{0}',UPDATE_TIME = NOW() where TASK_UID = '{0}'", site, task_uid);
+                String sql = String.Format(@"update WCS_TASK_INFO set SITE = '{0}',UPDATE_TIME = NOW() where TASK_UID = '{1}'", site, task_uid);
                 DataControl._mMySql.ExcuteSql(sql);
             }
             catch (Exception ex)
@@ -617,6 +692,15 @@ namespace WCS_phase1.Functions
 
         #region 日志记录
 
+        /// <summary>
+        /// 任务流程异常日志
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="remark"></param>
+        /// <param name="wcs_no"></param>
+        /// <param name="item_id"></param>
+        /// <param name="res"></param>
+        /// <param name="mes"></param>
         public void RecordLog(String name, String remark, String wcs_no, String item_id, String res, String mes)
         {
             try
@@ -640,7 +724,8 @@ namespace WCS_phase1.Functions
         /// <returns></returns>
         public String GetLogMessE(WCS_TASK_ITEM item, byte[] order, String err)
         {
-            String message = String.Format(@"{0}（Error）：[WCS单号:{1}]，[ID:{2}]，[设备号:{3}]，[异常信息:{4}]", ItemId.GetItemIdName(item.ITEM_ID), item.WCS_NO, item.ID, item.DEVICE, err); 
+            String message = String.Format(@"【Error】{0}：WCS单号[ {1} ]，ID[ {2} ]，设备号[ {3} ]，异常信息[ {4} ]", 
+                ItemId.GetItemIdName(item.ITEM_ID), item.WCS_NO, item.ID, item.DEVICE, err); 
             
             return message;
         }
@@ -654,7 +739,7 @@ namespace WCS_phase1.Functions
         public String GetLogMessS(WCS_TASK_ITEM item, byte[] order)
         {
             String ORDER = DataControl._mStools.BytetToString(order);
-            String message = String.Format(@"{0}（Success）：[WCS单号:{1}]，[ID:{2}]，[设备号:{3}]，[货物来源:{4}]，[货物目标:{5}]，[指令:{6}]",
+            String message = String.Format(@"【Success】{0}：WCS单号[ {1} ]，ID[ {2} ]，设备号[ {3} ]，来源[ {4} ]，目标[ {5} ]，指令[ {6} ]",
                 ItemId.GetItemIdName(item.ITEM_ID), item.WCS_NO, item.ID, item.DEVICE, item.LOC_FROM, item.LOC_TO, ORDER);
 
             return message;
@@ -669,7 +754,7 @@ namespace WCS_phase1.Functions
         public String GetLogMessW(WCS_TASK_ITEM item, byte[] order)
         {
             String ORDER = DataControl._mStools.BytetToString(order);
-            String message = String.Format(@"{0}（WaitFor）：[WCS单号:{1}]，[ID:{2}]，[设备号:{3}]，[货物来源:{4}]，[货物目标:{5}]，[指令:{6}]",
+            String message = String.Format(@"【WaitFor】{0}：WCS单号[ {1} ]，ID[ {2} ]，设备号[ {3} ]，来源[ {4} ]，目标[ {5} ]，指令[ {6} ]",
                 ItemId.GetItemIdName(item.ITEM_ID), item.WCS_NO, item.ID, item.DEVICE, item.LOC_FROM, item.LOC_TO, ORDER);
 
             return message;
@@ -684,7 +769,7 @@ namespace WCS_phase1.Functions
         public String GetLogMess(WCS_TASK_ITEM item, byte[] order)
         {
             String ORDER = DataControl._mStools.BytetToString(order);
-            String message = String.Format(@"{0}（SendOrder）：[WCS单号:{1}]，[ID:{2}]，[设备号:{3}]，[货物来源:{4}]，[货物目标:{5}]，[指令:{6}]",
+            String message = String.Format(@"【SendOrder】{0}：WCS单号[ {1} ]，ID[ {2} ]，设备号[ {3} ]，来源[ {4} ]，目标[ {5} ]，指令[ {6} ]",
                 ItemId.GetItemIdName(item.ITEM_ID), item.WCS_NO, item.ID, item.DEVICE, item.LOC_FROM, item.LOC_TO, ORDER);
 
             return message;

@@ -25,7 +25,7 @@ namespace WCS_phase1.Models
         /// <summary>
         /// 端口
         /// </summary>
-        public String PORT { get; set; }
+        public int PORT { get; set; }
 
         /// <summary>
         /// 区域

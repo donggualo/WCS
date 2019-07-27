@@ -647,7 +647,8 @@ namespace WCS_phase1.Action
                         }
                         else
                         {
-                            break;
+                            // 辊台已无货，即解锁设备数据状态
+                            DataControl._mTaskTools.DeviceUnLock(rgv);
                         }
                         // 判断是否需要对接到运输车[内]范围内作业
                         if (Convert.ToInt32(loc_Y) >= Convert.ToInt32(R))  // 需对接运输车[内]
@@ -663,7 +664,8 @@ namespace WCS_phase1.Action
                             DataControl._mTaskTools.CreateCustomItem(item.WCS_NO, ItemId.运输车定位, rgv, "", loc_Y, ItemStatus.请求执行);
                         }
                         // 生成行车库存定位任务
-                        DataControl._mTaskTools.CreateCustomItem(item.WCS_NO, ItemId.行车库存定位, item.DEVICE, "", DataControl._mTaskTools.GetABCStockLoc(loc_N), ItemStatus.请求执行);
+                        loc = loc_N == loc_1 ? command.LOC_TO_1 : command.LOC_TO_2;
+                        DataControl._mTaskTools.CreateCustomItem(item.WCS_NO, ItemId.行车库存定位, item.DEVICE, "", DataControl._mTaskTools.GetABCStockLoc(loc), ItemStatus.请求执行);
                         #endregion
 
                         break;
@@ -1465,9 +1467,9 @@ namespace WCS_phase1.Action
                         DataControl._mTaskControler.StartTask(new RGVTack(item, DeviceType.运输车, order));
 
                         break;
+                    case ItemId.摆渡车定位:
                     case ItemId.摆渡车定位固定辊台:
                     case ItemId.摆渡车定位运输车对接:
-                    case ItemId.摆渡车定位:
                         ARF arfMove = new ARF(item.DEVICE);
                         // 提取目的位置
                         byte arfloc = (byte)(Convert.ToInt32(item.LOC_TO));
@@ -1494,12 +1496,12 @@ namespace WCS_phase1.Action
                     case ItemId.行车放货:
                     case ItemId.行车轨道定位:
                     case ItemId.行车库存定位:
-                        ABC ABC = new ABC(item.DEVICE);
+                        ABC abc = new ABC(item.DEVICE);
                         // 提取目的位置
                         String[] LOC = item.LOC_TO.Split('-');
-                        byte[] locX = DataControl._mStools.IntToBytes(Convert.ToInt32(LOC[0]));
-                        byte[] locY = DataControl._mStools.IntToBytes(Convert.ToInt32(LOC[1]));
-                        byte[] locZ = DataControl._mStools.IntToBytes(Convert.ToInt32(LOC[2]));
+                        byte[] locX = DataControl._mStools.IntToBytes(Convert.ToInt32(String.IsNullOrWhiteSpace(LOC[0]) ? "0" : LOC[0]));
+                        byte[] locY = DataControl._mStools.IntToBytes(Convert.ToInt32(String.IsNullOrWhiteSpace(LOC[1]) ? "0" : LOC[1]));
+                        byte[] locZ = DataControl._mStools.IntToBytes(Convert.ToInt32(String.IsNullOrWhiteSpace(LOC[2]) ? "0" : LOC[2]));
                         // 指令类型
                         byte type;
                         if (item.ITEM_ID == ItemId.行车取货)
@@ -1515,7 +1517,7 @@ namespace WCS_phase1.Action
                             type = ABC.TaskLocate;
                         }
                         // 获取指令
-                        order = ABC._TaskControl(type, ABC.ABCNum(), locX, locY, locZ);
+                        order = ABC._TaskControl(type, abc.ABCNum(), locX, locY, locZ);
                         //加入任务作业链表
                         DataControl._mTaskControler.StartTask(new ABCTack(item, DeviceType.行车, order));
 
@@ -1526,8 +1528,8 @@ namespace WCS_phase1.Action
                 // 更新状态
                 DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.任务中);
                 // 记录LOG
-                log.LOG(String.Format(@"加入 [{0}] 新任务：[WCS单号:{1}]，[ID:{2}]，[设备号:{3}]，[指令:{4}]",
-                    ItemId.GetItemIdName(item.ITEM_ID), item.WCS_NO, item.ID, item.DEVICE, DataControl._mStools.BytetToString(order)));
+                log.LOG(String.Format(@"{0}：{5}=> WCS单号[ {1} ]，ID[ {2} ]，设备号[ {3} ]，指令[ {4} ]",
+                    ItemId.GetItemIdName(item.ITEM_ID), item.WCS_NO, item.ID, item.DEVICE, DataControl._mStools.BytetToString(order), "\r\n\t"));
             }
             catch (Exception ex)
             {
@@ -1540,6 +1542,9 @@ namespace WCS_phase1.Action
 
     }
 
+    /// <summary>
+    /// 任务流程
+    /// </summary>
     public class RunTask
     {
         // 线程
@@ -1566,7 +1571,7 @@ namespace WCS_phase1.Action
         /// </summary>
         private void ThreadFunc()
         {
-            while (true)
+            while (false)
             {
                 Thread.Sleep(500);
                 try

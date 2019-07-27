@@ -139,7 +139,7 @@ namespace WCS_phase1.Models
                     name = "运输车[外]移至与运输车[内]对接";
                     break;
                 case 行车轨道定位:
-                    name = "行车定位至运输车轨道坐标";
+                    name = "行车定位至运输轨道坐标";
                     break;
                 case 行车库存定位:
                     name = "行车定位至库存货位坐标";

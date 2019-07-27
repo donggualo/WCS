@@ -140,7 +140,7 @@ namespace WCS_phase1.Action
         public FRTTack(WCS_TASK_ITEM item, string deviceType, byte[] order) : base(item, deviceType, order)
         {
             _device = new FRT(ITEM.DEVICE);
-            log = new Log("Task_FRT");
+            log = new Log("Task_FRT-" + ITEM.DEVICE + "-");
         }
 
         public override void DoWork()
@@ -220,7 +220,7 @@ namespace WCS_phase1.Action
         public ARFTack(WCS_TASK_ITEM item, string deviceType, byte[] order) : base(item, deviceType, order)
         {
             _device = new ARF(ITEM.DEVICE);
-            log = new Log("Task_ARF");
+            log = new Log("Task_ARF-" + ITEM.DEVICE + "-");
         }
 
         public override void DoWork()
@@ -366,7 +366,7 @@ namespace WCS_phase1.Action
         public RGVTack(WCS_TASK_ITEM item, string deviceType, byte[] order) : base(item, deviceType, order)
         {
             _device = new RGV(ITEM.DEVICE);
-            log = new Log("Task_RGV");
+            log = new Log("Task_RGV-" + ITEM.DEVICE + "-");
         }
 
         public override void DoWork()
@@ -512,7 +512,7 @@ namespace WCS_phase1.Action
         public ABCTack(WCS_TASK_ITEM item, string deviceType, byte[] order) : base(item, deviceType, order)
         {
             _device = new ABC(ITEM.DEVICE);
-            log = new Log("Task_ABC");
+            log = new Log("Task_ABC-" + ITEM.DEVICE + "-");
         }
 
         public override void DoWork()

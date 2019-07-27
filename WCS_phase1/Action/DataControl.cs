@@ -50,9 +50,14 @@ namespace WCS_phase1.Action
         internal static TaskTools _mTaskTools;
 
         /// <summary>
-        /// WCS 任务作业管理
+        /// WCS 任务指令管理
         /// </summary>
         internal static TaskControler _mTaskControler;
+
+        /// <summary>
+        /// WCS 任务逻辑执行
+        /// </summary>
+        internal static RunTask _mRunTask;
 
 
         private static bool init = false;//是否已经初始化
@@ -63,19 +68,22 @@ namespace WCS_phase1.Action
             {
                 _mSocket = new SocketControl();
 
+                _mMySql = new MySQL();
+
+                _mStools = new SimpleTools();
+
+                _mTaskTools = new TaskTools();
+                _mTaskTools.InitializeClient();
+
                 _mHttpServer = new HttpServerControl();
 
                 _mHttp = new HttpControl();
 
                 _mNDCControl = new NDCControl();
 
-                _mMySql = new MySQL();
-
-                _mStools = new SimpleTools();
-
-                _mTaskTools = new TaskTools();
-
                 _mTaskControler = new TaskControler();
+
+                _mRunTask = new RunTask();
 
                 init = true;
             }
