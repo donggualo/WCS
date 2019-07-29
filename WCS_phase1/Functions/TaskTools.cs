@@ -503,9 +503,7 @@ namespace WCS_phase1.Functions
             try
             {
                 String sql = String.Format(@"select CASE WHEN (TASK_UID_1 is not null and SITE_1 <>'Y') 
-             AND (TASK_UID_2 is not null and SITE_1 <>'Y')
-            THEN 2 ELSE 1 END AS QTY
- from wcs_command_v where WCS_NO = '{0}'", wcs_no);
+             AND (TASK_UID_2 is not null and SITE_1 <>'Y') THEN 2 ELSE 1 END AS QTY from wcs_command_v where WCS_NO = '{0}'", wcs_no);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {
@@ -680,6 +678,36 @@ namespace WCS_phase1.Functions
                     sql = String.Format(@"delete from WCS_TASK_ITEM where STATUS in ('N','Q') and WCS_NO = '{0}' and ITEM_ID = '{1}'", wcs_no, item_id);
                 }
 
+                DataControl._mMySql.ExcuteSql(sql);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 备份任务
+        /// </summary>
+        /// <param name="wcs_no"></param>
+        public void BackupTask(String wcs_no)
+        {
+            try
+            {
+                String sql = String.Format(@"
+    /*备份*/
+    insert into wcs_task_backup(WCS_NO, FRT, TASK_UID, TASK_TYPE, BARCODE, W_S_LOC, W_D_LOC)
+select a.WCS_NO, a.FRT, b.TASK_UID, b.TASK_TYPE, b.BARCODE, b.W_S_LOC, b.W_D_LOC from wcs_command_master a , wcs_task_info b 
+where (a.TASK_UID_1 = b.TASK_UID or a.TASK_UID_2 = b.TASK_UID) and a.STEP = '4' and WCS_NO = '{0}';
+    /*清Item*/
+    delete from wcs_task_item where WCS_NO = '{0}';
+    /*清Task*/
+    delete from wcs_task_info where TASK_UID in
+    (select TASK_UID_1 TASK_UID from wcs_command_master where WCS_NO = '{0}'
+      union
+     select TASK_UID_2 TASK_UID from wcs_command_master where WCS_NO = '{0}');
+    /*清Command*/
+    delete from wcs_command_master where WCS_NO = '{0}'", wcs_no);
                 DataControl._mMySql.ExcuteSql(sql);
             }
             catch (Exception ex)

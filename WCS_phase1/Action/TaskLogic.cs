@@ -461,6 +461,8 @@ namespace WCS_phase1.Action
                 // 清单是[结束]状态 => 不作业
                 if (DataControl._mTaskTools.GetCommandStep(item.WCS_NO) == CommandStep.结束)
                 {
+                    // 备份任务数据
+                    DataControl._mTaskTools.BackupTask(item.WCS_NO);
                     // 解锁对应清单所有设备数据状态
                     DataControl._mTaskTools.DeviceUnLock(item.WCS_NO);
                     return;
@@ -1571,15 +1573,15 @@ namespace WCS_phase1.Action
         /// </summary>
         private void ThreadFunc()
         {
-            while (false)
+            while (true)
             {
                 Thread.Sleep(500);
                 try
                 {
+                    _task.Run_TaskContinued();
                     _task.Run_InInitial();
                     _task.Run_ItemDevice();
                     _task.Run_LinkDevice();
-                    _task.Run_TaskContinued();
                     _task.Run_OutFollow();
                     _task.Run_Order();
                 }

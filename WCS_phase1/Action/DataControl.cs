@@ -73,17 +73,17 @@ namespace WCS_phase1.Action
                 _mStools = new SimpleTools();
 
                 _mTaskTools = new TaskTools();
-                _mTaskTools.InitializeClient();
+                //_mTaskTools.InitializeClient();
 
-                _mHttpServer = new HttpServerControl();
+                //_mHttpServer = new HttpServerControl();
 
-                _mHttp = new HttpControl();
+                //_mHttp = new HttpControl();
 
-                _mNDCControl = new NDCControl();
+                //_mNDCControl = new NDCControl();
 
-                _mTaskControler = new TaskControler();
+                //_mTaskControler = new TaskControler();
 
-                _mRunTask = new RunTask();
+                //_mRunTask = new RunTask();
 
                 init = true;
             }
