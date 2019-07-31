@@ -1436,42 +1436,162 @@ namespace WCS_phase1.Action
                 byte[] order = null;
                 // 任务货物数量
                 int qty = DataControl._mTaskTools.GetTaskGoodsQty(item.WCS_NO);
+                //启动方式
+                byte site1;
+                //启动方向
+                byte site2;
+                //接送类型
+                byte site3;
+                //货物数量
+                byte site4;
 
                 switch (item.ITEM_ID)
                 {
                     case ItemId.固定辊台正向:
                     case ItemId.固定辊台反向:
+                        #region FRT 辊台指令
                         FRT frt = new FRT(item.DEVICE);
+                        // 根据任务类型确认
+                        site2 = item.ITEM_ID == ItemId.固定辊台正向 ? FRT.RunFront : FRT.RunObverse;
+                        // 根据货物对接任务的目的设备确认
+                        site3 = String.IsNullOrWhiteSpace(item.LOC_TO) ? FRT.GoodsReceive : FRT.GoodsDeliver;
+                        
+                        // 确认辊台启动方式
+                        site1 = FRT.RollerRunAll;   // 初始默认辊台全启
+                        if (site2 == FRT.RunFront && site3 == FRT.GoodsReceive) // 正向接货
+                        {
+                            // 当只有2#辊台有货则只启动1#辊台
+                            if (frt.GoodsStatus() == FRT.GoodsYes2) { site1 = FRT.RollerRun1; }
+                        }
+                        else if (site2 == FRT.RunFront && site3 == FRT.GoodsDeliver) // 正向送货
+                        {
+                            // 当只有2#辊台有货则只启动2#辊台
+                            if (frt.GoodsStatus() == FRT.GoodsYes2) { site1 = FRT.RollerRun2; }
+                        }
+                        else if (site2 == FRT.RunObverse && site3 == FRT.GoodsReceive) // 反向接货
+                        {
+                            // 当只有1#辊台有货则只启动2#辊台
+                            if (frt.GoodsStatus() == FRT.GoodsYes1) { site1 = FRT.RollerRun2; }
+                        }
+                        else if (site2 == FRT.RunObverse && site3 == FRT.GoodsDeliver) // 反向送货
+                        {
+                            // 当只有1#辊台有货则只启动1#辊台
+                            if (frt.GoodsStatus() == FRT.GoodsYes1) { site1 = FRT.RollerRun1; }
+                        }
+
+                        // 确认辊台货物数量
+                        site4 = qty == 1 ? FRT.GoodsQty1 : FRT.GoodsQty2;   // 初始默认根据任务货物数量确认
+                        if (site3 == FRT.GoodsDeliver)  // 送货
+                        {
+                            // 送货指令中以设备当前货物数量确定
+                            site4 = frt.GoodsStatus() == FRT.GoodsYesAll ? FRT.GoodsQty2 : FRT.GoodsQty1;
+                        }
+
                         // 获取指令
-                        order = FRT._RollerControl(frt.FRTNum(), FRT.RollerRunAll, item.ITEM_ID == ItemId.固定辊台正向 ? FRT.RunFront : FRT.RunObverse,
-                            item.ITEM_ID == ItemId.固定辊台正向 ? FRT.GoodsReceive : FRT.GoodsDeliver, qty == 1 ? FRT.GoodsQty1 : FRT.GoodsQty2);
+                        order = FRT._RollerControl(frt.FRTNum(), site1, site2, site3, site4);
                         // 加入任务作业链表
                         DataControl._mTaskControler.StartTask(new FRTTack(item, DeviceType.固定辊台, order));
+                        #endregion
 
                         break;
                     case ItemId.摆渡车正向:
                     case ItemId.摆渡车反向:
+                        #region ARF 辊台指令
                         ARF arf = new ARF(item.DEVICE);
+                        // 根据任务类型确认
+                        site2 = item.ITEM_ID == ItemId.摆渡车正向 ? ARF.RunFront : ARF.RunObverse;
+                        // 根据货物对接任务的目的设备确认
+                        site3 = String.IsNullOrWhiteSpace(item.LOC_TO) ? ARF.GoodsReceive : ARF.GoodsDeliver;
+
+                        // 确认辊台启动方式
+                        site1 = ARF.RollerRunAll;   // 初始默认辊台全启
+                        if (site2 == ARF.RunFront && site3 == ARF.GoodsReceive) // 正向接货
+                        {
+                            // 当只有2#辊台有货则只启动1#辊台
+                            if (arf.GoodsStatus() == ARF.GoodsYes2) { site1 = ARF.RollerRun1; }
+                        }
+                        else if (site2 == ARF.RunFront && site3 == ARF.GoodsDeliver) // 正向送货
+                        {
+                            // 当只有2#辊台有货则只启动2#辊台
+                            if (arf.GoodsStatus() == ARF.GoodsYes2) { site1 = ARF.RollerRun2; }
+                        }
+                        else if (site2 == ARF.RunObverse && site3 == ARF.GoodsReceive) // 反向接货
+                        {
+                            // 当只有1#辊台有货则只启动2#辊台
+                            if (arf.GoodsStatus() == ARF.GoodsYes1) { site1 = ARF.RollerRun2; }
+                        }
+                        else if (site2 == ARF.RunObverse && site3 == ARF.GoodsDeliver) // 反向送货
+                        {
+                            // 当只有1#辊台有货则只启动1#辊台
+                            if (arf.GoodsStatus() == ARF.GoodsYes1) { site1 = ARF.RollerRun1; }
+                        }
+
+                        // 确认辊台货物数量
+                        site4 = qty == 1 ? ARF.GoodsQty1 : ARF.GoodsQty2;   // 初始默认根据任务货物数量确认
+                        if (site3 == ARF.GoodsDeliver)  // 送货
+                        {
+                            // 送货指令中以设备当前货物数量确定
+                            site4 = arf.GoodsStatus() == ARF.GoodsYesAll ? ARF.GoodsQty2 : ARF.GoodsQty1;
+                        }
+
                         // 获取指令
-                        order = ARF._RollerControl(arf.ARFNum(), ARF.RollerRunAll, item.ITEM_ID == ItemId.固定辊台正向 ? ARF.RunFront : ARF.RunObverse,
-                            item.ITEM_ID == ItemId.固定辊台正向 ? ARF.GoodsReceive : ARF.GoodsDeliver, qty == 1 ? ARF.GoodsQty1 : ARF.GoodsQty2);
+                        order = ARF._RollerControl(arf.ARFNum(), site1, site2, site3, site4);
                         // 加入任务作业链表
                         DataControl._mTaskControler.StartTask(new ARFTack(item, DeviceType.摆渡车, order));
+                        #endregion
 
                         break;
                     case ItemId.运输车正向:
                     case ItemId.运输车反向:
+                        #region RGV 辊台指令
                         RGV rgv = new RGV(item.DEVICE);
+                        // 根据任务类型确认
+                        site2 = item.ITEM_ID == ItemId.运输车正向 ? RGV.RunFront : RGV.RunObverse;
+                        // 根据货物对接任务的目的设备确认
+                        site3 = String.IsNullOrWhiteSpace(item.LOC_TO) ? RGV.GoodsReceive : RGV.GoodsDeliver;
+
+                        // 确认辊台启动方式
+                        site1 = RGV.RollerRunAll;   // 初始默认辊台全启
+                        if (site2 == RGV.RunFront && site3 == RGV.GoodsReceive) // 正向接货
+                        {
+                            // 当只有2#辊台有货则只启动1#辊台
+                            if (rgv.GoodsStatus() == RGV.GoodsYes2) { site1 = RGV.RollerRun1; }
+                        }
+                        else if (site2 == RGV.RunFront && site3 == RGV.GoodsDeliver) // 正向送货
+                        {
+                            // 当只有2#辊台有货则只启动2#辊台
+                            if (rgv.GoodsStatus() == RGV.GoodsYes2) { site1 = RGV.RollerRun2; }
+                        }
+                        else if (site2 == RGV.RunObverse && site3 == RGV.GoodsReceive) // 反向接货
+                        {
+                            // 当只有1#辊台有货则只启动2#辊台
+                            if (rgv.GoodsStatus() == RGV.GoodsYes1) { site1 = RGV.RollerRun2; }
+                        }
+                        else if (site2 == RGV.RunObverse && site3 == RGV.GoodsDeliver) // 反向送货
+                        {
+                            // 当只有1#辊台有货则只启动1#辊台
+                            if (rgv.GoodsStatus() == RGV.GoodsYes1) { site1 = RGV.RollerRun1; }
+                        }
+
+                        // 确认辊台货物数量
+                        site4 = qty == 1 ? RGV.GoodsQty1 : RGV.GoodsQty2;   // 初始默认根据任务货物数量确认
+                        if (site3 == RGV.GoodsDeliver)  // 送货
+                        {
+                            // 送货指令中以设备当前货物数量确定
+                            site4 = rgv.GoodsStatus() == RGV.GoodsYesAll ? RGV.GoodsQty2 : RGV.GoodsQty1;
+                        }
+
                         // 获取指令
-                        order = RGV._RollerControl(rgv.RGVNum(), RGV.RollerRunAll, item.ITEM_ID == ItemId.固定辊台正向 ? RGV.RunFront : RGV.RunObverse,
-                            item.ITEM_ID == ItemId.固定辊台正向 ? RGV.GoodsReceive : RGV.GoodsDeliver, qty == 1 ? RGV.GoodsQty1 : RGV.GoodsQty2);
+                        order = RGV._RollerControl(rgv.RGVNum(), site1, site2, site3, site4);
                         // 加入任务作业链表
                         DataControl._mTaskControler.StartTask(new RGVTack(item, DeviceType.运输车, order));
+                        #endregion
 
                         break;
                     case ItemId.摆渡车定位:
                     case ItemId.摆渡车定位固定辊台:
                     case ItemId.摆渡车定位运输车对接:
+                        #region ARF 定位指令
                         ARF arfMove = new ARF(item.DEVICE);
                         // 提取目的位置
                         byte arfloc = (byte)(Convert.ToInt32(item.LOC_TO));
@@ -1479,12 +1599,14 @@ namespace WCS_phase1.Action
                         order = ARF._Position(arfMove.ARFNum(), arfloc);
                         // 加入任务作业链表
                         DataControl._mTaskControler.StartTask(new ARFTack(item, DeviceType.摆渡车, order));
+                        #endregion
 
                         break;
                     case ItemId.运输车定位:
                     case ItemId.运输车复位1:
                     case ItemId.运输车复位2:
                     case ItemId.运输车对接定位:
+                        #region RGV 定位指令
                         RGV rgvMove = new RGV(item.DEVICE);
                         // 提取目的位置
                         byte[] rgvloc = DataControl._mStools.IntToBytes(Convert.ToInt32(item.LOC_TO));
@@ -1492,12 +1614,14 @@ namespace WCS_phase1.Action
                         order = RGV._Position(rgvMove.RGVNum(), rgvloc);
                         // 加入任务作业链表
                         DataControl._mTaskControler.StartTask(new RGVTack(item, DeviceType.运输车, order));
+                        #endregion
 
                         break;
                     case ItemId.行车取货:
                     case ItemId.行车放货:
                     case ItemId.行车轨道定位:
                     case ItemId.行车库存定位:
+                        #region ABC 指令
                         ABC abc = new ABC(item.DEVICE);
                         // 提取目的位置
                         String[] LOC = item.LOC_TO.Split('-');
@@ -1522,6 +1646,7 @@ namespace WCS_phase1.Action
                         order = ABC._TaskControl(type, abc.ABCNum(), locX, locY, locZ);
                         //加入任务作业链表
                         DataControl._mTaskControler.StartTask(new ABCTack(item, DeviceType.行车, order));
+                        #endregion
 
                         break;
                     default:
