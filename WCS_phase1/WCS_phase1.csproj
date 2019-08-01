@@ -76,6 +76,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Action\DataControl.cs" />
+    <Compile Include="Action\ForAGVControl.cs" />
     <Compile Include="Action\ForWMSControl.cs" />
     <Compile Include="Action\TaskLogic.cs" />
     <Compile Include="Devices\ABC.cs" />

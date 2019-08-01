@@ -651,7 +651,9 @@ namespace WCS_phase1.Action
                         {
                             // 辊台已无货，即解锁设备数据状态
                             DataControl._mTaskTools.DeviceUnLock(rgv);
+                            break;
                         }
+
                         // 判断是否需要对接到运输车[内]范围内作业
                         if (Convert.ToInt32(loc_Y) >= Convert.ToInt32(R))  // 需对接运输车[内]
                         {
@@ -1105,7 +1107,7 @@ namespace WCS_phase1.Action
                         // 确认任务设备&位置
                         ARF ARF = new ARF(arf);
                         device = arf;
-                        loc = ARF.CurrentSite().ToString(); 
+                        loc = ARF.CurrentSite().ToString();
 
                         #endregion
 
@@ -1455,7 +1457,7 @@ namespace WCS_phase1.Action
                         site2 = item.ITEM_ID == ItemId.固定辊台正向 ? FRT.RunFront : FRT.RunObverse;
                         // 根据货物对接任务的目的设备确认
                         site3 = String.IsNullOrWhiteSpace(item.LOC_TO) ? FRT.GoodsReceive : FRT.GoodsDeliver;
-                        
+
                         // 确认辊台启动方式
                         site1 = FRT.RollerRunAll;   // 初始默认辊台全启
                         if (site2 == FRT.RunFront && site3 == FRT.GoodsReceive) // 正向接货
