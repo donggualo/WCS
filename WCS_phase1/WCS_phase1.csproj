@@ -93,6 +93,7 @@
     <Compile Include="Http\Routes.cs" />
     <Compile Include="Http\WmsModel.cs" />
     <Compile Include="Http\WmsStatus.cs" />
+    <Compile Include="LOG\IniFiles.cs" />
     <Compile Include="Models\MySQL.cs" />
     <Compile Include="Models\WCS_COMMAND_MASTER.cs" />
     <Compile Include="Models\WCS_COMMAND_V.cs" />

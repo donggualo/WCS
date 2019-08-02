@@ -105,7 +105,7 @@ namespace WCS_phase1.NDC.Message
 
             else if (status == 7) //parameter acknowledge
             {//This is commented out sine we always get this when writing a new state to the order.
-                return string.Format("_b parameter acknowledge, TS: {0}, Paramter id: {1}", transportStructure, parnumber);
+                return "";// string.Format("_b parameter acknowledge, TS: {0}, Paramter id: {1}", transportStructure, parnumber);
             }
 
             else if (status == 15) //parameter number too high for this

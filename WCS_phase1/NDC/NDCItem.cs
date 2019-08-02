@@ -59,6 +59,11 @@ namespace WCS_phase1.NDC
     /// </summary>
     public class NDCItem
     {
+        /// <summary>
+        /// 任务唯一标识
+        /// </summary>
+        public int TaskID;
+
         private _sMessage s;
         private _bMessage b;
         private Message_vpil vpilmessage;
@@ -72,6 +77,10 @@ namespace WCS_phase1.NDC
 
         public string StatusInfo;
         public string TaskInfo;
+        public string LoadStation;
+        public string UnloadStation;
+        public string NdcLoadStation;
+        public string NdcUnloadStation;
 
         public NDCItem()
         {

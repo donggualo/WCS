@@ -86,19 +86,19 @@ namespace WCS_phase1.NDC.Message
             {
                 return string.Format("[Index {0}]  Redirect, Phase: ${1}  ", orderIndex, magic2);
             }
-            else if (magic1 == 4)
+            else if (magic1 == 4)//到达接货点
             {
                 return string.Format("[Index {0}]  Load host sync, Phase: ${1}", orderIndex, magic1);
             }
-            else if (magic1 == 6)
+            else if (magic1 == 6)//接货完成
             {
                 return string.Format("[Index {0}]  Loaded host sync, station: {2} Phase: ${1}", orderIndex, magic1, station);
             }
-            else if (magic1 == 8)
+            else if (magic1 == 8)//到达卸货点 
             {
                 return string.Format("[Index {0}]  Unload host sync, Phase: ${1}", orderIndex, magic1);
             }
-            else if (magic1 == 10)
+            else if (magic1 == 10)//卸货完成
             {
                 return string.Format("[Index {0}]  Unloaded host sync, station: {2} Phase: ${1:X}", orderIndex, magic1, station);
             }

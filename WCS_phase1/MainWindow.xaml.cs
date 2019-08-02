@@ -40,18 +40,23 @@ namespace WCS_phase1
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            DataControl._mNDCControl.DoConnectNDC();
+            //DataControl._mNDCControl.DoConnectNDC();
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            DataControl._mNDCControl.DoStartOrder(ndcTB1.Text, ndcTB2.Text, ndcTB3.Text, ndcTB4.Text);//"1","1","2371","1380"
+            //DataControl._mNDCControl.DoStartOrder(ndcTB1.Text, ndcTB2.Text, ndcTB3.Text, ndcTB4.Text);//"1","1","2371","1380"
         }
 
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             DataControl.BeforeClose();
+        }
+
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+            DataControl._mNDCControl.AddNDCTask(1, "B02", "C03");
         }
     }
 }

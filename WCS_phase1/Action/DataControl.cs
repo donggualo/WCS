@@ -79,7 +79,7 @@ namespace WCS_phase1.Action
 
                 //_mHttp = new HttpControl();
 
-                //_mNDCControl = new NDCControl();
+                _mNDCControl = new NDCControl();
 
                 //_mTaskControler = new TaskControler();
 

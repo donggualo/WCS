@@ -300,7 +300,7 @@ namespace AsyncTcp
                 byte[] receivedBytes = new byte[numberOfReadBytes];
                 Buffer.BlockCopy(buffer, 0, receivedBytes, 0, numberOfReadBytes);
                 RaiseDatagramReceived(tcpClient, receivedBytes);
-                RaisePlaintextReceived(tcpClient, receivedBytes);
+                //RaisePlaintextReceived(tcpClient, receivedBytes);//处理为ASCALL码 
 
                 // then start reading from the network again
                 stream.BeginRead(

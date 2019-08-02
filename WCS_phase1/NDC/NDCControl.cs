@@ -14,9 +14,6 @@ namespace WCS_phase1.NDC
         //Parameter that will keep track of if system is halted or not
         private bool systemHalted;
 
-        //Used for trace file
-        private List<FileInfo> fileList = new List<FileInfo>();
-
         //Keep track if disconnected by button or communication is down.
         private bool disconnectedByUser = false;
 
@@ -36,6 +33,11 @@ namespace WCS_phase1.NDC
         /// </summary>
         private List<NDCItem> nDCItems;
 
+        IniFiles ini;
+
+        Dictionary<string, string> loadStaDic, unLoadStaDic;
+        private string loadSection = "Load", unloadSection = "Unload";
+
         #endregion
 
         #region Init
@@ -48,11 +50,15 @@ namespace WCS_phase1.NDC
             //Set a start value, that the system is not halted
             systemHalted = false;
 
+            ini = new IniFiles(AppDomain.CurrentDomain.BaseDirectory + @"\NdcSetting.ini");
+
             log = new Log("ndcAGV");
 
             nDCItems = new List<NDCItem>();
 
             log.LOG("Host Started.");
+
+            DoReadIniFile();
         }
 
         #endregion
@@ -83,7 +89,7 @@ namespace WCS_phase1.NDC
         /// <param name="IKEYFromUser">ikey值</param>
         /// <param name="DropStationFromUser">卸货地点</param>
         /// <param name="PickStationFromUser">装货地点</param>
-        public void DoStartOrder(string PrioFromUser,string IKEYFromUser,string DropStationFromUser,string PickStationFromUser)
+        private void DoStartOrder( string PrioFromUser, string IKEYFromUser, string PickStationFromUser, string DropStationFromUser)
         {
 
             List<string> StartOrderList = new List<string>();
@@ -120,7 +126,7 @@ namespace WCS_phase1.NDC
         /// </summary>
         /// <param name="index"></param>
         /// <param name="station"></param>
-        public void DoRedirect(int index,int station)
+        private void DoRedirect(int index,int station)
         {
 
             SendNewMForRedirect(index, station);
@@ -157,6 +163,14 @@ namespace WCS_phase1.NDC
             }
         }
 
+        /// <summary>
+        /// 重新读取装货点，卸货点对应NDC实际使用信息
+        /// </summary>
+        public void DoReadIniFile()
+        {
+            loadStaDic = ini.ReadAllValue(loadSection);
+            unLoadStaDic = ini.ReadAllValue(unloadSection);
+        }
         #endregion
 
         #region Operate Method
@@ -449,7 +463,11 @@ namespace WCS_phase1.NDC
 
         #region NDCITEM
 
-        public void UpdateItem(Message_s message)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
+        private void UpdateItem(Message_s message)
         {
 
             NDCItem ndcItem = nDCItems.Find(c => { return c.OrderIndex == message.Index; });
@@ -471,7 +489,7 @@ namespace WCS_phase1.NDC
             CheckMagic(message.Index, message.Magic);
         }
 
-        public void UpdateItem(Message_b message)
+        private void UpdateItem(Message_b message)
         {
 
             NDCItem ndcItem = nDCItems.Find(c => { return c.OrderIndex == message.Index; });
@@ -524,7 +542,46 @@ namespace WCS_phase1.NDC
 
         #endregion
 
+        #region 对外方法
+        private List<TempItem> tempList = new List<TempItem>();
+
+        public string AddNDCTask(int taskid,string loadstation, string unloadstation)
+        {
+            if(!loadStaDic.TryGetValue(loadstation, out string ndcLoadsta))
+            {
+                return "装货点未配置";
+            }
+
+            if (!unLoadStaDic.TryGetValue(unloadstation, out string ndcUnloadsta))
+            {
+                return "卸货点未配置";
+            }
+
+            NDCItem item = new NDCItem
+            {
+                TaskID = taskid,
+                LoadStation = loadstation,
+                UnloadStation = unloadstation,
+                NdcLoadStation = ndcLoadsta,
+                NdcUnloadStation = ndcUnloadsta
+            };
+            nDCItems.Add(item);
+
+            DoStartOrder("1", "1", ndcLoadsta, ndcUnloadsta);
+            return "";
+        }
+
+        #endregion
+
+    }
 
 
+    class TempItem
+    {
+        public int TaskID;
+        public string LoadStation;
+        public string UnloadStation;
+        public string NdcLoadStation;
+        public string NdcUnloadStation;
     }
 }
