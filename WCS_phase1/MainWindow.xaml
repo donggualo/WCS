@@ -28,18 +28,22 @@
                 <Grid Background="#FFE5E5E5">
                     <Canvas>
                         <Label Content="激光AGV调度" Canvas.Left="10" Canvas.Top="10"/>
-                        <Button Content="连接" Click="Button_Click_1" Canvas.Left="118" Canvas.Top="16" />
-                        <Button Content="开始调度" Click="Button_Click_2" Canvas.Left="108" Canvas.Top="258"/>
+
+                        <Label Content="任务ID" Canvas.Left="54" Canvas.Top="75"/>
+                        <Label Content="接货点" Canvas.Left="54" Canvas.Top="117"/>
+                        <Label Content="卸货点" Canvas.Left="54" Canvas.Top="156"/>
+                        <Label Content="重定位区域" Canvas.Left="215" Canvas.Top="156"/>
+                        
                         <TextBox Name="ndcTB1"  Height="24"  TextWrapping="Wrap" Text="1" Width="75" Canvas.Left="108" Canvas.Top="75"/>
-                        <TextBox Name="ndcTB2" Height="23"  TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="75" Canvas.Left="108" Canvas.Top="118" />
-                        <TextBox Name="ndcTB3"  Height="20" TextWrapping="Wrap" Text="2371" VerticalAlignment="Top" Width="75" Canvas.Left="108" Canvas.Top="164" />
-                        <TextBox Name="ndcTB4"  Height="19" TextWrapping="Wrap" Text="1380" VerticalAlignment="Top" Canvas.Left="108" Canvas.Top="207" Width="75" />
-                        <Label Content="优先级" Canvas.Left="54" Canvas.Top="75"/>
-                        <Label Content="Ikey" Canvas.Left="60" Canvas.Top="118"/>
-                        <Label Content="接货点" Canvas.Left="54" Canvas.Top="164"/>
-                        <Label Content="卸货点" Canvas.Left="54" Canvas.Top="203"/>
+                        <TextBox Name="ndcTB2"  Height="20" TextWrapping="Wrap" Text="B02" VerticalAlignment="Top" Width="75" Canvas.Left="108" Canvas.Top="117" />
+                        <TextBox Name="ndcTB3"  Height="19" TextWrapping="Wrap" Text="C03" VerticalAlignment="Top" Canvas.Left="108" Canvas.Top="160" Width="75" />
+                        <TextBox Name="ndcTB4" HorizontalAlignment="Left"   TextWrapping="Wrap" Text="C03-C02-001" VerticalAlignment="Top" Width="120" Canvas.Left="290" Canvas.Top="162"/>
+
+                        <Button Content="连接" Click="Button_Click_1" Canvas.Left="118" Canvas.Top="16" />
+                        <Button Content="开始调度" Click="Button_Click_2" Canvas.Left="108" Canvas.Top="201"/>
+                        <Button Content="重新定位" HorizontalAlignment="Left" Canvas.Left="290" Canvas.Top="201" Click="Button_Click_3" />
+
                     </Canvas>
-                    <Button Content="Test" HorizontalAlignment="Left" Margin="200,13,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_3"/>
                 </Grid>
             </TabItem>
             <TabItem Header="设备信息">

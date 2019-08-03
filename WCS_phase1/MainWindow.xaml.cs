@@ -40,12 +40,21 @@ namespace WCS_phase1
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            //DataControl._mNDCControl.DoConnectNDC();
+            DataControl._mNDCControl.DoConnectNDC();
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            //DataControl._mNDCControl.DoStartOrder(ndcTB1.Text, ndcTB2.Text, ndcTB3.Text, ndcTB4.Text);//"1","1","2371","1380"
+            if(!int.TryParse(ndcTB1.Text,out int taskid))
+            {
+                MessageBox.Show("任务ID必须是整型数字");
+                return;
+            }
+            string result = DataControl._mNDCControl.AddNDCTask(taskid, ndcTB2.Text, ndcTB3.Text);
+            if (result != "")
+            {
+                MessageBox.Show(result);
+            }
         }
 
 
@@ -56,7 +65,16 @@ namespace WCS_phase1
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
-            DataControl._mNDCControl.AddNDCTask(1, "B02", "C03");
+            if (!int.TryParse(ndcTB1.Text, out int taskid))
+            {
+                MessageBox.Show("任务ID必须是整型数字");
+                return;
+            }
+            string result = DataControl._mNDCControl.DoReDerect(taskid, ndcTB4.Text);
+            if (result != "")
+            {
+                MessageBox.Show(result);
+            }
         }
     }
 }

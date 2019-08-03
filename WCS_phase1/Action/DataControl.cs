@@ -97,7 +97,7 @@ namespace WCS_phase1.Action
 
                 if (_mHttpServer != null) _mHttpServer.StopServer();
 
-                if (_mNDCControl != null) _mNDCControl.DoConnectNDC();
+                if (_mNDCControl != null) _mNDCControl.DoDisConnectNDC();
             }
             return true;
         }
