@@ -90,7 +90,7 @@ namespace WCS_phase1.Action
                 DataControl._mTaskTools.UpdateTaskByWCSNo(command.WCS_NO, TaskSite.未执行);
                 DataControl._mTaskTools.DeleteItem(command.WCS_NO, "");
                 // 记录LOG
-                DataControl._mTaskTools.RecordLog("Task_InInitial()", "生成初始入库任务", command.WCS_NO, null, "NG", ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("Task_InInitial()", "生成初始入库任务", command.WCS_NO, null, ex.ToString());
             }
         }
         #endregion
@@ -198,7 +198,7 @@ namespace WCS_phase1.Action
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.摆渡车正向);
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.摆渡车反向);
                 // 记录LOG
-                DataControl._mTaskTools.RecordLog("CreateTask_ARF_FRT()", "生成摆渡车&固定辊台对接任务", item.WCS_NO, null, "NG", ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("CreateTask_ARF_FRT()", "生成摆渡车&固定辊台对接任务", item.WCS_NO, null, ex.ToString());
             }
         }
 
@@ -257,7 +257,7 @@ namespace WCS_phase1.Action
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.摆渡车反向);
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.运输车反向);
                 // 记录LOG
-                DataControl._mTaskTools.RecordLog("CreateTask_ARF_RGV()", "生成摆渡车&运输车对接任务", item.WCS_NO, null, "NG", ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("CreateTask_ARF_RGV()", "生成摆渡车&运输车对接任务", item.WCS_NO, null, ex.ToString());
             }
         }
 
@@ -314,7 +314,7 @@ namespace WCS_phase1.Action
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.运输车正向);
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.运输车反向);
                 // 记录LOG
-                DataControl._mTaskTools.RecordLog("CreateTask_RGV_RGV()", "生成运输车&运输车对接任务", item.WCS_NO, null, "NG", ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("CreateTask_RGV_RGV()", "生成运输车&运输车对接任务", item.WCS_NO, null, ex.ToString());
             }
         }
 
@@ -367,7 +367,7 @@ namespace WCS_phase1.Action
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.行车取货);
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.行车放货);
                 // 记录LOG
-                DataControl._mTaskTools.RecordLog("CreateTask_RGV_ABC()", "生成运输车&行车对接任务", item.WCS_NO, null, "NG", ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("CreateTask_RGV_ABC()", "生成运输车&行车对接任务", item.WCS_NO, null, ex.ToString());
             }
         }
 
@@ -403,7 +403,7 @@ namespace WCS_phase1.Action
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.行车取货);
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.行车放货);
                 // 记录LOG
-                DataControl._mTaskTools.RecordLog("CreateTask_ABC()", "生成行车取放货任务", item.WCS_NO, null, "NG", ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("CreateTask_ABC()", "生成行车取放货任务", item.WCS_NO, null, ex.ToString());
             }
         }
         #endregion
@@ -484,7 +484,7 @@ namespace WCS_phase1.Action
             catch (Exception ex)
             {
                 // 记录LOG
-                DataControl._mTaskTools.RecordLog("Task_Continued()", "生成对接完成后续任务", item.WCS_NO, null, "NG", ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("Task_Continued()", "生成对接完成后续任务", item.WCS_NO, null, ex.ToString());
             }
         }
 
@@ -1030,7 +1030,7 @@ namespace WCS_phase1.Action
                 DataControl._mTaskTools.UpdateTaskByWCSNo(wcs_no, TaskSite.未执行);
                 DataControl._mTaskTools.DeleteItem(wcs_no, "");
                 // 记录LOG
-                DataControl._mTaskTools.RecordLog("CreateOutJob()", "生成WCS出库清单", null, null, "NG", ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("CreateOutJob()", "生成WCS出库清单", null, null, ex.ToString());
             }
         }
 
@@ -1177,7 +1177,7 @@ namespace WCS_phase1.Action
                 //初始化
                 DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.不可执行);
                 // 记录LOG
-                DataControl._mTaskTools.RecordLog("ReadDevice()", "分配任务指定设备", item.WCS_NO, item.ITEM_ID, "NG", ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("ReadDevice()", "分配任务指定设备", item.WCS_NO, item.ITEM_ID, ex.ToString());
             }
         }
 
@@ -1663,7 +1663,7 @@ namespace WCS_phase1.Action
             catch (Exception ex)
             {
                 // 记录LOG
-                DataControl._mTaskTools.RecordLog("CreateAndAddTaskList()", "生成并加入设备指令任务链表", item.WCS_NO, item.ITEM_ID, "NG", ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("CreateAndAddTaskList()", "生成并加入设备指令任务链表", item.WCS_NO, item.ITEM_ID, ex.ToString());
             }
         }
 

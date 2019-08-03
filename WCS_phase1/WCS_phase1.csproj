@@ -95,6 +95,7 @@
     <Compile Include="Http\WmsStatus.cs" />
     <Compile Include="LOG\IniFiles.cs" />
     <Compile Include="Models\MySQL.cs" />
+    <Compile Include="Models\WCS_AGV_INFO.cs" />
     <Compile Include="Models\WCS_COMMAND_MASTER.cs" />
     <Compile Include="Models\WCS_COMMAND_V.cs" />
     <Compile Include="Models\WCS_CONFIG_DEVICE.cs" />

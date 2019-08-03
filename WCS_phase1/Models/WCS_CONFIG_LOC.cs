@@ -22,6 +22,11 @@ namespace WCS_phase1.Models
         public String FRT_LOC { get; set; }
 
         /// <summary>
+        /// AGV定位站点
+        /// </summary>
+        public String AGV_LOC { get; set; }
+
+        /// <summary>
         /// 摆渡车定位
         /// </summary>
         public String ARF_LOC { get; set; }

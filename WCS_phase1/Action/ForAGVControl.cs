@@ -23,29 +23,148 @@ namespace WCS_phase1.Action
         #region AGV 派车任务
 
         /// <summary>
-        /// 执行AGV派送任务
+        /// 调度AGV装货卸货
         /// </summary>
-        public void Run_AGVTask()
+        public void Run_DispatchAGV()
         {
-            //=》 获取包装线固定辊台资讯
-
-            //=》 判断是否存在AGV待命 是则继续执行，否则发送指令NDC派车并结束本次处理
-
-            //=》 判断是否存在货物  无货则结束本次处理
-            //=》 有货物则获取当前AGV资讯
-            //=》 启动AGV辊台
-            //=》 当AGV辊台已启动则启动当前固定辊台的辊台
-
+            try
+            {
+                // 获取空闲包装线固定辊台
+                DataTable dt = DataControl._mMySql.SelectAll("select * from wcs_config_device where LEFT(AREA,1) = 'A' and FLAG = 'Y'");
+                if (DataControl._mStools.IsNoData(dt))
+                {
+                    return;
+                }
+                List<WCS_CONFIG_DEVICE> frtList = dt.ToDataList<WCS_CONFIG_DEVICE>();
+                // 遍历执行派车任务
+                foreach (WCS_CONFIG_DEVICE frt in frtList)
+                {
+                    SendAGV(frt);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
-        // 当包装线固定辊台无AGV待命，则派车前往
-        // 待命派车发送指令含 装货点(包装线固定辊台对接点) & 卸货点(初始化模拟点)
 
-        // 当包装线固定辊台存在货物，扫码请求WMS返回位置时更新指令卸货点(实际库存货位固定辊台对接点)
-        // 发送接货指令启动AGV辊台，当AGV启动成功后，启动包装线固定辊台的辊台
+        /// <summary>
+        /// 发送调度AGV指令
+        /// </summary>
+        /// <param name="frt"></param>
+        public void SendAGV(WCS_CONFIG_DEVICE frt)
+        {
+            try
+            {
+                // IKey：新定义生成 WCS-AGV 唯一识别码
+                string IKey = GetNewIKey().ToString();
+                // 装货点：当前包装线固定辊台对接点
+                string PickStation = frt.DEVICE;
+                // 卸货点：初始化虚拟点
+                string DropStation = ConfigurationManager.AppSettings["AGVDropStation"];
 
-        // 当AGV异常后装载货物请求卸货点，需返回准确卸货点
+                // 发送 NDC
+                //DataControl._mNDCControl.DoStartOrder("", IKey, PickStation, DropStation);
 
-        // 当AGV抵达卸货点，启动对应固定辊台的辊台后，发送送货指令启动AGV辊台
+                // 数据库新增AGV任务资讯
+                String sql = String.Format(@"insert into wcs_agv_info(IKEY,PICKSTATION,DROPSTATION) values('{0}','{1}','{2}')", IKey, PickStation, DropStation);
+                DataControl._mMySql.ExcuteSql(sql);
+            }
+            catch (Exception ex)
+            {
+                // LOG
+                log.LOG(String.Format(@"包装线辊台[{0}]请求AGV发送指令异常：{1}", frt.DEVICE, ex.ToString()));
+            }
+        }
+
+        /// <summary>
+        /// 获取一个新的 IKEY 值
+        /// </summary>
+        /// <returns></returns>
+        public int GetNewIKey()
+        {
+            try
+            {
+                DataTable dt = DataControl._mMySql.SelectAll("select MAX(IKEY) IKEY from wcs_agv_info");
+                if (DataControl._mStools.IsNoData(dt))
+                {
+                    return 1;
+                }
+                int ikey = Convert.ToInt32(dt.Rows[0]["IKEY"].ToString());
+                // ikey 值定义 1~99 
+                return ikey < 100 ? ikey + 1 : 1;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        #endregion
+
+        #region AGV相关方法
+
+        // AGV 抵达站点
+        public void SubmitAGVIsReach(string id)
+        {
+            try
+            {
+                // 装货点
+                // 更新数据库内对应AGV任务资讯
+                // 当存在已扫码分配货位的货物时，发送指令启动AGV辊台
+
+                // 卸货点
+                // 先启动库存区的固定辊台，再发送指令启动AGV辊台
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+        // AGV 辊台启动
+        public void SubmitAGVIsRun(string id)
+        {
+            try
+            {
+                // 装货点
+                // 启动包装线辊台
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+        // AGV 离开站点
+        public void SubmitAGVIsLeave()
+        {
+            try
+            {
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+        // 更新AGV卸货点
+        public void UpdateAGVStation()
+        {
+            try
+            {
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+        // 获取AGV当前货物对应卸货点
 
         #endregion
     }

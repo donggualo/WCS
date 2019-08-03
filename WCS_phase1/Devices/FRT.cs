@@ -43,11 +43,6 @@ namespace WCS_phase1.Devices
         #region 任务类别
 
         /// <summary>
-        /// 定位任务
-        /// </summary>
-        public static byte TaskLocate = 0x01;
-
-        /// <summary>
         /// 辊台任务
         /// </summary>
         public static byte TaskTake = 0x02;

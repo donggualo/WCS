@@ -31,7 +31,7 @@ namespace WCS_phase1.Functions
             catch (Exception ex)
             {
                 // 记录LOG
-                RecordLog("InitializeClient()", "初始化", null, null, "NG", ex.ToString());
+                RecordTaskErrLog("InitializeClient()", "初始化", null, null, ex.ToString());
             }
         }
         
@@ -63,7 +63,7 @@ namespace WCS_phase1.Functions
             catch (Exception ex)
             {
                 // 记录LOG
-                RecordLog("LinkDevicesClient()", "连接网络设备", null, null, "NG", ex.ToString());
+                RecordTaskErrLog("LinkDevicesClient()", "连接网络设备", null, null, ex.ToString());
                 MessageBox.Show("连接网络设备发生异常："+ex.ToString(), "Error");
                 System.Environment.Exit(0);
             }
@@ -729,12 +729,12 @@ where (a.TASK_UID_1 = b.TASK_UID or a.TASK_UID_2 = b.TASK_UID) and a.STEP = '4' 
         /// <param name="item_id"></param>
         /// <param name="res"></param>
         /// <param name="mes"></param>
-        public void RecordLog(String name, String remark, String wcs_no, String item_id, String res, String mes)
+        public void RecordTaskErrLog(String name, String remark, String wcs_no, String item_id, String mes)
         {
             try
             {
-                String sql = String.Format(@"insert into wcs_function_log(FUNCTION_NAME,REMARK,WCS_NO,ITEM_ID,RESULT,MESSAGE) values('{0}','{1}','{2}','{3}','{4}','{5}')",
-                    name, remark, wcs_no, item_id, res, mes);
+                String sql = String.Format(@"insert into wcs_function_log(FUNCTION_NAME,REMARK,WCS_NO,ITEM_ID,RESULT,MESSAGE) values('{0}','{1}','{2}','{3}','NG','{4}')",
+                    name, remark, wcs_no, item_id, mes);
                 DataControl._mMySql.ExcuteSql(sql);
             }
             catch (Exception ex)
