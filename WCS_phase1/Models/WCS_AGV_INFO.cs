@@ -14,7 +14,12 @@ namespace WCS_phase1.Models
         /// <summary>
         /// 唯一识别码
         /// </summary>
-        public int IKEY { get; set; }
+        public int ID { get; set; }
+
+        /// <summary>
+        /// WMS任务UID
+        /// </summary>
+        public String TASK_UID { get; set; }
 
         /// <summary>
         /// AGV车号
