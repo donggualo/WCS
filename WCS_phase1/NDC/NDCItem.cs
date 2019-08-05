@@ -45,8 +45,8 @@ namespace WCS_phase1.NDC
         /// </summary>
         public int TaskID;
 
-        private _sMessage s;
-        private _bMessage b;
+        internal _sMessage s;
+        internal _bMessage b;
         private Message_vpil vpilmessage;
 
         public int OrderIndex;
@@ -110,6 +110,7 @@ namespace WCS_phase1.NDC
             s.Magic3 = message.Magic3;
             s.CarrierId = message.CarrierNumber;
             s.Station = message.CarrierStation;
+            NdcLoadStation = message.CarrierStation != 0 ? message.CarrierStation+"":"";
             StatusInfo = s.ToString();
         }
 

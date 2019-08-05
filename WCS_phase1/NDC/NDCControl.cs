@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using WCS_phase1.LOG;
 using NDC8.ACINET.ACI;
+using System.Text;
 
 namespace WCS_phase1.NDC
 {
@@ -31,12 +32,48 @@ namespace WCS_phase1.NDC
         /// <summary>
         /// 保存所有任务
         /// </summary>
-        private List<NDCItem> nDCItems;
+        private List<NDCItem> _items = new List<NDCItem>();
+        private List<NDCItem> Items
+        {
+            get
+            {
+                lock (_items)
+                {
+                    return _items;
+                }
+            }
+        }
 
+        private List<TempItem> tempList = new List<TempItem>();
+        private List<TempItem> TempList
+        {
+            get
+            {
+                lock (tempList)
+                {
+                    return tempList;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 配置文件工具类
+        /// </summary>
         IniFiles ini;
 
+        /// <summary>
+        /// 装货点和卸货点NDC对应信息
+        /// </summary>
         Dictionary<string, string> loadStaDic, unLoadStaDic;
-        private string loadSection = "Load", unloadSection = "Unload",iKeySection = "IKey";
+
+        /// <summary>
+        /// 配置文件保存Section名称
+        /// </summary>
+        private string loadSection = "Load", unloadSection = "Unload",iKeySection = "IKey",tempSection= "Temp",itemSection= "Item";
+
+        /// <summary>
+        /// 当前IKEY值
+        /// </summary>
         int Ikey=1;
 
         Thread redirectThread;
@@ -57,12 +94,11 @@ namespace WCS_phase1.NDC
 
             log = new Log("ndcAGV");
 
-            nDCItems = new List<NDCItem>();
-
             log.LOG("Host Started.");
 
             DoReadIniFile();
             DoReadIKey();
+            DoReadItemTempIF();
 
             redirectItemList = new List<int>();
             redirectThread = new Thread(CheckRedirectItem)
@@ -93,8 +129,38 @@ namespace WCS_phase1.NDC
         /// </summary>
         private void BeforeClose()
         {
-            if (Ikey >= 99) Ikey = 0;
+            if (Ikey >= 99) Ikey = 1;
             ini.WriteValue(iKeySection, "IKey", Ikey);
+
+            if (TempList.Count() > 0)
+            {
+                StringBuilder str = new StringBuilder();
+                foreach(var i in TempList)
+                {
+                    if (str.Length != 0) str.Append(";");
+                    str.Append(i.TaskID +"&");
+                    str.Append(i.IKey + "&");
+                    str.Append(i.Prio + "&");
+                    str.Append(i.LoadStation + "&");
+                    str.Append(i.UnloadStation + "&");
+                    str.Append(i.NdcLoadStation + "&");
+                    str.Append(i.NdcUnloadStation + "&");
+                    str.Append(i.RedirectUnloadStation + "&");
+                }
+                ini.WriteValue(tempSection, "tempinfo", str.ToString());
+            }
+
+            if (Items.Count() > 0)
+            {
+                StringBuilder str = new StringBuilder();
+                foreach (var i in Items)
+                {
+                    if (str.Length != 0) str.Append(";");
+                    str.Append(i.OrderIndex + "&");
+                    str.Append(i.TaskID + "&");
+                }
+                ini.WriteValue(itemSection, "iteminfo", str.ToString());
+            }
         }
 
 
@@ -130,9 +196,12 @@ namespace WCS_phase1.NDC
         /// <param name="IKEYFromUser">ikey值</param>
         /// <param name="DropStationFromUser">卸货地点</param>
         /// <param name="PickStationFromUser">装货地点</param>
-        private void DoStartOrder( string PrioFromUser, string IKEYFromUser, string PickStationFromUser, string DropStationFromUser)
+        private void DoStartOrder(TempItem tempItem)
         {
-
+            string PrioFromUser = tempItem.Prio;
+            string IKEYFromUser = tempItem.IKey;
+            string PickStationFromUser = tempItem.NdcLoadStation;
+            string DropStationFromUser = tempItem.NdcUnloadStation;
             List<string> StartOrderList = new List<string>();
 
             int Prio, IKEY, DropStation, PickStation;
@@ -225,6 +294,49 @@ namespace WCS_phase1.NDC
             {
                 Ikey = ikey+1;
                 if (Ikey >= 99) Ikey = 1;
+            }
+        }
+
+        /// <summary>
+        /// 读取关闭前保存的任务信息
+        /// </summary>
+        private void DoReadItemTempIF()
+        {
+            string tempinfo = ini.ReadStrValue(tempSection, "tempinfo");
+            string iteminfo = ini.ReadStrValue(itemSection, "iteminfo");
+            if (iteminfo != null && iteminfo != "")
+            {
+                string[] items = iteminfo.Split(';');
+                foreach (var i in items)
+                {
+                    string[] inf = i.Split('&');
+                    NDCItem item = new NDCItem();
+                    item.OrderIndex = int.Parse(inf[0]);
+                    item.TaskID = int.Parse(inf[1]);
+                    Items.Add(item);
+                }
+                ini.WriteValue(itemSection, "tempinfo", "");
+            }
+            if (tempinfo != null && tempinfo != "")
+            {
+                string[] items = tempinfo.Split(';');
+                foreach(var i in items)
+                {
+                    string[] inf = i.Split('&');
+                    TempItem item = new TempItem()
+                    {
+                        TaskID = int.Parse(inf[0]),
+                        IKey = inf[1],
+                        Prio = inf[2],
+                        LoadStation = inf[3],
+                        UnloadStation = inf[4],
+                        NdcLoadStation = inf[5],
+                        NdcUnloadStation = inf[6],
+                        RedirectUnloadStation = inf[7]
+                    };
+                    TempList.Add(item);
+                }
+                ini.WriteValue(tempSection, "tempinfo", "");
             }
         }
         
@@ -399,6 +511,8 @@ namespace WCS_phase1.NDC
 
             connecting = false;
             disconnectedByUser = false;
+
+            SendNewG();
         }
 
         /// <summary>
@@ -516,6 +630,20 @@ namespace WCS_phase1.NDC
             VCP9412.Instance.SendMessage(m);
         }
 
+        /// <summary>
+        /// Send _g message for Start Up
+        /// </summary>
+        //private void SendNewG(int magic, byte code, byte par_num, int par_ix, List<int> SendNewGList)
+        private void SendNewG()
+        {
+            List<int> SendNewGList = new List<int>();
+            SendNewGList.Add(2);
+            //SendNewG(0, 2, 1, 0, SendNewGList);
+            Message_g g = new Message_g(0, 2, 1, 0, SendNewGList);
+            //Message_g g = new Message_g(magic, code, par_num, par_ix, SendNewGList);
+            VCP9412.Instance.SendMessage(g);
+        }
+
         #endregion
 
         #region NDCITEM
@@ -527,7 +655,7 @@ namespace WCS_phase1.NDC
         private void UpdateItem(Message_s message)
         {
 
-            NDCItem ndcItem = nDCItems.Find(c => { return c.OrderIndex == message.Index; });
+            NDCItem ndcItem = Items.Find(c => { return c.OrderIndex == message.Index; });
             if (ndcItem == null)
             {
                 ndcItem = new NDCItem
@@ -535,7 +663,7 @@ namespace WCS_phase1.NDC
                     OrderIndex = message.Index,
                     CarrierId = message.CarrierNumber
                 };
-                nDCItems.Add(ndcItem);
+                Items.Add(ndcItem);
             }
             ndcItem.SetSMessage(message);
             log.LOG(ndcItem.StatusInfo);
@@ -549,7 +677,7 @@ namespace WCS_phase1.NDC
         private void UpdateItem(Message_b message)
         {
 
-            NDCItem ndcItem = nDCItems.Find(c => { return c.OrderIndex == message.Index; });
+            NDCItem ndcItem = Items.Find(c => { return c.OrderIndex == message.Index; });
             if (ndcItem == null)
             { 
                 ndcItem = new NDCItem
@@ -557,7 +685,7 @@ namespace WCS_phase1.NDC
                     OrderIndex = message.Index,
                     IKey = message.IKEY
                 };
-                nDCItems.Add(ndcItem);
+                Items.Add(ndcItem);
             }
             ndcItem.SetBMessage(message);
             log.LOG(ndcItem.TaskInfo);
@@ -572,12 +700,20 @@ namespace WCS_phase1.NDC
         {
             switch (item.Status)
             {
-                case 37:
+                case 37: //小车已经分配
                     item.CarrierId = b.ParNo;
                     break;
 
                 case 3://任务完成
-                    nDCItems.Remove(item);
+                    Items.Remove(item);
+                    break;
+                case 27://IKEY in use
+                    TempItem temp = TempList.Find(c => { return c.IKey.Equals("" + item.IKey); });
+                    if (temp != null)
+                    {
+                        temp.IKey = "" + Ikey++;
+                        DoStartOrder(temp);
+                    }
                     break;
             }
         }
@@ -594,26 +730,22 @@ namespace WCS_phase1.NDC
             switch (item.Magic)
             {
                 case 2://确定生成任务
-                    TempItem tempItem = tempList.Find(c => { return c.NdcLoadStation == item.NdcLoadStation && c.NdcUnloadStation == item.NdcUnloadStation; });
-                    if(tempItem != null)
-                    {
-                        item.TaskID = tempItem.TaskID;
-                        item.LoadStation = tempItem.LoadStation;
-                        item.UnloadStation = tempItem.UnloadStation;
-                        item.RedirectUnloadStation = tempItem.RedirectUnloadStation;
-                        tempList.Remove(tempItem);
-                    }
+                    item.NdcLoadStation =  item.s.Magic2+"";
+                    item.NdcUnloadStation = item.s.Magic3 + "";
                     break;
 
-                case 4: //小车前往装货点
+                case 4: //小车到达接货点
                     if (item.DirectStatus != NDCItemStatus.HasDirectInfo)
                     {
                         item.DirectStatus = NDCItemStatus.CanRedirect;
                     }
-                    ReDirectList.Add(item.OrderIndex);
+                    if (!ReDirectList.Contains(item.OrderIndex))
+                    {
+                        ReDirectList.Add(item.OrderIndex);
+                    }                    //TODO 告诉WCS 车已经到达
                     break;
-                case 6: //小车装货完成
-                    if(item.DirectStatus == NDCItemStatus.CanRedirect || item.DirectStatus == NDCItemStatus.Init)
+                case 6: //小车接货完成
+                    if (item.DirectStatus == NDCItemStatus.CanRedirect || item.DirectStatus == NDCItemStatus.Init)
                     {
                         item.DirectStatus = NDCItemStatus.NeedRedirect;
                     }
@@ -628,12 +760,27 @@ namespace WCS_phase1.NDC
                     ReDirectList.Remove(item.OrderIndex);
                     break;
                 case 11://任务完成
-                    nDCItems.Remove(item);
+                    Items.Remove(item);
                     break;
                 default:
                     break;
             }
+            GetTempInfo(item);
+        }
 
+        private void GetTempInfo(NDCItem item)
+        {
+            if (item.TaskID != 0) return;
+            if(item.NdcLoadStation == null) return;
+            TempItem tempItem = TempList.Find(c => { return c.NdcLoadStation == item.NdcLoadStation; });
+            if (tempItem != null)
+            {
+                item.TaskID = tempItem.TaskID;
+                item.LoadStation = tempItem.LoadStation;
+                item.UnloadStation = tempItem.UnloadStation;
+                item.RedirectUnloadStation = tempItem.RedirectUnloadStation;
+                TempList.Remove(tempItem);
+            }
         }
 
         /// <summary>
@@ -646,7 +793,7 @@ namespace WCS_phase1.NDC
                 Thread.Sleep(3000);
                 foreach(int index in ReDirectList)
                 {
-                    NDCItem item = nDCItems.Find(c => { return c.OrderIndex == index; });
+                    NDCItem item = Items.Find(c => { return c.OrderIndex == index; });
                     if(item !=null && item.CanDirect())
                     {
                         DoRedirect(item.OrderIndex, item.NdcRedirectUnloadStation);
@@ -657,42 +804,63 @@ namespace WCS_phase1.NDC
         #endregion
 
         #region 对外方法
-        private List<TempItem> tempList = new List<TempItem>();
 
-        public string AddNDCTask(int taskid,string loadstation, string unloadstation)
+        /// <summary>
+        /// 添加接货任务
+        /// </summary>
+        /// <param name="taskid">任务ID </param>
+        /// <param name="loadstation">装货区域</param>
+        /// <param name="unloadstation">卸货区域</param>
+        /// <param name="result">失败原因</param>
+        /// <returns></returns>
+        public bool AddNDCTask(int taskid,string loadstation, string unloadstation,out string result)
         {
+            if (!VCP9412.Instance.IsConnected)
+            {
+                result = "NDC服务未连接";
+                return false;
+            }
+
             if(!loadStaDic.TryGetValue(loadstation, out string ndcLoadsta))
             {
-                return "装货点未配置";
+                result = "装货点未配置";
+                return false;
             }
 
             if (!unLoadStaDic.TryGetValue(unloadstation, out string ndcUnloadsta))
             {
-                return "卸货点未配置";
+                result = "卸货点未配置";
+                return false;
             }
 
-            if (nDCItems.Find(c => { return c.TaskID == taskid; })!=null)
+            if (Items.Find(c => { return c.TaskID == taskid; })!=null)
             {
-                return "找到相同任务ID("+taskid+")任务，不能再次添加";
+                result = "找到相同任务ID("+taskid+")任务，不能再次添加";
+                return false;
             }
 
-            if (tempList.Find(c => { return c.TaskID == taskid; }) != null)
+            if (TempList.Find(c => { return c.TaskID == taskid; }) != null)
             {
-                return "找到相同任务ID(" + taskid + ")任务，不能再次添加";
+                result = "找到相同任务ID(" + taskid + ")任务，不能再次添加";
+                return false;
             }
+
 
             TempItem item = new TempItem
             {
+                Prio = "1",
+                IKey = ""+ Ikey++,
                 TaskID = taskid,
                 LoadStation = loadstation,
                 UnloadStation = unloadstation,
                 NdcLoadStation = ndcLoadsta,
                 NdcUnloadStation = ndcUnloadsta
             };
-            tempList.Add(item);
+            TempList.Add(item);
             if (Ikey >= 99) Ikey = 1;
-            DoStartOrder("1", ""+Ikey++, ndcLoadsta, ndcUnloadsta);
-            return "";
+            DoStartOrder(item);
+            result = "";
+            return true;
         }
 
         /// <summary>
@@ -701,20 +869,22 @@ namespace WCS_phase1.NDC
         /// <param name="taskid"></param>
         /// <param name="unloadstation"></param>
         /// <returns></returns>
-        public string DoReDerect(int taskid,string unloadstation)
+        public bool DoReDerect(int taskid,string unloadstation,out string result)
         {
-            string res = "";
-            NDCItem item = nDCItems.Find(c => { return c.TaskID == taskid && (c.DirectStatus == NDCItemStatus.CanRedirect || c.DirectStatus == NDCItemStatus.NeedRedirect); });
+            NDCItem item = Items.Find(c => { return c.TaskID == taskid 
+                && (c.DirectStatus == NDCItemStatus.CanRedirect || c.DirectStatus == NDCItemStatus.NeedRedirect); });
+
             if (item == null)
             {
-                TempItem temp = tempList.Find(c => { return c.TaskID == taskid; });
+                TempItem temp = TempList.Find(c => { return c.TaskID == taskid; });
                 if (temp != null)
                 {
                     temp.RedirectUnloadStation = unloadstation;
                 }
                 else
                 {
-                    res = "并未找到任务ID为："+taskid+"的任务";
+                    result = "并未找到任务ID为："+taskid+"的任务";
+                    return false;
                 }
             }
             else
@@ -727,7 +897,8 @@ namespace WCS_phase1.NDC
                 }
             }
 
-            return res;
+            result = "";
+            return true;
         }
 
         #endregion
@@ -739,11 +910,24 @@ namespace WCS_phase1.NDC
     /// </summary>
     class TempItem
     {
+        public string IKey;
+        public string Prio;
         public int TaskID;
         public string LoadStation;
         public string UnloadStation;
         public string NdcLoadStation;
         public string NdcUnloadStation;
         public string RedirectUnloadStation;
+
+        public DateTime addTime =  DateTime.Now;
+
+        /// <summary>
+        /// 能否重新添加
+        /// </summary>
+        /// <returns></returns>
+        public bool CanReAdd()
+        {
+            return addTime.Subtract(DateTime.Now).TotalSeconds > 20;
+        }
     }
 }

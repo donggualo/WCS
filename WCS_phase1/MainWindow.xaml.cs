@@ -50,8 +50,8 @@ namespace WCS_phase1
                 MessageBox.Show("任务ID必须是整型数字");
                 return;
             }
-            string result = DataControl._mNDCControl.AddNDCTask(taskid, ndcTB2.Text, ndcTB3.Text);
-            if (result != "")
+            ;
+            if (!DataControl._mNDCControl.AddNDCTask(taskid, ndcTB2.Text, ndcTB3.Text, out string result))
             {
                 MessageBox.Show(result);
             }
@@ -70,8 +70,7 @@ namespace WCS_phase1
                 MessageBox.Show("任务ID必须是整型数字");
                 return;
             }
-            string result = DataControl._mNDCControl.DoReDerect(taskid, ndcTB4.Text);
-            if (result != "")
+            if (DataControl._mNDCControl.DoReDerect(taskid, ndcTB4.Text,out string result))
             {
                 MessageBox.Show(result);
             }

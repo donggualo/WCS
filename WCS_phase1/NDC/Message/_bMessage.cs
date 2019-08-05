@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 //
 namespace WCS_phase1.NDC.Message
 {
-    class _bMessage
+    internal class _bMessage
     {
         /// <summary>
         /// 

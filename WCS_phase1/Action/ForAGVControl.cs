@@ -64,7 +64,9 @@ namespace WCS_phase1.Action
                 string DropStation = ConfigurationManager.AppSettings["AGVDropStation"];
 
                 // 发送 NDC
-                DataControl._mNDCControl.AddNDCTask(ID, PickStation, DropStation);
+                if(!DataControl._mNDCControl.AddNDCTask(ID, PickStation, DropStation,out string result)){
+                    //添加任务失败
+                }
 
                 // 数据库新增AGV任务资讯
                 String sql = String.Format(@"insert into wcs_agv_info(ID,PICKSTATION,DROPSTATION) values('{0}','{1}','{2}')", ID, PickStation, DropStation);
