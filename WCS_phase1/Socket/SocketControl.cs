@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AsyncTcp;
@@ -18,12 +19,24 @@ namespace WCS_phase1.Socket
     /// </summary>
     public class SocketControl
     {
-
-        private readonly object _uobj = new object();
+        private readonly object _obj = new object();
+        
         /// <summary>
         /// 设备列表
         /// </summary>
-        private readonly List<SocketClient> clinets = new List<SocketClient>();
+        private readonly List<SocketClient> client =  new List<SocketClient>();
+
+        private List<SocketClient> Clients
+        {
+            get
+            {
+                lock (_obj)
+                {
+                    return client;
+                }
+            }
+        }
+
 
         /// <summary>
         /// 构造函数
@@ -36,9 +49,14 @@ namespace WCS_phase1.Socket
 
         }
 
+        /// <summary>
+        /// 判断设备是否在线
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public bool IsAlive(string name)
         {
-            SocketClient client = clinets.Find(c => { return c.Name.Equals(name); });
+            SocketClient client = Clients.Find(c => { return c.Name.Equals(name); });
             if (client != null)
             {
                 return client.IsAlive;
@@ -47,9 +65,15 @@ namespace WCS_phase1.Socket
             return false;
         }
 
+
+        /// <summary>
+        /// 获取设备当前的最新数据
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public byte[] GetByteArr(string name)
         {
-            SocketClient client = clinets.Find(c => { return c.Name.Equals(name); });
+            SocketClient client = Clients.Find(c => { return c.Name.Equals(name); });
             if (client != null)
             {
                 return client.Bdata;
@@ -66,33 +90,58 @@ namespace WCS_phase1.Socket
         /// <param name="ip"></param>
         /// <param name="port"></param>
         /// <returns>bool</returns>
-        public bool AddClient(string name, string ip, int port)
+        public bool AddClient(string name, string ip, int port,out string result)
         {
-            if (clinets.Find(c => { return c.Name.Equals(name); }) == null)
+            if (!IsIP(ip))
             {
-                clinets.Add(new SocketClient(ip, port, name));
+                result = name + "的IP 不合法:" + ip;
+                return false;
+            }
+
+            if(name==null || name.Equals(""))
+            {
+                result = name + "不能为空";
+                return false;
+            }
+
+            if (port == 0)
+            {
+                result = name + "的端口不能为零";
+                return false;
+            }
+
+            if (Clients.Find(c => { return c.Name.Equals(name); }) == null)
+            {
+                Clients.Add(new SocketClient(ip, port, name));
+                result = "";
                 return true;
             }
+
+            result = name+"名称的设备已经存在了";
             return false;
         }
 
+        /// <summary>
+        /// 关闭设备连接
+        /// </summary>
+        /// <param name="name">名字为null 关闭所有设备， 指定名字则关闭指定设备</param>
         public void CloseClient(string name = null)
         {
             if (name == null)
             {
-                foreach (var client in clinets)
+                foreach (var client in Clients)
                 {
                     client.Close();
                 }
-                clinets.Clear();
+                Clients.Clear();
             }
             else
             {
-                SocketClient client = clinets.Find(c => { return c.Name.Equals(name); });
+                SocketClient client = Clients.Find(c => { return c.Name.Equals(name); });
                 if (client != null)
                 {
                     client.Close();
-                    clinets.Remove(client);
+                    Clients.Remove(client);
                 }
             }
 
@@ -116,7 +165,7 @@ namespace WCS_phase1.Socket
         /// <param name="order"></param>
         public bool SendToClient(string name, byte[] msg, out string result)
         {
-            SocketClient clinet = clinets.Find(c => { return name.Equals(c.Name); });
+            SocketClient clinet = Clients.Find(c => { return name.Equals(c.Name); });
             if (clinet != null && clinet.IsConnect())
             {
                 byte[] b = new byte[msg.Length + 2];
@@ -130,7 +179,19 @@ namespace WCS_phase1.Socket
             else result = "客户端未连接";
             return false;
         }
+
+
+        #region 检查是否为IP地址
+        /// <summary>
+        /// 是否为ip
+        /// </summary>
+        /// <param name="ip"></param>
+        /// <returns></returns>
+        public static bool IsIP(string ip)
+        {
+            return Regex.IsMatch(ip, @"^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$");
+        }
+
+        #endregion
     }
-
-
 }

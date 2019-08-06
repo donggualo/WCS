@@ -106,6 +106,7 @@
     <Compile Include="LOG\Log.cs" />
     <Compile Include="NDC\Message\_bMessage.cs" />
     <Compile Include="NDC\Message\_sMessage.cs" />
+    <Compile Include="NDC\Message\_vpilMessage.cs" />
     <Compile Include="NDC\NDCControl.cs" />
     <Compile Include="NDC\NDCItem.cs" />
     <Compile Include="NDC\NDCMagic.cs" />

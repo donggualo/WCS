@@ -53,10 +53,9 @@ namespace WCS_phase1.Functions
                 // 遍历加入网络设备
                 foreach (WCS_CONFIG_DEVICE dev in devList)
                 {
-                    bool add = DataControl._mSocket.AddClient(dev.DEVICE, dev.IP, dev.PORT);
-                    if (!add) 
+                    if (!DataControl._mSocket.AddClient(dev.DEVICE, dev.IP, dev.PORT, out string result)) 
                     {
-                        throw new Exception(dev.DEVICE + " 连接网络设备失败，请确认！");
+                        throw new Exception(dev.DEVICE + " 连接网络设备失败，请确认！" + result);
                     }
                 }
             }

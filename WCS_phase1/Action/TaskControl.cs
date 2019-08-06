@@ -189,7 +189,7 @@ namespace WCS_phase1.Action
                 // 发送指令
                 if (_device.CommandStatus() == FRT.CommandFinish)
                 {
-                    DataControl._mSocket.SendToClient(ITEM.DEVICE, Order);
+                    DataControl._mSocket.SendToClient(ITEM.DEVICE, Order,out string rusult);
                     // LOG
                     log.LOG(String.Format(@"【SendOrder】{0}：WMS任务ID[ {1} ]，AGV任务ID[ {2} ]，设备号[ {3} ], 指令[ {4} ].",
                     ITEM.ITEM_ID, ITEM.WCS_NO, ITEM.ID, ITEM.DEVICE, DataControl._mStools.BytetToString(Order)));

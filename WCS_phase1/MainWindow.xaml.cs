@@ -50,7 +50,7 @@ namespace WCS_phase1
                 MessageBox.Show("任务ID必须是整型数字");
                 return;
             }
-            ;
+            
             if (!DataControl._mNDCControl.AddNDCTask(taskid, ndcTB2.Text, ndcTB3.Text, out string result))
             {
                 MessageBox.Show(result);
