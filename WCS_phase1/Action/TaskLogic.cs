@@ -19,8 +19,6 @@ namespace WCS_phase1.Action
     /// </summary>
     public class TaskLogic
     {
-        Log log = new Log("AddTaskList");
-
         #region 初步入库任务
 
         /// <summary>
@@ -743,7 +741,7 @@ namespace WCS_phase1.Action
 
                         // 流程上设定是先分配运输车辊台①放置货物，即现确认运输车辊台②是否有任务/有货物
                         // 车辊台②不存在任务直接复位 ｜｜　所有辊台都有货
-                        if (String.IsNullOrEmpty(command.TASK_UID_2) || RGV.GoodsStatus() == RGV.GoodsYesAll)
+                        if (String.IsNullOrEmpty(command.TASK_UID_2.Trim()) || RGV.GoodsStatus() == RGV.GoodsYesAll)
                         {
                             // 将运输车复位待命点
                             // 当前设备位置 >= 运输车[内]待命复位点 ?  运输车[内]复位 ：运输车[外]复位
@@ -1002,7 +1000,7 @@ namespace WCS_phase1.Action
 
                 //生成 COMMAND
                 String sql = String.Format(@"insert into wcs_command_master(WCS_NO, FRT, TASK_UID_1, TASK_UID_2) values('{0}','{1}','{2}','{3}')",
-                    wcs_no, FRT, taskuid_1, String.IsNullOrWhiteSpace(taskuid_2) ? null : taskuid_2);
+                    wcs_no, FRT, taskuid_1, String.IsNullOrEmpty(taskuid_2.Trim()) ? null : taskuid_2);
                 DataControl._mMySql.ExcuteSql(sql);
 
                 //生成 ITEM
@@ -1075,14 +1073,14 @@ namespace WCS_phase1.Action
             {
                 // 获取任务所在固定辊台
                 String frt = DataControl._mTaskTools.GetFRTByWCSNo(item.WCS_NO);
-                if (String.IsNullOrEmpty(frt))
+                if (String.IsNullOrEmpty(frt.Trim()))
                 {
                     return;
                 }
 
                 // 获取任务所在作业区域
                 String area = DataControl._mTaskTools.GetArea(frt);
-                if (String.IsNullOrEmpty(frt))
+                if (String.IsNullOrEmpty(frt.Trim()))
                 {
                     return;
                 }
@@ -1100,7 +1098,7 @@ namespace WCS_phase1.Action
                         List<WCS_CONFIG_DEVICE> dList_ARF = DataControl._mTaskTools.GetDeviceList(area, DeviceType.摆渡车);
                         // 确认其中最适合的摆渡车
                         String arf = GetSuitableARF(item.LOC_TO, dList_ARF);
-                        if (String.IsNullOrEmpty(arf))
+                        if (String.IsNullOrEmpty(arf.Trim()))
                         {
                             return;
                         }
@@ -1119,7 +1117,7 @@ namespace WCS_phase1.Action
                         List<WCS_CONFIG_DEVICE> dList_RGV = DataControl._mTaskTools.GetDeviceList(area, DeviceType.运输车);
                         // 确认其中最适合的摆渡车
                         String rgv = GetSuitableRGV(item.LOC_TO, dList_RGV);
-                        if (String.IsNullOrEmpty(rgv))
+                        if (String.IsNullOrEmpty(rgv.Trim()))
                         {
                             return;
                         }
@@ -1138,7 +1136,7 @@ namespace WCS_phase1.Action
                         List<WCS_CONFIG_DEVICE> dList_ABC = DataControl._mTaskTools.GetDeviceList(area, DeviceType.行车);
                         // 确认其中最适合的行车
                         String abc = GetSuitableABC(item.LOC_TO, dList_ABC);
-                        if (String.IsNullOrEmpty(abc))
+                        if (String.IsNullOrEmpty(abc.Trim()))
                         {
                             return;
                         }
@@ -1154,7 +1152,7 @@ namespace WCS_phase1.Action
                         break;
                 }
 
-                if (String.IsNullOrEmpty(device) || String.IsNullOrEmpty(loc) || loc.Equals("0"))
+                if (String.IsNullOrEmpty(device.Trim()) || String.IsNullOrEmpty(loc.Trim()) || loc.Equals("0"))
                 {
                     return;
                 }
@@ -1239,7 +1237,7 @@ namespace WCS_phase1.Action
                 }
 
                 // 检测设备是否可用
-                if (!String.IsNullOrEmpty(arf))
+                if (!String.IsNullOrEmpty(arf.Trim()))
                 {
                     ARF = new ARF(arf);
                     // 命令状态不为完成, 货物状态不为无货 ==> 不可用
@@ -1308,7 +1306,7 @@ namespace WCS_phase1.Action
                 }
 
                 // 检测设备是否可用
-                if (!String.IsNullOrEmpty(rgv))
+                if (!String.IsNullOrEmpty(rgv.Trim()))
                 {
                     RGV = new RGV(rgv);
                     // 命令状态不为完成, 货物状态不为无货, 辊台状态不为停止 ==> 不可用
@@ -1378,7 +1376,7 @@ namespace WCS_phase1.Action
                 }
 
                 // 检测设备是否可用
-                if (!String.IsNullOrEmpty(abc))
+                if (!String.IsNullOrEmpty(abc.Trim()))
                 {
                     ABC = new ABC(abc);
                     // 命令状态不为完成, 货物状态不为无货 ==> 不可用
@@ -1456,7 +1454,7 @@ namespace WCS_phase1.Action
                         // 根据任务类型确认
                         site2 = item.ITEM_ID == ItemId.固定辊台正向 ? FRT.RunFront : FRT.RunObverse;
                         // 根据货物对接任务的目的设备确认
-                        site3 = String.IsNullOrWhiteSpace(item.LOC_TO) ? FRT.GoodsReceive : FRT.GoodsDeliver;
+                        site3 = String.IsNullOrEmpty(item.LOC_TO.Trim()) ? FRT.GoodsReceive : FRT.GoodsDeliver;
 
                         // 确认辊台启动方式
                         site1 = FRT.RollerRunAll;   // 初始默认辊台全启
@@ -1503,7 +1501,7 @@ namespace WCS_phase1.Action
                         // 根据任务类型确认
                         site2 = item.ITEM_ID == ItemId.摆渡车正向 ? ARF.RunFront : ARF.RunObverse;
                         // 根据货物对接任务的目的设备确认
-                        site3 = String.IsNullOrWhiteSpace(item.LOC_TO) ? ARF.GoodsReceive : ARF.GoodsDeliver;
+                        site3 = String.IsNullOrEmpty(item.LOC_TO.Trim()) ? ARF.GoodsReceive : ARF.GoodsDeliver;
 
                         // 确认辊台启动方式
                         site1 = ARF.RollerRunAll;   // 初始默认辊台全启
@@ -1550,7 +1548,7 @@ namespace WCS_phase1.Action
                         // 根据任务类型确认
                         site2 = item.ITEM_ID == ItemId.运输车正向 ? RGV.RunFront : RGV.RunObverse;
                         // 根据货物对接任务的目的设备确认
-                        site3 = String.IsNullOrWhiteSpace(item.LOC_TO) ? RGV.GoodsReceive : RGV.GoodsDeliver;
+                        site3 = String.IsNullOrEmpty(item.LOC_TO.Trim()) ? RGV.GoodsReceive : RGV.GoodsDeliver;
 
                         // 确认辊台启动方式
                         site1 = RGV.RollerRunAll;   // 初始默认辊台全启
@@ -1627,9 +1625,9 @@ namespace WCS_phase1.Action
                         ABC abc = new ABC(item.DEVICE);
                         // 提取目的位置
                         String[] LOC = item.LOC_TO.Split('-');
-                        byte[] locX = DataControl._mStools.IntToBytes(Convert.ToInt32(String.IsNullOrWhiteSpace(LOC[0]) ? "0" : LOC[0]));
-                        byte[] locY = DataControl._mStools.IntToBytes(Convert.ToInt32(String.IsNullOrWhiteSpace(LOC[1]) ? "0" : LOC[1]));
-                        byte[] locZ = DataControl._mStools.IntToBytes(Convert.ToInt32(String.IsNullOrWhiteSpace(LOC[2]) ? "0" : LOC[2]));
+                        byte[] locX = DataControl._mStools.IntToBytes(Convert.ToInt32(String.IsNullOrEmpty(LOC[0].Trim()) ? "0" : LOC[0]));
+                        byte[] locY = DataControl._mStools.IntToBytes(Convert.ToInt32(String.IsNullOrEmpty(LOC[1].Trim()) ? "0" : LOC[1]));
+                        byte[] locZ = DataControl._mStools.IntToBytes(Convert.ToInt32(String.IsNullOrEmpty(LOC[2].Trim()) ? "0" : LOC[2]));
                         // 指令类型
                         byte type;
                         if (item.ITEM_ID == ItemId.行车取货)
@@ -1656,9 +1654,6 @@ namespace WCS_phase1.Action
                 }
                 // 更新状态
                 DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.任务中);
-                // 记录LOG
-                log.LOG(String.Format(@"{0}：{5}=> WCS单号[ {1} ]，ID[ {2} ]，设备号[ {3} ]，指令[ {4} ]",
-                    ItemId.GetItemIdName(item.ITEM_ID), item.WCS_NO, item.ID, item.DEVICE, DataControl._mStools.BytetToString(order), "\r\n\t"));
             }
             catch (Exception ex)
             {

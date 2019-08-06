@@ -131,7 +131,81 @@ namespace WCS_phase1.Action
     }
 
     /// <summary>
-    /// 固定辊台任务
+    /// 与 AGV 对接的固定辊台任务
+    /// </summary>
+    public class AGVFRTTack : Task
+    {
+        FRT _device;
+        Log log;
+        public AGVFRTTack(WCS_TASK_ITEM item, string deviceType, byte[] order) : base(item, deviceType, order)
+        {
+            _device = new FRT(ITEM.DEVICE);
+            log = new Log("AGV_FRT-" + ITEM.DEVICE + "-");
+            // 记录生成指令LOG
+            log.LOG(String.Format(@"【CreatOrder】{0}：WMS任务ID[ {1} ]，AGV任务ID[ {2} ]，设备号[ {3} ], 指令[ {4} ].",
+                item.ITEM_ID, item.WCS_NO, item.ID, item.DEVICE, DataControl._mStools.BytetToString(order)));
+        }
+
+        public override void DoWork()
+        {
+            try
+            {
+                // 异常
+                if (_device.CommandStatus() == FRT.DeviceError || _device.CommandStatus() == FRT.CommandError)
+                {
+                    ISetTaskErr();
+                    // LOG
+                    log.LOG(String.Format(@"【Error】{0}：WMS任务ID[ {1} ]，AGV任务ID[ {2} ]，设备号[ {3} ], 异常信息[ {4} ].",
+                    ITEM.ITEM_ID, ITEM.WCS_NO, ITEM.ID, ITEM.DEVICE, "设备故障或命令错误"));
+                    return;
+                }
+                // 对接设备状态
+                if (!string.IsNullOrEmpty(ITEM.LOC_TO.Trim())) // 目标不为空即最终无货
+                {
+                    // 固定辊台无货物
+                    if (_device.GoodsStatus() == FRT.GoodsNoAll)
+                    {
+                        // 完成任务
+                        ISetTaskSuc();
+                        // LOG
+                        log.LOG(String.Format(@"【Success】{0}：WMS任务ID[ {1} ]，AGV任务ID[ {2} ]，设备号[ {3} ], 指令[ {4} ].",
+                        ITEM.ITEM_ID, ITEM.WCS_NO, ITEM.ID, ITEM.DEVICE, DataControl._mStools.BytetToString(Order)));
+                        return;
+                    }
+                }
+                else
+                {
+                    // 固定辊台上有2#有货 或者 都有货
+                    if ((_device.GoodsStatus() == FRT.GoodsYes2 || _device.GoodsStatus() == FRT.GoodsYesAll) && _device.CommandStatus() == FRT.CommandFinish)
+                    {
+                        // 完成任务
+                        ISetTaskSuc();
+                        // LOG
+                        log.LOG(String.Format(@"【Success】{0}：WMS任务ID[ {1} ]，AGV任务ID[ {2} ]，设备号[ {3} ], 指令[ {4} ].",
+                        ITEM.ITEM_ID, ITEM.WCS_NO, ITEM.ID, ITEM.DEVICE, DataControl._mStools.BytetToString(Order)));
+                        return;
+                    }
+                }
+                // 发送指令
+                if (_device.CommandStatus() == FRT.CommandFinish)
+                {
+                    DataControl._mSocket.SendToClient(ITEM.DEVICE, Order);
+                    // LOG
+                    log.LOG(String.Format(@"【SendOrder】{0}：WMS任务ID[ {1} ]，AGV任务ID[ {2} ]，设备号[ {3} ], 指令[ {4} ].",
+                    ITEM.ITEM_ID, ITEM.WCS_NO, ITEM.ID, ITEM.DEVICE, DataControl._mStools.BytetToString(Order)));
+                }
+            }
+            catch (Exception ex)
+            {
+                // LOG
+                log.LOG(String.Format(@"【Error】{0}：WMS任务ID[ {1} ]，AGV任务ID[ {2} ]，设备号[ {3} ], 异常信息[ {4} ].",
+                ITEM.ITEM_ID, ITEM.WCS_NO, ITEM.ID, ITEM.DEVICE, ex.ToString()));
+            }
+        }
+    }
+
+    /// <summary>
+    /// 与 ARF 对接的固定辊台任务
     /// </summary>
     public class FRTTack : Task
     {
@@ -141,6 +215,8 @@ namespace WCS_phase1.Action
         {
             _device = new FRT(ITEM.DEVICE);
             log = new Log("Task_FRT-" + ITEM.DEVICE + "-");
+            // 记录生成指令LOG
+            log.LOG(DataControl._mTaskTools.GetLogMessC(item, order));
         }
 
         public override void DoWork()
@@ -157,7 +233,7 @@ namespace WCS_phase1.Action
                 }
                 ARF _arf = new ARF(ITEM.LOC_TO);
                 // 对接设备状态
-                if (!string.IsNullOrWhiteSpace(ITEM.LOC_TO)) // 目标不为空即最终无货
+                if (!string.IsNullOrEmpty(ITEM.LOC_TO.Trim())) // 目标不为空即最终无货
                 {
                     // 摆渡车辊台停止状态
                     if (_arf.CurrentStatus() == ARF.RollerStop)
@@ -221,6 +297,8 @@ namespace WCS_phase1.Action
         {
             _device = new ARF(ITEM.DEVICE);
             log = new Log("Task_ARF-" + ITEM.DEVICE + "-");
+            // 记录生成指令LOG
+            log.LOG(DataControl._mTaskTools.GetLogMessC(item, order));
         }
 
         public override void DoWork()
@@ -238,7 +316,7 @@ namespace WCS_phase1.Action
                 // 对接任务
                 if (ITEM.ITEM_ID.Substring(0, 2) == "11")
                 {
-                    if (!string.IsNullOrWhiteSpace(ITEM.LOC_TO)) // 目标不为空即最终无货
+                    if (!string.IsNullOrEmpty(ITEM.LOC_TO.Trim())) // 目标不为空即最终无货
                     {
                         // 获取目标设备类型
                         String typeTo = DataControl._mTaskTools.GetDeviceType(ITEM.LOC_TO);
@@ -367,6 +445,8 @@ namespace WCS_phase1.Action
         {
             _device = new RGV(ITEM.DEVICE);
             log = new Log("Task_RGV-" + ITEM.DEVICE + "-");
+            // 记录生成指令LOG
+            log.LOG(DataControl._mTaskTools.GetLogMessC(item, order));
         }
 
         public override void DoWork()
@@ -384,7 +464,7 @@ namespace WCS_phase1.Action
                 // 对接任务
                 if (ITEM.ITEM_ID.Substring(0, 2) == "11")
                 {
-                    if (!string.IsNullOrWhiteSpace(ITEM.LOC_TO)) // 目标不为空即最终无货
+                    if (!string.IsNullOrEmpty(ITEM.LOC_TO.Trim())) // 目标不为空即最终无货
                     {
                         // 获取目标设备类型
                         String typeTo = DataControl._mTaskTools.GetDeviceType(ITEM.LOC_TO);
@@ -513,6 +593,8 @@ namespace WCS_phase1.Action
         {
             _device = new ABC(ITEM.DEVICE);
             log = new Log("Task_ABC-" + ITEM.DEVICE + "-");
+            // 记录生成指令LOG
+            log.LOG(DataControl._mTaskTools.GetLogMessC(item, order));
         }
 
         public override void DoWork()
