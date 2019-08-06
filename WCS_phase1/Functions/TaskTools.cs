@@ -669,7 +669,7 @@ namespace WCS_phase1.Functions
             String sql;
             try
             {
-                if (String.IsNullOrWhiteSpace(item_id))
+                if (String.IsNullOrEmpty(item_id.Trim()))
                 {
                     sql = String.Format(@"delete from WCS_TASK_ITEM where STATUS in ('N','Q') and WCS_NO = '{0}'", wcs_no);
                 }
@@ -744,6 +744,20 @@ where (a.TASK_UID_1 = b.TASK_UID or a.TASK_UID_2 = b.TASK_UID) and a.STEP = '4' 
         }
 
         /// <summary>
+        /// 生成指令日志
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        public String GetLogMessC(WCS_TASK_ITEM item, byte[] order)
+        {
+            String ORDER = DataControl._mStools.BytetToString(order);
+            String message = String.Format(@"【CreatOrder】{0}({1})：WCS单号[ {2} ]，ID[ {3} ]，设备号[ {4} ]，指令[ {5} ].",
+                ItemId.GetItemIdName(item.ITEM_ID), item.ITEM_ID, item.WCS_NO, item.ID, item.DEVICE, ORDER);
+            return message;
+        }
+
+        /// <summary>
         /// 异常日志
         /// </summary>
         /// <param name="item"></param>
@@ -752,8 +766,8 @@ where (a.TASK_UID_1 = b.TASK_UID or a.TASK_UID_2 = b.TASK_UID) and a.STEP = '4' 
         /// <returns></returns>
         public String GetLogMessE(WCS_TASK_ITEM item, byte[] order, String err)
         {
-            String message = String.Format(@"【Error】{0}：WCS单号[ {1} ]，ID[ {2} ]，设备号[ {3} ]，异常信息[ {4} ]", 
-                ItemId.GetItemIdName(item.ITEM_ID), item.WCS_NO, item.ID, item.DEVICE, err); 
+            String message = String.Format(@"【Error】{0}({1})：WCS单号[ {2} ]，ID[ {3} ]，设备号[ {4} ]，异常信息[ {5} ].", 
+                ItemId.GetItemIdName(item.ITEM_ID), item.ITEM_ID, item.WCS_NO, item.ID, item.DEVICE, err); 
             
             return message;
         }
@@ -767,8 +781,8 @@ where (a.TASK_UID_1 = b.TASK_UID or a.TASK_UID_2 = b.TASK_UID) and a.STEP = '4' 
         public String GetLogMessS(WCS_TASK_ITEM item, byte[] order)
         {
             String ORDER = DataControl._mStools.BytetToString(order);
-            String message = String.Format(@"【Success】{0}：WCS单号[ {1} ]，ID[ {2} ]，设备号[ {3} ]，来源[ {4} ]，目标[ {5} ]，指令[ {6} ]",
-                ItemId.GetItemIdName(item.ITEM_ID), item.WCS_NO, item.ID, item.DEVICE, item.LOC_FROM, item.LOC_TO, ORDER);
+            String message = String.Format(@"【Success】{0}({1})：WCS单号[ {2} ]，ID[ {3} ]，设备号[ {4} ]，来源[ {5} ]，目标[ {6} ]，指令[ {7} ].",
+                ItemId.GetItemIdName(item.ITEM_ID), item.ITEM_ID, item.WCS_NO, item.ID, item.DEVICE, item.LOC_FROM, item.LOC_TO, ORDER);
 
             return message;
         }
@@ -782,8 +796,8 @@ where (a.TASK_UID_1 = b.TASK_UID or a.TASK_UID_2 = b.TASK_UID) and a.STEP = '4' 
         public String GetLogMessW(WCS_TASK_ITEM item, byte[] order)
         {
             String ORDER = DataControl._mStools.BytetToString(order);
-            String message = String.Format(@"【WaitFor】{0}：WCS单号[ {1} ]，ID[ {2} ]，设备号[ {3} ]，来源[ {4} ]，目标[ {5} ]，指令[ {6} ]",
-                ItemId.GetItemIdName(item.ITEM_ID), item.WCS_NO, item.ID, item.DEVICE, item.LOC_FROM, item.LOC_TO, ORDER);
+            String message = String.Format(@"【WaitFor】{0}({1})：WCS单号[ {2} ]，ID[ {3} ]，设备号[ {4} ]，来源[ {5} ]，目标[ {6} ]，指令[ {7} ].",
+                ItemId.GetItemIdName(item.ITEM_ID), item.ITEM_ID, item.WCS_NO, item.ID, item.DEVICE, item.LOC_FROM, item.LOC_TO, ORDER);
 
             return message;
         }
@@ -797,8 +811,8 @@ where (a.TASK_UID_1 = b.TASK_UID or a.TASK_UID_2 = b.TASK_UID) and a.STEP = '4' 
         public String GetLogMess(WCS_TASK_ITEM item, byte[] order)
         {
             String ORDER = DataControl._mStools.BytetToString(order);
-            String message = String.Format(@"【SendOrder】{0}：WCS单号[ {1} ]，ID[ {2} ]，设备号[ {3} ]，来源[ {4} ]，目标[ {5} ]，指令[ {6} ]",
-                ItemId.GetItemIdName(item.ITEM_ID), item.WCS_NO, item.ID, item.DEVICE, item.LOC_FROM, item.LOC_TO, ORDER);
+            String message = String.Format(@"【SendOrder】{0}({1})：WCS单号[ {2} ]，ID[ {3} ]，设备号[ {4} ]，来源[ {5} ]，目标[ {6} ]，指令[ {7} ].",
+                ItemId.GetItemIdName(item.ITEM_ID), item.ITEM_ID, item.WCS_NO, item.ID, item.DEVICE, item.LOC_FROM, item.LOC_TO, ORDER);
 
             return message;
         }
