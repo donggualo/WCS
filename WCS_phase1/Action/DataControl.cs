@@ -73,6 +73,7 @@ namespace WCS_phase1.Action
                 _mStools = new SimpleTools();
 
                 _mTaskTools = new TaskTools();
+
                 //_mTaskTools.InitializeClient();
 
                 //_mHttpServer = new HttpServerControl();

@@ -197,7 +197,7 @@ namespace WCS_phase1.Action
                 // 发送指令
                 if (_device.CommandStatus() == FRT.CommandFinish)
                 {
-                    DataControl._mSocket.SendToClient(ITEM.DEVICE, Order);
+                    DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result);
                     // LOG
                     log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                 }
@@ -322,7 +322,10 @@ namespace WCS_phase1.Action
                     // 发送指令
                     if (_device.CommandStatus() == ARF.CommandFinish)
                     {
-                        DataControl._mSocket.SendToClient(ITEM.DEVICE, Order);
+                        if(!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order,out string result))
+                        {
+
+                        }
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                     }
@@ -333,7 +336,7 @@ namespace WCS_phase1.Action
                     // 发送指令
                     if (_device.CommandStatus() == ARF.CommandFinish)
                     {
-                        DataControl._mSocket.SendToClient(ITEM.DEVICE, Order);
+                        DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result);
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                     }
@@ -468,7 +471,7 @@ namespace WCS_phase1.Action
                     // 发送指令
                     if (_device.CommandStatus() == RGV.CommandFinish)
                     {
-                        DataControl._mSocket.SendToClient(ITEM.DEVICE, Order);
+                        DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result);
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                     }
@@ -479,7 +482,7 @@ namespace WCS_phase1.Action
                     // 发送指令
                     if (_device.CommandStatus() == RGV.CommandFinish)
                     {
-                        DataControl._mSocket.SendToClient(ITEM.DEVICE, Order);
+                        DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result);
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                     }
@@ -568,7 +571,7 @@ namespace WCS_phase1.Action
                 // 发送指令
                 if (_device.CommandStatus() == ABC.CommandFinish)
                 {
-                    DataControl._mSocket.SendToClient(ITEM.DEVICE, Order);
+                    DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result);
                     // LOG
                     log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                 }

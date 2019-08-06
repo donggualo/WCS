@@ -104,9 +104,9 @@ namespace WCS_phase1.Socket
         /// </summary>
         /// <param name="name"></param>
         /// <param name="order"></param>
-        public bool SendToClient(string name, string order)
+        public bool SendToClient(string name, string order, out string result)
         {
-            return SendToClient(name, CRCMethod.StringToHexByte(order));
+            return SendToClient(name, CRCMethod.StringToHexByte(order),out result);
         }        
         
         /// <summary>
@@ -114,7 +114,7 @@ namespace WCS_phase1.Socket
         /// </summary>
         /// <param name="name"></param>
         /// <param name="order"></param>
-        public bool SendToClient(string name, byte[] msg)
+        public bool SendToClient(string name, byte[] msg, out string result)
         {
             SocketClient clinet = clinets.Find(c => { return name.Equals(c.Name); });
             if (clinet != null && clinet.IsConnect())
@@ -123,8 +123,11 @@ namespace WCS_phase1.Socket
                 msg.CopyTo(b, 0);
                 CRCMethod.ToModbusCRC16Byte(msg).CopyTo(b, msg.Length);
                 clinet.Send(b);
+                result = "";
                 return true;
             }
+            if (clinet == null) result = "未找到该客户端";
+            else result = "客户端未连接";
             return false;
         }
     }
