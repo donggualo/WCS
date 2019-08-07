@@ -61,10 +61,8 @@ namespace WCS_phase1.Models
         public const int 分配装货卸货点 = 2;
         public const int 前往装货点 = 3;
         public const int 到达装货点 = 4;
-        public const int 准备装货 = 5;
         public const int 装货完成 = 6;
-        public const int 到达卸货点 = 7;
-        public const int 准备卸货 = 8;
+        public const int 到达卸货点 = 8;
         public const int 卸货完成 = 10;
         public const int 任务完成 = 11;
         public const int 重新定位卸货 = 254;

@@ -77,7 +77,7 @@ namespace WCS_phase1.Action
             catch (Exception ex)
             {
                 // LOG
-                DataControl._mTaskTools.RecordTaskErrLog("SendAGV()","调度AGV装货卸货", frt.DEVICE,"",ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("SendAGV()","调度AGV装货卸货[固定辊台设备号]", frt.DEVICE,"",ex.ToString());
             }
         }
 
@@ -93,7 +93,7 @@ namespace WCS_phase1.Action
             try
             {
                 //获取满足启动辊台条件的AGV任务---位于装货卸货点状态
-                DataTable dt = DataControl._mMySql.SelectAll("select * from wcs_agv_info where MAGIC in(4,7) and TASK_UID is not null and AGV is not null order by CREATION_TIME");
+                DataTable dt = DataControl._mMySql.SelectAll("select * from wcs_agv_info where MAGIC in(4,8) and TASK_UID is not null and AGV is not null order by CREATION_TIME");
                 if (DataControl._mStools.IsNoData(dt))
                 {
                     return;
@@ -115,80 +115,73 @@ namespace WCS_phase1.Action
         {
             try
             {
-                // 指令
-                byte[] order = null;
-                // 设备号
-                byte frtNum = 0;
-                //启动方式
-                byte site1 = FRT.RollerRunAll; // 初始默认辊台全启
-                //启动方向
-                byte site2 = FRT.RunFront; // 初始默认正向启动
-                //接送类型
-                byte site3 = FRT.GoodsReceive; // 初始默认接货
-                //货物数量
-                byte site4 = FRT.GoodsQty1; // 固定数量1
-
                 // 按任务当前状态处理
                 switch (Convert.ToInt32(agv.MAGIC))
                 {
                     case AGVMagic.到达装货点:
                         // 获取对应包装线固定辊台资讯
                         FRT frt = new FRT(agv.PICKSTATION);
-                        frtNum = frt.FRTNum();
+                        // 是否作业中
+                        if (frt.CurrentStatus() != FRT.RollerStop)
+                        {
+                            return;
+                        }
                         // 是否存在货物
                         if (frt.GoodsStatus() == FRT.GoodsYesAll)
                         {
-                            //=》 发指令请求AGV启动辊台装货
+                            // 发指令请求AGV启动辊台装货
+                            DataControl._mNDCControl.DoLoad(agv.ID, Convert.ToInt32(agv.AGV), out string result);
+                            if (!string.IsNullOrEmpty(result.Trim()))
+                            {
+                                throw new Exception(result);
+                            }
                         }
                         
-                        break;
-                    case AGVMagic.准备装货:
-                        // 获取对应包装线固定辊台资讯
-                        FRT frtpick = new FRT(agv.PICKSTATION);
-                        frtNum = frtpick.FRTNum();
-                        // 是否存在货物
-                        if (frtpick.GoodsStatus() == FRT.GoodsYesAll)
-                        {
-                            // 生成指令请求包装线固定辊台反向启动辊台送货
-                            site2 = FRT.RunObverse;
-                            site3 = FRT.GoodsDeliver;
-                        }
-
                         break;
                     case AGVMagic.到达卸货点:
                         // 获取对应包装线固定辊台资讯
                         FRT frtdrop = new FRT(agv.DROPSTATION);
-                        frtNum = frtdrop.FRTNum();
-
+                        // 是否作业中
+                        if (frtdrop.CurrentStatus() != FRT.RollerStop)
+                        {
+                            // 当已启动辊台
+                            if (frtdrop.CurrentTask() == FRT.TaskTake && (frtdrop.CurrentStatus() == FRT.RollerRun1 || frtdrop.CurrentStatus() == FRT.RollerRunAll))
+                            {
+                                // 发指令请求AGV启动辊台装货
+                                DataControl._mNDCControl.DoUnLoad(agv.ID, Convert.ToInt32(agv.AGV), out string result);
+                                if (!string.IsNullOrEmpty(result.Trim()))
+                                {
+                                    throw new Exception(result);
+                                }
+                            }
+                            return;
+                        }
                         // 当仅2#辊台有货
                         if (frtdrop.GoodsStatus() == FRT.GoodsYes2)
                         {
                             // 生成指令请求库存区固定辊台正向启动辊台接货
-                            site2 = FRT.RunFront;
-                            site3 = FRT.GoodsReceive;
-                            // 只启动1#辊台
-                            site1 = FRT.RollerRun1;
+                            // 获取指令-- 只启动1#辊台 正向接货
+                            byte[] order = FRT._RollerControl(frtdrop.FRTNum(), FRT.RollerRun1, FRT.RunFront, FRT.GoodsReceive, FRT.GoodsQty1);
+                            // 加入任务作业链表
+                            WCS_TASK_ITEM item = new WCS_TASK_ITEM()
+                            {
+                                ITEM_ID = "库区接货",
+                                WCS_NO = agv.TASK_UID,
+                                ID = agv.ID,
+                                DEVICE = agv.AGV
+                            };
+                            DataControl._mTaskControler.StartTask(new FRTTack(item, DeviceType.固定辊台, order));
                         }
 
                         break;
                     default:
                         return;
                 }
-                // 获取指令
-                order = FRT._RollerControl(frtNum, site1, site2, site3, site4);
-                // 加入任务作业链表
-                WCS_TASK_ITEM item = new WCS_TASK_ITEM()
-                {
-                    ITEM_ID = Convert.ToInt32(agv.MAGIC) == AGVMagic.到达卸货点 ? "库存区接货" : "包装线送货",
-                    WCS_NO = agv.TASK_UID,
-                    ID = agv.ID,
-                    DEVICE = agv.AGV
-                };
-                DataControl._mTaskControler.StartTask(new FRTTack(item, DeviceType.固定辊台, order));
             }
             catch (Exception ex)
             {
-                throw ex;
+                // LOG
+                DataControl._mTaskTools.RecordTaskErrLog("CreatOrderTask()", "AGV辊台任务[AGV任务ID]", agv.ID.ToString(), "", ex.ToString());
             }
         }
 
@@ -196,7 +189,11 @@ namespace WCS_phase1.Action
 
         #region AGV Method
 
-        // 更新AGV卸货点
+        /// <summary>
+        /// 更新AGV卸货点
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="station"></param>
         public void UpdateAGVStation(int id, string station)
         {
             try
@@ -213,7 +210,7 @@ namespace WCS_phase1.Action
             catch (Exception ex)
             {
                 // LOG
-                DataControl._mTaskTools.RecordTaskErrLog("UpdateAGVStation()", "更新AGV卸货点", id.ToString(), "", ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("UpdateAGVStation()", "更新AGV卸货点[AGV任务ID]", id.ToString(), "", ex.ToString());
             }
         }
 
@@ -232,7 +229,6 @@ namespace WCS_phase1.Action
         {
             try
             {
-                // 更新AGV任务资讯
                 StringBuilder sql = new StringBuilder();
                 sql.Append(String.Format(@"update wcs_agv_info set MAGIC = '{1}' where ID = '{0}'", id, magic));
 
@@ -249,11 +245,67 @@ namespace WCS_phase1.Action
 select distinct PICKSTATION from wcs_agv_info where ISOVER = 'N' and ID = '{0}')", id));
                 }
 
+                // 更新AGV任务资讯
                 DataControl._mMySql.ExcuteSql(sql.ToString());
+
+                if (magic == AGVMagic.重新定位卸货)
+                {
+                    string station;
+                    // 获取任务ID对应的卸货点
+                    String sqlsta = String.Format(@"select DISTINCT DROPSTATION From wcs_agv_info where ID = '{0}'", id);
+                    DataTable dt = DataControl._mMySql.SelectAll(sqlsta);
+                    if (DataControl._mStools.IsNoData(dt))
+                    {
+                        // 定位初始值
+                        station = ConfigurationManager.AppSettings["AGVDropStation"];
+                    }
+                    
+                    station = dt.Rows[0]["DROPSTATION"].ToString();
+                    // 发送 NDC 更新点位
+                    UpdateAGVStation(id, station);
+                }
             }
             catch (Exception ex)
             {
                 throw ex;
+            }
+        }
+
+        /// <summary>
+        /// AGV 装货中
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="agv"></param>
+        public void SubmitAgvLoading(int id, string agv)
+        {
+            try
+            {
+                // 获取对应AGV任务资讯
+                String sql = String.Format(@"select * from wcs_agv_info where MAGIC = '{0}' and TASK_UID = '{1}' and AGV = '{2}'", AGVMagic.到达装货点, id.ToString(), agv);
+                DataTable dt = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dt))
+                {
+                    throw new Exception("找不到对应AGV任务资讯！");
+                }
+                WCS_AGV_INFO info = dt.ToDataEntity<WCS_AGV_INFO>();
+                // 生成包装线固定辊台指令
+                FRT frt = new FRT(info.PICKSTATION);
+                // 获取指令-- 反向送货
+                byte[] order = FRT._RollerControl(frt.FRTNum(), FRT.RollerRunAll, FRT.RunObverse, FRT.GoodsDeliver, FRT.GoodsQty1);
+                // 加入任务作业链表
+                WCS_TASK_ITEM item = new WCS_TASK_ITEM()
+                {
+                    ITEM_ID = "包装线送货",
+                    WCS_NO = info.TASK_UID,
+                    ID = info.ID,
+                    DEVICE = info.AGV
+                };
+                DataControl._mTaskControler.StartTask(new FRTTack(item, DeviceType.固定辊台, order));
+            }
+            catch (Exception ex)
+            {
+                // LOG
+                DataControl._mTaskTools.RecordTaskErrLog("SubmitNDCPlcLoading()", "AGV装货中[AGV任务ID，AGV设备号]", id.ToString(), agv, ex.ToString());
             }
         }
 
@@ -290,7 +342,7 @@ select distinct PICKSTATION from wcs_agv_info where ISOVER = 'N' and ID = '{0}')
         {
             while (true)
             {
-                Thread.Sleep(500);
+                Thread.Sleep(5000);
                 try
                 {
                     forAGV.Run_DispatchAGV();

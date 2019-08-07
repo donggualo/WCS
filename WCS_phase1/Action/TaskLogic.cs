@@ -482,7 +482,7 @@ namespace WCS_phase1.Action
             catch (Exception ex)
             {
                 // 记录LOG
-                DataControl._mTaskTools.RecordTaskErrLog("Task_Continued()", "生成对接完成后续任务", item.WCS_NO, null, ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("Task_Continued()", "后续任务判断实施", item.WCS_NO, null, ex.ToString());
             }
         }
 
@@ -513,20 +513,30 @@ namespace WCS_phase1.Action
                     case TaskType.入库:
                         if (loc == DataControl._mTaskTools.GetABCStockLoc(command.LOC_TO_1))
                         {
+                            // 更新清单完成
                             DataControl._mTaskTools.UpdateTask(command.TASK_UID_1, TaskSite.完成);
+                            // 通知WMS完成
+                            DataControl._mHttp.DoStockInFinishTask(command.LOC_TO_1, command.TASK_UID_1);
                         }
 
                         if (loc == DataControl._mTaskTools.GetABCStockLoc(command.LOC_TO_2))
                         {
+                            // 更新清单完成
                             DataControl._mTaskTools.UpdateTask(command.TASK_UID_2, TaskSite.完成);
+                            // 通知WMS完成
+                            DataControl._mHttp.DoStockInFinishTask(command.LOC_TO_2, command.TASK_UID_2);
                         }
 
                         break;
                     case TaskType.出库:
                         if (loc == command.FRT)
                         {
+                            // 更新清单完成
                             DataControl._mTaskTools.UpdateTask(command.TASK_UID_1, TaskSite.完成);
                             DataControl._mTaskTools.UpdateTask(command.TASK_UID_2, TaskSite.完成);
+                            // 通知WMS完成
+                            DataControl._mHttp.DoStockOutFinishTask(command.LOC_TO_1, command.TASK_UID_1);
+                            DataControl._mHttp.DoStockOutFinishTask(command.LOC_TO_2, command.TASK_UID_2);
                         }
 
                         break;
@@ -1697,7 +1707,7 @@ namespace WCS_phase1.Action
         {
             while (true)
             {
-                Thread.Sleep(500);
+                Thread.Sleep(5000);
                 try
                 {
                     _task.Run_TaskContinued();

@@ -189,7 +189,11 @@ namespace WCS_phase1.Action
                 // 发送指令
                 if (_device.CommandStatus() == FRT.CommandFinish)
                 {
-                    DataControl._mSocket.SendToClient(ITEM.DEVICE, Order,out string rusult);
+                    DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result);
+                    if (!string.IsNullOrEmpty(result.Trim()))
+                    {
+                        throw new Exception(result);
+                    }
                     // LOG
                     log.LOG(String.Format(@"【SendOrder】{0}：WMS任务ID[ {1} ]，AGV任务ID[ {2} ]，设备号[ {3} ], 指令[ {4} ].",
                     ITEM.ITEM_ID, ITEM.WCS_NO, ITEM.ID, ITEM.DEVICE, DataControl._mStools.BytetToString(Order)));
@@ -274,6 +278,10 @@ namespace WCS_phase1.Action
                 if (_device.CommandStatus() == FRT.CommandFinish)
                 {
                     DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result);
+                    if (!string.IsNullOrEmpty(result.Trim()))
+                    {
+                        throw new Exception(result);
+                    }
                     // LOG
                     log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                 }
@@ -400,9 +408,10 @@ namespace WCS_phase1.Action
                     // 发送指令
                     if (_device.CommandStatus() == ARF.CommandFinish)
                     {
-                        if(!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order,out string result))
+                        DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result);
+                        if (!string.IsNullOrEmpty(result.Trim()))
                         {
-
+                            throw new Exception(result);
                         }
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
@@ -415,6 +424,10 @@ namespace WCS_phase1.Action
                     if (_device.CommandStatus() == ARF.CommandFinish)
                     {
                         DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result);
+                        if (!string.IsNullOrEmpty(result.Trim()))
+                        {
+                            throw new Exception(result);
+                        }
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                     }
@@ -552,6 +565,10 @@ namespace WCS_phase1.Action
                     if (_device.CommandStatus() == RGV.CommandFinish)
                     {
                         DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result);
+                        if (!string.IsNullOrEmpty(result.Trim()))
+                        {
+                            throw new Exception(result);
+                        }
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                     }
@@ -563,6 +580,10 @@ namespace WCS_phase1.Action
                     if (_device.CommandStatus() == RGV.CommandFinish)
                     {
                         DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result);
+                        if (!string.IsNullOrEmpty(result.Trim()))
+                        {
+                            throw new Exception(result);
+                        }
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                     }
@@ -654,6 +675,10 @@ namespace WCS_phase1.Action
                 if (_device.CommandStatus() == ABC.CommandFinish)
                 {
                     DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result);
+                    if (!string.IsNullOrEmpty(result.Trim()))
+                    {
+                        throw new Exception(result);
+                    }
                     // LOG
                     log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                 }
