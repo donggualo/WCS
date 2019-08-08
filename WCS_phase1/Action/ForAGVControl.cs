@@ -62,12 +62,9 @@ namespace WCS_phase1.Action
                 string DropStation = ConfigurationManager.AppSettings["AGVDropStation"];
 
                 // 发送 NDC
-                bool res;
-                string mes = "";
-                res = DataControl._mNDCControl.AddNDCTask(ID, PickStation, DropStation, out mes);
-                if (!res)
+                if (!DataControl._mNDCControl.AddNDCTask(ID, PickStation, DropStation, out string result))
                 {
-                    throw new Exception(mes);
+                    throw new Exception(result);
                 }
 
                 // 数据库新增AGV任务资讯
@@ -93,7 +90,7 @@ namespace WCS_phase1.Action
             try
             {
                 //获取满足启动辊台条件的AGV任务---位于装货卸货点状态
-                DataTable dt = DataControl._mMySql.SelectAll("select * from wcs_agv_info where MAGIC in(4,8) and TASK_UID is not null and AGV is not null order by CREATION_TIME");
+                DataTable dt = DataControl._mMySql.SelectAll("select * from wcs_agv_info where MAGIC in(4,8) and AGV is not null order by CREATION_TIME");
                 if (DataControl._mStools.IsNoData(dt))
                 {
                     return;
@@ -111,6 +108,10 @@ namespace WCS_phase1.Action
             }
         }
 
+        /// <summary>
+        /// 生成对应辊台任务指令
+        /// </summary>
+        /// <param name="agv"></param>
         public void CreatOrderTask(WCS_AGV_INFO agv)
         {
             try
@@ -129,9 +130,41 @@ namespace WCS_phase1.Action
                         // 是否存在货物
                         if (frt.GoodsStatus() == FRT.GoodsYesAll)
                         {
+                            // 分配 WMS TASK
+                            if (String.IsNullOrEmpty(agv.TASK_UID.Trim()))
+                            {
+                                // 获取WMS TASK ID
+                                String sql = String.Format(@"select TASK_UID from wcs_task_info where TASK_TYPE = '{0}' and W_S_LOC = '{1}' and TASK_UID not in 
+(select DISTINCT TASK_UID from wcs_agv_info where TASK_UID is not null)", TaskType.AGV搬运, DataControl._mTaskTools.GetArea(agv.PICKSTATION));
+                                DataTable dt = DataControl._mMySql.SelectAll(sql);
+                                if (DataControl._mStools.IsNoData(dt))
+                                {
+                                    throw new Exception("无对应 WMS Task！");
+                                }
+                                // 更新AGV任务资讯-- WMS TASK ID
+                                agv.TASK_UID = dt.Rows[0]["TASK_UID"].ToString();
+                                sql = String.Format(@"update wcs_agv_info set TASK_UID = '{1}' where ID = '{0}'", agv.ID, agv.TASK_UID);
+                                DataControl._mMySql.ExcuteSql(sql);
+                            }
+
+                            // 分配卸货点
+                            if (agv.UPDATE_TIME == null)
+                            {
+                                // 获取 WMS 任务目标点
+                                String sqlloc = String.Format(@"select W_D_LOC from wcs_task_info where TASK_UID = '{0}'", agv.TASK_UID);
+                                DataTable dtloc = DataControl._mMySql.SelectAll(sqlloc);
+                                if (DataControl._mStools.IsNoData(dtloc))
+                                {
+                                    throw new Exception("无对应 WMS Task 目标位置！");
+                                }
+                                // 更新AGV任务资讯-- 卸货点
+                                agv.DROPSTATION = dtloc.Rows[0]["W_D_LOC"].ToString();
+                                sqlloc = String.Format(@"update wcs_agv_info set UPDATE_TIME = NOW(), DROPSTATION = '{1}' where ID = '{0}'", agv.ID, agv.DROPSTATION);
+                                DataControl._mMySql.ExcuteSql(sqlloc);
+                            }
+
                             // 发指令请求AGV启动辊台装货
-                            DataControl._mNDCControl.DoLoad(agv.ID, Convert.ToInt32(agv.AGV), out string result);
-                            if (!string.IsNullOrEmpty(result.Trim()))
+                            if (!DataControl._mNDCControl.DoLoad(agv.ID, Convert.ToInt32(agv.AGV), out string result))
                             {
                                 throw new Exception(result);
                             }
@@ -148,8 +181,7 @@ namespace WCS_phase1.Action
                             if (frtdrop.CurrentTask() == FRT.TaskTake && (frtdrop.CurrentStatus() == FRT.RollerRun1 || frtdrop.CurrentStatus() == FRT.RollerRunAll))
                             {
                                 // 发指令请求AGV启动辊台装货
-                                DataControl._mNDCControl.DoUnLoad(agv.ID, Convert.ToInt32(agv.AGV), out string result);
-                                if (!string.IsNullOrEmpty(result.Trim()))
+                                if (!DataControl._mNDCControl.DoUnLoad(agv.ID, Convert.ToInt32(agv.AGV), out string result))
                                 {
                                     throw new Exception(result);
                                 }
@@ -170,7 +202,7 @@ namespace WCS_phase1.Action
                                 ID = agv.ID,
                                 DEVICE = agv.AGV
                             };
-                            DataControl._mTaskControler.StartTask(new FRTTack(item, DeviceType.固定辊台, order));
+                            DataControl._mTaskControler.StartTask(new AGVFRTTack(item, DeviceType.固定辊台, order));
                         }
 
                         break;
@@ -199,12 +231,9 @@ namespace WCS_phase1.Action
             try
             {
                 // 发送 NDC
-                bool res;
-                string mes = "";
-                res = DataControl._mNDCControl.DoReDerect(id, station, out mes);
-                if (!res)
+                if (!DataControl._mNDCControl.DoReDerect(id, station, out string result))
                 {
-                    throw new Exception(mes);
+                    throw new Exception(result);
                 }
             }
             catch (Exception ex)
@@ -241,8 +270,7 @@ namespace WCS_phase1.Action
                 if (magic == AGVMagic.装货完成)
                 {
                     // 更新对应包装线辊台状态，允许新任务派车前往
-                    sql.Append(String.Format(@";update wcs_config_device set FLAG = 'Y' where DEVICE in (
-select distinct PICKSTATION from wcs_agv_info where ISOVER = 'N' and ID = '{0}')", id));
+                    sql.Append(String.Format(@";update wcs_config_device set FLAG = 'Y' where DEVICE in (select distinct PICKSTATION from wcs_agv_info where ID = '{0}')", id));
                 }
 
                 // 更新AGV任务资讯
@@ -300,7 +328,7 @@ select distinct PICKSTATION from wcs_agv_info where ISOVER = 'N' and ID = '{0}')
                     ID = info.ID,
                     DEVICE = info.AGV
                 };
-                DataControl._mTaskControler.StartTask(new FRTTack(item, DeviceType.固定辊台, order));
+                DataControl._mTaskControler.StartTask(new AGVFRTTack(item, DeviceType.固定辊台, order));
             }
             catch (Exception ex)
             {

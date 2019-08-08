@@ -34,7 +34,7 @@ namespace WCS_phase1.Functions
                 RecordTaskErrLog("InitializeClient()", "初始化", null, null, ex.ToString());
             }
         }
-        
+
         /// <summary>
         /// 连接网络设备
         /// </summary>
@@ -53,8 +53,7 @@ namespace WCS_phase1.Functions
                 // 遍历加入网络设备
                 foreach (WCS_CONFIG_DEVICE dev in devList)
                 {
-                    bool add = DataControl._mSocket.AddClient(dev.DEVICE, dev.IP, dev.PORT, out string result);
-                    if (!string.IsNullOrEmpty(result.Trim()))
+                    if (!DataControl._mSocket.AddClient(dev.DEVICE, dev.IP, dev.PORT, out string result))
                     {
                         throw new Exception(result);
                     }
@@ -64,7 +63,7 @@ namespace WCS_phase1.Functions
             {
                 // 记录LOG
                 RecordTaskErrLog("LinkDevicesClient()", "连接网络设备", null, null, ex.ToString());
-                MessageBox.Show("连接网络设备发生异常："+ex.ToString(), "Error");
+                MessageBox.Show("连接网络设备发生异常：" + ex.ToString(), "Error");
                 System.Environment.Exit(0);
             }
         }
@@ -588,8 +587,41 @@ namespace WCS_phase1.Functions
         {
             try
             {
-                String sql = String.Format(@"update WCS_TASK_ITEM set {0} = '{1}',UPDATE_TIME = NOW() where ID = {2} and WCS_NO = '{3}' and ITEM_ID = '{4}'", 
+                String sql = String.Format(@"update WCS_TASK_ITEM set {0} = '{1}',UPDATE_TIME = NOW() where ID = {2} and WCS_NO = '{3}' and ITEM_ID = '{4}'",
                     key, value, id, wcs_no, item_id);
+                DataControl._mMySql.ExcuteSql(sql);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 创建 WCS 入库清单
+        /// </summary>
+        /// <param name="task_uid"></param>
+        public void CreateCommandIn(String task_uid, String frt)
+        {
+            try
+            {
+                String wcs_no;
+                // 判断是否有在建清单
+                String sql = String.Format(@"select WCS_NO from wcs_command_master where STEP = '{0}' and FRT = '{1}'", CommandStep.生成单号, frt);
+                DataTable dt = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dt))
+                {
+                    // 无则新增
+                    wcs_no = "I" + System.DateTime.Now.ToString("yyMMddHHmmss"); // 生成 WCS 清单号
+                    sql = String.Format(@"insert into wcs_command_master(WCS_NO, FRT, TASK_UID_1) values('{0}','{1}','{2}')", wcs_no, frt, task_uid);
+                }
+                else
+                {
+                    // 有则更新
+                    wcs_no = dt.Rows[0]["WCS_NO"].ToString();
+                    sql = String.Format(@"update wcs_command_master set UPDATE_TIME = NOW(), STEP = '{0}', TASK_UID_2 = '{1}' where WCS_NO = '{2}'", CommandStep.请求执行, task_uid, wcs_no);
+                }
+
                 DataControl._mMySql.ExcuteSql(sql);
             }
             catch (Exception ex)
@@ -766,9 +798,9 @@ where (a.TASK_UID_1 = b.TASK_UID or a.TASK_UID_2 = b.TASK_UID) and a.STEP = '4' 
         /// <returns></returns>
         public String GetLogMessE(WCS_TASK_ITEM item, byte[] order, String err)
         {
-            String message = String.Format(@"【Error】{0}({1})：WCS单号[ {2} ]，ID[ {3} ]，设备号[ {4} ]，异常信息[ {5} ].", 
-                ItemId.GetItemIdName(item.ITEM_ID), item.ITEM_ID, item.WCS_NO, item.ID, item.DEVICE, err); 
-            
+            String message = String.Format(@"【Error】{0}({1})：WCS单号[ {2} ]，ID[ {3} ]，设备号[ {4} ]，异常信息[ {5} ].",
+                ItemId.GetItemIdName(item.ITEM_ID), item.ITEM_ID, item.WCS_NO, item.ID, item.DEVICE, err);
+
             return message;
         }
 
