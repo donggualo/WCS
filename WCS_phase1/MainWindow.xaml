@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WCS_phase1"
         mc:Ignorable="d"
-        Title="MainWindow" Height="585.743" Width="960.847" Closing="Window_Closing" ResizeMode="CanResizeWithGrip">
+        Title="内蒙调度系统WCS" Height="585.743" Width="960.847" Closing="Window_Closing" ResizeMode="CanResizeWithGrip">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="88"/>
@@ -29,19 +29,32 @@
                     <Canvas>
                         <Label Content="激光AGV调度" Canvas.Left="10" Canvas.Top="10"/>
 
-                        <Label Content="任务ID" Canvas.Left="54" Canvas.Top="75"/>
-                        <Label Content="接货点" Canvas.Left="54" Canvas.Top="117"/>
-                        <Label Content="卸货点" Canvas.Left="54" Canvas.Top="156"/>
-                        <Label Content="重定位区域" Canvas.Left="215" Canvas.Top="156"/>
-                        
-                        <TextBox Name="ndcTB1"  Height="24"  TextWrapping="Wrap" Text="1" Width="75" Canvas.Left="108" Canvas.Top="75"/>
-                        <TextBox Name="ndcTB2"  Height="20" TextWrapping="Wrap" Text="B02" VerticalAlignment="Top" Width="75" Canvas.Left="108" Canvas.Top="117" />
-                        <TextBox Name="ndcTB3"  Height="19" TextWrapping="Wrap" Text="C03" VerticalAlignment="Top" Canvas.Left="108" Canvas.Top="160" Width="75" />
-                        <TextBox Name="ndcTB4" HorizontalAlignment="Left"   TextWrapping="Wrap" Text="C03-C02-001" VerticalAlignment="Top" Width="120" Canvas.Left="290" Canvas.Top="162"/>
+                        <Label Content="任务ID" Canvas.Left="447" Canvas.Top="74"/>
+                        <Label Content="接货点" Canvas.Left="447" Canvas.Top="116"/>
+                        <Label Content="卸货点" Canvas.Left="447" Canvas.Top="155"/>
+                        <Label Content="重定位区域" Canvas.Left="608" Canvas.Top="155"/>
+
+                        <TextBox Name="ndcTB1"  Height="24"  TextWrapping="Wrap" Text="1" Width="75" Canvas.Left="501" Canvas.Top="74"/>
+                        <TextBox Name="ndcTB2"  Height="20" TextWrapping="Wrap" Text="B02" VerticalAlignment="Top" Width="75" Canvas.Left="501" Canvas.Top="116" />
+                        <TextBox Name="ndcTB3"  Height="19" TextWrapping="Wrap" Text="C03" VerticalAlignment="Top" Canvas.Left="501" Canvas.Top="159" Width="75" />
+                        <TextBox Name="ndcTB4" HorizontalAlignment="Left"   TextWrapping="Wrap" Text="C03-C02-001" VerticalAlignment="Top" Width="120" Canvas.Left="683" Canvas.Top="161"/>
 
                         <Button Content="连接" Click="Button_Click_1" Canvas.Left="118" Canvas.Top="16" />
-                        <Button Content="开始调度" Click="Button_Click_2" Canvas.Left="108" Canvas.Top="201"/>
-                        <Button Content="重新定位" HorizontalAlignment="Left" Canvas.Left="290" Canvas.Top="201" Click="Button_Click_3" />
+                        <Button Content="开始调度" Click="Button_Click_2" Canvas.Left="501" Canvas.Top="200"/>
+                        <Button Content="重新定位" HorizontalAlignment="Left" Canvas.Left="683" Canvas.Top="200" Click="Button_Click_3" />
+                        <ListView HorizontalAlignment="Left" Height="331" VerticalAlignment="Top" Width="337" Canvas.Left="10" Canvas.Top="40">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="ID"/>
+                                    <GridViewColumn Header="小车"/>
+                                    <GridViewColumn Header="接货点"/>
+                                    <GridViewColumn Header="卸货点"/>
+                                    <GridViewColumn Header="重定位"/>
+                                    <GridViewColumn Header="接货"/>
+                                    <GridViewColumn Header="卸货"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
 
                     </Canvas>
                 </Grid>
