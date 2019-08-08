@@ -6,6 +6,7 @@ using System.Threading;
 using WCS_phase1.LOG;
 using NDC8.ACINET.ACI;
 using System.Text;
+using WCS_phase1.Action;
 
 namespace WCS_phase1.NDC
 {
@@ -769,6 +770,8 @@ namespace WCS_phase1.NDC
             ndcItem.SetSMessage(message);
             log.LOG(ndcItem.StatusInfo);
             CheckMagic(ndcItem, message);
+            ///通知并更新
+            if(ndcItem.TaskID !=0 ) DataControl._mForAGVControl.SubmitAgvMagic(ndcItem.TaskID, ndcItem.CarrierId+"", ndcItem.Magic);
         }
 
         /// <summary>
@@ -912,6 +915,7 @@ namespace WCS_phase1.NDC
                 case 1://装货中
                     item.PLCStatus = NDCPlcStatus.Loading;
                     LoadItemList.Remove(item.OrderIndex);
+                    DataControl._mForAGVControl.SubmitAgvLoading(item.TaskID, item.CarrierId + "");
                     break;
 
 

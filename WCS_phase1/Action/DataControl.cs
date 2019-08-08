@@ -60,6 +60,9 @@ namespace WCS_phase1.Action
         internal static RunTask _mRunTask;
 
 
+        internal static ForAGVControl _mForAGVControl;
+
+
         private static bool init = false;//是否已经初始化
 
         public static void Init()
@@ -85,6 +88,8 @@ namespace WCS_phase1.Action
                 //_mTaskControler = new TaskControler();
 
                 //_mRunTask = new RunTask();
+
+                _mForAGVControl = new ForAGVControl();
 
                 init = true;
             }
