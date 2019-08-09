@@ -28,7 +28,6 @@ namespace WCS_phase1.Action
         /// </summary>
         internal static HttpControl _mHttp;
 
-
         /// <summary>
         /// 控制激光小车任务和调度
         /// </summary>
@@ -59,9 +58,44 @@ namespace WCS_phase1.Action
         /// </summary>
         internal static RunTask _mRunTask;
 
-
+        /// <summary>
+        /// AGV 任务
+        /// </summary>
         internal static ForAGVControl _mForAGVControl;
 
+        #region 调试设定
+
+        /// <summary>
+        /// 是否无视AGV货物状态
+        /// </summary>
+        public static bool IsIgnoreAGV = false;
+
+        /// <summary>
+        /// 是否无视包装线固定辊台货物状态
+        /// </summary>
+        public static bool IsIgnoreFRT_P = false;
+
+        /// <summary>
+        /// 是否无视库存区固定辊台货物状态
+        /// </summary>
+        public static bool IsIgnoreFRT_S = false;
+
+        /// <summary>
+        /// 是否无视摆渡车货物状态
+        /// </summary>
+        public static bool IsIgnoreARF = false;
+
+        /// <summary>
+        /// 是否无视运输车货物状态
+        /// </summary>
+        public static bool IsIgnoreRGV = false;
+
+        /// <summary>
+        /// 是否无视行车货物状态
+        /// </summary>
+        public static bool IsIgnoreABC = false;
+
+        #endregion
 
         private static bool init = false;//是否已经初始化
 

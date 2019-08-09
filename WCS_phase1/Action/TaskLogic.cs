@@ -70,7 +70,7 @@ namespace WCS_phase1.Action
                 DataControl._mTaskTools.CreateItem(command.WCS_NO, ItemId.摆渡车定位固定辊台, ARFloc);  //生成摆渡车任务
 
                 // 运输车到摆渡车对接点
-                DataControl._mTaskTools.CreateItem(command.WCS_NO, ItemId.运输车复位1, ConfigurationManager.AppSettings["StandbyR1"]);  //生成运输车任务
+                DataControl._mTaskTools.CreateItem(command.WCS_NO, ItemId.运输车复位1, DataControl._mStools.GetValueByKey("StandbyR1"));  //生成运输车任务
 
                 // 行车到运输车对接取货点
                 String ABCloc = DataControl._mTaskTools.GetABCTrackLoc(loc == loc1 ? command.LOC_TO_1 : command.LOC_TO_2);     //获取对应行车位置
@@ -559,11 +559,11 @@ namespace WCS_phase1.Action
             try
             {
                 // 摆渡车于运输车对接点
-                String AR = ConfigurationManager.AppSettings["StandbyAR"];
+                String AR = DataControl._mStools.GetValueByKey("StandbyAR");
                 // 运输车[内]待命复位点
-                String R = ConfigurationManager.AppSettings["StandbyR2"];
+                String R = DataControl._mStools.GetValueByKey("StandbyR2");
                 // 运输车于运输车对接点
-                String RR = ConfigurationManager.AppSettings["StandbyRR"];
+                String RR = DataControl._mStools.GetValueByKey("StandbyRR");
 
                 // 获取对应清单
                 String sql = String.Format(@"select * from wcs_command_v where WCS_NO = '{0}'", item.WCS_NO);
@@ -714,11 +714,11 @@ namespace WCS_phase1.Action
                 String rgv;
                 RGV RGV;
                 // 运输车[外]待命复位点
-                String R1 = ConfigurationManager.AppSettings["StandbyR1"];
+                String R1 = DataControl._mStools.GetValueByKey("StandbyR1");
                 // 运输车[内]待命复位点
-                String R2 = ConfigurationManager.AppSettings["StandbyR2"];
+                String R2 = DataControl._mStools.GetValueByKey("StandbyR2");
                 // 运输车于运输车对接点
-                String RR = ConfigurationManager.AppSettings["StandbyRR"];
+                String RR = DataControl._mStools.GetValueByKey("StandbyRR");
 
                 // 获取对应清单
                 String sql = String.Format(@"select * from wcs_command_v where WCS_NO = '{0}'", item.WCS_NO);
@@ -882,7 +882,7 @@ namespace WCS_phase1.Action
                 List<WCS_CONFIG_DEVICE> abcList = dtabc.ToDataList<WCS_CONFIG_DEVICE>();
 
                 // 行车中间值
-                int AA = Convert.ToInt32(ConfigurationManager.AppSettings["CenterX"]);
+                int AA = Convert.ToInt32(DataControl._mStools.GetValueByKey("CenterX"));
 
                 // 遍历确认出库任务
                 foreach (WCS_CONFIG_DEVICE abc in abcList)
@@ -930,7 +930,7 @@ namespace WCS_phase1.Action
             try
             {
                 // 行车中间值
-                int AA = Convert.ToInt32(ConfigurationManager.AppSettings["CenterX"]);
+                int AA = Convert.ToInt32(DataControl._mStools.GetValueByKey("CenterX"));
                 // 大小运算符号
                 String sign;
                 if (range == 1)
@@ -1023,7 +1023,7 @@ namespace WCS_phase1.Action
                 DataControl._mTaskTools.CreateItem(wcs_no, ItemId.运输车定位, RGVloc);  //生成运输车任务
 
                 //生成摆渡车对接运输车任务
-                DataControl._mTaskTools.CreateItem(wcs_no, ItemId.摆渡车定位运输车对接, ConfigurationManager.AppSettings["StandbyAR"]);  //生成摆渡车任务
+                DataControl._mTaskTools.CreateItem(wcs_no, ItemId.摆渡车定位运输车对接, DataControl._mStools.GetValueByKey("StandbyAR"));  //生成摆渡车任务
 
                 //更新WCS COMMAND状态——执行中
                 DataControl._mTaskTools.UpdateCommand(wcs_no, CommandStep.执行中);
@@ -1282,7 +1282,7 @@ namespace WCS_phase1.Action
                 // 目标位置
                 int LOC = Convert.ToInt32(loc);
                 // 运输车间对接点
-                int RR = Convert.ToInt32(ConfigurationManager.AppSettings["StandbyRR"]);
+                int RR = Convert.ToInt32(DataControl._mStools.GetValueByKey("StandbyRR"));
 
                 // 遍历比对
                 foreach (WCS_CONFIG_DEVICE d in dList)
@@ -1349,7 +1349,7 @@ namespace WCS_phase1.Action
                 // 终选行车
                 String abc = String.Empty;
                 // 行车中间值
-                int AA = Convert.ToInt32(ConfigurationManager.AppSettings["CenterX"]);
+                int AA = Convert.ToInt32(DataControl._mStools.GetValueByKey("CenterX"));
                 // 目标位置 X轴值
                 String[] LOC = loc.Split('-');
                 int X = Convert.ToInt32(LOC[0]);

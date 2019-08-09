@@ -18,6 +18,45 @@ namespace WCS_phase1.Action
     /// </summary>
     class ForAGVControl
     {
+        #region 线程
+
+        Thread _thread;
+
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        public ForAGVControl()
+        {
+            _thread = new Thread(ThreadFunc)
+            {
+                Name = "AGV任务逻辑处理线程",
+                IsBackground = true
+            };
+
+            _thread.Start();
+        }
+
+        /// <summary>
+        /// 事务线程
+        /// </summary>
+        private void ThreadFunc()
+        {
+            while (true)
+            {
+                Thread.Sleep(5000);
+                try
+                {
+                    Run_DispatchAGV();
+                    Run_Roller();
+                }
+                catch (Exception)
+                {
+                }
+            }
+        }
+
+        #endregion
+
         #region AGV 派车任务
 
         /// <summary>
@@ -59,7 +98,7 @@ namespace WCS_phase1.Action
                 // 装货点：当前包装线固定辊台对接点
                 string PickStation = frt.DEVICE;
                 // 卸货点：初始化站点
-                string DropStation = ConfigurationManager.AppSettings["AGVDropStation"];
+                string DropStation = DataControl._mStools.GetValueByKey("AGVDropStation");
 
                 // 发送 NDC
                 if (!DataControl._mNDCControl.AddNDCTask(ID, PickStation, DropStation, out string result))
@@ -74,7 +113,7 @@ namespace WCS_phase1.Action
             catch (Exception ex)
             {
                 // LOG
-                DataControl._mTaskTools.RecordTaskErrLog("SendAGV()","调度AGV装货卸货[固定辊台设备号]", frt.DEVICE,"",ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("SendAGV()", "调度AGV装货卸货[固定辊台设备号]", frt.DEVICE, "", ex.ToString());
             }
         }
 
@@ -128,7 +167,8 @@ namespace WCS_phase1.Action
                             return;
                         }
                         // 是否存在货物
-                        if (frt.GoodsStatus() == FRT.GoodsYesAll)
+                        //if (frt.GoodsStatus() == FRT.GoodsYesAll)
+                        if (frt.GoodsStatus() == FRT.GoodsYesAll || DataControl.IsIgnoreFRT_P)  //add调试判断
                         {
                             // 分配 WMS TASK
                             if (String.IsNullOrEmpty(agv.TASK_UID.Trim()))
@@ -169,7 +209,7 @@ namespace WCS_phase1.Action
                                 throw new Exception(result);
                             }
                         }
-                        
+
                         break;
                     case AGVMagic.到达卸货点:
                         // 获取对应包装线固定辊台资讯
@@ -188,19 +228,30 @@ namespace WCS_phase1.Action
                             }
                             return;
                         }
-                        // 当仅2#辊台有货
-                        if (frtdrop.GoodsStatus() == FRT.GoodsYes2)
+                        else // 未启动辊台
                         {
-                            // 生成指令请求库存区固定辊台正向启动辊台接货
-                            // 获取指令-- 只启动1#辊台 正向接货
-                            byte[] order = FRT._RollerControl(frtdrop.FRTNum(), FRT.RollerRun1, FRT.RunFront, FRT.GoodsReceive, FRT.GoodsQty1);
+                            byte[] order = null;
+                            // 当辊台都无货
+                            //if (frtdrop.GoodsStatus() == FRT.GoodsNoAll)
+                            if (frtdrop.GoodsStatus() == FRT.GoodsNoAll || DataControl.IsIgnoreFRT_S) //add调试判断
+                            {
+                                // 获取指令-- 启动所有辊台 正向接货
+                                order = FRT._RollerControl(frtdrop.FRTNum(), FRT.RollerRunAll, FRT.RunFront, FRT.GoodsReceive, FRT.GoodsQty1);
+                            }
+                            // 当仅2#辊台有货
+                            else if (frtdrop.GoodsStatus() == FRT.GoodsYes2)
+                            {
+                                // 获取指令-- 只启动1#辊台 正向接货
+                                order = FRT._RollerControl(frtdrop.FRTNum(), FRT.RollerRun1, FRT.RunFront, FRT.GoodsReceive, FRT.GoodsQty1);
+                            }
                             // 加入任务作业链表
                             WCS_TASK_ITEM item = new WCS_TASK_ITEM()
                             {
                                 ITEM_ID = "库区接货",
                                 WCS_NO = agv.TASK_UID,
                                 ID = agv.ID,
-                                DEVICE = agv.AGV
+                                DEVICE = agv.AGV,
+                                LOC_TO = agv.AGV
                             };
                             DataControl._mTaskControler.StartTask(new AGVFRTTack(item, DeviceType.固定辊台, order));
                         }
@@ -285,9 +336,9 @@ namespace WCS_phase1.Action
                     if (DataControl._mStools.IsNoData(dt))
                     {
                         // 定位初始值
-                        station = ConfigurationManager.AppSettings["AGVDropStation"];
+                        station = DataControl._mStools.GetValueByKey("AGVDropStation");
                     }
-                    
+
                     station = dt.Rows[0]["DROPSTATION"].ToString();
                     // 发送 NDC 更新点位
                     UpdateAGVStation(id, station);
@@ -338,49 +389,6 @@ namespace WCS_phase1.Action
         }
 
         #endregion
-    }
-
-    /// <summary>
-    /// AGV任务线程
-    /// </summary>
-    public class AGVTask
-    {
-        // 线程
-        Thread _thread;
-        ForAGVControl forAGV = new ForAGVControl();
-
-        /// <summary>
-        /// 构造函数
-        /// </summary>
-        public AGVTask()
-        {
-            _thread = new Thread(ThreadFunc)
-            {
-                Name = "AGV任务逻辑处理线程",
-                IsBackground = true
-            };
-
-            _thread.Start();
-        }
-
-        /// <summary>
-        /// 事务线程
-        /// </summary>
-        private void ThreadFunc()
-        {
-            while (true)
-            {
-                Thread.Sleep(5000);
-                try
-                {
-                    forAGV.Run_DispatchAGV();
-                    forAGV.Run_Roller();
-                }
-                catch (Exception)
-                {
-                }
-            }
-        }
     }
 
 }

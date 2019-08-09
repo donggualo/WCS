@@ -163,7 +163,7 @@ namespace WCS_phase1.Action
                 if (!string.IsNullOrEmpty(ITEM.LOC_TO.Trim())) // 目标不为空即最终无货
                 {
                     // 固定辊台无货物
-                    if (_device.GoodsStatus() == FRT.GoodsNoAll)
+                    if (_device.GoodsStatus() == FRT.GoodsNoAll && _device.CommandStatus() == FRT.CommandFinish)
                     {
                         // 完成任务
                         ISetTaskSuc();
@@ -248,7 +248,7 @@ namespace WCS_phase1.Action
                         }
                     }
                     // 固定辊台无货物
-                    if (_device.GoodsStatus() == FRT.GoodsNoAll)
+                    if (_device.GoodsStatus() == FRT.GoodsNoAll && _device.CommandStatus() == FRT.CommandFinish)
                     {
                         // 完成任务
                         ISetTaskSuc();
@@ -262,7 +262,7 @@ namespace WCS_phase1.Action
                 else
                 {
                     // 摆渡车辊台上无货物,固定辊台上有货物
-                    if (_arf.GoodsStatus() == ARF.GoodsNoAll && _device.GoodsStatus() != FRT.GoodsNoAll)
+                    if (_arf.GoodsStatus() == ARF.GoodsNoAll && _device.GoodsStatus() != FRT.GoodsNoAll && _device.CommandStatus() == FRT.CommandFinish)
                     {
                         // 完成任务
                         ISetTaskSuc();
@@ -357,7 +357,7 @@ namespace WCS_phase1.Action
                                 break;
                         }
                         // 摆渡车无货物
-                        if (_device.GoodsStatus() == ARF.GoodsNoAll)
+                        if (_device.GoodsStatus() == ARF.GoodsNoAll && _device.CommandStatus() == ARF.CommandFinish)
                         {
                             // 完成任务
                             ISetTaskSuc();
@@ -378,7 +378,7 @@ namespace WCS_phase1.Action
                             case DeviceType.固定辊台:
                                 FRT _frt = new FRT(ITEM.LOC_FROM);
                                 // 固定辊台上无货物,摆渡车辊台上有货物
-                                if (_frt.GoodsStatus() == FRT.GoodsNoAll && _device.GoodsStatus() != ARF.GoodsNoAll)
+                                if (_frt.GoodsStatus() == FRT.GoodsNoAll && _device.GoodsStatus() != ARF.GoodsNoAll && _device.CommandStatus() == ARF.CommandFinish)
                                 {
                                     // 完成任务
                                     ISetTaskSuc();
@@ -428,7 +428,7 @@ namespace WCS_phase1.Action
                         log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                     }
                     // 当前位置与目的位置一致 视为任务完成
-                    if (_device.CurrentSite() == Convert.ToInt32(ITEM.LOC_TO))
+                    if (_device.CurrentSite() == Convert.ToInt32(ITEM.LOC_TO) && _device.CommandStatus() == ARF.CommandFinish)
                     {
                         // 等待对接
                         ISetTaskWait();
@@ -532,7 +532,7 @@ namespace WCS_phase1.Action
                             case DeviceType.摆渡车:
                                 ARF _arf = new ARF(ITEM.LOC_FROM);
                                 // 摆渡车辊台上无货物,运输车辊台上有货物
-                                if (_arf.GoodsStatus() == ARF.GoodsNoAll && _device.GoodsStatus() != RGV.GoodsNoAll)
+                                if (_arf.GoodsStatus() == ARF.GoodsNoAll && _device.GoodsStatus() != RGV.GoodsNoAll && _device.CommandStatus() == RGV.CommandFinish)
                                 {
                                     // 完成任务
                                     ISetTaskSuc();
@@ -544,7 +544,7 @@ namespace WCS_phase1.Action
                             case DeviceType.运输车:
                                 RGV _rgv = new RGV(ITEM.LOC_FROM);
                                 // 来源运输车辊台上无货物,运输车辊台上有货物
-                                if (_rgv.GoodsStatus() == FRT.GoodsNoAll && _device.GoodsStatus() != ARF.GoodsNoAll)
+                                if (_rgv.GoodsStatus() == FRT.GoodsNoAll && _device.GoodsStatus() != ARF.GoodsNoAll && _device.CommandStatus() == RGV.CommandFinish)
                                 {
                                     // 完成任务
                                     ISetTaskSuc();
@@ -582,7 +582,7 @@ namespace WCS_phase1.Action
                         log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                     }
                     // 当前位置与目的位置一致 视为任务完成
-                    if (_device.GetCurrentSite() == Convert.ToInt32(ITEM.LOC_TO))
+                    if (_device.GetCurrentSite() == Convert.ToInt32(ITEM.LOC_TO) && _device.CommandStatus() == RGV.CommandFinish)
                     {
                         // 等待对接
                         ISetTaskWait();
@@ -631,7 +631,7 @@ namespace WCS_phase1.Action
                 if (ITEM.ITEM_ID == ItemId.行车取货)
                 {
                     // 有货则任务完成
-                    if (_device.GoodsStatus() == ABC.GoodsYes)
+                    if (_device.GoodsStatus() == ABC.GoodsYes && _device.CommandStatus() == ABC.CommandFinish)
                     {
                         // 完成任务
                         ISetTaskSuc();
@@ -643,7 +643,7 @@ namespace WCS_phase1.Action
                 else if (ITEM.ITEM_ID == ItemId.行车放货)
                 {
                     // 无货则任务完成
-                    if (_device.GoodsStatus() == ABC.GoodsNo)
+                    if (_device.GoodsStatus() == ABC.GoodsNo && _device.CommandStatus() == ABC.CommandFinish)
                     {
                         // 完成任务
                         ISetTaskSuc();
