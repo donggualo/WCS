@@ -159,6 +159,34 @@ namespace WCS_phase1.Action
                     ITEM.ITEM_ID, ITEM.WCS_NO, ITEM.ID, ITEM.DEVICE, "设备故障或命令错误"));
                     return;
                 }
+
+                #region 调试
+                if (DataControl.IsIgnoreFRT) //add调试判断
+                {
+                    if (_device.CommandStatus() == FRT.CommandFinish)
+                    {
+                        // 发送指令
+                        if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
+                        {
+                            throw new Exception(result);
+                        }
+                        // LOG
+                        log.LOG(String.Format(@"【SendOrder】{0}：WMS任务ID[ {1} ]，AGV任务ID[ {2} ]，设备号[ {3} ], 指令[ {4} ].",
+                        ITEM.ITEM_ID, ITEM.WCS_NO, ITEM.ID, ITEM.DEVICE, DataControl._mStools.BytetToString(Order)));
+                    }
+                    else
+                    {
+                        Thread.Sleep(5000);
+                        // 完成任务
+                        ISetTaskSuc();
+                        // LOG
+                        log.LOG(String.Format(@"【Success】{0}：WMS任务ID[ {1} ]，AGV任务ID[ {2} ]，设备号[ {3} ], 指令[ {4} ].",
+                        ITEM.ITEM_ID, ITEM.WCS_NO, ITEM.ID, ITEM.DEVICE, DataControl._mStools.BytetToString(Order)));
+                    }
+                    return;
+                }
+                #endregion
+
                 // 对接设备状态
                 if (!string.IsNullOrEmpty(ITEM.LOC_TO.Trim())) // 目标不为空即最终无货
                 {
@@ -234,6 +262,34 @@ namespace WCS_phase1.Action
                     log.LOG(DataControl._mTaskTools.GetLogMessE(ITEM, Order, "设备故障或命令错误."));
                     return;
                 }
+
+                #region 调试
+                if (DataControl.IsIgnoreFRT) //add调试判断
+                {
+                    if (_device.CommandStatus() == FRT.CommandFinish)
+                    {
+                        // 发送指令
+                        if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
+                        {
+                            throw new Exception(result);
+                        }
+                        // LOG
+                        log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
+                    }
+                    else
+                    {
+                        Thread.Sleep(5000);
+                        // 完成任务
+                        ISetTaskSuc();
+                        // 解锁设备数据状态
+                        DataControl._mTaskTools.DeviceUnLock(ITEM.DEVICE);
+                        // LOG
+                        log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
+                    }
+                    return;
+                }
+                #endregion
+
                 ARF _arf = new ARF(ITEM.LOC_TO);
                 // 对接设备状态
                 if (!string.IsNullOrEmpty(ITEM.LOC_TO.Trim())) // 目标不为空即最终无货
@@ -257,6 +313,10 @@ namespace WCS_phase1.Action
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
                         return;
+                    }
+                    else if (_device.GoodsStatus() != FRT.GoodsNoAll && _device.CommandStatus() == FRT.CommandFinish)
+                    {
+                        return; // 固定辊台与摆渡车都有货，不启动辊台
                     }
                 }
                 else
@@ -322,6 +382,33 @@ namespace WCS_phase1.Action
                 // 对接任务
                 if (ITEM.ITEM_ID.Substring(0, 2) == "11")
                 {
+                    #region 调试
+                    if (DataControl.IsIgnoreARF) //add调试判断
+                    {
+                        if (_device.CommandStatus() == ARF.CommandFinish)
+                        {
+                            // 发送指令
+                            if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
+                            {
+                                throw new Exception(result);
+                            }
+                            // LOG
+                            log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
+                        }
+                        else
+                        {
+                            Thread.Sleep(5000);
+                            // 完成任务
+                            ISetTaskSuc();
+                            // 解锁设备数据状态
+                            DataControl._mTaskTools.DeviceUnLock(ITEM.DEVICE);
+                            // LOG
+                            log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
+                        }
+                        return;
+                    }
+                    #endregion
+
                     if (!string.IsNullOrEmpty(ITEM.LOC_TO.Trim())) // 目标不为空即最终无货
                     {
                         // 获取目标设备类型
@@ -476,6 +563,33 @@ namespace WCS_phase1.Action
                 // 对接任务
                 if (ITEM.ITEM_ID.Substring(0, 2) == "11")
                 {
+                    #region 调试
+                    if (DataControl.IsIgnoreRGV) //add调试判断
+                    {
+                        if (_device.CommandStatus() == RGV.CommandFinish)
+                        {
+                            // 发送指令
+                            if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
+                            {
+                                throw new Exception(result);
+                            }
+                            // LOG
+                            log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
+                        }
+                        else
+                        {
+                            Thread.Sleep(5000);
+                            // 完成任务
+                            ISetTaskSuc();
+                            // 解锁设备数据状态
+                            DataControl._mTaskTools.DeviceUnLock(ITEM.DEVICE);
+                            // LOG
+                            log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
+                        }
+                        return;
+                    }
+                    #endregion
+
                     if (!string.IsNullOrEmpty(ITEM.LOC_TO.Trim())) // 目标不为空即最终无货
                     {
                         // 获取目标设备类型
@@ -627,6 +741,35 @@ namespace WCS_phase1.Action
                     log.LOG(DataControl._mTaskTools.GetLogMessE(ITEM, Order, "设备故障或命令错误."));
                     return;
                 }
+
+                #region 调试
+                if (DataControl.IsIgnoreABC) //add调试判断
+                {
+                    if (_device.CommandStatus() == ABC.CommandFinish)
+                    {
+                        // 发送指令
+                        if (_device.CommandStatus() == ABC.CommandFinish)
+                        {
+                            if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
+                            {
+                                throw new Exception(result);
+                            }
+                            // LOG
+                            log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
+                        }
+                    }
+                    else
+                    {
+                        Thread.Sleep(5000);
+                        // 完成任务
+                        ISetTaskSuc();
+                        // LOG
+                        log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
+                    }
+                    return;
+                }
+                #endregion
+
                 // 取放货任务
                 if (ITEM.ITEM_ID == ItemId.行车取货)
                 {

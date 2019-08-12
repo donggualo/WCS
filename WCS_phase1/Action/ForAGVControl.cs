@@ -168,7 +168,7 @@ namespace WCS_phase1.Action
                         }
                         // 是否存在货物
                         //if (frt.GoodsStatus() == FRT.GoodsYesAll)
-                        if (frt.GoodsStatus() == FRT.GoodsYesAll || DataControl.IsIgnoreFRT_P)  //add调试判断
+                        if (frt.GoodsStatus() == FRT.GoodsYesAll || DataControl.IsIgnoreFRT)  //add调试判断
                         {
                             // 分配 WMS TASK
                             if (String.IsNullOrEmpty(agv.TASK_UID.Trim()))
@@ -233,7 +233,7 @@ namespace WCS_phase1.Action
                             byte[] order = null;
                             // 当辊台都无货
                             //if (frtdrop.GoodsStatus() == FRT.GoodsNoAll)
-                            if (frtdrop.GoodsStatus() == FRT.GoodsNoAll || DataControl.IsIgnoreFRT_S) //add调试判断
+                            if (frtdrop.GoodsStatus() == FRT.GoodsNoAll || DataControl.IsIgnoreFRT) //add调试判断
                             {
                                 // 获取指令-- 启动所有辊台 正向接货
                                 order = FRT._RollerControl(frtdrop.FRTNum(), FRT.RollerRunAll, FRT.RunFront, FRT.GoodsReceive, FRT.GoodsQty1);
@@ -250,8 +250,8 @@ namespace WCS_phase1.Action
                                 ITEM_ID = "库区接货",
                                 WCS_NO = agv.TASK_UID,
                                 ID = agv.ID,
-                                DEVICE = agv.AGV,
-                                LOC_TO = agv.AGV
+                                DEVICE = agv.DROPSTATION,
+                                LOC_FROM = agv.AGV
                             };
                             DataControl._mTaskControler.StartTask(new AGVFRTTack(item, DeviceType.固定辊台, order));
                         }
@@ -377,7 +377,8 @@ namespace WCS_phase1.Action
                     ITEM_ID = "包装线送货",
                     WCS_NO = info.TASK_UID,
                     ID = info.ID,
-                    DEVICE = info.AGV
+                    DEVICE = info.PICKSTATION,
+                    LOC_TO = info.AGV
                 };
                 DataControl._mTaskControler.StartTask(new AGVFRTTack(item, DeviceType.固定辊台, order));
             }

@@ -85,6 +85,21 @@ namespace WCS_phase1.Functions
             }
         }
 
+        /// <summary>
+        /// 设备复位待命点
+        /// </summary>
+        public void ResetDevLoc()
+        {
+            try
+            {
+                throw new Exception("");
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         #endregion
 
         #region 位置点位

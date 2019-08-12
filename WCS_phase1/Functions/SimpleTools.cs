@@ -30,6 +30,8 @@ namespace WCS_phase1.Functions
             }
         }
 
+        #region Byte
+
         /// <summary>
         /// int 转 byte[]
         /// </summary>
@@ -76,6 +78,7 @@ namespace WCS_phase1.Functions
             string s = str.ToString();
             return s;
         }
+        #endregion
 
         #region AppConfig
 
