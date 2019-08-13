@@ -71,7 +71,7 @@ namespace WCS_phase1.Models
         public const String 行车取货 = "117";
         public const String 行车放货 = "118";
 
-        public const String 摆渡车定位 = "011";
+        public const String 摆渡车复位 = "011";
         public const String 摆渡车定位固定辊台 = "012";
         public const String 摆渡车定位运输车对接 = "013";
 
@@ -82,6 +82,7 @@ namespace WCS_phase1.Models
 
         public const String 行车轨道定位 = "031";
         public const String 行车库存定位 = "032";
+        public const String 行车复位 = "033";
 
         /// <summary>
         /// 获取Item Id 对应的中文意义
@@ -123,8 +124,8 @@ namespace WCS_phase1.Models
                 case 摆渡车定位运输车对接:
                     name = "摆渡车移至与运输车对接";
                     break;
-                case 摆渡车定位:
-                    name = "摆渡车定位";
+                case 摆渡车复位:
+                    name = "摆渡车复位";
                     break;
                 case 运输车定位:
                     name = "运输车定位";
@@ -143,6 +144,9 @@ namespace WCS_phase1.Models
                     break;
                 case 行车库存定位:
                     name = "行车定位至库存货位坐标";
+                    break;
+                case 行车复位:
+                    name = "行车复位待命点";
                     break;
             }
             return name;

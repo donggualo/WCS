@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WCS_phase1.Models;
 using System.Data;
-using WCS_phase1.Functions;
+using WCS_phase1.Devices;
 using System.Configuration;
 using WCS_phase1.Action;
 using System.Windows;
@@ -88,11 +88,324 @@ namespace WCS_phase1.Functions
         /// <summary>
         /// 设备复位待命点
         /// </summary>
-        public void ResetDevLoc()
+        /// <param name="area"></param>
+        /// <param name="type"></param>
+        public string ResetDevLoc(String area, String type)
         {
             try
             {
-                throw new Exception("");
+                StringBuilder result = new StringBuilder();
+                // 获取区域内可复位设备
+                String sql = String.Format(@"select * from wcs_config_device where AREA = '{0}' and TYPE = '{1}' order by FLAG desc", area, type);
+                DataTable dt = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dt))
+                {
+                    throw new Exception("当前没有可复位的设备！");
+                }
+                List<WCS_CONFIG_DEVICE> devList = dt.ToDataList<WCS_CONFIG_DEVICE>();
+                // 发送复位指令
+                switch (type)
+                {
+                    case DeviceType.摆渡车:
+                        ResetLoc_ARF(devList, out string mesARF);
+                        result.Append(mesARF);
+                        break;
+                    case DeviceType.运输车:
+                        ResetLoc_RGV(devList, out string mesRGV);
+                        result.Append(mesRGV);
+                        break;
+                    case DeviceType.行车:
+                        ResetLoc_ABC(devList, out string mesABC);
+                        result.Append(mesABC);
+                        break;
+                    default:
+                        break;
+                }
+                return result.ToString();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 摆渡车复位
+        /// </summary>
+        /// <param name="dev"></param>
+        /// <param name="mes"></param>
+        public void ResetLoc_ARF(List<WCS_CONFIG_DEVICE> dev, out string mes)
+        {
+            try
+            {
+                // 摆渡车待命点1
+                int loc1 = Convert.ToInt32(DataControl._mStools.GetValueByKey("StandbyF1"));
+                // 摆渡车待命点2
+                int loc2 = Convert.ToInt32(DataControl._mStools.GetValueByKey("StandbyF2"));
+
+                // 获取当前摆渡车资讯
+                ARF a1 = new ARF(dev[0].DEVICE);
+                ARF a2 = new ARF(dev[1].DEVICE);
+
+                // 定位任务指令
+                byte[] order1;
+                byte[] order2;
+
+                // 任务明细
+                WCS_TASK_ITEM item1;
+                WCS_TASK_ITEM item2;
+
+                if (a1.CurrentSite() < a2.CurrentSite())
+                {
+                    // 定位任务指令
+                    order1 = ARF._Position(a1.ARFNum(), (byte)loc1);
+                    order2 = ARF._Position(a2.ARFNum(), (byte)loc2);
+                    // 任务明细
+                    item1 = new WCS_TASK_ITEM()
+                    {
+                        ITEM_ID = ItemId.摆渡车复位,
+                        ID = 1,
+                        DEVICE = dev[0].DEVICE,
+                        LOC_TO = loc1.ToString()
+                    };
+                    item2 = new WCS_TASK_ITEM()
+                    {
+                        ITEM_ID = ItemId.摆渡车复位,
+                        ID = 2,
+                        DEVICE = dev[1].DEVICE,
+                        LOC_TO = loc2.ToString()
+                    };
+                }
+                else
+                {
+                    // 定位任务指令
+                    order1 = ARF._Position(a1.ARFNum(), (byte)loc2);
+                    order2 = ARF._Position(a2.ARFNum(), (byte)loc1);
+                    // 任务明细
+                    item1 = new WCS_TASK_ITEM()
+                    {
+                        ITEM_ID = ItemId.摆渡车复位,
+                        ID = 1,
+                        DEVICE = dev[0].DEVICE,
+                        LOC_TO = loc2.ToString()
+                    };
+                    item2 = new WCS_TASK_ITEM()
+                    {
+                        ITEM_ID = ItemId.摆渡车复位,
+                        ID = 2,
+                        DEVICE = dev[1].DEVICE,
+                        LOC_TO = loc1.ToString()
+                    };
+                }
+                // 加入任务作业链表
+                mes = null;
+                if (dev[0].FLAG == "Y")
+                {
+                    DataControl._mTaskControler.StartTask(new ARFTack(item1, DeviceType.摆渡车, order1));
+                }
+                else
+                {
+                    mes = dev[0].DEVICE + " 摆渡车目前无法操作复位任务; \r";
+                }
+
+                if (dev[0].FLAG == "Y")
+                {
+                    DataControl._mTaskControler.StartTask(new ARFTack(item2, DeviceType.摆渡车, order2));
+                }
+
+                {
+                    mes = mes + dev[0].DEVICE + " 摆渡车目前无法操作复位任务; \r";
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 运输车复位
+        /// </summary>
+        /// <param name="dev"></param>
+        /// <param name="mes"></param>
+        public void ResetLoc_RGV(List<WCS_CONFIG_DEVICE> dev, out string mes)
+        {
+            try
+            {
+                // 运输车待命点1
+                int loc1 = Convert.ToInt32(DataControl._mStools.GetValueByKey("StandbyR1"));
+                // 运输车待命点2
+                int loc2 = Convert.ToInt32(DataControl._mStools.GetValueByKey("StandbyR2"));
+
+                // 获取当前摆渡车资讯
+                RGV a1 = new RGV(dev[0].DEVICE);
+                RGV a2 = new RGV(dev[1].DEVICE);
+
+                // 定位任务指令
+                byte[] order1;
+                byte[] order2;
+
+                // 任务明细
+                WCS_TASK_ITEM item1;
+                WCS_TASK_ITEM item2;
+
+                if (a1.GetCurrentSite() < a2.GetCurrentSite())
+                {
+                    // 定位任务指令
+                    order1 = RGV._Position(a1.RGVNum(), DataControl._mStools.IntToBytes(loc1));
+                    order2 = RGV._Position(a2.RGVNum(), DataControl._mStools.IntToBytes(loc2));
+                    // 任务明细
+                    item1 = new WCS_TASK_ITEM()
+                    {
+                        ITEM_ID = ItemId.运输车复位1,
+                        ID = 3,
+                        DEVICE = dev[0].DEVICE,
+                        LOC_TO = loc1.ToString()
+                    };
+                    item2 = new WCS_TASK_ITEM()
+                    {
+                        ITEM_ID = ItemId.运输车复位2,
+                        ID = 4,
+                        DEVICE = dev[1].DEVICE,
+                        LOC_TO = loc2.ToString()
+                    };
+                }
+                else
+                {
+                    // 定位任务指令
+                    order1 = RGV._Position(a1.RGVNum(), DataControl._mStools.IntToBytes(loc2));
+                    order2 = RGV._Position(a2.RGVNum(), DataControl._mStools.IntToBytes(loc1));
+                    // 任务明细
+                    item1 = new WCS_TASK_ITEM()
+                    {
+                        ITEM_ID = ItemId.运输车复位2,
+                        ID = 3,
+                        DEVICE = dev[0].DEVICE,
+                        LOC_TO = loc2.ToString()
+                    };
+                    item2 = new WCS_TASK_ITEM()
+                    {
+                        ITEM_ID = ItemId.运输车复位1,
+                        ID = 4,
+                        DEVICE = dev[1].DEVICE,
+                        LOC_TO = loc1.ToString()
+                    };
+                }
+                // 加入任务作业链表
+                mes = null;
+                if (dev[0].FLAG == "Y")
+                {
+                    DataControl._mTaskControler.StartTask(new RGVTack(item1, DeviceType.运输车, order1));
+                }
+                else
+                {
+                    mes = dev[0].DEVICE + " 运输车目前无法操作复位任务; \r";
+                }
+
+                if (dev[0].FLAG == "Y")
+                {
+                    DataControl._mTaskControler.StartTask(new ARFTack(item2, DeviceType.摆渡车, order2));
+                }
+
+                {
+                    mes = mes + dev[0].DEVICE + " 运输车目前无法操作复位任务; \r";
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 行车复位
+        /// </summary>
+        /// <param name="dev"></param>
+        /// <param name="mes"></param>
+        public void ResetLoc_ABC(List<WCS_CONFIG_DEVICE> dev, out string mes)
+        {
+            try
+            {
+                int locY = 1;
+                int locZ = 1;
+                // 行车待命点1
+                int locX1 = Convert.ToInt32(DataControl._mStools.GetValueByKey("StandbyA1"));
+                // 行车待命点2
+                int locX2 = Convert.ToInt32(DataControl._mStools.GetValueByKey("StandbyA2"));
+
+                // 获取当前摆渡车资讯
+                ABC a1 = new ABC(dev[0].DEVICE);
+                ABC a2 = new ABC(dev[1].DEVICE);
+
+                // 定位任务指令
+                byte[] order1;
+                byte[] order2;
+
+                // 任务明细
+                WCS_TASK_ITEM item1;
+                WCS_TASK_ITEM item2;
+
+                if (DataControl._mStools.BytesToInt(a1.CurrentXsite(),0) < DataControl._mStools.BytesToInt(a2.CurrentXsite(), 0))
+                {
+                    // 定位任务指令
+                    order1 = ABC._TaskControl(ABC.TaskLocate, a1.ABCNum(), DataControl._mStools.IntToBytes(locX1), DataControl._mStools.IntToBytes(locY), DataControl._mStools.IntToBytes(locZ));
+                    order2 = ABC._TaskControl(ABC.TaskLocate, a2.ABCNum(), DataControl._mStools.IntToBytes(locX2), DataControl._mStools.IntToBytes(locY), DataControl._mStools.IntToBytes(locZ));
+                    // 任务明细
+                    item1 = new WCS_TASK_ITEM()
+                    {
+                        ITEM_ID = ItemId.行车复位,
+                        ID = 5,
+                        DEVICE = dev[0].DEVICE,
+                        LOC_TO = Convert.ToString(locX1) + "-" + Convert.ToString(locY) + "-" + Convert.ToString(locZ)
+                    };
+                    item2 = new WCS_TASK_ITEM()
+                    {
+                        ITEM_ID = ItemId.行车复位,
+                        ID = 6,
+                        DEVICE = dev[1].DEVICE,
+                        LOC_TO = Convert.ToString(locX2) + "-" + Convert.ToString(locY) + "-" + Convert.ToString(locZ)
+                    };
+                }
+                else
+                {
+                    // 定位任务指令
+                    order1 = ABC._TaskControl(ABC.TaskLocate, a1.ABCNum(), DataControl._mStools.IntToBytes(locX2), DataControl._mStools.IntToBytes(locY), DataControl._mStools.IntToBytes(locZ));
+                    order2 = ABC._TaskControl(ABC.TaskLocate, a2.ABCNum(), DataControl._mStools.IntToBytes(locX1), DataControl._mStools.IntToBytes(locY), DataControl._mStools.IntToBytes(locZ));
+                    // 任务明细
+                    item1 = new WCS_TASK_ITEM()
+                    {
+                        ITEM_ID = ItemId.行车复位,
+                        ID = 5,
+                        DEVICE = dev[0].DEVICE,
+                        LOC_TO = Convert.ToString(locX2) + "-" + Convert.ToString(locY) + "-" + Convert.ToString(locZ)
+                    };
+                    item2 = new WCS_TASK_ITEM()
+                    {
+                        ITEM_ID = ItemId.行车复位,
+                        ID = 6,
+                        DEVICE = dev[1].DEVICE,
+                        LOC_TO = Convert.ToString(locX1) + "-" + Convert.ToString(locY) + "-" + Convert.ToString(locZ)
+                    };
+                }
+                // 加入任务作业链表
+                mes = null;
+                if (dev[0].FLAG == "Y")
+                {
+                    DataControl._mTaskControler.StartTask(new ABCTack(item1, DeviceType.行车, order1));
+                }
+                else
+                {
+                    mes = dev[0].DEVICE + " 行车目前无法操作复位任务; \r";
+                }
+
+                if (dev[0].FLAG == "Y")
+                {
+                    DataControl._mTaskControler.StartTask(new ABCTack(item2, DeviceType.行车, order2));
+                }
+
+                {
+                    mes = mes + dev[0].DEVICE + " 行车目前无法操作复位任务; \r";
+                }
             }
             catch (Exception ex)
             {

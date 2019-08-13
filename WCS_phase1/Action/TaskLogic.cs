@@ -1598,7 +1598,7 @@ namespace WCS_phase1.Action
                         #endregion
 
                         break;
-                    case ItemId.摆渡车定位:
+                    case ItemId.摆渡车复位:
                     case ItemId.摆渡车定位固定辊台:
                     case ItemId.摆渡车定位运输车对接:
                         #region ARF 定位指令
