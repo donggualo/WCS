@@ -75,5 +75,49 @@ namespace WCS_phase1
                 MessageBox.Show(result);
             }
         }
+        /// <summary>
+        /// 装货
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void LoadBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (!int.TryParse(ndcTB1.Text, out int taskid))
+            {
+                MessageBox.Show("任务ID必须是整型数字");
+                return;
+            }
+            if (!int.TryParse(agvId.Text, out int agvid))
+            {
+                MessageBox.Show("AGVID必须是整型数字");
+                return;
+            }
+            if(!DataControl._mNDCControl.DoLoad(taskid,agvid,out string result))
+            {
+                MessageBox.Show(result);
+            }
+        }
+        /// <summary>
+        /// 卸货
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UnLoadBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (!int.TryParse(ndcTB1.Text, out int taskid))
+            {
+                MessageBox.Show("任务ID必须是整型数字");
+                return;
+            }
+            if (!int.TryParse(agvId.Text, out int agvid))
+            {
+                MessageBox.Show("AGVID必须是整型数字");
+                return;
+            }
+            if (!DataControl._mNDCControl.DoUnLoad(taskid, agvid, out string result))
+            {
+                MessageBox.Show(result);
+            }
+        }
     }
 }

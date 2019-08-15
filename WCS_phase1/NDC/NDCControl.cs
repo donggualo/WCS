@@ -23,7 +23,8 @@ namespace WCS_phase1.NDC
         private bool connecting = false;
 
         //IP address where System Manager is located
-        private const string IPaddress = "10.9.30.120";
+        //private const string IPaddress = "10.9.30.120";
+        private const string IPaddress = "127.0.0.1";
 
         //Port number for the ACI connection
         private const int Port = 30001;
@@ -318,7 +319,7 @@ namespace WCS_phase1.NDC
         /// <param name="carid"></param>
         private void DoLoad(int index, int carid)
         {
-            SendHpilWordForPLC(carid, 1, 1);
+            SendHpilWordForPLC(carid, 29, 1);
         }
 
         /// <summary>
@@ -328,7 +329,7 @@ namespace WCS_phase1.NDC
         /// <param name="carid"></param>
         private void DoUnLoad(int index, int carid)
         {
-            SendHpilWordForPLC(carid, 2, 2);
+            SendHpilWordForPLC(carid, 29, 2);
         }
 
         /// <summary>
@@ -910,20 +911,35 @@ namespace WCS_phase1.NDC
 
         private void CheckPlc(NDCItem item,Message_vpil v)
         {
-            switch (v.PlcLp1)
+            Console.WriteLine("PLC:" + v.PlcLp1 + " Value:" + v.Value1);
+            if(v.PlcLp1 == 29 && v.Value1 == 1)
             {
-                case 1://装货中
-                    item.PLCStatus = NDCPlcStatus.Loading;
-                    LoadItemList.Remove(item.OrderIndex);
-                    DataControl._mForAGVControl.SubmitAgvLoading(item.TaskID, item.CarrierId + "");
-                    break;
-
-
-                case 2://卸货中
-                    item.PLCStatus = NDCPlcStatus.Unloading;
-                    UnLoadItemList.Remove(item.OrderIndex);
-                    break;
+                //装货中
+                item.PLCStatus = NDCPlcStatus.Loading;
+                LoadItemList.Remove(item.OrderIndex);
+                DataControl._mForAGVControl.SubmitAgvLoading(item.TaskID, item.CarrierId + "");
+            }else if (v.PlcLp1 == 29 && v.Value1 == 2)
+            {
+                //卸货中
+                item.PLCStatus = NDCPlcStatus.Unloading;
+                UnLoadItemList.Remove(item.OrderIndex);
             }
+
+
+            //switch (v.PlcLp1)
+            //{
+            //    case 1://装货中
+            //        item.PLCStatus = NDCPlcStatus.Loading;
+            //        LoadItemList.Remove(item.OrderIndex);
+            //        DataControl._mForAGVControl.SubmitAgvLoading(item.TaskID, item.CarrierId + "");
+            //        break;
+
+
+            //    case 2://卸货中
+            //        item.PLCStatus = NDCPlcStatus.Unloading;
+            //        UnLoadItemList.Remove(item.OrderIndex);
+            //        break;
+            //}
         }
 
 
@@ -1196,6 +1212,7 @@ namespace WCS_phase1.NDC
 
             if (!UnLoadItemList.Contains(item.OrderIndex))
             {
+                UnLoadItemList.Add(item.OrderIndex);
                 result = "";
                 return true;
             }

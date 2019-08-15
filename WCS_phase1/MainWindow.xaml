@@ -42,6 +42,12 @@
                         <Button Content="连接" Click="Button_Click_1" Canvas.Left="118" Canvas.Top="16" />
                         <Button Content="开始调度" Click="Button_Click_2" Canvas.Left="501" Canvas.Top="200"/>
                         <Button Content="重新定位" HorizontalAlignment="Left" Canvas.Left="683" Canvas.Top="200" Click="Button_Click_3" />
+
+                        <TextBox Name="agvId" TextWrapping="Wrap" Text="" Width="75" Canvas.Left="638" Canvas.Top="73" Height="25"/>
+                        <Label Content="AGV" Canvas.Left="603" Canvas.Top="74"/>
+                        <Button Name="UnLoadBtn" Content="卸货" HorizontalAlignment="Left"   Canvas.Left="826" Canvas.Top="77" Click="UnLoadBtn_Click"/>
+                        <Button Name="LoadBtn" Content="装货" HorizontalAlignment="Left"  Canvas.Left="769" Canvas.Top="77" Click="LoadBtn_Click"/>
+
                         <ListView HorizontalAlignment="Left" Height="331" VerticalAlignment="Top" Width="337" Canvas.Left="10" Canvas.Top="40">
                             <ListView.View>
                                 <GridView>
