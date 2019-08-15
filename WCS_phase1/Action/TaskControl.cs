@@ -863,6 +863,10 @@ namespace WCS_phase1.Action
             while (true)
             {
                 Thread.Sleep(500);
+                if (!DataControl.IsRunTaskOrder)
+                {
+                    continue;
+                }
                 try
                 {
                     // 同步任务

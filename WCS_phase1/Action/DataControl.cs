@@ -63,7 +63,18 @@ namespace WCS_phase1.Action
         /// </summary>
         internal static ForAGVControl _mForAGVControl;
 
-        #region 调试设定
+        #region 设定
+
+        /// <summary>
+        /// 是否运行生成任务逻辑
+        /// </summary>
+        public static bool IsRunTaskLogic = false;
+
+        /// <summary>
+        /// 是否运行发送任务指令
+        /// </summary>
+        public static bool IsRunTaskOrder = false;
+
 
         /// <summary>
         /// 是否无视AGV货物状态
@@ -71,14 +82,9 @@ namespace WCS_phase1.Action
         public static bool IsIgnoreAGV = false;
 
         /// <summary>
-        /// 是否无视包装线固定辊台货物状态
+        /// 是否无视固定辊台货物状态
         /// </summary>
-        public static bool IsIgnoreFRT_P = false;
-
-        /// <summary>
-        /// 是否无视库存区固定辊台货物状态
-        /// </summary>
-        public static bool IsIgnoreFRT_S = false;
+        public static bool IsIgnoreFRT = false;
 
         /// <summary>
         /// 是否无视摆渡车货物状态

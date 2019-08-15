@@ -120,6 +120,9 @@
     <Compile Include="WCSWindow\W_DevIgnoreSetting.xaml.cs">
       <DependentUpon>W_DevIgnoreSetting.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WCSWindow\W_TaskData.xaml.cs">
+      <DependentUpon>W_TaskData.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -133,6 +136,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="WCSWindow\W_DevIgnoreSetting.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WCSWindow\W_TaskData.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

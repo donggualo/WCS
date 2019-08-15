@@ -1708,6 +1708,10 @@ namespace WCS_phase1.Action
             while (true)
             {
                 Thread.Sleep(5000);
+                if (!DataControl.IsRunTaskLogic)
+                {
+                    continue;
+                }
                 try
                 {
                     _task.Run_TaskContinued();

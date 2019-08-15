@@ -360,7 +360,7 @@ namespace WCS_phase1.Action
             try
             {
                 // 获取对应AGV任务资讯
-                String sql = String.Format(@"select * from wcs_agv_info where MAGIC = '{0}' and TASK_UID = '{1}' and AGV = '{2}'", AGVMagic.到达装货点, id.ToString(), agv);
+                String sql = String.Format(@"select * from wcs_agv_info where MAGIC = '{0}' and ID = '{1}' and AGV = '{2}'", AGVMagic.到达装货点, id.ToString(), agv);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {

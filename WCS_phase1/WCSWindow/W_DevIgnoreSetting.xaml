@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WCS_phase1.WCSWindow"
         mc:Ignorable="d"
-        Title="无视设备设置（调试用）" Height="291" Width="289">
+        Title="无视设备设置（调试用）" Height="291" Width="289" WindowStyle="ToolWindow">
     <Window.Resources>
         <Style x:Key="CheckRadioFocusVisual">
             <Setter Property="Control.Template">
