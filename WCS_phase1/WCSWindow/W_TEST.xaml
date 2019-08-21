@@ -1,0 +1,42 @@
+﻿<Window x:Class="WCS_phase1.WCSWindow.W_TEST"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WCS_phase1.WCSWindow"
+        mc:Ignorable="d"
+        Title="模拟-测试" Height="450" Width="800" WindowStyle="ToolWindow">
+    <TabControl  Grid.Row="1" Grid.ColumnSpan="4">
+        <TabItem Header="模拟WMS扫码分配">
+            <Grid Background="LightGray">
+                <Label Content="包装线辊台设备号：" HorizontalAlignment="Left" Height="25" Margin="10,28,0,0" VerticalAlignment="Top" Width="115"/>
+                <ComboBox Name="CBfrt_P" HorizontalAlignment="Left" Height="25" Margin="130,28,0,0" VerticalAlignment="Top" Width="120"/>
+
+                <Label Content="货物条码：" HorizontalAlignment="Left" Height="25" Margin="10,73,0,0" VerticalAlignment="Top" Width="65"/>
+                <TextBox Name="TBcode" HorizontalAlignment="Left" Height="25" Margin="80,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="170"/>
+
+                <CheckBox Name="CheckWMS" Content="NO WMS" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="100" Click="CheckWMS_Click" Margin="150,118,0,0"/>
+
+                <Label Content="卸货点辊台设备号：" HorizontalAlignment="Left" Height="25" Margin="10,138,0,0" VerticalAlignment="Top" Width="115"/>
+                <ComboBox Name="CBfrt_D" HorizontalAlignment="Left" Height="25" Margin="130,138,0,0" VerticalAlignment="Top" Width="120" IsEnabled="False"/>
+                
+                <Label Content="库存货位：" HorizontalAlignment="Left" Height="25" Margin="10,178,0,0" VerticalAlignment="Top" Width="65"/>
+                <TextBox Name="TBlocX" HorizontalAlignment="Left" Height="25" Margin="80,178,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40" IsEnabled="False"
+                         InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum"/>
+                <TextBox Name="TBlocY" HorizontalAlignment="Left" Height="25" Margin="145,178,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40" IsEnabled="False"
+                         InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum"/>
+                <TextBox Name="TBlocZ" HorizontalAlignment="Left" Height="25" Margin="210,177,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40" IsEnabled="False"
+                         InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum"/>
+                <Label Content="—" HorizontalAlignment="Left" Height="25" Margin="125,175,0,0" VerticalAlignment="Top" Width="15"/>
+                <Label Content="—" HorizontalAlignment="Left" Height="25" Margin="190,175,0,0" VerticalAlignment="Top" Width="15"/>
+                
+                <Button Name="BtnFRT" Content="分配卸货点" HorizontalAlignment="Left" Height="75" Margin="315,95,0,0" VerticalAlignment="Top" Width="80" Click="BtnFRT_Click"/>
+                <Button Name="BtnLOC" Content="分配货位" HorizontalAlignment="Left" Height="75" Margin="315,193,0,0" VerticalAlignment="Top" Width="80" Click="BtnLOC_Click"/>
+            </Grid>
+        </TabItem>
+        <TabItem Header="TEST2">
+            <Grid Background="LightGray">
+            </Grid>
+        </TabItem>
+    </TabControl>
+</Window>

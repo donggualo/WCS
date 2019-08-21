@@ -22,7 +22,7 @@ namespace WCS_phase1.Action
             try
             {
                 String sql = String.Format(@"insert into wcs_task_info(TASK_UID, TASK_TYPE, BARCODE, W_S_LOC, W_D_LOC) values('{0}','{1}','{2}','{3}','{4}')",
-                    wms.Task_UID, wms.Task_type.ToString(), wms.Barcode, wms.W_S_Loc, wms.W_D_Loc);
+                    wms.Task_UID, wms.Task_type.GetHashCode(), wms.Barcode, wms.W_S_Loc, wms.W_D_Loc);
                 DataControl._mMySql.ExcuteSql(sql);
                 return true;
             }
@@ -39,7 +39,7 @@ namespace WCS_phase1.Action
         /// </summary>
         /// <param name="loc"></param>
         /// <param name="code"></param>
-        public void ScanCodeTask(string loc, string code)
+        public bool ScanCodeTask(string loc, string code)
         {
             try
             {
@@ -49,18 +49,19 @@ namespace WCS_phase1.Action
                 if (!DataControl._mStools.IsNoData(dt))
                 {
                     // 存在Task资讯则略过
-                    return;
+                    return false;
                 }
                 // 无Task资讯则新增
                 // 呼叫WMS 请求入库资讯---区域
                 WmsModel wms = DataControl._mHttp.DoBarcodeScanTask(loc, code);
                 // 写入数据库
-                WriteTaskToWCS(wms);
+                return WriteTaskToWCS(wms);
             }
             catch (Exception ex)
             {
                 // LOG
                 DataControl._mTaskTools.RecordTaskErrLog("ScanCodeTask()", "扫码任务[扫码位置,码数]", loc, code, ex.ToString());
+                return false;
             }
         }
 
@@ -69,12 +70,12 @@ namespace WCS_phase1.Action
         /// </summary>
         /// <param name="loc"></param>
         /// <param name="code"></param>
-        public void ScanCodeTask_Loc(string loc, string code)
+        public bool ScanCodeTask_Loc(string loc, string code)
         {
             try
             {
                 // 防止无任务资讯，模拟包装线扫码任务
-                ScanCodeTask_Loc(loc, code);
+                ScanCodeTask(loc, code);
 
                 // 获取Task资讯
                 String sql = String.Format(@"select TASK_UID from wcs_task_info where TASK_TYPE = '{1}' and BARCODE = '{0}'", code, TaskType.AGV搬运);
@@ -95,11 +96,14 @@ namespace WCS_phase1.Action
 
                 // 对应 WCS 清单
                 DataControl._mTaskTools.CreateCommandIn(taskuid, loc);
+
+                return true;
             }
             catch (Exception ex)
             {
                 // LOG
                 DataControl._mTaskTools.RecordTaskErrLog("ScanCodeTask()", "扫码任务-分配库位[扫码位置,码数]", loc, code, ex.ToString());
+                return false;
             }
         }
     }

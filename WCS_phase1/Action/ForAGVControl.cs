@@ -44,6 +44,10 @@ namespace WCS_phase1.Action
             while (true)
             {
                 Thread.Sleep(5000);
+                if (!DataControl.IsRunSendAGV)
+                {
+                    continue;
+                }
                 try
                 {
                     Run_DispatchAGV();

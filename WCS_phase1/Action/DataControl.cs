@@ -71,9 +71,14 @@ namespace WCS_phase1.Action
         public static bool IsRunTaskLogic = false;
 
         /// <summary>
-        /// 是否运行发送任务指令
+        /// 是否运行任务指令发送
         /// </summary>
         public static bool IsRunTaskOrder = false;
+
+        /// <summary>
+        /// 是否运行AGV派送
+        /// </summary>
+        public static bool IsRunSendAGV = false;
 
 
         /// <summary>
@@ -109,27 +114,26 @@ namespace WCS_phase1.Action
         {
             if (!init)
             {
-                _mSocket = new SocketControl();
+                //_mSocket = new SocketControl();
 
                 _mMySql = new MySQL();
 
                 _mStools = new SimpleTools();
 
                 _mTaskTools = new TaskTools();
-
                 //_mTaskTools.InitializeClient();
 
                 //_mHttpServer = new HttpServerControl();
 
                 //_mHttp = new HttpControl();
 
-                _mNDCControl = new NDCControl();
+                //_mNDCControl = new NDCControl();
 
                 //_mTaskControler = new TaskControler();
 
                 //_mRunTask = new RunTask();
 
-                _mForAGVControl = new ForAGVControl();
+                //_mForAGVControl = new ForAGVControl();
 
                 init = true;
             }

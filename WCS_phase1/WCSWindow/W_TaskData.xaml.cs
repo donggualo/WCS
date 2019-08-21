@@ -29,6 +29,7 @@ namespace WCS_phase1.WCSWindow
         public W_TaskData()
         {
             InitializeComponent();
+            RefreshData();
         }
 
         // 重写OnClosing（防止窗口关闭无法再开Bug）
@@ -38,12 +39,35 @@ namespace WCS_phase1.WCSWindow
             e.Cancel = true;
         }
 
+        // 赋值 VIEW INDEX
+        private void DataGrid_LoadingRow(object sender, System.Windows.Controls.DataGridRowEventArgs e)
+        {
+            e.Row.Header = e.Row.GetIndex() + 1;
+        }
+
+        // 设置时间格式
+        private void DataGrid_TimeFormat(object sender, DataGridAutoGeneratingColumnEventArgs e)
+        {
+            if (e.PropertyType == typeof(System.DateTime))
+            {
+                (e.Column as DataGridTextColumn).IsReadOnly = true;
+                (e.Column as DataGridTextColumn).Binding.StringFormat = "yyyy/MM/dd HH:mm:ss";
+            }
+        }
+
         /// <summary>
         /// 刷新清单
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Refresh_Click(object sender, EventArgs e)
+        {
+            RefreshData();
+        }
+        /// <summary>
+        /// 刷新
+        /// </summary>
+        public void RefreshData()
         {
             try
             {
