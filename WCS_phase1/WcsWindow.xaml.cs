@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Panuon.UI.Silver;
+using WCS_phase1.WCSWindow;
 
 namespace WCS_phase1
 {
@@ -27,9 +28,23 @@ namespace WCS_phase1
 
         private void TreeView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            TreeViewItem item = sender as TreeViewItem;
 
-            Console.WriteLine(item.Header);
+            TreeViewItem item = sender as TreeViewItem;
+            if ("Home".Equals(item.Tag))
+            {
+                wcsTabControl.SelectedIndex = 0;
+                return;
+            }
+            TabItem tabItem = new TabItem();
+            tabItem.Header = item.Header;
+            tabItem.Content = new W_NdcAgv();
+            wcsTabControl.Items.Add(tabItem);
+            wcsTabControl.SelectedIndex = wcsTabControl.Items.Count-1;
+        }
+
+        private void WcsTabControl_Removed(object sender, RoutedPropertyChangedEventArgs<TabItem> e)
+        {
+            wcsTabControl.SelectedIndex = wcsTabControl.Items.Count - 1;
         }
     }
 }

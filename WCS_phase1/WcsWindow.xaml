@@ -8,8 +8,10 @@
             mc:Ignorable="d"
             Title="NavbarWindow"
             WindowStartupLocation="CenterScreen"
-            Height="753.123"
-            Width="1204.899"
+            MinHeight="753"
+            Height="753"
+            MinWidth="1204"
+            Width="1204"
             BorderThickness="0"
             pu:WindowXCaption.Header=" ">
     <pu:WindowXCaption.ExtendControl>
@@ -156,6 +158,7 @@
                     BorderBrush="White"
                     Foreground="#AAFFFFFF">
                     <TreeViewItem
+                        Tag="Home"
                         MouseDoubleClick="TreeView_MouseDoubleClick"
                         FontSize="22"
                         Header="概况"
@@ -163,7 +166,6 @@
                         Padding="10,0,0,0"
                         pu:TreeViewHelper.ItemIcon="&#xf015;" />
                     <TreeViewItem
-                        MouseDoubleClick="TreeView_MouseDoubleClick"
                         FontSize="22"
                         Header="设备信息"
                         IsExpanded="False"
@@ -224,11 +226,13 @@
                             Grid.Column="1" />
                 </Grid>
                 <Grid Grid.Row="1">
-                    <TabControl
+                    <TabControl Name="wcsTabControl"
+                                SelectedIndex="0"
                                 pu:TabControlHelper.TabControlStyle="Classic"
                                 pu:TabControlHelper.SelectedForeground="#000000"
-                                pu:TabControlHelper.CanRemove="True" >
-                        <TabItem Header="主页"
+                                pu:TabControlHelper.CanRemove="True"
+                                pu:TabControlHelper.Removed="WcsTabControl_Removed">
+                        <TabItem Header="概况"
                                 pu:TabControlHelper.CanRemove="False">
                             <DataGrid Margin="10">
                                 <DataGrid.Columns>
@@ -239,32 +243,6 @@
                                                 Header="PhoneNumber1" />
                                     <DataGridTextColumn Width="*"
                                                 Header="Email1" />
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </TabItem>
-                        <TabItem Header="设备信息">
-                            <DataGrid Margin="10">
-                                <DataGrid.Columns>
-                                    <DataGridCheckBoxColumn Width="40"/>
-                                    <DataGridTextColumn Width="*"
-                                                Header="Nam2e"/>
-                                    <DataGridTextColumn Width="*"
-                                                Header="PhoneNumber2" />
-                                    <DataGridTextColumn Width="*"
-                                                Header="Email2" />
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </TabItem>
-                        <TabItem Header="通信记录">
-                            <DataGrid Margin="10">
-                                <DataGrid.Columns>
-                                    <DataGridCheckBoxColumn Width="40"/>
-                                    <DataGridTextColumn Width="*"
-                                                Header="Name3"/>
-                                    <DataGridTextColumn Width="*"
-                                                Header="PhoneNumber3" />
-                                    <DataGridTextColumn Width="*"
-                                                Header="Email3" />
                                 </DataGrid.Columns>
                             </DataGrid>
                         </TabItem>

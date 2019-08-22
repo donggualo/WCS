@@ -38,6 +38,9 @@
     <Reference Include="BouncyCastle.Crypto, Version=1.8.3.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
       <HintPath>..\packages\BouncyCastle.1.8.3.1\lib\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
+    <Reference Include="Caliburn.Micro, Version=3.2.0.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Caliburn.Micro.Core.3.2.0\lib\net45\Caliburn.Micro.dll</HintPath>
+    </Reference>
     <Reference Include="Google.Protobuf, Version=3.6.1.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Protobuf.3.6.1\lib\net45\Google.Protobuf.dll</HintPath>
     </Reference>
@@ -91,6 +94,7 @@
     <Compile Include="Functions\DataTableExtend.cs" />
     <Compile Include="Functions\SimpleTools.cs" />
     <Compile Include="Functions\TaskTools.cs" />
+    <Compile Include="Helpers\Helper.cs" />
     <Compile Include="Http\HttpControl.cs" />
     <Compile Include="Http\HttpServerControl.cs" />
     <Compile Include="Http\Routes.cs" />
@@ -126,6 +130,9 @@
     <Compile Include="WCSWindow\W_DevIgnoreSetting.xaml.cs">
       <DependentUpon>W_DevIgnoreSetting.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WCSWindow\W_NdcAgv.xaml.cs">
+      <DependentUpon>W_NdcAgv.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WCSWindow\W_TaskData.xaml.cs">
       <DependentUpon>W_TaskData.xaml</DependentUpon>
     </Compile>
@@ -153,6 +160,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="WCSWindow\W_DevIgnoreSetting.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WCSWindow\W_NdcAgv.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
