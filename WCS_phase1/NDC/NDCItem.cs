@@ -31,6 +31,7 @@ namespace WCS_phase1.NDC
         /// 车重定位任务的状态
         /// </summary>
         public NDCItemStatus DirectStatus;
+        public bool HadLoad, HadUnload;
 
         /// <summary>
         /// 小车PLC状态

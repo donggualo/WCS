@@ -11,9 +11,10 @@
             MinHeight="753"
             Height="753"
             MinWidth="1204"
-            Width="1204"
+            Width="1400"
             BorderThickness="0"
-            pu:WindowXCaption.Header=" ">
+            pu:WindowXCaption.Header=" "
+            Closing="WindowX_Closing">
     <pu:WindowXCaption.ExtendControl>
         <pu:DropDown HorizontalAlignment="Left"
                      VerticalAlignment="Top">
@@ -172,27 +173,39 @@
                         Padding="10,0,0,0"
                         pu:TreeViewHelper.ItemIcon="&#xf022;">
                         <TreeViewItem
+                            Tag="RGV"
                             MouseDoubleClick="TreeView_MouseDoubleClick"
                             FontSize="22"
                             Header="行车信息"
                             Padding="20,0,0,0"/>
                         <TreeViewItem
+                            Tag=""
                             MouseDoubleClick="TreeView_MouseDoubleClick"
                             FontSize="22"
                             Header="运输车信息"
                             Padding="20,0,0,0" />
                         <TreeViewItem
+                            Tag=""
                             MouseDoubleClick="TreeView_MouseDoubleClick"
                             FontSize="22"
                             Header="固定棍台"
                             Padding="20,0,0,0" />
                         <TreeViewItem
+                            Tag=""
                             MouseDoubleClick="TreeView_MouseDoubleClick"
                             FontSize="22"
                             Header="喷码机"
                             Padding="20,0,0,0" />
                     </TreeViewItem>
                     <TreeViewItem
+                        Tag="AGV"
+                        MouseDoubleClick="TreeView_MouseDoubleClick"
+                        FontSize="22"
+                        Header="激光AGV"
+                        Padding="10,0,0,0"
+                        pu:TreeViewHelper.ItemIcon="&#xf013;" />                    
+                    <TreeViewItem
+                        Tag="Setting"
                         MouseDoubleClick="TreeView_MouseDoubleClick"
                         FontSize="22"
                         Header="设置"
@@ -226,12 +239,17 @@
                             Grid.Column="1" />
                 </Grid>
                 <Grid Grid.Row="1">
+                    <Border Background="LightGray" Height="2" VerticalAlignment="Top"/>
                     <TabControl Name="wcsTabControl"
                                 SelectedIndex="0"
                                 pu:TabControlHelper.TabControlStyle="Classic"
-                                pu:TabControlHelper.SelectedForeground="#000000"
+                                pu:TabControlHelper.SelectedForeground="#FFFFFF"
+                                pu:TabControlHelper.SelectedBackground="#666666"
+                                Background="#FFFFFF"
                                 pu:TabControlHelper.CanRemove="True"
-                                pu:TabControlHelper.Removed="WcsTabControl_Removed">
+                                pu:TabControlHelper.RemoveCommand=""
+                                pu:TabControlHelper.Removed="WcsTabControl_Removed"
+                                Margin="0,2,0,0">
                         <TabItem Header="概况"
                                 pu:TabControlHelper.CanRemove="False">
                             <DataGrid Margin="10">

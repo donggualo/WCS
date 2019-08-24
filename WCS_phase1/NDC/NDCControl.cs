@@ -7,6 +7,7 @@ using WCS_phase1.LOG;
 using NDC8.ACINET.ACI;
 using System.Text;
 using WCS_phase1.Action;
+using WCS_phase1.WCSWindow;
 
 namespace WCS_phase1.NDC
 {
@@ -28,6 +29,8 @@ namespace WCS_phase1.NDC
 
         //Port number for the ACI connection
         private const int Port = 30001;
+
+        private List<DataGridTaskModel> taskList = new List<DataGridTaskModel>();
 
         /// <summary>
         /// 日志保存
@@ -880,6 +883,7 @@ namespace WCS_phase1.NDC
 
                     //装货完成
                     item.PLCStatus = NDCPlcStatus.Loaded;
+                    item.HadLoad = true;
                     break;
 
                 case 254://重新定位成功
@@ -897,6 +901,7 @@ namespace WCS_phase1.NDC
 
                     //卸货完成
                     item.PLCStatus = NDCPlcStatus.Unloaded;
+                    item.HadUnload = true;
                     break;
                 case 11://任务完成
                     item.IsFinish = true;
@@ -1220,7 +1225,43 @@ namespace WCS_phase1.NDC
             return false;
         }
 
-        
+
+        /// <summary>
+        /// 返回任务列表信息用于界面显示
+        /// </summary>
+        /// <returns></returns>
+        internal IEnumerable<DataGridTaskModel> GetTaskDataList()
+        {
+            taskList.Clear();
+            foreach(var i in TempList)
+            {
+                taskList.Add(new DataGridTaskModel()
+                {
+                    TaskID = i.TaskID,
+                    IKey = int.Parse(i.IKey),
+                    LoadSite = i.LoadStation,
+                    UnLoadSite = i.UnloadStation,
+                    RedirectSite = i.RedirectUnloadStation,
+
+                }) ;
+            }
+
+            foreach(var i in Items)
+            {
+                taskList.Add(new DataGridTaskModel()
+                {
+                    TaskID = i.TaskID,
+                    IKey = i.IKey,
+                    LoadSite = i.LoadStation,
+                    UnLoadSite = i.UnloadStation,
+                    RedirectSite = i.RedirectUnloadStation,
+                    HasLoad = i.HadLoad,
+                    HasUnLoad = i.HadUnload
+                }) ;
+            }
+            return taskList;
+        }
+
         #endregion
 
     }
