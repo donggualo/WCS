@@ -31,7 +31,7 @@ namespace WCS_phase1.NDC
         /// 车重定位任务的状态
         /// </summary>
         public NDCItemStatus DirectStatus;
-        public bool HadLoad, HadUnload;
+        public bool HadLoad, HadUnload,HadDirectInfo;
 
         /// <summary>
         /// 小车PLC状态
@@ -56,6 +56,18 @@ namespace WCS_phase1.NDC
         public DateTime lastDirectTime;
         public DateTime lastLoadTime;
         public DateTime lastUnLoadTime;
+        public DateTime finishTime;//不用急着删除，可以延时10秒钟
+
+        public bool CanDeleteFinish()
+        {
+            if (!IsFinish) return false;
+            if (DateTime.Now.Subtract(finishTime).TotalSeconds > 10)
+            {
+                return true;
+            }
+            return false;
+        }
+
 
         /// <summary>
         /// 判断是否符合重定位
