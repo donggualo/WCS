@@ -151,7 +151,7 @@ namespace WCS_phase1.Action
             try
             {
                 // 异常
-                if (_device.CommandStatus() == FRT.DeviceError || _device.CommandStatus() == FRT.CommandError)
+                if (_device.DeviceStatus() == FRT.DeviceError || _device.CommandStatus() == FRT.CommandError)
                 {
                     ISetTaskErr();
                     // LOG
@@ -163,7 +163,7 @@ namespace WCS_phase1.Action
                 #region 调试
                 if (DataControl.IsIgnoreFRT) //add调试判断
                 {
-                    if (_device.CommandStatus() == FRT.CommandFinish)
+                    if (_device.ActionStatus() == FRT.Stop)
                     {
                         // 发送指令
                         if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
@@ -191,7 +191,7 @@ namespace WCS_phase1.Action
                 if (!string.IsNullOrEmpty(ITEM.LOC_TO.Trim())) // 目标不为空即最终无货
                 {
                     // 固定辊台无货物
-                    if (_device.GoodsStatus() == FRT.GoodsNoAll && _device.CommandStatus() == FRT.CommandFinish)
+                    if (_device.GoodsStatus() == FRT.GoodsNoAll && _device.ActionStatus() == FRT.Stop)
                     {
                         // 完成任务
                         ISetTaskSuc();
@@ -204,7 +204,7 @@ namespace WCS_phase1.Action
                 else
                 {
                     // 固定辊台上有2#有货 或者 都有货
-                    if ((_device.GoodsStatus() == FRT.GoodsYes2 || _device.GoodsStatus() == FRT.GoodsYesAll) && _device.CommandStatus() == FRT.CommandFinish)
+                    if ((_device.GoodsStatus() == FRT.GoodsYes2 || _device.GoodsStatus() == FRT.GoodsYesAll) && _device.ActionStatus() == FRT.Stop)
                     {
                         // 完成任务
                         ISetTaskSuc();
@@ -215,7 +215,7 @@ namespace WCS_phase1.Action
                     }
                 }
                 // 发送指令
-                if (_device.CommandStatus() == FRT.CommandFinish)
+                if (_device.ActionStatus() == FRT.Stop)
                 {
                     if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
                     {
@@ -255,7 +255,7 @@ namespace WCS_phase1.Action
             try
             {
                 // 异常
-                if (_device.CommandStatus() == FRT.DeviceError || _device.CommandStatus() == FRT.CommandError)
+                if (_device.DeviceStatus() == FRT.DeviceError || _device.CommandStatus() == FRT.CommandError)
                 {
                     ISetTaskErr();
                     // LOG
@@ -266,7 +266,7 @@ namespace WCS_phase1.Action
                 #region 调试
                 if (DataControl.IsIgnoreFRT) //add调试判断
                 {
-                    if (_device.CommandStatus() == FRT.CommandFinish)
+                    if (_device.ActionStatus() == FRT.Stop)
                     {
                         // 发送指令
                         if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
@@ -304,7 +304,7 @@ namespace WCS_phase1.Action
                         }
                     }
                     // 固定辊台无货物
-                    if (_device.GoodsStatus() == FRT.GoodsNoAll && _device.CommandStatus() == FRT.CommandFinish)
+                    if (_device.GoodsStatus() == FRT.GoodsNoAll && _device.ActionStatus() == FRT.Stop)
                     {
                         // 完成任务
                         ISetTaskSuc();
@@ -314,7 +314,7 @@ namespace WCS_phase1.Action
                         log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
                         return;
                     }
-                    else if (_device.GoodsStatus() != FRT.GoodsNoAll && _device.CommandStatus() == FRT.CommandFinish)
+                    else if (_device.GoodsStatus() != FRT.GoodsNoAll && _device.ActionStatus() == FRT.Stop)
                     {
                         return; // 固定辊台与摆渡车都有货，不启动辊台
                     }
@@ -322,7 +322,7 @@ namespace WCS_phase1.Action
                 else
                 {
                     // 摆渡车辊台上无货物,固定辊台上有货物
-                    if (_arf.GoodsStatus() == ARF.GoodsNoAll && _device.GoodsStatus() != FRT.GoodsNoAll && _device.CommandStatus() == FRT.CommandFinish)
+                    if (_arf.GoodsStatus() == ARF.GoodsNoAll && _device.GoodsStatus() != FRT.GoodsNoAll && _device.ActionStatus() == FRT.Stop)
                     {
                         // 完成任务
                         ISetTaskSuc();
@@ -334,7 +334,7 @@ namespace WCS_phase1.Action
                     }
                 }
                 // 发送指令
-                if (_device.CommandStatus() == FRT.CommandFinish)
+                if (_device.ActionStatus() == FRT.Stop)
                 {
                     if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
                     {
@@ -372,7 +372,7 @@ namespace WCS_phase1.Action
             try
             {
                 // 异常
-                if (_device.CommandStatus() == ARF.DeviceError || _device.CommandStatus() == ARF.CommandError)
+                if (_device.DeviceStatus() == ARF.DeviceError || _device.CommandStatus() == ARF.CommandError)
                 {
                     ISetTaskErr();
                     // LOG
@@ -385,7 +385,7 @@ namespace WCS_phase1.Action
                     #region 调试
                     if (DataControl.IsIgnoreARF) //add调试判断
                     {
-                        if (_device.CommandStatus() == ARF.CommandFinish)
+                        if (_device.ActionStatus() == ARF.Stop)
                         {
                             // 发送指令
                             if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
@@ -444,7 +444,7 @@ namespace WCS_phase1.Action
                                 break;
                         }
                         // 摆渡车无货物
-                        if (_device.GoodsStatus() == ARF.GoodsNoAll && _device.CommandStatus() == ARF.CommandFinish)
+                        if (_device.GoodsStatus() == ARF.GoodsNoAll && _device.ActionStatus() == ARF.Stop)
                         {
                             // 完成任务
                             ISetTaskSuc();
@@ -465,7 +465,7 @@ namespace WCS_phase1.Action
                             case DeviceType.固定辊台:
                                 FRT _frt = new FRT(ITEM.LOC_FROM);
                                 // 固定辊台上无货物,摆渡车辊台上有货物
-                                if (_frt.GoodsStatus() == FRT.GoodsNoAll && _device.GoodsStatus() != ARF.GoodsNoAll && _device.CommandStatus() == ARF.CommandFinish)
+                                if (_frt.GoodsStatus() == FRT.GoodsNoAll && _device.GoodsStatus() != ARF.GoodsNoAll && _device.ActionStatus() == ARF.Stop)
                                 {
                                     // 完成任务
                                     ISetTaskSuc();
@@ -491,7 +491,7 @@ namespace WCS_phase1.Action
                         }
                     }
                     // 发送指令
-                    if (_device.CommandStatus() == ARF.CommandFinish)
+                    if (_device.ActionStatus() == ARF.Stop)
                     {
                         if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
                         {
@@ -505,7 +505,7 @@ namespace WCS_phase1.Action
                 else
                 {
                     // 发送指令
-                    if (_device.CommandStatus() == ARF.CommandFinish)
+                    if (_device.ActionStatus() == ARF.Stop)
                     {
                         if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
                         {
@@ -515,7 +515,7 @@ namespace WCS_phase1.Action
                         log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                     }
                     // 当前位置与目的位置一致 视为任务完成
-                    if (_device.CurrentSite() == Convert.ToInt32(ITEM.LOC_TO) && _device.CommandStatus() == ARF.CommandFinish)
+                    if (_device.CurrentSite() == Convert.ToInt32(ITEM.LOC_TO) && _device.ActionStatus() == ARF.Stop)
                     {
                         // 等待对接
                         ISetTaskWait();
@@ -553,7 +553,7 @@ namespace WCS_phase1.Action
             try
             {
                 // 异常
-                if (_device.CommandStatus() == RGV.DeviceError || _device.CommandStatus() == RGV.CommandError)
+                if (_device.DeviceStatus() == RGV.DeviceError || _device.CommandStatus() == RGV.CommandError)
                 {
                     ISetTaskErr();
                     // LOG
@@ -566,7 +566,7 @@ namespace WCS_phase1.Action
                     #region 调试
                     if (DataControl.IsIgnoreRGV) //add调试判断
                     {
-                        if (_device.CommandStatus() == RGV.CommandFinish)
+                        if (_device.ActionStatus() == RGV.Stop)
                         {
                             // 发送指令
                             if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
@@ -646,7 +646,7 @@ namespace WCS_phase1.Action
                             case DeviceType.摆渡车:
                                 ARF _arf = new ARF(ITEM.LOC_FROM);
                                 // 摆渡车辊台上无货物,运输车辊台上有货物
-                                if (_arf.GoodsStatus() == ARF.GoodsNoAll && _device.GoodsStatus() != RGV.GoodsNoAll && _device.CommandStatus() == RGV.CommandFinish)
+                                if (_arf.GoodsStatus() == ARF.GoodsNoAll && _device.GoodsStatus() != RGV.GoodsNoAll && _device.ActionStatus() == RGV.Stop)
                                 {
                                     // 完成任务
                                     ISetTaskSuc();
@@ -658,7 +658,7 @@ namespace WCS_phase1.Action
                             case DeviceType.运输车:
                                 RGV _rgv = new RGV(ITEM.LOC_FROM);
                                 // 来源运输车辊台上无货物,运输车辊台上有货物
-                                if (_rgv.GoodsStatus() == FRT.GoodsNoAll && _device.GoodsStatus() != ARF.GoodsNoAll && _device.CommandStatus() == RGV.CommandFinish)
+                                if (_rgv.GoodsStatus() == FRT.GoodsNoAll && _device.GoodsStatus() != ARF.GoodsNoAll && _device.ActionStatus() == RGV.Stop)
                                 {
                                     // 完成任务
                                     ISetTaskSuc();
@@ -672,7 +672,7 @@ namespace WCS_phase1.Action
                         }
                     }
                     // 发送指令
-                    if (_device.CommandStatus() == RGV.CommandFinish)
+                    if (_device.ActionStatus() == RGV.Stop)
                     {
                         if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
                         {
@@ -686,7 +686,7 @@ namespace WCS_phase1.Action
                 else
                 {
                     // 发送指令
-                    if (_device.CommandStatus() == RGV.CommandFinish)
+                    if (_device.ActionStatus() == RGV.Stop)
                     {
                         if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
                         {
@@ -696,7 +696,7 @@ namespace WCS_phase1.Action
                         log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                     }
                     // 当前位置与目的位置一致 视为任务完成
-                    if (_device.GetCurrentSite() == Convert.ToInt32(ITEM.LOC_TO) && _device.CommandStatus() == RGV.CommandFinish)
+                    if (_device.GetCurrentSite() == Convert.ToInt32(ITEM.LOC_TO) && _device.ActionStatus() == RGV.Stop)
                     {
                         // 等待对接
                         ISetTaskWait();
@@ -734,7 +734,7 @@ namespace WCS_phase1.Action
             try
             {
                 // 异常
-                if (_device.CommandStatus() == ABC.DeviceError || _device.CommandStatus() == ABC.CommandError)
+                if (_device.DeviceStatus() == ABC.DeviceError || _device.CommandStatus() == ABC.CommandError)
                 {
                     ISetTaskErr();
                     // LOG
@@ -745,10 +745,10 @@ namespace WCS_phase1.Action
                 #region 调试
                 if (DataControl.IsIgnoreABC) //add调试判断
                 {
-                    if (_device.CommandStatus() == ABC.CommandFinish)
+                    if (_device.ActionStatus() == ABC.Stop)
                     {
                         // 发送指令
-                        if (_device.CommandStatus() == ABC.CommandFinish)
+                        if (_device.ActionStatus() == ABC.Stop)
                         {
                             if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
                             {
@@ -774,7 +774,7 @@ namespace WCS_phase1.Action
                 if (ITEM.ITEM_ID == ItemId.行车取货)
                 {
                     // 有货则任务完成
-                    if (_device.GoodsStatus() == ABC.GoodsYes && _device.CommandStatus() == ABC.CommandFinish)
+                    if (_device.GoodsStatus() == ABC.GoodsYes && _device.ActionStatus() == ABC.Stop)
                     {
                         // 完成任务
                         ISetTaskSuc();
@@ -786,7 +786,7 @@ namespace WCS_phase1.Action
                 else if (ITEM.ITEM_ID == ItemId.行车放货)
                 {
                     // 无货则任务完成
-                    if (_device.GoodsStatus() == ABC.GoodsNo && _device.CommandStatus() == ABC.CommandFinish)
+                    if (_device.GoodsStatus() == ABC.GoodsNo && _device.ActionStatus() == ABC.Stop)
                     {
                         // 完成任务
                         ISetTaskSuc();
@@ -809,7 +809,7 @@ namespace WCS_phase1.Action
                     }
                 }
                 // 发送指令
-                if (_device.CommandStatus() == ABC.CommandFinish)
+                if (_device.ActionStatus() == ABC.Stop)
                 {
                     if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
                     {

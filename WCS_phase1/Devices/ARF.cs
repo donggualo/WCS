@@ -16,27 +16,27 @@ namespace WCS_phase1.Devices
 
         }
 
-        #region 命令状态
+        #region 状态
 
         /// <summary>
-        /// 命令完成
+        /// 设备停止
         /// </summary>
-        public static byte CommandFinish = 0x00;
+        public static byte Stop = 0x00;
 
         /// <summary>
-        /// 命令执行中
+        /// 设备运行
         /// </summary>
-        public static byte CommandExecute = 0x01;
+        public static byte Run = 0x01;
 
         /// <summary>
         /// 设备故障
         /// </summary>
-        public static byte DeviceError = 0xFE;
+        public static byte DeviceError = 0x01;
 
         /// <summary>
         /// 命令错误
         /// </summary>
-        public static byte CommandError = 0xFF;
+        public static byte CommandError = 0x01;
 
         #endregion
 
@@ -172,12 +172,30 @@ namespace WCS_phase1.Devices
         }
 
         /// <summary>
+        /// 运行状态
+        /// </summary>
+        /// <returns></returns>
+        public byte ActionStatus()
+        {
+            return GetSingleByte(3);
+        }
+
+        /// <summary>
+        /// 设备状态
+        /// </summary>
+        /// <returns></returns>
+        public byte DeviceStatus()
+        {
+            return GetSingleByte(4);
+        }
+
+        /// <summary>
         /// 命令状态
         /// </summary>
         /// <returns></returns>
         public byte CommandStatus()
         {
-            return GetSingleByte(3);
+            return GetSingleByte(5);
         }
 
         /// <summary>
@@ -186,7 +204,7 @@ namespace WCS_phase1.Devices
         /// <returns></returns>
         public byte Goods1site()
         {
-            return GetSingleByte(4);
+            return GetSingleByte(6);
         }
 
         /// <summary>
@@ -195,7 +213,7 @@ namespace WCS_phase1.Devices
         /// <returns></returns>
         public byte Goods2site()
         {
-            return GetSingleByte(5);
+            return GetSingleByte(7);
         }
 
         /// <summary>
@@ -204,7 +222,7 @@ namespace WCS_phase1.Devices
         /// <returns></returns>
         public byte Goods3site()
         {
-            return GetSingleByte(6);
+            return GetSingleByte(8);
         }
 
         /// <summary>
@@ -213,7 +231,7 @@ namespace WCS_phase1.Devices
         /// <returns></returns>
         public byte Goods4site()
         {
-            return GetSingleByte(7);
+            return GetSingleByte(9);
         }
 
         /// <summary>
@@ -222,7 +240,7 @@ namespace WCS_phase1.Devices
         /// <returns></returns>
         public byte CurrentTask()
         {
-            return GetSingleByte(8);
+            return GetSingleByte(10);
         }
 
         /// <summary>
@@ -231,7 +249,7 @@ namespace WCS_phase1.Devices
         /// <returns></returns>
         public byte CurrentSite()
         {
-            return GetSingleByte(9);
+            return GetSingleByte(11);
         }
 
         /// <summary>
@@ -240,7 +258,7 @@ namespace WCS_phase1.Devices
         /// <returns></returns>
         public byte CurrentStatus()
         {
-            return GetSingleByte(10);
+            return GetSingleByte(12);
         }
 
         /// <summary>
@@ -249,7 +267,7 @@ namespace WCS_phase1.Devices
         /// <returns></returns>
         public byte RunDirection()
         {
-            return GetSingleByte(11);
+            return GetSingleByte(13);
         }
 
         /// <summary>
@@ -258,7 +276,7 @@ namespace WCS_phase1.Devices
         /// <returns></returns>
         public byte FinishTask()
         {
-            return GetSingleByte(12);
+            return GetSingleByte(14);
         }
 
         /// <summary>
@@ -267,7 +285,7 @@ namespace WCS_phase1.Devices
         /// <returns></returns>
         public byte GoodsStatus()
         {
-            return GetSingleByte(13);
+            return GetSingleByte(15);
         }
 
         /// <summary>
@@ -276,7 +294,7 @@ namespace WCS_phase1.Devices
         /// <returns></returns>
         public byte ErrorMessage()
         {
-            return GetSingleByte(17);
+            return GetSingleByte(16);
         }
 
         #endregion

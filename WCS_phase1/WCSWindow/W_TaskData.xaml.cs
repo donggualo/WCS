@@ -39,12 +39,6 @@ namespace WCS_phase1.WCSWindow
             e.Cancel = true;
         }
 
-        // 赋值 VIEW INDEX
-        private void DataGrid_LoadingRow(object sender, System.Windows.Controls.DataGridRowEventArgs e)
-        {
-            e.Row.Header = e.Row.GetIndex() + 1;
-        }
-
         // 设置时间格式
         private void DataGrid_TimeFormat(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
@@ -87,11 +81,13 @@ namespace WCS_phase1.WCSWindow
 			 TASK_UID_1 货物①任务号,LOC_FROM_1 货物①来源,LOC_TO_1 货物①目的,
 			 (case when SITE_1 = 'N' then '未执行'
 				   when SITE_1 = 'W' then '任务中'
-				   when SITE_1 = 'Y' then '完成' else '失效' end) 货物①任务状态,
+				   when SITE_1 = 'Y' then '完成'
+				   when SITE_1 = 'X' then '失效' else '' end) 货物①任务状态,
 			 TASK_UID_2 货物②任务号,LOC_FROM_2 货物②来源,LOC_TO_2 货物②目的,
 			 (case when SITE_2 = 'N' then '未执行'
 				   when SITE_2 = 'W' then '任务中'
-				   when SITE_2 = 'Y' then '完成' else '失效' end) 货物②任务状态 from wcs_command_v";
+				   when SITE_2 = 'Y' then '完成'
+				   when SITE_1 = 'X' then '失效' else '' end) 货物②任务状态 from wcs_command_v";
                 // 获取数据
                 dt = DataControl._mMySql.SelectAll(sql);
                 DGcommand.ItemsSource = dt.DefaultView;
