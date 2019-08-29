@@ -28,10 +28,7 @@ namespace WCS_phase1.WCSWindow
         public W_TEST()
         {
             InitializeComponent();
-
-            // 选项框
-            AddCombBoxForWMS("A01", CBfrt_P);
-            AddCombBoxForDEV();
+            AddCombBox("A01", CBfrt_P);
         }
 
         // 重写OnClosing（防止窗口关闭无法再开Bug）
@@ -41,30 +38,12 @@ namespace WCS_phase1.WCSWindow
             e.Cancel = true;
         }
 
-        // 赋值 VIEW INDEX
-        private void DataGrid_LoadingRow(object sender, System.Windows.Controls.DataGridRowEventArgs e)
-        {
-            e.Row.Header = e.Row.GetIndex() + 1;
-        }
-
-        // 设置时间格式
-        private void DataGrid_TimeFormat(object sender, DataGridAutoGeneratingColumnEventArgs e)
-        {
-            if (e.PropertyType == typeof(System.DateTime))
-            {
-                (e.Column as DataGridTextColumn).IsReadOnly = true;
-                (e.Column as DataGridTextColumn).Binding.StringFormat = "yyyy/MM/dd HH:mm:ss";
-            }
-        }
-
-        #region 扫码
-
         /// <summary>
         /// Add 选项
         /// </summary>
         /// <param name="area"></param>
         /// <param name="box"></param>
-        private void AddCombBoxForWMS(string area, System.Windows.Controls.ComboBox box)
+        private void AddCombBox(string area, System.Windows.Controls.ComboBox box)
         {
             try
             {
@@ -96,7 +75,7 @@ namespace WCS_phase1.WCSWindow
                 TBlocX.IsEnabled = true;
                 TBlocY.IsEnabled = true;
                 TBlocZ.IsEnabled = true;
-                AddCombBoxForWMS("B01", CBfrt_D);
+                AddCombBox("B01", CBfrt_D);
             }
         }
 
@@ -233,143 +212,6 @@ namespace WCS_phase1.WCSWindow
                 }
             }
         }
-
-        #endregion
-
-        #region 设备
-
-        private void AddCombBoxForDEV()
-        {
-            try
-            {
-                CBdev.Items.Add(" ");
-                CBdev.Items.Add(DeviceType.固定辊台 + " : 固定辊台");
-                CBdev.Items.Add(DeviceType.摆渡车 + " : 摆渡车");
-                CBdev.Items.Add(DeviceType.运输车 + " : 运输车");
-                CBdev.Items.Add(DeviceType.行车 + " : 行车");
-                CBdev.SelectedIndex = 0;
-
-                CBarea.Items.Add(" ");
-                CBarea.SelectedIndex = 0;
-                String sql = "select distinct AREA from wcs_config_device";
-                DataTable dt = DataControl._mMySql.SelectAll(sql);
-                if (DataControl._mStools.IsNoData(dt))
-                {
-                    return;
-                }
-                List<WCS_CONFIG_DEVICE> areaList = dt.ToDataList<WCS_CONFIG_DEVICE>();
-                foreach (WCS_CONFIG_DEVICE area in areaList)
-                {
-                    CBarea.Items.Add(area.AREA);
-                }
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.ToString(), "Error");
-            }
-        }
-
-        /// <summary>
-        /// 刷新
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void RefreshDev_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                // 清空数据
-                DGdevice.ItemsSource = null;
-
-                string sql = @"select DEVICE 设备号, IP, PORT, AREA 所属区域, REMARK 备注, 
-             (case when TYPE = 'FRT' then '固定辊台'
-			       when TYPE = 'ARF' then '摆渡车'
-						 when TYPE = 'RGV' then '运输车' else '行车' end) 设备类型, 
-			 (case when FLAG = 'L' then '锁定'
-					   when FLAG = 'Y' then '空闲' else '未知' end) 状态, LOCK_WCS_NO 锁定清单号, CREATION_TIME 创建时间, UPDATE_TIME 更新时间 
-             from wcs_config_device where 1=1";
-                if (!string.IsNullOrWhiteSpace(CBdev.Text))
-                {
-                    sql = sql + string.Format(" and TYPE = '{0}'", CBdev.Text.Substring(0, 3));
-                }
-                if (!string.IsNullOrWhiteSpace(CBarea.Text))
-                {
-                    sql = sql + string.Format(" and AREA = '{0}'", CBarea.Text.Substring(0, 3));
-                }
-                // 获取数据
-                DataTable dt = DataControl._mMySql.SelectAll(sql);
-                DGdevice.ItemsSource = dt.DefaultView;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// 修改
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void UpdateDev_Click(object sender, EventArgs e)
-        {
-            try
-            {
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// 新增
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void AddDev_Click(object sender, EventArgs e)
-        {
-            try
-            {
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// 删除
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void DeleteDev_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                MessageBoxResult result = MessageBox.Show("确认删除此笔记录？！", "提示", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (result == MessageBoxResult.No)
-                {
-                    return;
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// 导出Excel文件
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void SaveToExcel_Click(object sender, EventArgs e)
-        {
-            DataControl._mStools.SaveToExcel(DGdevice);
-        }
-        #endregion
-
     }
 
 }

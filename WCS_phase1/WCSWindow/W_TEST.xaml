@@ -5,62 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WCS_phase1.WCSWindow"
         mc:Ignorable="d"
-        Title="测试" Height="503" Width="914" WindowStyle="ToolWindow">
-
-    <Window.Resources>
-        <Style TargetType="DataGrid">
-            <!--拖动改变单元格大小-->
-            <Setter Property="CanUserResizeColumns" Value="True"/>
-            <!--网格线颜色-->
-            <Setter Property="HorizontalGridLinesBrush">
-                <Setter.Value>
-                    <SolidColorBrush Color="LightBlue"/>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="VerticalGridLinesBrush">
-                <Setter.Value>
-                    <SolidColorBrush Color="LightBlue"/>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!--标题栏样式-->
-        <Style  TargetType="DataGridColumnHeader" >
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            <Setter Property="Width" Value="Auto"/>
-            <Setter Property="FontSize" Value="16" />
-            <!--加粗-->
-            <Setter  Property="FontWeight"  Value="Bold"/>
-        </Style>
-
-        <!--行样式触发-->
-        <!--背景色改变必须先设置cellStyle 因为cellStyle会覆盖rowStyle样式-->
-        <Style  TargetType="DataGridRow">
-            <Style.Triggers>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Height" Value="Auto"/>
-                    <!--加粗-->
-                    <Setter  Property="FontWeight"  Value="Bold"/>
-                </Trigger>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="LightGray"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <!--单元格样式触发-->
-        <Style TargetType="DataGridCell">
-            <Setter Property="FontSize" Value="14" />
-            <Style.Triggers>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="DeepSkyBlue"/>
-                    <Setter Property="BorderThickness" Value="0"/>
-                    <Setter Property="Foreground" Value="White"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-    </Window.Resources>
-
+        Title="模拟-测试" Height="450" Width="800" WindowStyle="ToolWindow">
     <TabControl  Grid.Row="1" Grid.ColumnSpan="4">
         <TabItem Header="模拟WMS扫码分配">
             <Grid Background="LightGray">
@@ -74,41 +19,24 @@
 
                 <Label Content="卸货点辊台设备号：" HorizontalAlignment="Left" Height="25" Margin="10,138,0,0" VerticalAlignment="Top" Width="115"/>
                 <ComboBox Name="CBfrt_D" HorizontalAlignment="Left" Height="25" Margin="130,138,0,0" VerticalAlignment="Top" Width="120" IsEnabled="False"/>
-
+                
                 <Label Content="库存货位：" HorizontalAlignment="Left" Height="25" Margin="10,178,0,0" VerticalAlignment="Top" Width="65"/>
                 <TextBox Name="TBlocX" HorizontalAlignment="Left" Height="25" Margin="80,178,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40" IsEnabled="False"
-                         InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum" MaxLength="3"/>
+                         InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum"/>
                 <TextBox Name="TBlocY" HorizontalAlignment="Left" Height="25" Margin="145,178,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40" IsEnabled="False"
-                         InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum" MaxLength="3"/>
+                         InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum"/>
                 <TextBox Name="TBlocZ" HorizontalAlignment="Left" Height="25" Margin="210,177,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40" IsEnabled="False"
-                         InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum" MaxLength="3"/>
+                         InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum"/>
                 <Label Content="—" HorizontalAlignment="Left" Height="25" Margin="125,175,0,0" VerticalAlignment="Top" Width="15"/>
                 <Label Content="—" HorizontalAlignment="Left" Height="25" Margin="190,175,0,0" VerticalAlignment="Top" Width="15"/>
-
+                
                 <Button Name="BtnFRT" Content="分配卸货点" HorizontalAlignment="Left" Height="75" Margin="315,95,0,0" VerticalAlignment="Top" Width="80" Click="BtnFRT_Click"/>
                 <Button Name="BtnLOC" Content="分配货位" HorizontalAlignment="Left" Height="75" Margin="315,193,0,0" VerticalAlignment="Top" Width="80" Click="BtnLOC_Click"/>
             </Grid>
         </TabItem>
-
-        <TabItem Header="设备数据">
+        <TabItem Header="TEST2">
             <Grid Background="LightGray">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="55*"/>
-                    <ColumnDefinition Width="727*"/>
-                </Grid.ColumnDefinitions>
-                <Button Name="BTrefresh" Content="刷新" HorizontalAlignment="Left" Height="40" Margin="40,20,0,0" VerticalAlignment="Top" Width="60" Click="RefreshDev_Click" Grid.ColumnSpan="2"/>
-                <Label Content="设备类型：" HorizontalAlignment="Left" Height="25" Margin="75,10,0,0" VerticalAlignment="Top" Width="65" Grid.Column="1"/>
-                <ComboBox Name="CBdev" HorizontalAlignment="Left" Height="25" Margin="75,35,0,0" VerticalAlignment="Top" Width="117" Grid.Column="1"/>
-                <Label Content="设备区域：" HorizontalAlignment="Left" Height="25" Margin="207,10,0,0" VerticalAlignment="Top" Width="65" Grid.Column="1"/>
-                <ComboBox Name="CBarea" HorizontalAlignment="Left" Height="25" Margin="207,35,0,0" VerticalAlignment="Top" Width="100" Grid.Column="1"/>
-                
-                <Button Content="导出" HorizontalAlignment="Left" Height="40" Margin="332,20,0,0" VerticalAlignment="Top" Width="60" Click="SaveToExcel_Click" Grid.Column="1"/>
-
-                <DataGrid Name="DGdevice" Margin="20,80,21,10" Grid.ColumnSpan="2" LoadingRow="DataGrid_LoadingRow" AutoGeneratingColumn="DataGrid_TimeFormat" 
-                          CanUserAddRows="False" CanUserDeleteRows="True">
-                </DataGrid>
             </Grid>
         </TabItem>
-
     </TabControl>
 </Window>
