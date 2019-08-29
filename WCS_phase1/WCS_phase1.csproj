@@ -85,6 +85,9 @@
     <Compile Include="Action\ForAGVControl.cs" />
     <Compile Include="Action\ForWMSControl.cs" />
     <Compile Include="Action\TaskLogic.cs" />
+    <Compile Include="DataGrid\BaseDataGrid.cs" />
+    <Compile Include="DataGrid\Models\NdcTaskModel.cs" />
+    <Compile Include="DataGrid\NdcAgvDataGrid.cs" />
     <Compile Include="Devices\ABC.cs" />
     <Compile Include="Devices\AGV.cs" />
     <Compile Include="Devices\ARF.cs" />
@@ -217,5 +220,6 @@
   <ItemGroup>
     <Resource Include="Resources\head.jpg" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

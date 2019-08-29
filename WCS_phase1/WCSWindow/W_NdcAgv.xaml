@@ -6,7 +6,7 @@
              xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
              mc:Ignorable="d"
              d:DesignHeight="450"
-             d:DesignWidth="1000">
+             d:DesignWidth="930">
         <Grid >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -26,12 +26,17 @@
             <Border Background="LightGray" Height="2" Grid.Row="1" VerticalAlignment="Top"></Border>
             <ScrollViewer Grid.Row="1" Margin="0,2,0,0">
                     <DataGrid
+                        ItemsSource="{Binding}"
                         x:Name="DgCustom"
                         BorderBrush="LightGray"
                         BorderThickness="1"
                         Margin="5,0,0,0"
                         MinWidth="500"
                         IsReadOnly="True"
+                        SelectionMode="Single"
+                        CanUserReorderColumns="False"
+                        CanUserSortColumns="False"
+                        MouseDoubleClick="DgCustom_MouseDoubleClick"
                         CanUserAddRows="False">
                         <pu:DataGridHelper.AutoGenerateCheckBoxStyle>
                             <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
@@ -45,7 +50,7 @@
                         </pu:DataGridHelper.AutoGenerateCheckBoxStyle>
 
                     </DataGrid>
-                </ScrollViewer>
+            </ScrollViewer>
             </Grid>
             <GridSplitter Grid.Column="1" Width="2" Background="LightGray"/>
             <!--操作面板-->
@@ -79,7 +84,7 @@
                       HorizontalAlignment="Left" FontFamily="MV Boli"/>
             <Label Grid.Row="1" Grid.ColumnSpan="2"  Content="添加任务" FontSize="18" VerticalAlignment="Center"  FontFamily="MV Boli"/>
             <TextBlock Grid.Row="2" Grid.Column="0" Text="任务ID:" VerticalAlignment="Center" FontSize="16"  FontFamily="MV Boli"/>
-                <TextBox Grid.Row="2"  Grid.Column="1" Height="30"
+            <TextBox Grid.Row="2"  Grid.Column="1" Height="30" Text=""
                     Width="160" Name="taskId"
                     pu:TextBoxHelper.Watermark="任务ID"
                     pu:TextBoxHelper.FocusedBorderBrush="#000000"
@@ -87,7 +92,7 @@
                     pu:TextBoxHelper.CornerRadius="8"  FontFamily="MV Boli"/>
 
             <TextBlock Grid.Row="3" Grid.Column="0" Text="接货点:" VerticalAlignment="Center" FontSize="16"  FontFamily="MV Boli"/>
-                <TextBox Grid.Row="3" Grid.Column="1"  Height="30"
+            <TextBox Grid.Row="3" Grid.Column="1"  Height="30" Text="B02"
                     Width="160" Name="loadSite"
                     pu:TextBoxHelper.Watermark="接货点"
                     pu:TextBoxHelper.FocusedBorderBrush="#000000"
@@ -95,7 +100,7 @@
                     pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
 
             <TextBlock Grid.Row="4" Grid.Column="0" Text="卸货点:" VerticalAlignment="Center" FontSize="16" FontFamily="MV Boli"/>
-                <TextBox Grid.Row="4" Grid.Column="1"  Height="30"
+            <TextBox Grid.Row="4" Grid.Column="1"  Height="30" Text="C03"
                     Width="160" Name="unloadSite"
                     pu:TextBoxHelper.Watermark="卸货点"
                     pu:TextBoxHelper.FocusedBorderBrush="#000000"
@@ -142,12 +147,18 @@
                     pu:ButtonHelper.HoverBrush="#3F3F3F"
                     pu:ButtonHelper.CornerRadius="6" />
             <TextBlock Grid.Row="8" Grid.Column="0" Text="重定向区域:" VerticalAlignment="Center" FontSize="16" Margin="0,0,10,0" FontFamily="MV Boli"/>
-            <TextBox Grid.Row="8" Grid.Column="1"  Height="30"
+            <TextBox Grid.Row="8" Grid.Column="1"  Height="30" Text="C03-C02-001"
                     Width="160" Name="redirectArea"
                     pu:TextBoxHelper.Watermark="重定向区域"
                     pu:TextBoxHelper.FocusedBorderBrush="#000000"
                     pu:TextBoxHelper.FocusedShadowColor="#000000"
                     pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
+            <TextBox Grid.Row="8"  Grid.Column="2" Height="30" Text=""
+                    Width="160" Name="order"
+                    pu:TextBoxHelper.Watermark="Order"
+                    pu:TextBoxHelper.FocusedBorderBrush="#000000"
+                    pu:TextBoxHelper.FocusedShadowColor="#000000"
+                    pu:TextBoxHelper.CornerRadius="8"  FontFamily="MV Boli"/>
             <Button Grid.Row="9" Grid.Column="1"  Height="30"
                     Width="130" Name="redirectBtn" Click="RedirectBtn_Click"
                     Content="&#xf090; 重定向"
