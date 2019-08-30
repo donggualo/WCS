@@ -167,7 +167,7 @@ namespace WCS_phase1.Devices
         }
 
         /// <summary>
-        /// 命令状态
+        /// 运行状态
         /// </summary>
         /// <returns></returns>
         public byte ActionStatus()

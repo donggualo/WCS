@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using WCS_phase1.Action;
+using WCS_phase1.Devices;
 using WCS_phase1.Functions;
 using WCS_phase1.Http;
 using WCS_phase1.Models;
@@ -31,8 +32,9 @@ namespace WCS_phase1.WCSWindow
 
             // 选项框
             AddCombBoxForWMS("A01", CBfrt_P);
-            AddCombBoxForDEV_C();
-            AddCombBoxForDEV_S();
+            AddCombBoxForWMS("B01", CBfrt_D);
+
+            AddCombBoxForDEV();
         }
 
         // 重写OnClosing（防止窗口关闭无法再开Bug）
@@ -52,7 +54,7 @@ namespace WCS_phase1.WCSWindow
             }
         }
 
-        #region 扫码
+        #region WMS
 
         /// <summary>
         /// Add 选项
@@ -83,25 +85,6 @@ namespace WCS_phase1.WCSWindow
             }
         }
 
-        private void CheckWMS_Click(object sender, RoutedEventArgs e)
-        {
-            if ((bool)CheckWMS.IsChecked)
-            {
-                CBfrt_D.IsEnabled = true;
-                TBlocX.IsEnabled = true;
-                TBlocY.IsEnabled = true;
-                TBlocZ.IsEnabled = true;
-                AddCombBoxForWMS("B01", CBfrt_D);
-            }
-            else
-            {
-                CBfrt_D.IsEnabled = false;
-                TBlocX.IsEnabled = false;
-                TBlocY.IsEnabled = false;
-                TBlocZ.IsEnabled = false;
-            }
-        }
-
         /// <summary>
         /// 限制仅输入数字
         /// </summary>
@@ -114,13 +97,17 @@ namespace WCS_phase1.WCSWindow
         }
 
         /// <summary>
-        /// 分配卸货点
+        /// 分配卸货
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void BtnFRT_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(CBfrt_P.Text) || string.IsNullOrEmpty(TBcode.Text))
+            string frtP = CBfrt_P.Text.Trim();
+            string code = TBcode.Text.Trim();
+            string frtD = CBfrt_D.Text.Trim();
+
+            if (string.IsNullOrEmpty(frtP) || string.IsNullOrEmpty(code))
             {
                 MessageBox.Show("包装线辊台设备号 / 货物条码 不能为空！", "Error");
                 return;
@@ -128,13 +115,13 @@ namespace WCS_phase1.WCSWindow
 
             if ((bool)CheckWMS.IsChecked)
             {
-                if (string.IsNullOrEmpty(CBfrt_D.Text))
+                if (string.IsNullOrEmpty(frtD))
                 {
                     MessageBox.Show("卸货点不能为空！", "Error");
                     return;
                 }
                 // 获取Task资讯
-                String sql = String.Format(@"select * from wcs_task_info where SITE <> '{1}' and BARCODE = '{0}'", TBcode.Text, TaskSite.完成);
+                String sql = String.Format(@"select * from wcs_task_info where SITE <> '{1}' and BARCODE = '{0}'", code, TaskSite.完成);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (!DataControl._mStools.IsNoData(dt))
                 {
@@ -145,11 +132,11 @@ namespace WCS_phase1.WCSWindow
                 // 呼叫WMS 请求入库资讯---区域
                 WmsModel wms = new WmsModel()
                 {
-                    Task_UID = "Test" + System.DateTime.Now.ToString("MMddHHmmss"),
+                    Task_UID = "NW" + System.DateTime.Now.ToString("yyMMddHHmmss"),
                     Task_type = WmsStatus.StockInTask,
-                    Barcode = TBcode.Text,
-                    W_S_Loc = CBfrt_P.Text,
-                    W_D_Loc = CBfrt_D.Text
+                    Barcode = code,
+                    W_S_Loc = frtP,
+                    W_D_Loc = frtD
                 };
                 // 写入数据库
                 if (new ForWMSControl().WriteTaskToWCS(wms))
@@ -163,7 +150,7 @@ namespace WCS_phase1.WCSWindow
             }
             else
             {
-                if (new ForWMSControl().ScanCodeTask(CBfrt_P.Text, TBcode.Text))
+                if (new ForWMSControl().ScanCodeTask(frtP, code))
                 {
                     MessageBox.Show("完成！");
                 }
@@ -181,7 +168,11 @@ namespace WCS_phase1.WCSWindow
         /// <param name="e"></param>
         private void BtnLOC_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(CBfrt_P.Text) || string.IsNullOrEmpty(TBcode.Text))
+            string frtP = CBfrt_P.Text.Trim();
+            string code = TBcode.Text.Trim();
+            string frtD = CBfrt_D.Text.Trim();
+
+            if (string.IsNullOrEmpty(frtP) || string.IsNullOrEmpty(code))
             {
                 MessageBox.Show("包装线辊台设备号 / 货物条码 不能为空！", "Error");
                 return;
@@ -189,22 +180,20 @@ namespace WCS_phase1.WCSWindow
 
             if ((bool)CheckWMS.IsChecked)
             {
-                if (string.IsNullOrEmpty(CBfrt_D.Text))
+                if (string.IsNullOrEmpty(frtD))
                 {
                     MessageBox.Show("卸货点不能为空！", "Error");
                     return;
                 }
-                if (string.IsNullOrEmpty(TBlocX.Text) && string.IsNullOrEmpty(TBlocY.Text) && string.IsNullOrEmpty(TBlocZ.Text))
+                if (string.IsNullOrEmpty(TBlocX.Text.Trim()) && string.IsNullOrEmpty(TBlocY.Text.Trim()) && string.IsNullOrEmpty(TBlocZ.Text.Trim()))
                 {
                     MessageBox.Show("货位不能为空！", "Error");
                     return;
                 }
-                string locX = TBlocX.Text.PadLeft(3, '0');
-                string locY = TBlocY.Text.PadLeft(3, '0');
-                string locZ = TBlocZ.Text.PadLeft(3, '0');
-                string LOC = "C" + locX + "-" + locX + "-" + locZ;
+                // 货位
+                string LOC = "C" + TBlocX.Text.Trim().PadLeft(3, '0') + "-" + TBlocY.Text.Trim().PadLeft(3, '0') + "-" + TBlocZ.Text.Trim().PadLeft(3, '0');
                 // 获取Task资讯
-                String sql = String.Format(@"select TASK_UID from wcs_task_info where TASK_TYPE = '{1}' and BARCODE = '{0}'", TBcode.Text, TaskType.入库);
+                String sql = String.Format(@"select TASK_UID from wcs_task_info where TASK_TYPE = '{1}' and BARCODE = '{0}'", code, TaskType.入库);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {
@@ -216,16 +205,16 @@ namespace WCS_phase1.WCSWindow
                 string taskuid = dt.Rows[0]["TASK_UID"].ToString();
                 // 更新任务资讯
                 sql = String.Format(@"update WCS_TASK_INFO set UPDATE_TIME = NOW(), TASK_TYPE = '{0}', W_S_LOC = '{1}', W_D_LOC = '{2}' where TASK_UID = '{3}'",
-                    TaskType.入库, CBfrt_D.Text, LOC, taskuid);
+                    TaskType.入库, frtD, LOC, taskuid);
                 DataControl._mMySql.ExcuteSql(sql);
 
                 // 对应 WCS 清单
-                DataControl._mTaskTools.CreateCommandIn(taskuid, CBfrt_D.Text);
+                DataControl._mTaskTools.CreateCommandIn(taskuid, frtD);
                 MessageBox.Show("完成！");
             }
             else
             {
-                if (new ForWMSControl().ScanCodeTask_Loc(CBfrt_P.Text, TBcode.Text))
+                if (new ForWMSControl().ScanCodeTask_Loc(frtP, code))
                 {
                     MessageBox.Show("完成！");
                 }
@@ -236,17 +225,114 @@ namespace WCS_phase1.WCSWindow
             }
         }
 
+        /// <summary>
+        /// 货位出库
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BtnOUT_Click(object sender, RoutedEventArgs e)
+        {
+            // 无用资讯
+            CBfrt_P.Text = "";
+            TBcode.Text = "";
+
+            string frtD = CBfrt_D.Text.Trim();
+            if (string.IsNullOrEmpty(frtD))
+            {
+                MessageBox.Show("卸货点不能为空！", "Error");
+                return;
+            }
+            if (string.IsNullOrEmpty(TBlocX.Text.Trim()) && string.IsNullOrEmpty(TBlocY.Text.Trim()) && string.IsNullOrEmpty(TBlocZ.Text.Trim()))
+            {
+                MessageBox.Show("货位不能为空！", "Error");
+                return;
+            }
+            // 货位
+            string LOC = "C" + TBlocX.Text.Trim().PadLeft(3, '0') + "-" + TBlocY.Text.Trim().PadLeft(3, '0') + "-" + TBlocZ.Text.Trim().PadLeft(3, '0');
+
+            if ((bool)CheckWMS.IsChecked)
+            {
+                // 获取Task资讯
+                String sql = String.Format(@"select * from wcs_task_info where SITE <> '{1}' and TASK_TYPE = '{2}' and W_S_LOC = '{0}'", LOC, TaskSite.完成, TaskType.出库);
+                DataTable dt = DataControl._mMySql.SelectAll(sql);
+                if (!DataControl._mStools.IsNoData(dt))
+                {
+                    MessageBox.Show("该货位已存在出库任务！");
+                    return;
+                }
+                // 无Task资讯则新增
+                // 呼叫WMS 请求入库资讯---区域
+                WmsModel wms = new WmsModel()
+                {
+                    Task_UID = "NW" + System.DateTime.Now.ToString("yyMMddHHmmss"),
+                    Task_type = WmsStatus.StockOutTask,
+                    Barcode = "",
+                    W_S_Loc = LOC,
+                    W_D_Loc = frtD
+                };
+                // 写入数据库
+                if (new ForWMSControl().WriteTaskToWCS(wms))
+                {
+                    MessageBox.Show("完成！");
+                }
+                else
+                {
+                    MessageBox.Show("失败！");
+                }
+            }
+            else
+            {
+                MessageBox.Show("无法请求WMS出库！");
+            }
+        }
+
         #endregion
 
         #region 设备控制
 
-        private void AddCombBoxForDEV_C()
+        /// <summary>
+        /// 更新设备号内容
+        /// </summary>
+        private void ResetDev()
         {
-            // 所属设备类型
-            CBdevtype.Items.Add("固定辊台");
-            CBdevtype.Items.Add("摆渡车");
-            CBdevtype.Items.Add("运输车");
-            CBdevtype.Items.Add("行车");
+            CBnum.Items.Clear();
+            string type = CBdevtype.SelectedValue.ToString();
+            string area = CBdevarea.SelectedValue.ToString();
+
+            switch (type)
+            {
+                case "固定辊台":
+                    type = DeviceType.固定辊台;
+                    break;
+                case "摆渡车":
+                    type = DeviceType.摆渡车;
+                    break;
+                case "运输车":
+                    type = DeviceType.运输车;
+                    break;
+                case "行车":
+                    type = DeviceType.行车;
+                    break;
+                default:
+                    break;
+            }
+
+            String sql = String.Format(@"select distinct DEVICE from wcs_config_device where TYPE = '{0}' and AREA = '{1}'", type, area);
+            DataTable dt = DataControl._mMySql.SelectAll(sql);
+            if (DataControl._mStools.IsNoData(dt))
+            {
+                return;
+            }
+            List<WCS_CONFIG_DEVICE> devList = dt.ToDataList<WCS_CONFIG_DEVICE>();
+            foreach (WCS_CONFIG_DEVICE dev in devList)
+            {
+                CBnum.Items.Add(dev.DEVICE);
+            }
+        }
+
+        private void CBnum_DropDownOpened(object sender, EventArgs e)
+        {
+            ResetDev();
         }
 
         /// <summary>
@@ -254,31 +340,43 @@ namespace WCS_phase1.WCSWindow
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void GetDevData_Click(object sender, System.EventArgs e)
+        private void GetDevData_Click(object sender, EventArgs e)
         {
             try
             {
                 string type = CBdevtype.Text;
-                string dev = TBnum.Text.Trim();
+                string dev = CBnum.Text.Trim();
 
                 if (string.IsNullOrEmpty(type) || string.IsNullOrEmpty(dev))
                 {
+                    LAdevice.Content = "— — — —";
+                    LAactS.Content = "— — — —";
+                    LAdevS.Content = "— — — —";
+                    LAcmdS.Content = "— — — —";
+                    LAtask.Content = "— — — —";
+                    LAfinish.Content = "— — — —";
+                    LAlocC.Content = "— — — —";
+                    LAlocT.Content = "— — — —";
+                    LAgoodsS.Content = "— — — —";
+                    LAerr.Content = "— — — —";
+                    LArollS.Content = "— — — —";
+                    LArollD.Content = "— — — —";
                     return;
                 }
 
-                switch(type)
+                switch (type)
                 {
                     case "固定辊台":
-                        type = DeviceType.固定辊台;
+                        FRT frt = new FRT(dev);
                         break;
                     case "摆渡车":
-                        type = DeviceType.摆渡车;
+                        ARF arf = new ARF(dev);
                         break;
                     case "运输车":
-                        type = DeviceType.运输车;
+                        RGV rgv = new RGV(dev);
                         break;
                     case "行车":
-                        type = DeviceType.行车;
+                        ABC abc = new ABC(dev);
                         break;
                     default:
                         break;
@@ -292,9 +390,7 @@ namespace WCS_phase1.WCSWindow
 
         #endregion
 
-        #region 设备设定
-
-        private void AddCombBoxForDEV_S()
+        private void AddCombBoxForDEV()
         {
             try
             {
@@ -319,6 +415,7 @@ namespace WCS_phase1.WCSWindow
                 foreach (WCS_CONFIG_DEVICE area in areaList)
                 {
                     CBarea.Items.Add(area.AREA);
+                    CBdevarea.Items.Add(area.AREA);
                 }
 
                 // 所属设备类型
@@ -326,12 +423,22 @@ namespace WCS_phase1.WCSWindow
                 CBtype.Items.Add("摆渡车");
                 CBtype.Items.Add("运输车");
                 CBtype.Items.Add("行车");
+
+                CBdevtype.Items.Add("固定辊台");
+                CBdevtype.Items.Add("摆渡车");
+                CBdevtype.Items.Add("运输车");
+                CBdevtype.Items.Add("行车");
+
+                CBdevtype.SelectedIndex = 0;
+                CBdevarea.SelectedIndex = 0;
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.ToString(), "Error");
             }
         }
+
+        #region 设备设定
 
         /// <summary>
         /// 刷新
@@ -467,7 +574,22 @@ namespace WCS_phase1.WCSWindow
             }
             catch (Exception ex)
             {
-                MessageBox.Show("修改失败： " + ex.ToString(), "Error");
+                if (ex.ToString().Contains("PRIMARY"))
+                {
+                    MessageBox.Show("添加失败： 重复设备号！", "Error");
+                }
+                else if (ex.ToString().Contains("IP_UNIQUE"))
+                {
+                    MessageBox.Show("添加失败： 重复IP！", "Error");
+                }
+                else if (ex.ToString().Contains("PORT_UNIQUE"))
+                {
+                    MessageBox.Show("添加失败： 重复PORT！", "Error");
+                }
+                else
+                {
+                    MessageBox.Show("添加失败： " + ex.ToString(), "Error");
+                }
             }
         }
 
@@ -524,7 +646,22 @@ namespace WCS_phase1.WCSWindow
             }
             catch (Exception ex)
             {
-                MessageBox.Show("添加失败： " + ex.ToString(), "Error");
+                if (ex.ToString().Contains("PRIMARY"))
+                {
+                    MessageBox.Show("添加失败： 重复设备号！", "Error");
+                }
+                else if (ex.ToString().Contains("IP_UNIQUE"))
+                {
+                    MessageBox.Show("添加失败： 重复IP！", "Error");
+                }
+                else if (ex.ToString().Contains("PORT_UNIQUE"))
+                {
+                    MessageBox.Show("添加失败： 重复PORT！", "Error");
+                }
+                else
+                {
+                    MessageBox.Show("添加失败： " + ex.ToString(), "Error");
+                }
             }
         }
 

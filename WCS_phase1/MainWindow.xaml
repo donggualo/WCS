@@ -112,7 +112,7 @@
 
             <Button Content="调试设置" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="75" Canvas.Left="115" Canvas.Top="46" Click="BtnDIS_Click"/>
             <Button Content="任务资讯" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="75" Canvas.Left="20" Canvas.Top="46" Click="BtnTD_Click"/>
-            <Button Content="模拟测试" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="75" Canvas.Left="220" Canvas.Top="46" Click="BtnTEST_Click"/>
+            <Button Content="数据调控" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="75" Canvas.Left="220" Canvas.Top="46" Click="BtnTEST_Click"/>
 
             <Button Content="Test" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="Button_Click" Canvas.Left="425" Canvas.Top="46"/>
 
