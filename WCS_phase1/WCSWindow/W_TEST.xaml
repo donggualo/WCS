@@ -5,38 +5,217 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WCS_phase1.WCSWindow"
         mc:Ignorable="d"
-        Title="模拟-测试" Height="450" Width="800" WindowStyle="ToolWindow">
+        Title="测试" Height="583" Width="909" WindowStyle="ToolWindow">
+
+    <Window.Resources>
+        <Style TargetType="DataGrid">
+            <!--拖动改变单元格大小-->
+            <Setter Property="CanUserResizeColumns" Value="True"/>
+            <!--网格线颜色-->
+            <Setter Property="HorizontalGridLinesBrush">
+                <Setter.Value>
+                    <SolidColorBrush Color="LightBlue"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="VerticalGridLinesBrush">
+                <Setter.Value>
+                    <SolidColorBrush Color="LightBlue"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--标题栏样式-->
+        <Style  TargetType="DataGridColumnHeader" >
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="16" />
+            <!--加粗-->
+            <Setter  Property="FontWeight"  Value="Bold"/>
+        </Style>
+
+        <!--行样式触发-->
+        <!--背景色改变必须先设置cellStyle 因为cellStyle会覆盖rowStyle样式-->
+        <Style  TargetType="DataGridRow">
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <!--加粗-->
+                    <Setter  Property="FontWeight"  Value="Bold"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="LightGray"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!--单元格样式触发-->
+        <Style TargetType="DataGridCell">
+            <Setter Property="FontSize" Value="14" />
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="DeepSkyBlue"/>
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+    </Window.Resources>
+
     <TabControl  Grid.Row="1" Grid.ColumnSpan="4">
-        <TabItem Header="模拟WMS扫码分配">
-            <Grid Background="LightGray">
-                <Label Content="包装线辊台设备号：" HorizontalAlignment="Left" Height="25" Margin="10,28,0,0" VerticalAlignment="Top" Width="115"/>
-                <ComboBox Name="CBfrt_P" HorizontalAlignment="Left" Height="25" Margin="130,28,0,0" VerticalAlignment="Top" Width="120"/>
+        <TabItem Header="模拟WMS" Background="LightSlateGray">
+            <Grid Background="LightSlateGray">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" MinHeight="10"/>
+                    <RowDefinition Height="Auto" MinHeight="60"/>
+                    <RowDefinition Height="Auto" MinHeight="60"/>
+                    <RowDefinition Height="Auto" MinHeight="50"/>
+                    <RowDefinition Height="Auto" MinHeight="100"/>
+                    <RowDefinition Height="Auto" MinHeight="100"/>
+                    <RowDefinition Height="Auto" MinHeight="100"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Label Content="包装线辊台设备号：" Grid.Row="1" Grid.Column="1"/>
+                <ComboBox Name="CBfrt_P" Margin="5,5,5,5" Grid.Column="2" Grid.Row="1"/>
 
-                <Label Content="货物条码：" HorizontalAlignment="Left" Height="25" Margin="10,73,0,0" VerticalAlignment="Top" Width="65"/>
-                <TextBox Name="TBcode" HorizontalAlignment="Left" Height="25" Margin="80,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="170"/>
+                <Label Content="货物条码：" Grid.Column="3" Grid.Row="1"/>
+                <TextBox Name="TBcode" Margin="5,5,5,5" TextWrapping="Wrap" Grid.Column="4" Grid.Row="1"/>
 
-                <CheckBox Name="CheckWMS" Content="NO WMS" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="100" Click="CheckWMS_Click" Margin="150,118,0,0"/>
+                <CheckBox Name="CheckWMS" Content="NO WMS" Margin="50,0,0,0" Grid.Row="3" Grid.Column="1"/>
 
-                <Label Content="卸货点辊台设备号：" HorizontalAlignment="Left" Height="25" Margin="10,138,0,0" VerticalAlignment="Top" Width="115"/>
-                <ComboBox Name="CBfrt_D" HorizontalAlignment="Left" Height="25" Margin="130,138,0,0" VerticalAlignment="Top" Width="120" IsEnabled="False"/>
-                
-                <Label Content="库存货位：" HorizontalAlignment="Left" Height="25" Margin="10,178,0,0" VerticalAlignment="Top" Width="65"/>
-                <TextBox Name="TBlocX" HorizontalAlignment="Left" Height="25" Margin="80,178,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40" IsEnabled="False"
-                         InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum"/>
-                <TextBox Name="TBlocY" HorizontalAlignment="Left" Height="25" Margin="145,178,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40" IsEnabled="False"
-                         InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum"/>
-                <TextBox Name="TBlocZ" HorizontalAlignment="Left" Height="25" Margin="210,177,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40" IsEnabled="False"
-                         InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum"/>
-                <Label Content="—" HorizontalAlignment="Left" Height="25" Margin="125,175,0,0" VerticalAlignment="Top" Width="15"/>
-                <Label Content="—" HorizontalAlignment="Left" Height="25" Margin="190,175,0,0" VerticalAlignment="Top" Width="15"/>
-                
-                <Button Name="BtnFRT" Content="分配卸货点" HorizontalAlignment="Left" Height="75" Margin="315,95,0,0" VerticalAlignment="Top" Width="80" Click="BtnFRT_Click"/>
-                <Button Name="BtnLOC" Content="分配货位" HorizontalAlignment="Left" Height="75" Margin="315,193,0,0" VerticalAlignment="Top" Width="80" Click="BtnLOC_Click"/>
+                <Label Content="库存区辊台设备号：" Grid.Row="2" Grid.Column="1"/>
+                <ComboBox Name="CBfrt_D" Margin="5,5,5,5" Grid.Column="2" Grid.Row="2"/>
+
+                <Label Content="库存货位：" Grid.Column="3" Grid.Row="2"/>
+                <TextBox Name="TBlocX" Margin="5,5,180,5" TextWrapping="Wrap"
+                         InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum" MaxLength="3" Grid.Column="4" Grid.Row="2"/>
+                <TextBox Name="TBlocY" Margin="90,5,95,5" TextWrapping="Wrap"
+                         InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum" MaxLength="3" Grid.Column="4" Grid.Row="2"/>
+                <TextBox Name="TBlocZ" Margin="180,5,5,5" TextWrapping="Wrap"
+                         InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum" MaxLength="3" Grid.Column="4" Grid.Row="2"/>
+                <Label Content="—" Margin="60,17,155,13" Grid.Column="4" Grid.Row="2"/>
+                <Label Content="—" Margin="150,17,65,13" Grid.Column="4" Grid.Row="2"/>
+
+                <Button Name="BtnFRT" Content="分配卸货" Margin="50,0,5,20" Click="BtnFRT_Click" Grid.Row="4" Grid.Column="1"/>
+                <Button Name="BtnLOC" Content="分配货位" Margin="50,0,5,20" Click="BtnLOC_Click" Grid.Row="5" Grid.Column="1"/>
+                <Button Name="BtnOUT" Content="货位出库" Margin="50,0,5,20" Click="BtnOUT_Click" Grid.Row="6" Grid.Column="1"/>
+                <TextBlock TextWrapping="Wrap"  Text="【WMS】：根据包装线辊台与条码请求WMS获取AGV卸货点；   【NO WMS】：仅供AGV运输。" Grid.Column="2" Grid.Row="4" Height="90" VerticalAlignment="Top" HorizontalAlignment="Left" Width="199"/>
+                <TextBlock TextWrapping="Wrap"  Text="【WMS】：根据包装线辊台与条码请求WMS获取入库货位；   【NO WMS】：入实物不添帐。" Grid.Column="2" Grid.Row="5" HorizontalAlignment="Left" Width="195" Height="90" VerticalAlignment="Top"/>
+                <TextBlock TextWrapping="Wrap"  Text="【NO WMS】：出实物不除帐。" Grid.Column="2" Grid.Row="6" Height="90" VerticalAlignment="Top" HorizontalAlignment="Left" Width="195"/>
             </Grid>
         </TabItem>
-        <TabItem Header="TEST2">
+
+        <TabItem  Header="设备控制" Background="LightGray">
             <Grid Background="LightGray">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" MinHeight="10"/>
+                    <RowDefinition Height="Auto" MinHeight="132"/>
+                    <RowDefinition Height="Auto" MinHeight="28"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" MinWidth="10"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <ComboBox Name="CBdevtype" Margin="0,3,0,89" Grid.Column="1" Grid.Row="1"/>
+                <ComboBox Name="CBdevarea" Margin="0,46,0,46" Grid.Column="1" Grid.Row="1"/>
+                <ComboBox Name="CBnum" Margin="0,89,0,3" Grid.Column="1" Grid.Row="1" DropDownOpened="CBnum_DropDownOpened"/>
+                <Button Content="获取" Margin="10,30,10,30" Click="GetDevData_Click" Grid.Column="2" Grid.Row="1"/>
+
+                <Label Content="设备号：" Margin="48,0,0,0" Grid.Column="1" Grid.Row="2"/>
+                <Label Name="LAdevice" Content="— — — —" FontWeight="Bold" Grid.Column="2" Grid.Row="2"/>
+                <Label Content="运动状态：" Margin="32,0,0,0" Grid.Column="1" Grid.Row="3"/>
+                <Label Name="LAactS" Content="— — — —" FontWeight="Bold" Grid.Column="2" Grid.Row="3"/>
+                <Label Content="设备状态：" Margin="32,0,0,0" Grid.Column="1" Grid.Row="4"/>
+                <Label Name="LAdevS" Content="— — — —" FontWeight="Bold"  Grid.Column="2" Grid.Row="4"/>
+                <Label Content="命令状态：" Margin="32,0,0,0" Grid.Column="1" Grid.Row="5"/>
+                <Label Name="LAcmdS" Content="— — — —" FontWeight="Bold" Grid.Column="2" Grid.Row="5"/>
+                <Label Content="当前任务：" Margin="32,0,0,0" Grid.Column="1" Grid.Row="6"/>
+                <Label Name="LAtask" Content="— — — —" FontWeight="Bold" Grid.Column="2" Grid.Row="6"/>
+                <Label Content="完成任务：" Margin="32,0,0,0" Grid.Column="1" Grid.Row="7"/>
+                <Label Name="LAfinish" Content="— — — —" FontWeight="Bold" Grid.Column="2" Grid.Row="7"/>
+                <Label Content="当前位置：" Margin="32,0,0,0" Grid.Column="1" Grid.Row="8"/>
+                <Label Name="LAlocC" Content="— — — —" FontWeight="Bold" Grid.Column="2" Grid.Row="8"/>
+                <Label Content="目的位置：" Margin="31,0,0,0" Grid.Column="1" Grid.Row="9"/>
+                <Label Name="LAlocT" Content="— — — —" FontWeight="Bold"  Grid.Column="2" Grid.Row="9"/>
+                <Label Content="货物状态：" Margin="32,0,0,0" Grid.Column="1" Grid.Row="10"/>
+                <Label Name="LAgoodsS" Content="— — — —" FontWeight="Bold" Grid.Column="2" Grid.Row="10"/>
+                <Label Content="故障信息：" Margin="32,0,0,0" Grid.Column="1" Grid.Row="11"/>
+                <Label Name="LAerr" Content="— — — —" FontWeight="Bold" Grid.Column="2" Grid.Row="11"/>
+                <Label Content="当前辊台状态：" Margin="3,0,0,0" Grid.Column="1" Grid.Row="12"/>
+                <Label Name="LArollS" Content="— — — —" FontWeight="Bold" Grid.Column="2" Grid.Row="12"/>
+                <Label Content="辊台运行方向：" Margin="3,0,0,0" Grid.Column="1" Grid.Row="13"/>
+                <Label Name="LArollD" Content="— — — —" FontWeight="Bold" Grid.Column="2" Grid.Row="13"/>
+
             </Grid>
         </TabItem>
+
+        <TabItem Header="设备设定" Background="LightSteelBlue">
+            <Grid Background="LightSteelBlue">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="415*"/>
+                    <RowDefinition Height="76*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Button Content="刷新" HorizontalAlignment="Left" Height="50" Margin="20,20,0,0" VerticalAlignment="Top" Width="60" Click="RefreshDev_Click"/>
+                <Label Content="设备类型：" Margin="100,10,0,378" HorizontalAlignment="Left" Width="77"/>
+                <ComboBox Name="CBdev" HorizontalAlignment="Left" Height="33" Margin="100,37,0,0" VerticalAlignment="Top" Width="127"/>
+                <Label Content="设备区域：" Height="27" Margin="240,10,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="77"/>
+                <ComboBox Name="CBarea" HorizontalAlignment="Left" Height="33" Margin="240,37,0,0" VerticalAlignment="Top" Width="109"/>
+
+                <DataGrid Name="DGdevice" Margin="20,80,21,3" AutoGeneratingColumn="DataGrid_TimeFormat" CanUserAddRows="False" IsReadOnly="True" MouseDoubleClick="DGdevice_DoubleClick">
+                    <DataGrid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="删除此数据" Click="DeleteDev_Click"/>
+                            <MenuItem Header="导出 Excel" Click="SaveToExcel_Click"/>
+                        </ContextMenu>
+                    </DataGrid.ContextMenu>
+                </DataGrid>
+                <Label Content="设备号：" Height="27" Margin="0,8,801,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="60" Grid.Row="1"/>
+                <TextBox Name="TBdevice" HorizontalAlignment="Right" Height="27" Margin="0,8,685,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="111" Grid.Row="1"/>
+
+                <Label Content="IP：" Height="27" Margin="0,7,641,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="32" Grid.Row="1"/>
+                <TextBox Name="TBip" HorizontalAlignment="Right" Height="27" Margin="0,7,481,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="155" Grid.Row="1"/>
+
+                <Label Content="PORT：" Height="27" Margin="0,8,376,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="60" Grid.Row="1"/>
+                <TextBox Name="TBport" HorizontalAlignment="Right" Height="27" Margin="0,7,260,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="111" Grid.Row="1"/>
+
+                <Label Content="所属区域：" Height="27" Margin="0,8,161,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="77" Grid.Row="1"/>
+                <TextBox Name="TBarea" HorizontalAlignment="Right" Height="27" Margin="0,7,45,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="111" Grid.Row="1"/>
+
+                <Label Content="备注：" Height="27" Margin="0,41,801,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="45" Grid.Row="1"/>
+                <TextBox Name="TBmark" HorizontalAlignment="Right" Height="27" Margin="0,41,481,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="315" Grid.Row="1"/>
+
+                <Label Content="所属类型：" Height="27" Margin="0,41,376,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="77" Grid.Row="1"/>
+                <ComboBox Name="CBtype" HorizontalAlignment="Right" Height="27" Margin="0,41,260,0" VerticalAlignment="Top" Width="111" Grid.Row="1"/>
+
+                <Button Name="BtnADD" Content="添加" Height="28" Margin="0,41,152,0" VerticalAlignment="Top" Click="AddDev_Click" Grid.Row="1" HorizontalAlignment="Right" Width="81"/>
+                <Button Name="BtnUPD" Content="修改" Height="28" Margin="0,41,45,0" VerticalAlignment="Top" Click="UpdateDev_Click" Grid.Row="1" HorizontalAlignment="Right" Width="81"/>
+            </Grid>
+        </TabItem>
+
     </TabControl>
 </Window>

@@ -1200,7 +1200,7 @@ namespace WCS_phase1.Action
             try
             {
                 // 摆渡车
-                ARF ARF;
+                ARF dev;
                 // 终选摆渡车
                 String arf = String.Empty;
                 // 距离比较值
@@ -1212,46 +1212,46 @@ namespace WCS_phase1.Action
                 foreach (WCS_CONFIG_DEVICE d in dList)
                 {
                     // 获取摆渡车设备资讯
-                    ARF = new ARF(d.DEVICE);
+                    dev = new ARF(d.DEVICE);
 
                     // 当前坐标值比较目标位置
-                    if (ARF.CurrentSite() == LOC)    // 当前坐标值 = 目标位置
+                    if (dev.CurrentSite() == LOC)    // 当前坐标值 = 目标位置
                     {
                         // 直接选取该设备
                         arf = d.DEVICE;
                         break;
                     }
-                    else if (ARF.CurrentSite() < LOC) // 当前坐标值 < 目标位置
+                    else if (dev.CurrentSite() < LOC) // 当前坐标值 < 目标位置
                     {
                         // 距离比较值 >=（目标位置 - 当前坐标值）
-                        if (X >= (LOC - ARF.CurrentSite()))
+                        if (X >= (LOC - dev.CurrentSite()))
                         {
                             // 暂选取该设备
                             arf = d.DEVICE;
                             // 更新距离比较值
-                            X = (byte)(LOC - ARF.CurrentSite());
+                            X = (byte)(LOC - dev.CurrentSite());
                         }
                     }
                     else // 当前坐标值 > 目标位置
                     {
                         // 距离比较值 >=（当前坐标值 - 目标位置）
-                        if (X >= (ARF.CurrentSite() - LOC))
+                        if (X >= (dev.CurrentSite() - LOC))
                         {
                             // 暂选取该设备
                             arf = d.DEVICE;
                             // 更新距离比较值
-                            X = (byte)(ARF.CurrentSite() - LOC);
+                            X = (byte)(dev.CurrentSite() - LOC);
                         }
                     }
-                    ARF = null;
+                    dev = null;
                 }
 
                 // 检测设备是否可用
                 if (!String.IsNullOrEmpty(arf.Trim()))
                 {
-                    ARF = new ARF(arf);
-                    // 命令状态不为完成, 货物状态不为无货 ==> 不可用
-                    if (ARF.CommandStatus() != ARF.CommandFinish && ARF.GoodsStatus() != ARF.GoodsNoAll && ARF.CurrentStatus() != ARF.RollerStop)
+                    dev = new ARF(arf);
+                    // 设备故障, 正在运行, 货物状态不为无货, 辊台状态不为停止 ==> 不可用
+                    if (dev.DeviceStatus() == ARF.DeviceError || dev.ActionStatus() == ARF.Run || dev.GoodsStatus() != ARF.GoodsNoAll || dev.CurrentStatus() != ARF.RollerStop)
                     {
                         arf = String.Empty;
                     }
@@ -1276,7 +1276,7 @@ namespace WCS_phase1.Action
             try
             {
                 // 运输车
-                RGV RGV;
+                RGV dev;
                 // 终选运输车
                 String rgv = String.Empty;
                 // 目标位置
@@ -1288,13 +1288,13 @@ namespace WCS_phase1.Action
                 foreach (WCS_CONFIG_DEVICE d in dList)
                 {
                     // 获取摆渡车设备资讯
-                    RGV = new RGV(d.DEVICE);
+                    dev = new RGV(d.DEVICE);
 
                     // 比较目标位置与对接点
                     if (LOC <= RR)
                     {
                         // 仅获取位置于运输车[外]运输范围内的 RGV
-                        if (RGV.GetCurrentSite() <= RR)
+                        if (dev.GetCurrentSite() <= RR)
                         {
                             // 锁定设备
                             rgv = d.DEVICE;
@@ -1304,7 +1304,7 @@ namespace WCS_phase1.Action
                     else
                     {
                         // 仅获取位置于运输车[内]运输范围内的 RGV
-                        if (RGV.GetCurrentSite() > RR)
+                        if (dev.GetCurrentSite() > RR)
                         {
                             // 锁定设备
                             rgv = d.DEVICE;
@@ -1312,15 +1312,15 @@ namespace WCS_phase1.Action
                         }
                     }
 
-                    RGV = null;
+                    dev = null;
                 }
 
                 // 检测设备是否可用
                 if (!String.IsNullOrEmpty(rgv.Trim()))
                 {
-                    RGV = new RGV(rgv);
-                    // 命令状态不为完成, 货物状态不为无货, 辊台状态不为停止 ==> 不可用
-                    if (RGV.CommandStatus() != RGV.CommandFinish && RGV.GoodsStatus() != RGV.GoodsNoAll && RGV.CurrentStatus() != RGV.RollerStop)
+                    dev = new RGV(rgv);
+                    // 设备故障, 正在运行, 货物状态不为无货, 辊台状态不为停止 ==> 不可用
+                    if (dev.DeviceStatus() == RGV.DeviceError || dev.ActionStatus() == RGV.Run || dev.GoodsStatus() != RGV.GoodsNoAll || dev.CurrentStatus() != RGV.RollerStop)
                     {
                         rgv = String.Empty;
                     }
@@ -1345,7 +1345,7 @@ namespace WCS_phase1.Action
             try
             {
                 // 行车
-                ABC ABC;
+                ABC dev;
                 // 终选行车
                 String abc = String.Empty;
                 // 行车中间值
@@ -1358,13 +1358,13 @@ namespace WCS_phase1.Action
                 foreach (WCS_CONFIG_DEVICE d in dList)
                 {
                     // 获取行车设备资讯
-                    ABC = new ABC(d.DEVICE);
+                    dev = new ABC(d.DEVICE);
 
                     // 比较目标X轴值与对接点
                     if (X <= AA)
                     {
                         // 仅获取位置于行车[外]运输范围内的 ABC
-                        if (DataControl._mStools.BytesToInt(ABC.CurrentXsite(), 0) <= AA)
+                        if (DataControl._mStools.BytesToInt(dev.CurrentXsite(), 0) <= AA)
                         {
                             // 锁定设备
                             abc = d.DEVICE;
@@ -1374,7 +1374,7 @@ namespace WCS_phase1.Action
                     else
                     {
                         // 仅获取位置于行车[内]运输范围内的 ABC
-                        if (DataControl._mStools.BytesToInt(ABC.CurrentXsite(), 0) > AA)
+                        if (DataControl._mStools.BytesToInt(dev.CurrentXsite(), 0) > AA)
                         {
                             // 锁定设备
                             abc = d.DEVICE;
@@ -1382,15 +1382,15 @@ namespace WCS_phase1.Action
                         }
                     }
 
-                    ABC = null;
+                    dev = null;
                 }
 
                 // 检测设备是否可用
                 if (!String.IsNullOrEmpty(abc.Trim()))
                 {
-                    ABC = new ABC(abc);
-                    // 命令状态不为完成, 货物状态不为无货 ==> 不可用
-                    if (ABC.CommandStatus() != ABC.CommandFinish && ABC.GoodsStatus() != ABC.GoodsNo)
+                    dev = new ABC(abc);
+                    // 设备故障, 正在运行, 货物状态不为无货 ==> 不可用
+                    if (dev.DeviceStatus() == ABC.DeviceError || dev.ActionStatus() == ABC.Run || dev.GoodsStatus() != ABC.GoodsNo)
                     {
                         abc = String.Empty;
                     }

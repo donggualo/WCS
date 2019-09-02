@@ -18,27 +18,27 @@ namespace WCS_phase1.Devices
 
         }
 
-        #region 命令状态
+        #region 状态
 
         /// <summary>
-        /// 命令完成
+        /// 设备停止
         /// </summary>
-        public static byte CommandFinish = 0x00;
+        public static byte Stop = 0x00;
 
         /// <summary>
-        /// 命令执行中
+        /// 设备运行
         /// </summary>
-        public static byte CommandExecute = 0x01;
+        public static byte Run = 0x01;
 
         /// <summary>
         /// 设备故障
         /// </summary>
-        public static byte DeviceError = 0xFE;
+        public static byte DeviceError = 0x01;
 
         /// <summary>
         /// 命令错误
         /// </summary>
-        public static byte CommandError = 0xFF;
+        public static byte CommandError = 0x01;
 
         #endregion
 
@@ -103,12 +103,30 @@ namespace WCS_phase1.Devices
         }
 
         /// <summary>
+        /// 运行状态
+        /// </summary>
+        /// <returns></returns>
+        public byte ActionStatus()
+        {
+            return GetSingleByte(3);
+        }
+
+        /// <summary>
+        /// 设备状态
+        /// </summary>
+        /// <returns></returns>
+        public byte DeviceStatus()
+        {
+            return GetSingleByte(4);
+        }
+
+        /// <summary>
         /// 命令状态
         /// </summary>
         /// <returns></returns>
         public byte CommandStatus()
         {
-            return GetSingleByte(3);
+            return GetSingleByte(5);
         }
 
         /// <summary>
@@ -117,7 +135,7 @@ namespace WCS_phase1.Devices
         /// <returns></returns>
         public byte[] GoodsXsite()
         {
-            return GetThridByte(4);
+            return GetThridByte(6);
         }
 
         /// <summary>
@@ -126,7 +144,7 @@ namespace WCS_phase1.Devices
         /// <returns></returns>
         public byte[] GoodsYsite()
         {
-            return GetDoubleByte(7);
+            return GetDoubleByte(9);
         }
 
         /// <summary>
@@ -135,7 +153,7 @@ namespace WCS_phase1.Devices
         /// <returns></returns>
         public byte[] GoodsZsite()
         {
-            return GetDoubleByte(9);
+            return GetDoubleByte(11);
         }
 
         /// <summary>
@@ -144,7 +162,7 @@ namespace WCS_phase1.Devices
         /// <returns></returns>
         public byte CurrentTask()
         {
-            return GetSingleByte(11);
+            return GetSingleByte(13);
         }
 
         /// <summary>
@@ -153,7 +171,7 @@ namespace WCS_phase1.Devices
         /// <returns></returns>
         public byte[] CurrentXsite()
         {
-            return GetThridByte(12);
+            return GetThridByte(14);
         }
 
         /// <summary>
@@ -162,7 +180,7 @@ namespace WCS_phase1.Devices
         /// <returns></returns>
         public byte[] CurrentYsite()
         {
-            return GetDoubleByte(15);
+            return GetDoubleByte(17);
         }
 
         /// <summary>
@@ -171,7 +189,7 @@ namespace WCS_phase1.Devices
         /// <returns></returns>
         public byte[] CurrentZsite()
         {
-            return GetDoubleByte(17);
+            return GetDoubleByte(19);
         }
 
         /// <summary>
@@ -180,7 +198,7 @@ namespace WCS_phase1.Devices
         /// <returns></returns>
         public byte FinishTask()
         {
-            return GetSingleByte(19);
+            return GetSingleByte(21);
         }
 
         /// <summary>
@@ -189,7 +207,7 @@ namespace WCS_phase1.Devices
         /// <returns></returns>
         public byte GoodsStatus()
         {
-            return GetSingleByte(20);
+            return GetSingleByte(22);
         }
 
         /// <summary>
@@ -198,7 +216,7 @@ namespace WCS_phase1.Devices
         /// <returns></returns>
         public byte ErrorMessage()
         {
-            return GetSingleByte(21);
+            return GetSingleByte(23);
         }
 
         #endregion

@@ -28,6 +28,11 @@ namespace WCS_phase1.Models
         public int PORT { get; set; }
 
         /// <summary>
+        /// 类型
+        /// </summary>
+        public String TYPE { get; set; }
+
+        /// <summary>
         /// 区域
         /// </summary>
         public String AREA { get; set; }
