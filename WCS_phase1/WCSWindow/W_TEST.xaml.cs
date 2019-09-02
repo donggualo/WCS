@@ -271,13 +271,13 @@ namespace WCS_phase1.WCSWindow
                     W_D_Loc = frtD
                 };
                 // 写入数据库
-                if (new ForWMSControl().WriteTaskToWCS(wms))
+                if (new ForWMSControl().WriteTaskToWCS(wms,out string result))
                 {
                     MessageBox.Show("完成！");
                 }
                 else
                 {
-                    MessageBox.Show("失败！");
+                    MessageBox.Show("失败！"+result);
                 }
             }
             else

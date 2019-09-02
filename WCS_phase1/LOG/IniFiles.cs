@@ -77,14 +77,24 @@ namespace WCS_phase1
 
         public Dictionary<string,string> ReadAllValue(string section)
         {
+
             Dictionary<string, string> dic = new Dictionary<string, string>();
 
-            string str = ascii.GetString(ReadValue(section, null)).Replace("\0\0","");
-            string[] list = str.Split(new char[1] { '\0' });
-
-            foreach(string s in list)
+            try
             {
-                dic.Add(s, ReadStrValue(section, s));
+
+
+                string str = ascii.GetString(ReadValue(section, null)).Replace("\0\0", "");
+                string[] list = str.Split(new char[1] { '\0' });
+
+                foreach (string s in list)
+                {
+                    dic.Add(s, ReadStrValue(section, s));
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
             }
 
             return dic;
