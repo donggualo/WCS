@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Panuon.UI.Silver;
 using WCS_phase1.Action;
+using WCS_phase1.Http;
 using WCS_phase1.WCSWindow;
 
 namespace WCS_phase1
@@ -53,6 +54,25 @@ namespace WCS_phase1
         {
             DataControl.BeforeClose();
             System.Environment.Exit(0);
+        }
+
+        private void GetWmsInfo_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+
+                WmsModel result = DataControl._mHttp.DoBarcodeScanTask("A01","BARCODE");
+                if (result != null)
+                {
+                    Notice.Show(result.ToString(), "信息", 15, MessageBoxIcon.Info);
+
+                }
+            }
+            catch(Exception ex)
+            {
+                Notice.Show(ex.Message, "错误", 3, MessageBoxIcon.Error);
+
+            }
         }
     }
 }

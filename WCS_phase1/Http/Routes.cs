@@ -4,6 +4,7 @@
 using MHttpServer;
 using MHttpServer.Models;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using WCS_phase1.Action;
 
@@ -64,21 +65,24 @@ namespace WCS_phase1.Http
         /// <returns></returns>
         private static HttpResponse StockOutHandle(HttpRequest request)
         {
-            if (request.Content != null)
-            {
-                WmsModel model = JsonConvert.DeserializeObject<WmsModel>(request.Content);
-                HttpResponse response = CheckWmsModel(model,WmsStatus.StockOutTask,true);
-                if (response != null) return response;
-                if(new ForWMSControl().WriteTaskToWCS(model))
+            try { 
+                if (request.Content != null)
                 {
-                    return FailResponse();
+                    WmsModel model = JsonConvert.DeserializeObject<WmsModel>(request.Content);
+                    HttpResponse response = CheckWmsModel(model,WmsStatus.StockOutTask,true);
+                    if (response != null) return response;
+                    if (new ForWMSControl().WriteTaskToWCS(model, out string result))
+                    {
+                        return FailResponse(result);
+                    }
+                    return OkResponse();
                 }
-                return OkResponse();
             }
-            else
+            catch (Exception e)
             {
-                return EmptyMssage();
+                Console.WriteLine(e.Message);
             }
+            return EmptyMssage();
         }
 
         /// <summary>
@@ -89,21 +93,25 @@ namespace WCS_phase1.Http
         /// <returns></returns>
         private static HttpResponse StockMoveHandle(HttpRequest request)
         {
-            if (request.Content != null)
+            try
             {
-                WmsModel model = JsonConvert.DeserializeObject<WmsModel>(request.Content);
-                HttpResponse response = CheckWmsModel(model,WmsStatus.StockMoveTask,true);
-                if (response != null) return response;
-                if (new ForWMSControl().WriteTaskToWCS(model))
+                if (request.Content != null)
                 {
-                    return FailResponse();
+                    WmsModel model = JsonConvert.DeserializeObject<WmsModel>(request.Content);
+                    HttpResponse response = CheckWmsModel(model,WmsStatus.StockMoveTask,true);
+                    if (response != null) return response;
+                    if (new ForWMSControl().WriteTaskToWCS(model,out string result))
+                    {
+                        return FailResponse(result);
+                    }
+                    return OkResponse();
                 }
-                return OkResponse();
-            }
-            else
+            }catch(Exception e)
             {
-                return EmptyMssage();
+                Console.WriteLine(e.Message);
             }
+            return EmptyMssage();
+
         }
 
         /// <summary>
@@ -114,21 +122,24 @@ namespace WCS_phase1.Http
         /// <returns></returns>
         private static HttpResponse StockCheckHandle(HttpRequest request)
         {
-            if (request.Content != null)
+            try
             {
-                WmsModel model = JsonConvert.DeserializeObject<WmsModel>(request.Content);
-                HttpResponse response = CheckWmsModel(model,WmsStatus.StockCheckTask,false);
-                if (response != null) return response;
-                if (new ForWMSControl().WriteTaskToWCS(model))
+                if (request.Content != null)
                 {
-                    return FailResponse();
+                    WmsModel model = JsonConvert.DeserializeObject<WmsModel>(request.Content);
+                    HttpResponse response = CheckWmsModel(model,WmsStatus.StockCheckTask,false);
+                    if (response != null) return response;
+                    if (new ForWMSControl().WriteTaskToWCS(model, out string result))
+                    {
+                        return FailResponse(result);
+                    }
+                    return OkResponse();
                 }
-                return OkResponse();
-            }
-            else
+            }catch(Exception e)
             {
-                return EmptyMssage();
+                Console.WriteLine(e.Message);
             }
+            return EmptyMssage();
         }
 
         /// <summary>

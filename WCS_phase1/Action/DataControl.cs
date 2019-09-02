@@ -116,7 +116,7 @@ namespace WCS_phase1.Action
             {
                 //_mSocket = new SocketControl();
 
-                //_mMySql = new MySQL();
+                _mMySql = new MySQL();
 
                 //_mStools = new SimpleTools();
 
@@ -124,9 +124,9 @@ namespace WCS_phase1.Action
 
                 //_mTaskTools.InitializeClient();
 
-                //_mHttpServer = new HttpServerControl();
+                _mHttpServer = new HttpServerControl();
 
-                //_mHttp = new HttpControl();
+                _mHttp = new HttpControl();
 
                 _mNDCControl = new NDCControl();
 

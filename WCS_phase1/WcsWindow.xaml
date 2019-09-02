@@ -203,7 +203,7 @@
                         FontSize="22"
                         Header="激光AGV"
                         Padding="10,0,0,0"
-                        pu:TreeViewHelper.ItemIcon="&#xf013;" />                    
+                        pu:TreeViewHelper.ItemIcon="&#xf013;" />
                     <TreeViewItem
                         Tag="Setting"
                         MouseDoubleClick="TreeView_MouseDoubleClick"
@@ -252,6 +252,7 @@
                                 Margin="0,2,0,0">
                         <TabItem Header="概况"
                                 pu:TabControlHelper.CanRemove="False">
+
                             <DataGrid Margin="10">
                                 <DataGrid.Columns>
                                     <DataGridCheckBoxColumn Width="40"/>
@@ -266,6 +267,18 @@
                         </TabItem>
                     </TabControl>
                 </Grid>
+                <Button Name="getWmsInfo"
+                    HorizontalAlignment="Left" Margin="316,10,0,0" VerticalAlignment="Top"
+                        Height="30"
+                    Width="130" Click="GetWmsInfo_Click"
+                    Content="&#xf090; 获取信息"
+                    pu:ButtonHelper.ClickStyle="Sink"
+                    FontFamily="{DynamicResource FontAwesome}"
+                    pu:ButtonHelper.ButtonStyle="Hollow"
+                    BorderBrush="#FF3F3F3F"
+                    Foreground="#FF3F3F3F"
+                    pu:ButtonHelper.HoverBrush="#3F3F3F"
+                    pu:ButtonHelper.CornerRadius="6"/>
             </Grid>
         </Grid>
     </Grid>

@@ -37,5 +37,14 @@ namespace WCS_phase1.Http
         /// 目标货位
         /// </summary>
         public string W_D_Loc { get; set; }
+
+        public override string ToString()
+        {
+            return "任务ID : "+this.Task_UID+
+                "\n任务类型 : "+WmsStatusZH.Get(Task_type)+
+                "\n二维码 : " + Barcode+
+                "\n来源货位 : " + W_S_Loc+
+                "\n目标货位 : " + W_D_Loc;
+        }
     }
 }

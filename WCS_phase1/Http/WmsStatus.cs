@@ -6,6 +6,43 @@ using System.Threading.Tasks;
 
 namespace WCS_phase1.Http
 {
+    public class WmsStatusZH
+    {
+        public static string Get(WmsStatus status)
+        {
+            string str = "";
+            switch (status)
+            {
+
+                /// <summary>
+                /// 入库任务：从 WCS 发出进仓任务
+                /// </summary>
+                case WmsStatus.StockInTask:
+                    str = "入库任务";
+                    break;
+
+                /// <summary>
+                /// 出库任务：从 WMS 发出出仓任务
+                /// </summary>
+                case WmsStatus.StockOutTask:
+                    str = "出库任务";
+                    break;
+                /// <summary>
+                /// 移库任务：从 WMS 发出移仓任务
+                /// </summary>
+                case WmsStatus.StockMoveTask:
+                    str = "移库任务";
+                    break;
+                /// <summary>
+                /// 盘点任务：从 WMS 发出盘点任务
+                /// </summary>
+                case WmsStatus.StockCheckTask:
+                    str = "盘点任务";
+                    break;
+            }
+            return str;
+        }
+    }
 
     /// <summary>
     /// WMS 状态定义 

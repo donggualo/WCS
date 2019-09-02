@@ -17,19 +17,21 @@ namespace WCS_phase1.Action
         /// 获取WMS资讯写入WCS数据库
         /// </summary>
         /// <param name="wms"></param>
-        public bool WriteTaskToWCS(WmsModel wms)
+        public bool WriteTaskToWCS(WmsModel wms, out string result)
         {
             try
             {
                 String sql = String.Format(@"insert into wcs_task_info(TASK_UID, TASK_TYPE, BARCODE, W_S_LOC, W_D_LOC) values('{0}','{1}','{2}','{3}','{4}')",
                     wms.Task_UID, wms.Task_type.GetHashCode(), wms.Barcode, wms.W_S_Loc, wms.W_D_Loc);
                 DataControl._mMySql.ExcuteSql(sql);
+                result = "";
                 return true;
             }
             catch (Exception ex)
             {
                 // LOG
                 DataControl._mTaskTools.RecordTaskErrLog("WriteTaskToWCS()", "WMS请求作业[任务ID，作业类型]", wms.Task_UID, wms.Task_type.ToString(), ex.ToString());
+                result = "未知错误";
                 return false;
             }
         }
@@ -55,7 +57,7 @@ namespace WCS_phase1.Action
                 // 呼叫WMS 请求入库资讯---区域
                 WmsModel wms = DataControl._mHttp.DoBarcodeScanTask(loc, code);
                 // 写入数据库
-                return WriteTaskToWCS(wms);
+                return WriteTaskToWCS(wms, out string result);
             }
             catch (Exception ex)
             {

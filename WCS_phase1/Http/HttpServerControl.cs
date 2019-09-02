@@ -21,6 +21,11 @@ namespace WCS_phase1.Http
         private bool isStart = false;
         Thread thread;
 
+        public HttpServerControl()
+        {
+            StartServer();
+        }
+
         public void StartServer()
         {
             try

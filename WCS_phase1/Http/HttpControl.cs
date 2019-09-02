@@ -20,7 +20,7 @@ namespace WCS_phase1.Http
 
         public HttpControl()
         {
-            wcsUrl = "http://10.9.31.101/wms.php";
+            wcsUrl = "http://10.9.31.66/wms.php";
         }
 
         #region 入库任务
