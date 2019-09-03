@@ -1,22 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using WCS_phase1.Models;
 using System.Data;
-using WCS_phase1.Functions;
-using WCS_phase1.Devices;
-using WCS_phase1.LOG;
-using System.Configuration;
 using System.Threading;
+using TaskManager.Models;
+using TaskManager.Functions;
+using TaskManager.Devices;
 
-namespace WCS_phase1.Action
+namespace TaskManager
 {
     /// <summary>
     /// AGV运输货物任务
     /// </summary>
-    class ForAGVControl
+    public class ForAGVControl
     {
         #region 线程
 

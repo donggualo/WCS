@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WCS_phase1.Models;
 using System.Data;
-using WCS_phase1.Functions;
-using System.Configuration;
-using WCS_phase1.Http;
+using TaskManager.Models;
+using WcsHttpManager;
 
-namespace WCS_phase1.Action
+namespace TaskManager
 {
-    class ForWMSControl
+    public class ForWMSControl
     {
         /// <summary>
         /// 获取WMS资讯写入WCS数据库
