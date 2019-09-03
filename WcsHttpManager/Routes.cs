@@ -70,7 +70,7 @@ namespace WcsHttpManager
                     WmsModel model = JsonConvert.DeserializeObject<WmsModel>(request.Content);
                     HttpResponse response = CheckWmsModel(model,WmsStatus.StockOutTask,true);
                     if (response != null) return response;
-                    if (WmsModelAdd(model, out string result))
+                    if (!WmsModelAdd(model, out string result))
                     {
                         return FailResponse(result);
                     }
@@ -99,7 +99,7 @@ namespace WcsHttpManager
                     WmsModel model = JsonConvert.DeserializeObject<WmsModel>(request.Content);
                     HttpResponse response = CheckWmsModel(model,WmsStatus.StockMoveTask,true);
                     if (response != null) return response;
-                    if (WmsModelAdd(model, out string result))
+                    if (!WmsModelAdd(model, out string result))
                     {
                         return FailResponse(result);
                     }
@@ -128,7 +128,7 @@ namespace WcsHttpManager
                     WmsModel model = JsonConvert.DeserializeObject<WmsModel>(request.Content);
                     HttpResponse response = CheckWmsModel(model,WmsStatus.StockCheckTask,false);
                     if (response != null) return response;
-                    if (WmsModelAdd(model, out string result))
+                    if (!WmsModelAdd(model, out string result))
                     {
                         return FailResponse(result);
                     }

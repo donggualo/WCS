@@ -211,7 +211,7 @@ namespace TaskManager.Functions
 
                     worksheet.Cells[r + 2, i + 1] = (dg.Columns[i].GetCellContent(dg.Items[r]) as TextBlock).Text;   //读取DataGrid某一行某一列的信息内容
                 }
-                //System.Windows.Forms.Application.DoEvents();
+                System.Windows.Forms.Application.DoEvents();
             }
             worksheet.Columns.EntireColumn.AutoFit();
             System.Windows.MessageBox.Show(fileName + "保存成功");

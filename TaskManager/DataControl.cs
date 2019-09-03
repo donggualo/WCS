@@ -117,7 +117,7 @@ namespace TaskManager
         {
             if (!init)
             {
-                _mSocket = new SocketControl();
+                //_mSocket = new SocketControl();
 
                 _mMySql = new MySQL();
 
