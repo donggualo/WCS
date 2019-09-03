@@ -12,9 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Panuon.UI.Silver;
-using WCS_phase1.Action;
-using WCS_phase1.Http;
-using WCS_phase1.WCSWindow;
+using TaskManager;
+using WcsHttpManager;
+using WindowManager;
 
 namespace WCS_phase1
 {

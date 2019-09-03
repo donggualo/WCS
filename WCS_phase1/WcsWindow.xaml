@@ -8,10 +8,10 @@
             mc:Ignorable="d"
             Title="NavbarWindow"
             WindowStartupLocation="CenterScreen"
-            MinHeight="753"
-            Height="753"
-            MinWidth="1204"
-            Width="1400"
+            MinHeight="700"
+            Height="700"
+            MinWidth="1000"
+            Width="1200"
             BorderThickness="0"
             pu:WindowXCaption.Header=" "
             Closing="WindowX_Closing">
@@ -161,53 +161,53 @@
                     <TreeViewItem
                         Tag="Home"
                         MouseDoubleClick="TreeView_MouseDoubleClick"
-                        FontSize="22"
+                        FontSize="20"
                         Header="概况"
                         IsSelected="True"
                         Padding="10,0,0,0"
                         pu:TreeViewHelper.ItemIcon="&#xf015;" />
                     <TreeViewItem
-                        FontSize="22"
+                        FontSize="20"
                         Header="设备信息"
                         IsExpanded="False"
                         Padding="10,0,0,0"
                         pu:TreeViewHelper.ItemIcon="&#xf022;">
                         <TreeViewItem
-                            Tag="RGV"
+                            Tag="ABC"
                             MouseDoubleClick="TreeView_MouseDoubleClick"
-                            FontSize="22"
+                            FontSize="20"
                             Header="行车信息"
                             Padding="20,0,0,0"/>
                         <TreeViewItem
-                            Tag=""
+                            Tag="ARF"
                             MouseDoubleClick="TreeView_MouseDoubleClick"
-                            FontSize="22"
+                            FontSize="20"
                             Header="运输车信息"
                             Padding="20,0,0,0" />
                         <TreeViewItem
-                            Tag=""
+                            Tag="FRT"
                             MouseDoubleClick="TreeView_MouseDoubleClick"
-                            FontSize="22"
+                            FontSize="20"
                             Header="固定棍台"
                             Padding="20,0,0,0" />
                         <TreeViewItem
                             Tag=""
                             MouseDoubleClick="TreeView_MouseDoubleClick"
-                            FontSize="22"
+                            FontSize="20"
                             Header="喷码机"
                             Padding="20,0,0,0" />
                     </TreeViewItem>
                     <TreeViewItem
                         Tag="AGV"
                         MouseDoubleClick="TreeView_MouseDoubleClick"
-                        FontSize="22"
+                        FontSize="20"
                         Header="激光AGV"
                         Padding="10,0,0,0"
                         pu:TreeViewHelper.ItemIcon="&#xf013;" />
                     <TreeViewItem
                         Tag="Setting"
                         MouseDoubleClick="TreeView_MouseDoubleClick"
-                        FontSize="22"
+                        FontSize="20"
                         Header="设置"
                         Padding="10,0,0,0"
                         pu:TreeViewHelper.ItemIcon="&#xf013;" />
@@ -252,18 +252,7 @@
                                 Margin="0,2,0,0">
                         <TabItem Header="概况"
                                 pu:TabControlHelper.CanRemove="False">
-
-                            <DataGrid Margin="10">
-                                <DataGrid.Columns>
-                                    <DataGridCheckBoxColumn Width="40"/>
-                                    <DataGridTextColumn Width="*"
-                                                Header="Name1"/>
-                                    <DataGridTextColumn Width="*"
-                                                Header="PhoneNumber1" />
-                                    <DataGridTextColumn Width="*"
-                                                Header="Email1" />
-                                </DataGrid.Columns>
-                            </DataGrid>
+                            
                         </TabItem>
                     </TabControl>
                 </Grid>

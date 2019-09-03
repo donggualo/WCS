@@ -4,19 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{1D4E5334-175A-4BD7-9844-27530CDCD41B}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <RootNamespace>WCS_phase1</RootNamespace>
-    <AssemblyName>WCS_phase1</AssemblyName>
+    <ProjectGuid>{0F7B97C2-6B7E-46B0-8D3D-005C4971ED64}</ProjectGuid>
+    <OutputType>library</OutputType>
+    <RootNamespace>TaskManager</RootNamespace>
+    <AssemblyName>TaskManager</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TargetFrameworkProfile />
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -26,7 +24,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -38,20 +35,11 @@
     <Reference Include="BouncyCastle.Crypto, Version=1.8.3.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
       <HintPath>..\packages\BouncyCastle.1.8.3.1\lib\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
-    <Reference Include="Caliburn.Micro, Version=3.2.0.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Caliburn.Micro.Core.3.2.0\lib\net45\Caliburn.Micro.dll</HintPath>
-    </Reference>
     <Reference Include="Google.Protobuf, Version=3.6.1.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Protobuf.3.6.1\lib\net45\Google.Protobuf.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data, Version=8.0.16.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <HintPath>..\packages\MySql.Data.8.0.16\lib\net452\MySql.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="Panuon.UI.Silver">
-      <HintPath>..\DLL\Panuon.UI.Silver.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel" />
@@ -63,7 +51,6 @@
     <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Management" />
     <Reference Include="System.Transactions" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -78,34 +65,29 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-    <Compile Include="Helpers\Helper.cs" />
-    <Compile Include="WcsWindow.xaml.cs">
-      <DependentUpon>WcsWindow.xaml</DependentUpon>
-    </Compile>
-    <Page Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Page Include="Resources\Styles.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="WcsWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
+    <Compile Include="DataControl.cs" />
+    <Compile Include="Devices\ABC.cs" />
+    <Compile Include="Devices\AGV.cs" />
+    <Compile Include="Devices\ARF.cs" />
+    <Compile Include="Devices\Device.cs" />
+    <Compile Include="Devices\FRT.cs" />
+    <Compile Include="Devices\RGV.cs" />
+    <Compile Include="ForAGVControl.cs" />
+    <Compile Include="ForWMSControl.cs" />
+    <Compile Include="Functions\DataTableExtend.cs" />
+    <Compile Include="Functions\SimpleTools.cs" />
+    <Compile Include="Functions\TaskTools.cs" />
+    <Compile Include="Models\MySQL.cs" />
+    <Compile Include="Models\WCS_AGV_INFO.cs" />
+    <Compile Include="Models\WCS_COMMAND_MASTER.cs" />
+    <Compile Include="Models\WCS_COMMAND_V.cs" />
+    <Compile Include="Models\WCS_CONFIG_DEVICE.cs" />
+    <Compile Include="Models\WCS_CONFIG_LOC.cs" />
+    <Compile Include="Models\WCS_FUNCTION_LOG.cs" />
+    <Compile Include="Models\WCS_TASK_INFO.cs" />
+    <Compile Include="Models\WCS_TASK_ITEM.cs" />
+    <Compile Include="TaskControl.cs" />
+    <Compile Include="TaskLogic.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -130,39 +112,24 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Resource Include="Resources\NeteaseExample\iconfont.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\HttpServer\MHttpServer.csproj">
-      <Project>{9E139539-C272-488A-BFCF-CADDF458DF9D}</Project>
-      <Name>MHttpServer</Name>
-    </ProjectReference>
     <ProjectReference Include="..\NdcManager\NdcManager.csproj">
-      <Project>{D7F23C4B-2E0E-4A97-A0DA-7AF778E26A60}</Project>
+      <Project>{d7f23c4b-2e0e-4a97-a0da-7af778e26a60}</Project>
       <Name>NdcManager</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TaskManager\TaskManager.csproj">
-      <Project>{0F7B97C2-6B7E-46B0-8D3D-005C4971ED64}</Project>
-      <Name>TaskManager</Name>
+    <ProjectReference Include="..\SockManager\SockManager.csproj">
+      <Project>{3F05540D-B196-4FC8-B6BE-DF7FE9245A8D}</Project>
+      <Name>SockManager</Name>
     </ProjectReference>
     <ProjectReference Include="..\ToolManager\ToolManager.csproj">
-      <Project>{b65231a1-c544-4279-ac1a-c62194c4ad3f}</Project>
+      <Project>{B65231A1-C544-4279-AC1A-C62194C4AD3F}</Project>
       <Name>ToolManager</Name>
     </ProjectReference>
     <ProjectReference Include="..\WcsHttpManager\WcsHttpManager.csproj">
-      <Project>{1B6193D0-25F4-4405-883A-5999C0E8F42B}</Project>
+      <Project>{1b6193d0-25f4-4405-883a-5999c0e8f42b}</Project>
       <Name>WcsHttpManager</Name>
     </ProjectReference>
-    <ProjectReference Include="..\WindowManager\WindowManager.csproj">
-      <Project>{C422AB6D-FDF4-46B2-8ED2-35C8EB6DB6D8}</Project>
-      <Name>WindowManager</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\head.jpg" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="Microsoft.Office.Core">

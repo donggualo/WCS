@@ -12,9 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using WCS_phase1.Action;
-using WCS_phase1.WCSWindow;
-using WCS_phase1.Http;
+using TaskManager;
+using WindowManager;
+
 namespace WCS_phase1
 {
     /// <summary>
