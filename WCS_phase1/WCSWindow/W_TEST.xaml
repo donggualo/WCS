@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WCS_phase1.WCSWindow"
         mc:Ignorable="d"
-        Title="测试" Height="583" Width="909" WindowStyle="ToolWindow">
+        Title="" Height="583" Width="909" WindowStyle="ToolWindow">
 
     <Window.Resources>
         <Style TargetType="DataGrid">
@@ -96,9 +96,9 @@
                 <TextBox Name="TBlocX" Margin="5,5,180,5" TextWrapping="Wrap"
                          InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum" MaxLength="3" Grid.Column="4" Grid.Row="2"/>
                 <TextBox Name="TBlocY" Margin="90,5,95,5" TextWrapping="Wrap"
-                         InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum" MaxLength="3" Grid.Column="4" Grid.Row="2"/>
+                         InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum" MaxLength="2" Grid.Column="4" Grid.Row="2"/>
                 <TextBox Name="TBlocZ" Margin="180,5,5,5" TextWrapping="Wrap"
-                         InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum" MaxLength="3" Grid.Column="4" Grid.Row="2"/>
+                         InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum" MaxLength="2" Grid.Column="4" Grid.Row="2"/>
                 <Label Content="—" Margin="60,17,155,13" Grid.Column="4" Grid.Row="2"/>
                 <Label Content="—" Margin="150,17,65,13" Grid.Column="4" Grid.Row="2"/>
 
@@ -129,14 +129,16 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" MinWidth="10"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto" MinWidth="150"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <ComboBox Name="CBdevtype" Margin="0,3,0,89" Grid.Column="1" Grid.Row="1"/>
                 <ComboBox Name="CBdevarea" Margin="0,46,0,46" Grid.Column="1" Grid.Row="1"/>
@@ -167,6 +169,25 @@
                 <Label Name="LArollS" Content="— — — —" FontWeight="Bold" Grid.Column="2" Grid.Row="12"/>
                 <Label Content="辊台运行方向：" Margin="3,0,0,0" Grid.Column="1" Grid.Row="13"/>
                 <Label Name="LArollD" Content="— — — —" FontWeight="Bold" Grid.Column="2" Grid.Row="13"/>
+                <Label Content="设备类型：" Margin="32,0,0,0" Grid.Column="1" Grid.Row="15"/>
+                <Label Name="LAdevtype" Content="— — — —" FontWeight="Bold" Grid.Column="2" Grid.Row="15"/>
+
+                <Button Name="BTNover" Content="终止任务" Margin="50,30,37,30" Click="BTNover_Click" Grid.Column="3" Grid.Row="1"/>
+                <ComboBox Name="CBsite1" Margin="50,1,0,1" Grid.Column="3" Grid.Row="2"/>
+                <ComboBox Name="CBsite2" Margin="50,1,0,1" Grid.Column="3" Grid.Row="3"/>
+                <ComboBox Name="CBsite3" Margin="50,1,0,1" Grid.Column="3" Grid.Row="4"/>
+                <ComboBox Name="CBsite4" Margin="50,1,0,1" Grid.Column="3" Grid.Row="5"/>
+                <Button Name="BTNrun" Content="启动辊台" Margin="10,10,0,10" Click="BTNrun_Click" Grid.Column="4" Grid.Row="2" Grid.RowSpan="2"/>
+                <Button Name="BTNstop" Content="停止辊台" Margin="10,10,0,10" Click="BTNstop_Click" Grid.Column="4" Grid.Row="4" Grid.RowSpan="2"/>
+
+                <TextBox Name="TBlocARF" TextWrapping="Wrap" InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum" MaxLength="1" Grid.Column="3" Grid.Row="7" Margin="70,0,0,0"/>
+                <TextBox Name="TBlocRGV" TextWrapping="Wrap" InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum" MaxLength="4" Grid.Column="3" Grid.Row="8" Margin="70,0,0,0"/>
+                <TextBox Name="TBlocABCx" TextWrapping="Wrap" InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum" MaxLength="3" Grid.Column="3" Grid.Row="9" Margin="70,0,0,0"/>
+                <TextBox Name="TBlocABCy" TextWrapping="Wrap" InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum" MaxLength="2" Grid.Column="3" Grid.Row="10" Margin="70,0,0,0"/>
+                <TextBox Name="TBlocABCz" TextWrapping="Wrap" InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum" MaxLength="2" Grid.Column="3" Grid.Row="11" Margin="70,0,0,0"/>
+                <Button Name="BTNlocate" Content="定位" Margin="10,0,0,0" Click="BTNlocate_Click" Grid.Column="4" Grid.Row="7" Grid.RowSpan="2"/>
+                <Button Name="BTNtake" Content="取货" Margin="10,10,0,10" Click="BTNtake_Click" Grid.Column="4" Grid.Row="9" Grid.RowSpan="2"/>
+                <Button Name="BTNrelease" Content="放货" Margin="10,10,0,10" Click="BTNrelease_Click" Grid.Column="4" Grid.Row="11" Grid.RowSpan="2"/>
 
             </Grid>
         </TabItem>
@@ -181,7 +202,7 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <Button Content="刷新" HorizontalAlignment="Left" Height="50" Margin="20,20,0,0" VerticalAlignment="Top" Width="60" Click="RefreshDev_Click"/>
-                <Label Content="设备类型：" Margin="100,10,0,378" HorizontalAlignment="Left" Width="77"/>
+                <Label Content="设备类型：" Margin="100,10,0,0" HorizontalAlignment="Left" Width="77" Height="27" VerticalAlignment="Top"/>
                 <ComboBox Name="CBdev" HorizontalAlignment="Left" Height="33" Margin="100,37,0,0" VerticalAlignment="Top" Width="127"/>
                 <Label Content="设备区域：" Height="27" Margin="240,10,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="77"/>
                 <ComboBox Name="CBarea" HorizontalAlignment="Left" Height="33" Margin="240,37,0,0" VerticalAlignment="Top" Width="109"/>

@@ -76,6 +76,26 @@ namespace WCS_phase1.Devices
         /// </summary>
         public static byte RollerRunAll = 0x03;
 
+        public static string GetRollerStatusMes(byte rs)
+        {
+            if (rs == RollerStop)
+            {
+                return "辊台停止";
+            }
+            else if (rs == RollerRun1)
+            {
+                return "1#辊台启动";
+            }
+            else if (rs == RollerRun2)
+            {
+                return "2#辊台启动";
+            }
+            else
+            {
+                return "2个辊台同时启动";
+            }
+        }
+
         #endregion
 
         #region 辊台方向
@@ -113,6 +133,26 @@ namespace WCS_phase1.Devices
         /// 2个辊台都有货
         /// </summary>
         public static byte GoodsYesAll = 0x03;
+
+        public static string GetGoodsStatusMes(byte gs)
+        {
+            if (gs == GoodsNoAll)
+            {
+                return "2个辊台都无货";
+            }
+            else if(gs == GoodsYes1)
+            {
+                return "1#辊台有货";
+            }
+            else if(gs == GoodsYes2)
+            {
+                return "2#辊台有货";
+            }
+            else
+            {
+                return "2个辊台都有货";
+            }
+        }
 
         #endregion
 

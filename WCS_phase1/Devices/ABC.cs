@@ -64,6 +64,26 @@ namespace WCS_phase1.Devices
         /// </summary>
         public static byte TaskRestoration = 0x04;
 
+        public static string GetTaskMes(byte task)
+        {
+            if (task == TaskLocate)
+            {
+                return "定位任务";
+            }
+            else if (task == TaskTake)
+            {
+                return "取货任务";
+            }
+            else if (task == TaskRelease)
+            {
+                return "放货任务";
+            }
+            else
+            {
+                return "复位任务";
+            }
+        }
+
         #endregion
 
         #region 货物状态
@@ -232,6 +252,19 @@ namespace WCS_phase1.Devices
             int z = DataControl._mStools.BytesToInt(CurrentZsite(), 0);
 
             return Convert.ToString(x) +"-"+ Convert.ToString(y) + "-" + Convert.ToString(z);
+        }
+
+        /// <summary>
+        /// ABC 目标位置
+        /// </summary>
+        /// <returns></returns>
+        public String GetGoodsSite()
+        {
+            int x = DataControl._mStools.BytesToInt(GoodsXsite(), 0);
+            int y = DataControl._mStools.BytesToInt(GoodsYsite(), 0);
+            int z = DataControl._mStools.BytesToInt(GoodsZsite(), 0);
+
+            return Convert.ToString(x) + "-" + Convert.ToString(y) + "-" + Convert.ToString(z);
         }
 
         #region 行车设备命令

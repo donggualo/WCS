@@ -31,7 +31,7 @@ namespace WCS_phase1.Action
             {
                 // LOG
                 DataControl._mTaskTools.RecordTaskErrLog("WriteTaskToWCS()", "WMS请求作业[任务ID，作业类型]", wms.Task_UID, wms.Task_type.ToString(), ex.ToString());
-                result = "未知错误";
+                result = ex.ToString();
                 return false;
             }
         }

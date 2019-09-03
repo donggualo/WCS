@@ -35,6 +35,7 @@ namespace WCS_phase1.WCSWindow
             AddCombBoxForWMS("B01", CBfrt_D);
 
             AddCombBoxForDEV();
+            UpdateWindow();
         }
 
         // 重写OnClosing（防止窗口关闭无法再开Bug）
@@ -52,6 +53,13 @@ namespace WCS_phase1.WCSWindow
                 (e.Column as DataGridTextColumn).IsReadOnly = true;
                 (e.Column as DataGridTextColumn).Binding.StringFormat = "yyyy/MM/dd HH:mm:ss";
             }
+        }
+
+        // 限制仅输入数字
+        private void InputNum(object sender, TextCompositionEventArgs e)
+        {
+            Regex re = new Regex("[^0-9]+");
+            e.Handled = re.IsMatch(e.Text);
         }
 
         #region WMS
@@ -83,17 +91,6 @@ namespace WCS_phase1.WCSWindow
             {
                 MessageBox.Show(e.ToString(), "Error");
             }
-        }
-
-        /// <summary>
-        /// 限制仅输入数字
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void InputNum(object sender, TextCompositionEventArgs e)
-        {
-            Regex re = new Regex("[^0-9]+");
-            e.Handled = re.IsMatch(e.Text);
         }
 
         /// <summary>
@@ -139,13 +136,13 @@ namespace WCS_phase1.WCSWindow
                     W_D_Loc = frtD
                 };
                 // 写入数据库
-                if (new ForWMSControl().WriteTaskToWCS(wms,out string result))
+                if (new ForWMSControl().WriteTaskToWCS(wms, out string result))
                 {
                     MessageBox.Show("完成！");
                 }
                 else
                 {
-                    MessageBox.Show("失败！"+result);
+                    MessageBox.Show("失败:" + result);
                 }
             }
             else
@@ -191,7 +188,7 @@ namespace WCS_phase1.WCSWindow
                     return;
                 }
                 // 货位
-                string LOC = "C" + TBlocX.Text.Trim().PadLeft(3, '0') + "-" + TBlocY.Text.Trim().PadLeft(3, '0') + "-" + TBlocZ.Text.Trim().PadLeft(3, '0');
+                string LOC = "C" + TBlocX.Text.Trim().PadLeft(3, '0') + "-" + TBlocY.Text.Trim().PadLeft(2, '0') + "-" + TBlocZ.Text.Trim().PadLeft(2, '0');
                 // 获取Task资讯
                 String sql = String.Format(@"select TASK_UID from wcs_task_info where TASK_TYPE = '{1}' and BARCODE = '{0}'", code, TaskType.入库);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
@@ -248,7 +245,7 @@ namespace WCS_phase1.WCSWindow
                 return;
             }
             // 货位
-            string LOC = "C" + TBlocX.Text.Trim().PadLeft(3, '0') + "-" + TBlocY.Text.Trim().PadLeft(3, '0') + "-" + TBlocZ.Text.Trim().PadLeft(3, '0');
+            string LOC = "C" + TBlocX.Text.Trim().PadLeft(3, '0') + "-" + TBlocY.Text.Trim().PadLeft(2, '0') + "-" + TBlocZ.Text.Trim().PadLeft(2, '0');
 
             if ((bool)CheckWMS.IsChecked)
             {
@@ -271,13 +268,13 @@ namespace WCS_phase1.WCSWindow
                     W_D_Loc = frtD
                 };
                 // 写入数据库
-                if (new ForWMSControl().WriteTaskToWCS(wms,out string result))
+                if (new ForWMSControl().WriteTaskToWCS(wms))
                 {
                     MessageBox.Show("完成！");
                 }
                 else
                 {
-                    MessageBox.Show("失败！"+result);
+                    MessageBox.Show("失败！");
                 }
             }
             else
@@ -290,15 +287,22 @@ namespace WCS_phase1.WCSWindow
 
         #region 设备控制
 
+        string checkType;
+        string checkArea;
         /// <summary>
         /// 更新设备号内容
         /// </summary>
         private void ResetDev()
         {
-            CBnum.Items.Clear();
             string type = CBdevtype.SelectedValue.ToString();
             string area = CBdevarea.SelectedValue.ToString();
-
+            if (checkType == type && checkArea == area)
+            {
+                return;
+            }
+            checkType = type;
+            checkArea = area;
+            CBnum.Items.Clear();
             switch (type)
             {
                 case "固定辊台":
@@ -335,6 +339,12 @@ namespace WCS_phase1.WCSWindow
             ResetDev();
         }
 
+        FRT frt;
+        ARF arf;
+        RGV rgv;
+        ABC abc;
+        string dev;
+
         /// <summary>
         /// 获取当前设备资讯
         /// </summary>
@@ -344,8 +354,9 @@ namespace WCS_phase1.WCSWindow
         {
             try
             {
-                string type = CBdevtype.Text;
-                string dev = CBnum.Text.Trim();
+                dev = CBnum.SelectedValue.ToString();
+                string type = CBdevtype.SelectedValue.ToString();
+                UpdateWindow();
 
                 if (string.IsNullOrEmpty(type) || string.IsNullOrEmpty(dev))
                 {
@@ -361,22 +372,115 @@ namespace WCS_phase1.WCSWindow
                     LAerr.Content = "— — — —";
                     LArollS.Content = "— — — —";
                     LArollD.Content = "— — — —";
+                    LAdevtype.Content = "— — — —";
                     return;
                 }
 
                 switch (type)
                 {
                     case "固定辊台":
-                        FRT frt = new FRT(dev);
+                        frt = new FRT(dev);
+
+                        LAdevice.Content = frt.FRTNum();
+                        LAactS.Content = frt.ActionStatus() == FRT.Stop ? "停止" : "运行中";
+                        LAdevS.Content = frt.DeviceStatus() == FRT.DeviceError ? "故障" : "正常";
+                        LAcmdS.Content = frt.CommandStatus() == FRT.CommandError ? "命令异常" : "命令正常";
+                        LAtask.Content = frt.CurrentTask() == FRT.TaskTake ? "辊台任务" : "停止辊台任务";
+                        LAfinish.Content = frt.FinishTask() == FRT.TaskTake ? "辊台任务" : "停止辊台任务";
+                        LAlocC.Content = "— — — —";
+                        LAlocT.Content = "— — — —";
+                        LAgoodsS.Content = FRT.GetGoodsStatusMes(frt.GoodsStatus());
+                        LAerr.Content = "— — — —";
+                        LArollS.Content = FRT.GetRollerStatusMes(frt.CurrentStatus());
+                        LArollD.Content = frt.RunDirection() == FRT.RunFront ? "正向启动" : "反向启动";
+                        LAdevtype.Content = DeviceType.固定辊台;
+
+                        BTNover.Visibility = Visibility.Visible;
+                        CBsite1.Visibility = Visibility.Visible;
+                        CBsite2.Visibility = Visibility.Visible;
+                        CBsite3.Visibility = Visibility.Visible;
+                        CBsite4.Visibility = Visibility.Visible;
+                        BTNrun.Visibility = Visibility.Visible;
+                        BTNstop.Visibility = Visibility.Visible;
                         break;
                     case "摆渡车":
-                        ARF arf = new ARF(dev);
+                        arf = new ARF(dev);
+
+                        LAdevice.Content = arf.ARFNum();
+                        LAactS.Content = arf.ActionStatus() == ARF.Stop ? "停止" : "运行中";
+                        LAdevS.Content = arf.DeviceStatus() == ARF.DeviceError ? "故障" : "正常";
+                        LAcmdS.Content = arf.CommandStatus() == ARF.CommandError ? "命令异常" : "命令正常";
+                        LAtask.Content = ARF.GetTaskMes(arf.CurrentTask());
+                        LAfinish.Content = ARF.GetTaskMes(arf.FinishTask());
+                        LAlocC.Content = arf.CurrentSite();
+                        LAlocT.Content = arf.Goods1site();
+                        LAgoodsS.Content = ARF.GetGoodsStatusMes(arf.GoodsStatus());
+                        LAerr.Content = "— — — —";
+                        LArollS.Content = ARF.GetRollerStatusMes(arf.CurrentStatus());
+                        LArollD.Content = arf.RunDirection() == ARF.RunFront ? "正向启动" : "反向启动";
+                        LAdevtype.Content = DeviceType.摆渡车;
+
+                        BTNover.Visibility = Visibility.Visible;
+                        CBsite1.Visibility = Visibility.Visible;
+                        CBsite2.Visibility = Visibility.Visible;
+                        CBsite3.Visibility = Visibility.Visible;
+                        CBsite4.Visibility = Visibility.Visible;
+                        BTNrun.Visibility = Visibility.Visible;
+                        BTNstop.Visibility = Visibility.Visible;
+                        TBlocARF.Visibility = Visibility.Visible;
+                        BTNlocate.Visibility = Visibility.Visible;
                         break;
                     case "运输车":
-                        RGV rgv = new RGV(dev);
+                        rgv = new RGV(dev);
+
+                        LAdevice.Content = rgv.RGVNum();
+                        LAactS.Content = rgv.ActionStatus() == RGV.Stop ? "停止" : "运行中";
+                        LAdevS.Content = rgv.DeviceStatus() == RGV.DeviceError ? "故障" : "正常";
+                        LAcmdS.Content = rgv.CommandStatus() == RGV.CommandError ? "命令异常" : "命令正常";
+                        LAtask.Content = RGV.GetTaskMes(rgv.CurrentTask());
+                        LAfinish.Content = RGV.GetTaskMes(rgv.FinishTask());
+                        LAlocC.Content = rgv.GetCurrentSite();
+                        LAlocT.Content = rgv.GetGoodsSite();
+                        LAgoodsS.Content = RGV.GetGoodsStatusMes(rgv.GoodsStatus());
+                        LAerr.Content = "— — — —";
+                        LArollS.Content = RGV.GetRollerStatusMes(rgv.CurrentStatus());
+                        LArollD.Content = rgv.RunDirection() == RGV.RunFront ? "正向启动" : "反向启动";
+                        LAdevtype.Content = DeviceType.运输车;
+
+                        BTNover.Visibility = Visibility.Visible;
+                        CBsite1.Visibility = Visibility.Visible;
+                        CBsite2.Visibility = Visibility.Visible;
+                        CBsite3.Visibility = Visibility.Visible;
+                        CBsite4.Visibility = Visibility.Visible;
+                        BTNrun.Visibility = Visibility.Visible;
+                        BTNstop.Visibility = Visibility.Visible;
+                        TBlocRGV.Visibility = Visibility.Visible;
+                        BTNlocate.Visibility = Visibility.Visible;
                         break;
                     case "行车":
-                        ABC abc = new ABC(dev);
+                        abc = new ABC(dev);
+
+                        LAdevice.Content = abc.ABCNum();
+                        LAactS.Content = abc.ActionStatus() == ABC.Stop ? "停止" : "运行中";
+                        LAdevS.Content = abc.DeviceStatus() == ABC.DeviceError ? "故障" : "正常";
+                        LAcmdS.Content = abc.CommandStatus() == ABC.CommandError ? "命令异常" : "命令正常";
+                        LAtask.Content = ABC.GetTaskMes(abc.CurrentTask());
+                        LAfinish.Content = ABC.GetTaskMes(abc.FinishTask());
+                        LAlocC.Content = abc.GetCurrentSite();
+                        LAlocT.Content = abc.GetGoodsSite();
+                        LAgoodsS.Content = abc.GoodsStatus() == ABC.GoodsNo ? "无货" : "有货";
+                        LAerr.Content = "— — — —";
+                        LArollS.Content = "— — — —";
+                        LArollD.Content = "— — — —";
+                        LAdevtype.Content = DeviceType.行车;
+
+                        BTNover.Visibility = Visibility.Visible;
+                        TBlocABCx.Visibility = Visibility.Visible;
+                        TBlocABCy.Visibility = Visibility.Visible;
+                        TBlocABCz.Visibility = Visibility.Visible;
+                        BTNlocate.Visibility = Visibility.Visible;
+                        BTNtake.Visibility = Visibility.Visible;
+                        BTNrelease.Visibility = Visibility.Visible;
                         break;
                     default:
                         break;
@@ -384,10 +488,395 @@ namespace WCS_phase1.WCSWindow
             }
             catch (Exception ex)
             {
-                throw ex;
+                MessageBox.Show("连接设备获取资讯失败：" + ex.ToString());
             }
         }
 
+        private void UpdateWindow()
+        {
+            BTNover.Visibility = Visibility.Hidden;
+            CBsite1.Visibility = Visibility.Hidden;
+            CBsite2.Visibility = Visibility.Hidden;
+            CBsite3.Visibility = Visibility.Hidden;
+            CBsite4.Visibility = Visibility.Hidden;
+            BTNrun.Visibility = Visibility.Hidden;
+            BTNstop.Visibility = Visibility.Hidden;
+            TBlocARF.Visibility = Visibility.Hidden;
+            TBlocRGV.Visibility = Visibility.Hidden;
+            TBlocABCx.Visibility = Visibility.Hidden;
+            TBlocABCy.Visibility = Visibility.Hidden;
+            TBlocABCz.Visibility = Visibility.Hidden;
+            BTNlocate.Visibility = Visibility.Hidden;
+            BTNtake.Visibility = Visibility.Hidden;
+            BTNrelease.Visibility = Visibility.Hidden;
+        }
+
+        /// <summary>
+        /// 终止任务
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BTNover_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                byte[] order = null;
+                string type = LAdevtype.Content.ToString();
+                if (type == "— — — —")
+                {
+                    return;
+                }
+                switch (type)
+                {
+                    case DeviceType.固定辊台:
+                        order = FRT._StopTask(frt.FRTNum());
+
+                        break;
+                    case DeviceType.摆渡车:
+                        order = ARF._StopTask(arf.ARFNum());
+
+                        break;
+                    case DeviceType.运输车:
+                        order = RGV._StopTask(rgv.RGVNum());
+
+                        break;
+                    case DeviceType.行车:
+                        order = ABC._StopTask(abc.ABCNum());
+
+                        break;
+                }
+                if (!DataControl._mSocket.SendToClient(dev, order, out string result))
+                {
+                    throw new Exception(result);
+                }
+                MessageBox.Show("发送成功！");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("发送失败：" + ex.ToString());
+            }
+        }
+
+        /// <summary>
+        /// 启动辊台
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BTNrun_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                byte[] order = null;
+                string type = LAdevtype.Content.ToString();
+                if (type == "— — — —")
+                {
+                    return;
+                }
+
+                // 方式
+                byte site1 = FRT.RollerRun1;
+                if (CBsite1.SelectedValue.ToString() == "启动2#辊台")
+                {
+                    site1 = FRT.RollerRun2;
+                }
+                if (CBsite1.SelectedValue.ToString() == "启动全部辊台")
+                {
+                    site1 = FRT.RollerRunAll;
+                }
+                // 方向
+                byte site2 = FRT.RunFront;
+                if (CBsite2.SelectedValue.ToString() == "反向启动")
+                {
+                    site2 = FRT.RunObverse;
+                }
+                // 类型
+                byte site3 = FRT.GoodsReceive;
+                if (CBsite3.SelectedValue.ToString() == "送货")
+                {
+                    site3 = FRT.GoodsDeliver;
+                }
+                // 数量
+                byte site4 = FRT.GoodsQty1;
+                if (CBsite4.SelectedValue.ToString() == "货物数量2")
+                {
+                    site4 = FRT.GoodsQty2;
+                }
+
+                switch (type)
+                {
+                    case DeviceType.固定辊台:
+                        if (frt.ActionStatus() == FRT.Run)
+                        {
+                            MessageBox.Show("设备运行中！");
+                        }
+                        if (frt.DeviceStatus() == FRT.DeviceError)
+                        {
+                            MessageBox.Show("设备故障！");
+                        }
+                        order = FRT._RollerControl(frt.FRTNum(), site1, site2, site3, site4);
+
+                        break;
+                    case DeviceType.摆渡车:
+                        if (arf.ActionStatus() == ARF.Run)
+                        {
+                            MessageBox.Show("设备运行中！");
+                        }
+                        if (arf.DeviceStatus() == ARF.DeviceError)
+                        {
+                            MessageBox.Show("设备故障！");
+                        }
+                        order = ARF._RollerControl(arf.ARFNum(), site1, site2, site3, site4);
+
+                        break;
+                    case DeviceType.运输车:
+                        if (rgv.ActionStatus() == RGV.Run)
+                        {
+                            MessageBox.Show("设备运行中！");
+                        }
+                        if (rgv.DeviceStatus() == RGV.DeviceError)
+                        {
+                            MessageBox.Show("设备故障！");
+                        }
+                        order = RGV._RollerControl(rgv.RGVNum(), site1, site2, site3, site4);
+
+                        break;
+                }
+                if (!DataControl._mSocket.SendToClient(dev, order, out string result))
+                {
+                    throw new Exception(result);
+                }
+                MessageBox.Show("发送成功！");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("发送失败：" + ex.ToString());
+            }
+        }
+
+        /// <summary>
+        /// 停止辊台
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BTNstop_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                byte[] order = null;
+                string type = LAdevtype.Content.ToString();
+                if (type == "— — — —")
+                {
+                    return;
+                }
+                switch (type)
+                {
+                    case DeviceType.固定辊台:
+                        if (frt.DeviceStatus() == FRT.DeviceError)
+                        {
+                            MessageBox.Show("设备故障！");
+                        }
+                        order = FRT._StopRoller(frt.FRTNum());
+
+                        break;
+                    case DeviceType.摆渡车:
+                        if (arf.DeviceStatus() == ARF.DeviceError)
+                        {
+                            MessageBox.Show("设备故障！");
+                        }
+                        order = ARF._StopRoller(arf.ARFNum());
+
+                        break;
+                    case DeviceType.运输车:
+                        if (rgv.DeviceStatus() == RGV.DeviceError)
+                        {
+                            MessageBox.Show("设备故障！");
+                        }
+                        order = RGV._StopRoller(rgv.RGVNum());
+
+                        break;
+                }
+                if (!DataControl._mSocket.SendToClient(dev, order, out string result))
+                {
+                    throw new Exception(result);
+                }
+                MessageBox.Show("发送成功！");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("发送失败：" + ex.ToString());
+            }
+        }
+
+        /// <summary>
+        /// 定位任务
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BTNlocate_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                byte[] order = null;
+                string type = LAdevtype.Content.ToString();
+                if (type == "— — — —")
+                {
+                    return;
+                }
+                switch (type)
+                {
+                    case DeviceType.摆渡车:
+                        if (string.IsNullOrEmpty(TBlocARF.Text.Trim()))
+                        {
+                            MessageBox.Show("请填写坐标！");
+                            return;
+                        }
+                        int ARFloc = Convert.ToInt32(TBlocARF.Text.Trim());
+
+                        if (arf.ActionStatus() == ARF.Run)
+                        {
+                            MessageBox.Show("设备运行中！");
+                        }
+                        if (arf.DeviceStatus() == ARF.DeviceError)
+                        {
+                            MessageBox.Show("设备故障！");
+                        }
+                        order = ARF._Position(arf.ARFNum(), (byte)ARFloc);
+
+                        break;
+                    case DeviceType.运输车:
+                        if (string.IsNullOrEmpty(TBlocRGV.Text.Trim()))
+                        {
+                            MessageBox.Show("请填写坐标！");
+                            return;
+                        }
+                        int RGVloc = Convert.ToInt32(TBlocRGV.Text.Trim());
+
+                        if (rgv.ActionStatus() == RGV.Run)
+                        {
+                            MessageBox.Show("设备运行中！");
+                        }
+                        if (rgv.DeviceStatus() == RGV.DeviceError)
+                        {
+                            MessageBox.Show("设备故障！");
+                        }
+                        order = RGV._Position(rgv.RGVNum(), DataControl._mStools.IntToBytes(RGVloc));
+
+                        break;
+                    case DeviceType.行车:
+                        if (string.IsNullOrEmpty(TBlocABCx.Text.Trim()) || string.IsNullOrEmpty(TBlocABCy.Text.Trim()) || string.IsNullOrEmpty(TBlocABCz.Text.Trim()))
+                        {
+                            MessageBox.Show("请填写坐标！");
+                            return;
+                        }
+                        int x = Convert.ToInt32(TBlocABCx.Text.Trim());
+                        int y = Convert.ToInt32(TBlocABCy.Text.Trim());
+                        int z = Convert.ToInt32(TBlocABCz.Text.Trim());
+
+                        if (abc.ActionStatus() == ABC.Run)
+                        {
+                            MessageBox.Show("设备运行中！");
+                        }
+                        if (abc.DeviceStatus() == ABC.DeviceError)
+                        {
+                            MessageBox.Show("设备故障！");
+                        }
+                        order = ABC._TaskControl(ABC.TaskLocate, abc.ABCNum(), DataControl._mStools.IntToBytes(x), DataControl._mStools.IntToBytes(y), DataControl._mStools.IntToBytes(z));
+
+                        break;
+                }
+                if (!DataControl._mSocket.SendToClient(dev, order, out string result))
+                {
+                    throw new Exception(result);
+                }
+                MessageBox.Show("发送成功！");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("发送失败：" + ex.ToString());
+            }
+        }
+
+        /// <summary>
+        /// 取货任务
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BTNtake_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                byte[] order = null;
+                if (string.IsNullOrEmpty(TBlocABCx.Text.Trim()) || string.IsNullOrEmpty(TBlocABCy.Text.Trim()) || string.IsNullOrEmpty(TBlocABCz.Text.Trim()))
+                {
+                    MessageBox.Show("请填写坐标！");
+                    return;
+                }
+                int x = Convert.ToInt32(TBlocABCx.Text.Trim());
+                int y = Convert.ToInt32(TBlocABCy.Text.Trim());
+                int z = Convert.ToInt32(TBlocABCz.Text.Trim());
+
+                if (abc.ActionStatus() == ABC.Run)
+                {
+                    MessageBox.Show("设备运行中！");
+                }
+                if (abc.DeviceStatus() == ABC.DeviceError)
+                {
+                    MessageBox.Show("设备故障！");
+                }
+                order = ABC._TaskControl(ABC.TaskRelease, abc.ABCNum(), DataControl._mStools.IntToBytes(x), DataControl._mStools.IntToBytes(y), DataControl._mStools.IntToBytes(z));
+
+                if (!DataControl._mSocket.SendToClient(dev, order, out string result))
+                {
+                    throw new Exception(result);
+                }
+                MessageBox.Show("发送成功！");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("发送失败：" + ex.ToString());
+            }
+        }
+
+        /// <summary>
+        /// 放货任务
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BTNrelease_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                byte[] order = null;
+                if (string.IsNullOrEmpty(TBlocABCx.Text.Trim()) || string.IsNullOrEmpty(TBlocABCy.Text.Trim()) || string.IsNullOrEmpty(TBlocABCz.Text.Trim()))
+                {
+                    MessageBox.Show("请填写坐标！");
+                    return;
+                }
+                int x = Convert.ToInt32(TBlocABCx.Text.Trim());
+                int y = Convert.ToInt32(TBlocABCy.Text.Trim());
+                int z = Convert.ToInt32(TBlocABCz.Text.Trim());
+
+                if (abc.ActionStatus() == ABC.Run)
+                {
+                    MessageBox.Show("设备运行中！");
+                }
+                if (abc.DeviceStatus() == ABC.DeviceError)
+                {
+                    MessageBox.Show("设备故障！");
+                }
+                order = ABC._TaskControl(ABC.TaskRelease, abc.ABCNum(), DataControl._mStools.IntToBytes(x), DataControl._mStools.IntToBytes(y), DataControl._mStools.IntToBytes(z));
+
+                if (!DataControl._mSocket.SendToClient(dev, order, out string result))
+                {
+                    throw new Exception(result);
+                }
+                MessageBox.Show("发送成功！");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("发送失败：" + ex.ToString());
+            }
+        }
         #endregion
 
         private void AddCombBoxForDEV()
@@ -431,6 +920,25 @@ namespace WCS_phase1.WCSWindow
 
                 CBdevtype.SelectedIndex = 0;
                 CBdevarea.SelectedIndex = 0;
+
+                // 辊台内容
+                //方式
+                CBsite1.Items.Add("启动1#辊台");
+                CBsite1.Items.Add("启动2#辊台");
+                CBsite1.Items.Add("启动全部辊台");
+                CBsite1.SelectedIndex = 0;
+                //方向
+                CBsite2.Items.Add("正向启动");
+                CBsite2.Items.Add("反向启动");
+                CBsite2.SelectedIndex = 0;
+                //类型
+                CBsite3.Items.Add("接货");
+                CBsite3.Items.Add("送货");
+                CBsite3.SelectedIndex = 0;
+                //数量
+                CBsite4.Items.Add("货物数量1");
+                CBsite4.Items.Add("货物数量2");
+                CBsite4.SelectedIndex = 0;
             }
             catch (Exception e)
             {
@@ -552,8 +1060,8 @@ namespace WCS_phase1.WCSWindow
                         break;
                 }
 
-                if (string.IsNullOrEmpty(deviceNew) && string.IsNullOrEmpty(ipNew) && string.IsNullOrEmpty(portNew) &&
-                    string.IsNullOrEmpty(area) && string.IsNullOrEmpty(type))
+                if (string.IsNullOrEmpty(deviceNew) || string.IsNullOrEmpty(ipNew) || string.IsNullOrEmpty(portNew) ||
+                    string.IsNullOrEmpty(area) || string.IsNullOrEmpty(type))
                 {
                     MessageBox.Show("请填入明细！", "提示");
                     return;
@@ -624,8 +1132,8 @@ namespace WCS_phase1.WCSWindow
                         break;
                 }
 
-                if (string.IsNullOrEmpty(device) && string.IsNullOrEmpty(ip) && string.IsNullOrEmpty(port) &&
-                    string.IsNullOrEmpty(area) && string.IsNullOrEmpty(type))
+                if (string.IsNullOrEmpty(device) || string.IsNullOrEmpty(ip) || string.IsNullOrEmpty(port) ||
+                    string.IsNullOrEmpty(area) || string.IsNullOrEmpty(type))
                 {
                     MessageBox.Show("请填入明细！", "提示");
                     return;
