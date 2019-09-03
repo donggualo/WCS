@@ -19,7 +19,7 @@ namespace WcsHttpManager
         /// </summary>
         private int listenerPort = 8080;
         private bool isStart = false;
-        Thread thread;
+        HttpServer httpServer;
 
         public delegate bool WmsModelHandler(WmsModel model, out string result);
         public event WmsModelHandler WmsModelAdd;
@@ -38,10 +38,13 @@ namespace WcsHttpManager
                     Routes routes = new Routes();
                     routes.WmsModelAdd += Routes_WmsModelAdd;
                     
-                    HttpServer httpServer = new HttpServer(listenerPort, routes.GET);
+                    httpServer = new HttpServer(listenerPort, routes.GET);
 
-                    thread = new Thread(new ThreadStart(httpServer.Listen));
-                    thread.Start();
+                    new Thread(httpServer.Listen)
+                    {
+                        IsBackground = true
+                    }.Start();
+                    
                     isStart = true;
                 }
             }catch(Exception e)
@@ -57,9 +60,9 @@ namespace WcsHttpManager
 
         public void StopServer()
         {
-            if (thread != null && thread.IsAlive)
+            if (httpServer!=null)
             {
-                thread.Abort();
+                httpServer.StopHttpServer = true;
             }
         }
     }

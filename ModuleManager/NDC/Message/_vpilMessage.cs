@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WCS_phase1.NDC.Message
+namespace ModuleManager.NDC.Message
 {
-    internal class _vpilMessage
+    public class _vpilMessage
     {
         /// <summary>
         /// 小车ID

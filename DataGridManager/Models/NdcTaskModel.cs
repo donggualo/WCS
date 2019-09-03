@@ -1,11 +1,13 @@
-﻿using Panuon.UI.Silver;
+﻿using ModuleManager.NDC;
+using NdcManager;
+using Panuon.UI.Silver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NdcManager.DataGrid.Models
+namespace DataGridManager.DataGrid.Models
 {
     [Serializable]
     public class NdcTaskModel

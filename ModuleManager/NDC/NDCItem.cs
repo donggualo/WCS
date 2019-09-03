@@ -1,14 +1,13 @@
-﻿using NDC8.ACINET.ACI;
+﻿using ModuleManager.NDC.Message;
+using NDC8.ACINET.ACI;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using WCS_phase1.NDC.Message;
+using System.Threading.Tasks;
 
-namespace NdcManager
+namespace ModuleManager.NDC
 {
-
-    /// <summary>
-    /// NDC任务信息
-    /// </summary>
     public class NDCItem
     {
         /// <summary>
@@ -16,9 +15,9 @@ namespace NdcManager
         /// </summary>
         public int TaskID;
 
-        internal _sMessage s;
-        internal _bMessage b;
-        private _vpilMessage v;
+        public _sMessage s;
+        public _bMessage b;
+        public _vpilMessage v;
 
         public int OrderIndex;
         public int IKey;
@@ -31,7 +30,7 @@ namespace NdcManager
         /// 车重定位任务的状态
         /// </summary>
         public NDCItemStatus DirectStatus;
-        public bool HadLoad, HadUnload,HadDirectInfo;
+        public bool HadLoad, HadUnload, HadDirectInfo;
 
         /// <summary>
         /// 小车PLC状态
@@ -145,7 +144,7 @@ namespace NdcManager
             s.Magic3 = message.Magic3;
             s.CarrierId = message.CarrierNumber;
             s.Station = message.CarrierStation;
-            NdcLoadStation = message.CarrierStation != 0 ? message.CarrierStation+"":"";
+            NdcLoadStation = message.CarrierStation != 0 ? message.CarrierStation + "" : "";
             StatusInfo = s.ToString();
         }
 
@@ -201,84 +200,4 @@ namespace NdcManager
         //    return str.ToString();
         //}
     }
-
-
-
-    /// <summary>
-    /// 任务状态
-    /// </summary>
-    public enum NDCItemStatus
-    {
-        /// <summary>
-        /// 初始化
-        /// </summary>
-        Init = 0,
-
-        /// <summary>
-        /// 走到第四步 就可以重定位
-        /// </summary>
-        CanRedirect = 1,
-
-        /// <summary>
-        /// 已经有需重定位数据
-        /// </summary>
-        HasDirectInfo = 2,
-
-        /// <summary>
-        /// 已经到第六步了  还没定位
-        /// </summary>
-        NeedRedirect = 3,
-
-        /// <summary>
-        /// 已经重新定位
-        /// </summary>
-        Redirected = 4,
-    }
-
-    /// <summary>
-    /// PLC状态
-    /// </summary>
-    public enum NDCPlcStatus
-    {
-        /// <summary>
-        /// 装货未准备好
-        /// </summary>
-        LoadUnReady = 0,
-
-        /// <summary>
-        /// 装货准备好了
-        /// </summary>
-        LoadReady = 1,
-
-        /// <summary>
-        /// 装货中
-        /// </summary>
-        Loading = 2,
-
-        /// <summary>
-        /// 装货完成 
-        /// </summary>
-        Loaded = 3,
-
-        /// <summary>
-        /// 卸货未准备好
-        /// </summary>
-        UnloadUnReady = 4,
-
-        /// <summary>
-        /// 卸货准备好
-        /// </summary>
-        UnloadReady = 5,
-
-        /// <summary>
-        /// 卸货中
-        /// </summary>
-        Unloading = 6,
-
-        /// <summary>
-        /// 卸货完成
-        /// </summary>
-        Unloaded = 7
-    }
-
 }

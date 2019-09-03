@@ -117,13 +117,13 @@ namespace TaskManager
         {
             if (!init)
             {
-                //_mSocket = new SocketControl();
+                _mSocket = new SocketControl();
 
                 _mMySql = new MySQL();
 
                 _mStools = new SimpleTools();
 
-                //_mTaskTools = new TaskTools();
+                _mTaskTools = new TaskTools();
 
                 _mHttpServer = new HttpServerControl();
 
@@ -136,6 +136,7 @@ namespace TaskManager
                 _mRunTask = new RunTask();
 
                 _mForAGVControl = new ForAGVControl();
+
                 _mNDCControl.AGVMagicUpdate += _mForAGVControl.SubmitAgvMagic;
                 _mNDCControl.AGVDataUpdate += _mForAGVControl.SubmitAgvLoading;
 
@@ -151,6 +152,18 @@ namespace TaskManager
         {
             if (init)
             {
+                if(_mHttpServer != null && _mForWmsControl != null)
+                {
+                    _mHttpServer.WmsModelAdd -= _mForWmsControl.WriteTaskToWCS;
+                }
+
+                if (_mNDCControl != null && _mForAGVControl != null)
+                {
+                    _mNDCControl.AGVMagicUpdate -= _mForAGVControl.SubmitAgvMagic;
+                    _mNDCControl.AGVDataUpdate -= _mForAGVControl.SubmitAgvLoading;
+                }
+
+
                 if(_mSocket!=null)_mSocket.CloseClient();
 
                 if (_mHttpServer != null) _mHttpServer.StopServer();

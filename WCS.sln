@@ -44,6 +44,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WcsHttpManager", "WcsHttpMa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowManager", "WindowManager\WindowManager.csproj", "{C422AB6D-FDF4-46B2-8ED2-35C8EB6DB6D8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataGridManager", "DataGridManager\DataGridManager.csproj", "{C2A9E79D-6219-4720-8EF2-6A50A0F8215E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModuleManager", "ModuleManager\ModuleManager.csproj", "{36A19B28-36C5-42A8-9360-A5FFF1891DC7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -124,6 +128,22 @@ Global
 		{C422AB6D-FDF4-46B2-8ED2-35C8EB6DB6D8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C422AB6D-FDF4-46B2-8ED2-35C8EB6DB6D8}.Release|x86.ActiveCfg = Release|Any CPU
 		{C422AB6D-FDF4-46B2-8ED2-35C8EB6DB6D8}.Release|x86.Build.0 = Release|Any CPU
+		{C2A9E79D-6219-4720-8EF2-6A50A0F8215E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2A9E79D-6219-4720-8EF2-6A50A0F8215E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2A9E79D-6219-4720-8EF2-6A50A0F8215E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C2A9E79D-6219-4720-8EF2-6A50A0F8215E}.Debug|x86.Build.0 = Debug|Any CPU
+		{C2A9E79D-6219-4720-8EF2-6A50A0F8215E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2A9E79D-6219-4720-8EF2-6A50A0F8215E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2A9E79D-6219-4720-8EF2-6A50A0F8215E}.Release|x86.ActiveCfg = Release|Any CPU
+		{C2A9E79D-6219-4720-8EF2-6A50A0F8215E}.Release|x86.Build.0 = Release|Any CPU
+		{36A19B28-36C5-42A8-9360-A5FFF1891DC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36A19B28-36C5-42A8-9360-A5FFF1891DC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36A19B28-36C5-42A8-9360-A5FFF1891DC7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{36A19B28-36C5-42A8-9360-A5FFF1891DC7}.Debug|x86.Build.0 = Debug|Any CPU
+		{36A19B28-36C5-42A8-9360-A5FFF1891DC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36A19B28-36C5-42A8-9360-A5FFF1891DC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36A19B28-36C5-42A8-9360-A5FFF1891DC7}.Release|x86.ActiveCfg = Release|Any CPU
+		{36A19B28-36C5-42A8-9360-A5FFF1891DC7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

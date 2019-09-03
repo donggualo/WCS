@@ -51,6 +51,9 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="W_ABC.xaml.cs">
+      <DependentUpon>W_ABC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="W_DevIgnoreSetting.xaml.cs">
       <DependentUpon>W_DevIgnoreSetting.xaml</DependentUpon>
     </Compile>
@@ -63,6 +66,10 @@
     <Compile Include="W_TEST.xaml.cs">
       <DependentUpon>W_TEST.xaml</DependentUpon>
     </Compile>
+    <Page Include="W_ABC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="W_DevIgnoreSetting.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -104,6 +111,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DataGridManager\DataGridManager.csproj">
+      <Project>{C2A9E79D-6219-4720-8EF2-6A50A0F8215E}</Project>
+      <Name>DataGridManager</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NdcManager\NdcManager.csproj">
       <Project>{d7f23c4b-2e0e-4a97-a0da-7af778e26a60}</Project>
       <Name>NdcManager</Name>

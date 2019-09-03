@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NdcManager
+namespace NdcManager.NDC
 {
     /// <summary>
     /// NDC任务状态

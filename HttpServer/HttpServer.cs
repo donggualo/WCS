@@ -21,6 +21,7 @@ namespace MHttpServer
         private TcpListener Listener;
         private HttpProcessor Processor;
         private bool IsActive = true;
+        public bool StopHttpServer = false;
 
         #endregion
 
@@ -42,7 +43,7 @@ namespace MHttpServer
         {
             this.Listener = new TcpListener(IPAddress.Any, this.Port);
             this.Listener.Start();
-            while (this.IsActive)
+            while (this.IsActive && !StopHttpServer)
             {
                 TcpClient s = this.Listener.AcceptTcpClient();
                 //Console.WriteLine("请求开始："+DateTime.Now.ToString("yyyyMMddHHmmss"));

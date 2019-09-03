@@ -1,4 +1,4 @@
-﻿using NdcManager.DataGrid.Models;
+﻿using DataGridManager.DataGrid.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,12 +8,11 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NdcManager.DataGrid
+namespace DataGridManager
 {
     /// <summary>
     /// 数据用于展示界面显示任务数据
     /// </summary>
-    [Serializable]
     public class NdcAgvDataGrid
     {
 

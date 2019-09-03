@@ -16,9 +16,9 @@ using System.Threading.Tasks;
 // By so doing, you are agreeing to the stated terms and conditions and accepting full
 // responsibility for your own actions. 
 //
-namespace WCS_phase1.NDC.Message
+namespace ModuleManager.NDC.Message
 {
-    internal class _bMessage
+    public class _bMessage
     {
         /// <summary>
         /// 

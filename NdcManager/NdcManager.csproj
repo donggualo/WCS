@@ -51,17 +51,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataGrid\BaseDataGrid.cs" />
-    <Compile Include="DataGrid\Models\NdcTaskModel.cs" />
-    <Compile Include="DataGrid\NdcAgvDataGrid.cs" />
-    <Compile Include="Helpers\Helper.cs" />
-    <Compile Include="Message\_bMessage.cs" />
-    <Compile Include="Message\_sMessage.cs" />
-    <Compile Include="Message\_vpilMessage.cs" />
     <Compile Include="NDCControl.cs" />
-    <Compile Include="NDCItem.cs" />
-    <Compile Include="NDCMagic.cs" />
-    <Compile Include="NDCStatus.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -90,6 +80,14 @@
     <ProjectReference Include="..\ACINET\ACINET.csproj">
       <Project>{7e2b7915-6cb9-432d-88b0-f635e3bf354e}</Project>
       <Name>ACINET</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataGridManager\DataGridManager.csproj">
+      <Project>{C2A9E79D-6219-4720-8EF2-6A50A0F8215E}</Project>
+      <Name>DataGridManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ModuleManager\ModuleManager.csproj">
+      <Project>{36a19b28-36c5-42a8-9360-a5fff1891dc7}</Project>
+      <Name>ModuleManager</Name>
     </ProjectReference>
     <ProjectReference Include="..\ToolManager\ToolManager.csproj">
       <Project>{b65231a1-c544-4279-ac1a-c62194c4ad3f}</Project>

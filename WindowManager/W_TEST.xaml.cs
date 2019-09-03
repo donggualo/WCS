@@ -1210,6 +1210,10 @@ namespace WindowManager
 
         #endregion
 
+        private void BTNrun_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 
 }

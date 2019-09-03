@@ -73,13 +73,20 @@ namespace SockManager
         /// </summary>
         public void ConnectToService()
         {
-            client = new AsyncTcpClient(IPAddress.Parse(IP), Port);
-            client.ServerConnected += Client_ServerConnected;//连接成功
-            client.PlaintextReceived += Client_PlaintextReceived; //文本接收
-            client.DatagramReceived += Client_DatagramReceived; //字节接收
-            client.ServerDisconnected += Client_ServerDisconnected;//断开连接
-            client.ServerExceptionOccurred += Client_ServerExceptionOccurred;//
-            client.Connect();
+            try
+            {
+                client = new AsyncTcpClient(IPAddress.Parse(IP), Port);
+                client.ServerConnected += Client_ServerConnected;//连接成功
+                client.PlaintextReceived += Client_PlaintextReceived; //文本接收
+                client.DatagramReceived += Client_DatagramReceived; //字节接收
+                client.ServerDisconnected += Client_ServerDisconnected;//断开连接
+                client.ServerExceptionOccurred += Client_ServerExceptionOccurred;//
+                client.Connect();
+            }catch(Exception e)
+            {
+                Console.WriteLine("[连接错误]IP:" + IP + ":" + Port + e.Message);
+            }
+
         }
 
         /// <summary>

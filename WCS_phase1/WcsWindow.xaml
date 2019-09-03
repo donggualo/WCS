@@ -169,7 +169,7 @@
                     <TreeViewItem
                         FontSize="20"
                         Header="设备信息"
-                        IsExpanded="False"
+                        IsExpanded="True"
                         Padding="10,0,0,0"
                         pu:TreeViewHelper.ItemIcon="&#xf022;">
                         <TreeViewItem
@@ -246,7 +246,7 @@
                                 pu:TabControlHelper.SelectedForeground="#FFFFFF"
                                 pu:TabControlHelper.SelectedBackground="#666666"
                                 Background="#FFFFFF"
-                                pu:TabControlHelper.CanRemove="True"
+                                pu:TabControlHelper.CanRemove="False"
                                 pu:TabControlHelper.RemoveCommand=""
                                 pu:TabControlHelper.Removed="WcsTabControl_Removed"
                                 Margin="0,2,0,0">

@@ -33,14 +33,22 @@ namespace WCS_phase1
         {
 
             TreeViewItem item = sender as TreeViewItem;
+            TabItem tabItem = new TabItem();
+            tabItem.Header = item.Header;
+            
             if ("Home".Equals(item.Tag))
             {
                 wcsTabControl.SelectedIndex = 0;
                 return;
+            }else if("ABC".Equals(item.Tag))
+            {
+                tabItem.Content = new W_ABC();
             }
-            TabItem tabItem = new TabItem();
-            tabItem.Header = item.Header;
-            tabItem.Content = new W_NdcAgv();
+            else
+            {
+                tabItem.Content = new W_NdcAgv();
+            }
+
             wcsTabControl.Items.Add(tabItem);
             wcsTabControl.SelectedIndex = wcsTabControl.Items.Count-1;
         }

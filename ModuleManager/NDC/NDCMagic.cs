@@ -4,8 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NdcManager
+namespace NdcManager.NDC
 {
+    /// <summary>
+    /// 任务状态
+    /// </summary>
+
     public enum NDCMagic
     {
         OrderStart =1,

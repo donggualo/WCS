@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NdcManager.DataGrid
+namespace DataGridManager
 {
     [Serializable]
-    class BaseDataGrid : INotifyPropertyChanged
+    public class BaseDataGrid : INotifyPropertyChanged
     {
 
         public BaseDataGrid()

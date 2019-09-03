@@ -232,9 +232,9 @@ namespace SockManager
                 RaiseServerConnected(Addresses, Port);
                 //retries = 0;
             }
-            catch //(Exception ex)
+            catch (Exception ex)
             {
-                //Console.WriteLine(ex.Message);
+                Console.WriteLine("重新连接("+Addresses[0]+","+Port+")"+ex.Message);
                 //ExceptionHandler.Handle(ex);
                 //if (retries > 0)
                 //{
@@ -477,19 +477,20 @@ namespace SockManager
             {
                 if (disposing)
                 {
-                    //try
-                    //{
-                    Close();
+                    try
+                    {
+                        Close();
 
                     if (tcpClient != null)
                     {
                         tcpClient = null;
                     }
-                    //}
-                    //catch (SocketException ex)
-                    //{
-                    //    ExceptionHandler.Handle(ex);
-                    //}
+                    }
+                    catch (SocketException ex)
+                    {
+                        //ExceptionHandler.Handle(ex);
+                        Console.WriteLine(ex.Source + ex.Message);
+                    }
                 }
 
                 disposed = true;
