@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WCS_phase1.Models;
 using System.Data;
-using TaskManager.Models;
-using WcsHttpManager;
+using WCS_phase1.Functions;
+using System.Configuration;
+using WCS_phase1.Http;
 
-namespace TaskManager
+namespace WCS_phase1.Action
 {
-    public class ForWMSControl
+    class ForWMSControl
     {
         /// <summary>
         /// 获取WMS资讯写入WCS数据库
@@ -19,7 +21,7 @@ namespace TaskManager
         {
             try
             {
-                string sql = string.Format(@"insert into wcs_task_info(TASK_UID, TASK_TYPE, BARCODE, W_S_LOC, W_D_LOC) values('{0}','{1}','{2}','{3}','{4}')",
+                String sql = String.Format(@"insert into wcs_task_info(TASK_UID, TASK_TYPE, BARCODE, W_S_LOC, W_D_LOC) values('{0}','{1}','{2}','{3}','{4}')",
                     wms.Task_UID, wms.Task_type.GetHashCode(), wms.Barcode, wms.W_S_Loc, wms.W_D_Loc);
                 DataControl._mMySql.ExcuteSql(sql);
                 result = "";
@@ -44,7 +46,7 @@ namespace TaskManager
             try
             {
                 // 获取Task资讯
-                string sql = string.Format(@"select * from wcs_task_info where TASK_TYPE = '{1}' and BARCODE = '{0}'", code, TaskType.AGV搬运);
+                String sql = String.Format(@"select * from wcs_task_info where TASK_TYPE = '{1}' and BARCODE = '{0}'", code, TaskType.AGV搬运);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (!DataControl._mStools.IsNoData(dt))
                 {
@@ -54,6 +56,7 @@ namespace TaskManager
                 // 无Task资讯则新增
                 // 呼叫WMS 请求入库资讯---区域
                 WmsModel wms = DataControl._mHttp.DoBarcodeScanTask(loc, code);
+                wms.Task_type = WmsStatus.Empty;
                 // 写入数据库
                 return WriteTaskToWCS(wms, out string result);
             }
@@ -78,7 +81,7 @@ namespace TaskManager
                 ScanCodeTask(loc, code);
 
                 // 获取Task资讯
-                string sql = string.Format(@"select TASK_UID from wcs_task_info where TASK_TYPE = '{1}' and BARCODE = '{0}'", code, TaskType.AGV搬运);
+                String sql = String.Format(@"select TASK_UID from wcs_task_info where TASK_TYPE = '{1}' and BARCODE = '{0}'", code, TaskType.AGV搬运);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {
