@@ -6,7 +6,7 @@ using NDC8.ACINET.ACI;
 using System.Text;
 using ToolManager;
 using ModuleManager.NDC;
-using DataGridManager.DataGrid.Models;
+using NdcManager.DataGrid.Models;
 
 namespace NdcManager
 {

@@ -51,6 +51,9 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Datagrid\BaseDataGrid.cs" />
+    <Compile Include="Datagrid\Models\NdcTaskModel.cs" />
+    <Compile Include="Datagrid\NdcAgvDataGrid.cs" />
     <Compile Include="NDCControl.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -80,10 +83,6 @@
     <ProjectReference Include="..\ACINET\ACINET.csproj">
       <Project>{7e2b7915-6cb9-432d-88b0-f635e3bf354e}</Project>
       <Name>ACINET</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DataGridManager\DataGridManager.csproj">
-      <Project>{C2A9E79D-6219-4720-8EF2-6A50A0F8215E}</Project>
-      <Name>DataGridManager</Name>
     </ProjectReference>
     <ProjectReference Include="..\ModuleManager\ModuleManager.csproj">
       <Project>{36a19b28-36c5-42a8-9360-a5fff1891dc7}</Project>

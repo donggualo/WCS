@@ -68,10 +68,10 @@ namespace TaskManager.Models
     /// </summary>
     public class DeviceType
     {
-        public const String 行车 = "ABC";
-        public const String 运输车 = "RGV";
-        public const String 摆渡车 = "ARF";
-        public const String 固定辊台 = "FRT";
+        public const string 行车 = "ABC";
+        public const string 运输车 = "RGV";
+        public const string 摆渡车 = "ARF";
+        public const string 固定辊台 = "FRT";
     }
 
 }

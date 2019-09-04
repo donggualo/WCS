@@ -25,7 +25,7 @@ namespace TaskManager.Devices
         /// 设备是否在线
         /// </summary>
         /// <returns></returns>
-        internal bool IsAlive()
+        public bool IsAlive()
         {
             return DataControl._mSocket.IsAlive(_name);
         }
@@ -60,7 +60,7 @@ namespace TaskManager.Devices
         internal byte GetSingleByte(int index)
         {
             Refresh();
-            if (bData.Length < index) return new byte();
+            if (bData == null || bData.Length <= index) return new byte();
             return bData[index];
         }
 
@@ -71,7 +71,7 @@ namespace TaskManager.Devices
         /// <returns></returns>
         internal byte[] GetDoubleByte(int index)
         {
-            if (bData.Length < (index + 2)) return new byte[]{};
+            if (bData == null || bData.Length < (index + 2)) return new byte[]{};
             return GetByteBegin(index,2);
         }
 
@@ -82,8 +82,13 @@ namespace TaskManager.Devices
         /// <returns></returns>
         internal byte[] GetThridByte(int index)
         {
-            if (bData.Length < (index+3)) return new byte[]{};
+            if (bData == null || bData.Length < (index+3)) return new byte[]{};
             return GetByteBegin(index, 3);
+        }
+
+        public bool GetUpdateTime(out DateTime dateTime)
+        {
+            return DataControl._mSocket.GetUpdateTime(_name,out dateTime);
         }
     }
 }

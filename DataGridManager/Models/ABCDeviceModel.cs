@@ -22,7 +22,9 @@ namespace DataGridManager.Models
         private int finish_task;
         private int loadstatus;
         private string errormsg;
+        private bool isconnect;
 
+        [DataGridColumn("设备号")]
         public int DeviceID {
             get { return deviceid; }
             set {
@@ -30,6 +32,7 @@ namespace DataGridManager.Models
                 OnPropertyChanged("Name");
             }
         }
+        [DataGridColumn("状态")]
         public int Status
         {
             get { return deviceid; }
@@ -39,6 +42,7 @@ namespace DataGridManager.Models
                 OnPropertyChanged("Status");
             }
         }
+        [DataGridColumn("目标坐标")]
         public string Des_X_Y_Z
         {
             get { return des_x_y_z; }
@@ -48,6 +52,7 @@ namespace DataGridManager.Models
                 OnPropertyChanged("Des_X_Y_Z");
             }
         }
+        [DataGridColumn("单前任务")]
         public int Now_Task
         {
             get { return now_task; }
@@ -57,6 +62,7 @@ namespace DataGridManager.Models
                 OnPropertyChanged("Now_Task");
             }
         }
+        [DataGridColumn("当前坐标")]
         public string Now_X_Y_Z
         {
             get { return now_x_y_z; }
@@ -66,6 +72,7 @@ namespace DataGridManager.Models
                 OnPropertyChanged("Now_X_Y_Z");
             }
         }
+        [DataGridColumn("完成任务")]
         public int Finish_Task
         {
             get { return finish_task; }
@@ -75,6 +82,7 @@ namespace DataGridManager.Models
                 OnPropertyChanged("Finish_Task");
             }
         }
+        [DataGridColumn("货位状态")]
         public int LoadStatus
         {
             get { return loadstatus; }
@@ -84,6 +92,7 @@ namespace DataGridManager.Models
                 OnPropertyChanged("LoadStatus");
             }
         }
+        [DataGridColumn("故障信息")]
         public string ErrorMsg
         {
             get { return errormsg; }
@@ -91,6 +100,17 @@ namespace DataGridManager.Models
             {
                 errormsg = value;
                 OnPropertyChanged("ErrorMsg");
+            }
+        }
+
+        [DataGridColumn("连接")]
+        public bool ISConnect
+        {
+            get { return isconnect; }
+            set
+            {
+                isconnect = value;
+                OnPropertyChanged("ISConnect");
             }
         }
 
@@ -130,18 +150,24 @@ namespace DataGridManager.Models
             {
                 ErrorMsg = m.ErrorMsg;
             }
+
+            if (isconnect != m.ISConnect)
+            {
+                ISConnect = m.ISConnect;
+            }
         }
 
-        public ABCDeviceModel()
+        public ABCDeviceModel(int devid,int sta, int no)
         {
-            deviceid = 1;
-            status = 2;
-            des_x_y_z = "29,32,44";
-            now_task = 2;
-            now_x_y_z = "23,34,55";
-            finish_task = 3;
-            loadstatus = 1;
-            errormsg = "sdklksdf";
+            deviceid = devid;
+            status = sta;
+            des_x_y_z = sta+":"+no;
+            now_task = no;
+            now_x_y_z = no + ":" + no;
+            finish_task = no*2;
+            loadstatus = sta*sta;
+            errormsg = no + ":" + no;
+            isconnect = sta % 2 == 0;
         }
     }
 }

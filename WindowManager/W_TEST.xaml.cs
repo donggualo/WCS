@@ -313,7 +313,7 @@ namespace WindowManager
                     break;
             }
 
-            String sql = String.Format(@"select distinct DEVICE from wcs_config_device where TYPE = '{0}' and AREA = '{1}'", type, area);
+            string sql = string.Format(@"select distinct DEVICE from wcs_config_device where TYPE = '{0}' and AREA = '{1}'", type, area);
             DataTable dt = DataControl._mMySql.SelectAll(sql);
             if (DataControl._mStools.IsNoData(dt))
             {

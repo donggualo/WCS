@@ -60,8 +60,19 @@ namespace WCS_phase1
 
         private void WindowX_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            DataControl.BeforeClose();
-            System.Environment.Exit(0);
+            var result = MessageBoxX.Show("是否退出程序", "Error", Application.Current.MainWindow, MessageBoxButton.YesNo, new MessageBoxXConfigurations()
+            {
+                MessageBoxStyle = MessageBoxStyle.Modern,
+            });
+            if(result == MessageBoxResult.Yes || result == MessageBoxResult.OK)
+            {
+                DataControl.BeforeClose();
+                System.Environment.Exit(0);
+            }
+            else
+            {
+                e.Cancel = true;
+            }
         }
 
         private void GetWmsInfo_Click(object sender, RoutedEventArgs e)

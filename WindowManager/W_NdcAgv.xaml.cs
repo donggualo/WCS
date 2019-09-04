@@ -1,11 +1,12 @@
-﻿using DataGridManager;
-using DataGridManager.DataGrid.Models;
+﻿using NdcManager.DataGrid;
+using NdcManager.DataGrid.Models;
 using Panuon.UI.Silver;
 using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using TaskManager;
+using WindowManager.Datagrid;
 
 namespace WindowManager
 {

@@ -1,12 +1,12 @@
-﻿using DataGridManager.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WindowManager.Datagrid.Models;
 
-namespace DataGridManager
+namespace WindowManager.Datagrid
 {
     public class AbcDataGrid
     {
@@ -22,16 +22,23 @@ namespace DataGridManager
             }
         }
 
-        public void UpdateDeviceList(ABCDeviceModel abc)
+        public void UpdateDeviceList(string name = "", string area = "")
         {
-            ABCDeviceModel m = _mDeviceList.FirstOrDefault(c => { return c.DeviceID == abc.DeviceID; });
-            if(m == null)
-            {
-                _mDeviceList.Add(abc);
+            if (name == "")
+            {//全刷新
+                foreach(var d in _mDeviceList)
+                {
+                    d.Update();
+                }
             }
             else
             {
-                m.Update(abc);
+                ABCDeviceModel m = _mDeviceList.FirstOrDefault(c => { return c.DeviceID == name; });
+                if (m == null)
+                {
+                    _mDeviceList.Add(new ABCDeviceModel(name, area));
+                    _mDeviceNameList.Add(name);
+                }
             }
         }
 

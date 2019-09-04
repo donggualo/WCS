@@ -81,6 +81,23 @@ namespace SockManager
             return new byte[0];
         }
 
+        /// <summary>
+        /// 获取最新的时间
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public bool GetUpdateTime(string name,out DateTime date)
+        {
+            SocketClient client = Clients.Find(c => { return c.Name.Equals(name); });
+            if (client != null)
+            {
+                date = client.UpDateTime;
+                return true;
+            }
+            date = DateTime.Now;
+            return false;
+        }
+
 
         /// <summary>
         /// 添加联网设备

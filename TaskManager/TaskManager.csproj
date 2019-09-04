@@ -66,6 +66,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommonSQL.cs" />
     <Compile Include="DataControl.cs" />
     <Compile Include="Devices\ABC.cs" />
     <Compile Include="Devices\AGV.cs" />
@@ -88,6 +89,7 @@
     <Compile Include="Models\WCS_TASK_INFO.cs" />
     <Compile Include="Models\WCS_TASK_ITEM.cs" />
     <Compile Include="TaskControl.cs" />
+    <Compile Include="TaskForDataGrid.cs" />
     <Compile Include="TaskLogic.cs" />
   </ItemGroup>
   <ItemGroup>

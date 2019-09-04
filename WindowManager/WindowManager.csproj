@@ -51,6 +51,9 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Datagrid\AbcDataGrid.cs" />
+    <Compile Include="Datagrid\BaseDataGrid.cs" />
+    <Compile Include="Datagrid\Models\ABCDeviceModel.cs" />
     <Compile Include="W_ABC.xaml.cs">
       <DependentUpon>W_ABC.xaml</DependentUpon>
     </Compile>
@@ -111,9 +114,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DataGridManager\DataGridManager.csproj">
-      <Project>{C2A9E79D-6219-4720-8EF2-6A50A0F8215E}</Project>
-      <Name>DataGridManager</Name>
+    <ProjectReference Include="..\ModuleManager\ModuleManager.csproj">
+      <Project>{36A19B28-36C5-42A8-9360-A5FFF1891DC7}</Project>
+      <Name>ModuleManager</Name>
     </ProjectReference>
     <ProjectReference Include="..\NdcManager\NdcManager.csproj">
       <Project>{d7f23c4b-2e0e-4a97-a0da-7af778e26a60}</Project>
