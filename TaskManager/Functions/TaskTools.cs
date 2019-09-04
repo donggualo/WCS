@@ -46,6 +46,8 @@ namespace TaskManager.Functions
         {
             try
             {
+                // 清空设备
+                DataControl._mSocket.CloseClient();
                 // 获取设备设定档资讯
                 String sql = "select * from wcs_config_device";
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
@@ -952,6 +954,8 @@ namespace TaskManager.Functions
                     // 有则更新
                     wcs_no = dt.Rows[0]["WCS_NO"].ToString();
                     sql = String.Format(@"update wcs_command_master set UPDATE_TIME = NOW(), STEP = '{0}', TASK_UID_2 = '{1}' where WCS_NO = '{2}'", CommandStep.请求执行, task_uid, wcs_no);
+                    // 锁定设备
+                    DataControl._mTaskTools.DeviceLock(wcs_no, frt);
                 }
 
                 DataControl._mMySql.ExcuteSql(sql);

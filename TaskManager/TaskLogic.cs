@@ -997,7 +997,7 @@ namespace TaskManager
                 {
                     return;
                 }
-                String FRT = dtfrt.Rows[0]["FRT"].ToString();
+                String frt = dtfrt.Rows[0]["FRT"].ToString();
 
                 // 默认先处理任务1：获取对应的任务1资讯
                 DataTable dttask = DataControl._mMySql.SelectAll(String.Format(@"select * From wcs_task_info where task_uid = '{0}'", taskuid_1));
@@ -1009,7 +1009,7 @@ namespace TaskManager
 
                 //生成 COMMAND
                 String sql = String.Format(@"insert into wcs_command_master(WCS_NO, FRT, TASK_UID_1, TASK_UID_2) values('{0}','{1}','{2}','{3}')",
-                    wcs_no, FRT, taskuid_1, String.IsNullOrEmpty(taskuid_2.Trim()) ? null : taskuid_2);
+                    wcs_no, frt, taskuid_1, String.IsNullOrEmpty(taskuid_2.Trim()) ? null : taskuid_2);
                 DataControl._mMySql.ExcuteSql(sql);
 
                 //生成 ITEM
@@ -1028,6 +1028,8 @@ namespace TaskManager
                 DataControl._mTaskTools.UpdateCommand(wcs_no, CommandStep.执行中);
                 //更新WCS TASK状态——任务中
                 DataControl._mTaskTools.UpdateTaskByWCSNo(wcs_no, TaskSite.任务中);
+                // 锁定设备
+                DataControl._mTaskTools.DeviceLock(wcs_no, frt);
 
             }
             catch (Exception ex)

@@ -235,6 +235,7 @@
 
                 <Button Name="BtnADD" Content="添加" Height="28" Margin="0,41,152,0" VerticalAlignment="Top" Click="AddDev_Click" Grid.Row="1" HorizontalAlignment="Right" Width="81"/>
                 <Button Name="BtnUPD" Content="修改" Height="28" Margin="0,41,45,0" VerticalAlignment="Top" Click="UpdateDev_Click" Grid.Row="1" HorizontalAlignment="Right" Width="81"/>
+                <Button Content="重连设备" HorizontalAlignment="Left" Height="50" Margin="775,20,0,0" VerticalAlignment="Top" Width="105" Click="ReLinkDev_Click"/>
             </Grid>
         </TabItem>
 

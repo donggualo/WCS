@@ -62,10 +62,19 @@
     </Window.Resources>
 
     <Grid>
-        <DataGrid Name="DGcommand" Margin="10,10,10,416" IsReadOnly="True" AutoGeneratingColumn="DataGrid_TimeFormat" MouseDoubleClick="DGcommand_DoubleClick"/>
-        <DataGrid Name="DGitem" Margin="10,420,10,0" IsReadOnly="True" AutoGeneratingColumn="DataGrid_TimeFormat"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" MinHeight="400"/>
+            <RowDefinition Height="Auto" MinHeight="30"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" MinWidth="100"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <DataGrid Name="DGcommand" Margin="10,10,10,10" IsReadOnly="True" AutoGeneratingColumn="DataGrid_TimeFormat" MouseDoubleClick="DGcommand_DoubleClick" Grid.ColumnSpan="2"/>
+        <DataGrid Name="DGitem" Margin="10,5,10,0" IsReadOnly="True" AutoGeneratingColumn="DataGrid_TimeFormat" Grid.ColumnSpan="2" Grid.Row="2"/>
 
-        <Button Name="Refresh" Content="刷新" HorizontalAlignment="Left" Height="25" Margin="10,390,0,0" VerticalAlignment="Top" Width="85" Click="Refresh_Click"/>
+        <Button Name="Refresh" Content="刷新" Margin="10,0,0,0" Click="Refresh_Click" Grid.Row="1"/>
 
     </Grid>
 

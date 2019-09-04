@@ -190,13 +190,9 @@ namespace TaskManager
                             // 分配卸货点
                             if (agv.UPDATE_TIME == null)
                             {
-                                // 锁定已满足2次AGV运输的卸货点
-                                String sqllock = @"update wcs_config_device set FLAG = 'L' where DEVICE in (
-                                    select distinct DROPSTATION from wcs_agv_info GROUP BY DROPSTATION HAVING count(DROPSTATION) = 2)";
-                                DataControl._mMySql.ExcuteSql(sqllock);
                                 // 获取 WMS 任务目标点
-                                String sqlloc = String.Format(@"select distinct DEVICE from wcs_config_device where FLAG = 'Y' and TYPE = 'FRT' and AREA in (
-                                    select W_D_LOC from wcs_task_info where TASK_UID = '{0}') order by CREATION_TIME", agv.TASK_UID);
+                                String sqlloc = String.Format(@"select distinct DEVICE from wcs_config_device where FLAG in('U','Y') and TYPE = 'FRT' and AREA in (
+                                    select W_D_LOC from wcs_task_info where TASK_UID = '{0}') order by FLAG,CREATION_TIME", agv.TASK_UID);
                                 DataTable dtloc = DataControl._mMySql.SelectAll(sqlloc);
                                 if (DataControl._mStools.IsNoData(dtloc))
                                 {
@@ -204,7 +200,8 @@ namespace TaskManager
                                 }
                                 // 更新AGV任务资讯-- 卸货点
                                 agv.DROPSTATION = dtloc.Rows[0]["DEVICE"].ToString();
-                                sqlloc = String.Format(@"update wcs_agv_info set UPDATE_TIME = NOW(), DROPSTATION = '{1}' where ID = '{0}'", agv.ID, agv.DROPSTATION);
+                                sqlloc = String.Format(@"update wcs_agv_info set UPDATE_TIME = NOW(), DROPSTATION = '{1}' where ID = '{0}';
+                                                         update wcs_config_device set FLAG = 'U' where DEVICE = '{1}'", agv.ID, agv.DROPSTATION);
                                 DataControl._mMySql.ExcuteSql(sqlloc);
                             }
 
@@ -347,12 +344,6 @@ namespace TaskManager
                     station = dt.Rows[0]["DROPSTATION"].ToString();
                     // 发送 NDC 更新点位
                     UpdateAGVStation(id, station);
-                }
-
-                if (magic == AGVMagic.任务完成)
-                {
-                    // 备份并删除
-                    String sqlfinish = String.Format(@"");
                 }
             }
             catch (Exception ex)

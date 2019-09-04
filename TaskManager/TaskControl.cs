@@ -313,7 +313,8 @@ namespace TaskManager
                         log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
                         return;
                     }
-                    else if (_device.GoodsStatus() != FRT.GoodsNoAll && _device.ActionStatus() == FRT.Stop)
+                    else if (_device.GoodsStatus() == FRT.GoodsYesAll && _device.ActionStatus() == FRT.Stop &&
+                             _arf.GoodsStatus() == ARF.GoodsYesAll && _arf.ActionStatus() == ARF.Stop)
                     {
                         return; // 固定辊台与摆渡车都有货，不启动辊台
                     }
@@ -330,6 +331,11 @@ namespace TaskManager
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
                         return;
+                    }
+                    else if (_device.GoodsStatus() == FRT.GoodsYesAll && _device.ActionStatus() == FRT.Stop &&
+                             _arf.GoodsStatus() == ARF.GoodsYesAll && _arf.ActionStatus() == ARF.Stop)
+                    {
+                        return; // 固定辊台与摆渡车都有货，不启动辊台
                     }
                 }
                 // 发送指令
@@ -426,6 +432,11 @@ namespace TaskManager
                                         return;
                                     }
                                 }
+                                else if (_device.GoodsStatus() == ARF.GoodsYesAll && _device.ActionStatus() == ARF.Stop &&
+                                         _frt.GoodsStatus() == FRT.GoodsYesAll && _frt.ActionStatus() == FRT.Stop)
+                                {
+                                    return; // 摆渡车与摆渡车都有货，不启动辊台
+                                }
                                 break;
                             case DeviceType.运输车:
                                 RGV _rgv = new RGV(ITEM.LOC_TO);
@@ -437,6 +448,11 @@ namespace TaskManager
                                     {
                                         return;
                                     }
+                                }
+                                else if (_device.GoodsStatus() == ARF.GoodsYesAll && _device.ActionStatus() == ARF.Stop &&
+                                         _rgv.GoodsStatus() == RGV.GoodsYesAll && _rgv.ActionStatus() == RGV.Stop)
+                                {
+                                    return; // 摆渡车与运输车都有货，不启动辊台
                                 }
                                 break;
                             default:
@@ -472,6 +488,11 @@ namespace TaskManager
                                     log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
                                     return;
                                 }
+                                else if (_device.GoodsStatus() == ARF.GoodsYesAll && _device.ActionStatus() == ARF.Stop &&
+                                         _frt.GoodsStatus() == FRT.GoodsYesAll && _frt.ActionStatus() == FRT.Stop)
+                                {
+                                    return; // 摆渡车与摆渡车都有货，不启动辊台
+                                }
                                 break;
                             case DeviceType.运输车:
                                 RGV _rgv = new RGV(ITEM.LOC_FROM);
@@ -483,6 +504,11 @@ namespace TaskManager
                                     // LOG
                                     log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
                                     return;
+                                }
+                                else if (_device.GoodsStatus() == ARF.GoodsYesAll && _device.ActionStatus() == ARF.Stop &&
+                                         _rgv.GoodsStatus() == RGV.GoodsYesAll && _rgv.ActionStatus() == RGV.Stop)
+                                {
+                                    return; // 摆渡车与运输车都有货，不启动辊台
                                 }
                                 break;
                             default:
@@ -607,6 +633,11 @@ namespace TaskManager
                                         return;
                                     }
                                 }
+                                else if (_device.GoodsStatus() == RGV.GoodsYesAll && _device.ActionStatus() == RGV.Stop &&
+                                         _arf.GoodsStatus() == ARF.GoodsYesAll && _arf.ActionStatus() == ARF.Stop)
+                                {
+                                    return; // 摆渡车与运输车都有货，不启动辊台
+                                }
                                 break;
                             case DeviceType.运输车:
                                 RGV _rgv = new RGV(ITEM.LOC_TO);
@@ -618,6 +649,11 @@ namespace TaskManager
                                     {
                                         return;
                                     }
+                                }
+                                else if (_device.GoodsStatus() == RGV.GoodsYesAll && _device.ActionStatus() == RGV.Stop &&
+                                         _rgv.GoodsStatus() == RGV.GoodsYesAll && _rgv.ActionStatus() == RGV.Stop)
+                                {
+                                    return; // 运输车与运输车都有货，不启动辊台
                                 }
                                 break;
                             default:
@@ -653,6 +689,11 @@ namespace TaskManager
                                     log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
                                     return;
                                 }
+                                else if (_device.GoodsStatus() == RGV.GoodsYesAll && _device.ActionStatus() == RGV.Stop &&
+                                         _arf.GoodsStatus() == ARF.GoodsYesAll && _arf.ActionStatus() == ARF.Stop)
+                                {
+                                    return; // 摆渡车与运输车都有货，不启动辊台
+                                }
                                 break;
                             case DeviceType.运输车:
                                 RGV _rgv = new RGV(ITEM.LOC_FROM);
@@ -664,6 +705,11 @@ namespace TaskManager
                                     // LOG
                                     log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
                                     return;
+                                }
+                                else if (_device.GoodsStatus() == RGV.GoodsYesAll && _device.ActionStatus() == RGV.Stop &&
+                                         _rgv.GoodsStatus() == RGV.GoodsYesAll && _rgv.ActionStatus() == RGV.Stop)
+                                {
+                                    return; // 运输车与运输车都有货，不启动辊台
                                 }
                                 break;
                             default:

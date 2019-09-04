@@ -978,6 +978,23 @@ namespace WindowManager
         }
 
         /// <summary>
+        /// 重连设备
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ReLinkDev_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                DataControl._mTaskTools.LinkDevicesClient();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("重连失败：" + ex.ToString());
+            }
+        }
+
+        /// <summary>
         /// 获取所选数据
         /// </summary>
         /// <param name="sender"></param>
@@ -1210,10 +1227,6 @@ namespace WindowManager
 
         #endregion
 
-        private void BTNrun_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
     }
 
 }
