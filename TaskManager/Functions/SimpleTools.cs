@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Xml;
 using System.Windows;
 using System.Windows.Controls;
-using Excel = Microsoft.Office.Interop.Excel;
+//using Excel = Microsoft.Office.Interop.Excel;
 using System.Data.OleDb;
 using Microsoft.Win32;
 
@@ -174,61 +174,61 @@ namespace TaskManager.Functions
         /// <param name="dg"></param>
         public void SaveToExcel(System.Windows.Controls.DataGrid dg)
         {
-            string fileName = "";
-            string saveFileName = "";
-            SaveFileDialog saveDialog = new SaveFileDialog
-            {
-                DefaultExt = "xlsx",
-                Filter = "Excel 文件|*.xlsx",
-                FileName = fileName
-            };
-            saveDialog.ShowDialog();
-            saveFileName = saveDialog.FileName;
-            if (saveFileName.IndexOf(":") < 0) return;  //被点了取消
-            Excel.Application xlApp = new Excel.Application();
-            if (xlApp == null)
-            {
-                System.Windows.MessageBox.Show("无法创建Excel对象，您可能未安装Excel");
-                return;
-            }
-            Excel.Workbooks workbooks = xlApp.Workbooks;
-            Excel.Workbook workbook = workbooks.Add(Excel.XlWBATemplate.xlWBATWorksheet);
-            Excel.Worksheet worksheet = (Excel.Worksheet)workbook.Worksheets[1]; //取得sheet1
+            //    string fileName = "";
+            //    string saveFileName = "";
+            //    SaveFileDialog saveDialog = new SaveFileDialog
+            //    {
+            //        DefaultExt = "xlsx",
+            //        Filter = "Excel 文件|*.xlsx",
+            //        FileName = fileName
+            //    };
+            //    saveDialog.ShowDialog();
+            //    saveFileName = saveDialog.FileName;
+            //    if (saveFileName.IndexOf(":") < 0) return;  //被点了取消
+            //    Excel.Application xlApp = new Excel.Application();
+            //    if (xlApp == null)
+            //    {
+            //        System.Windows.MessageBox.Show("无法创建Excel对象，您可能未安装Excel");
+            //        return;
+            //    }
+            //    Excel.Workbooks workbooks = xlApp.Workbooks;
+            //    Excel.Workbook workbook = workbooks.Add(Excel.XlWBATemplate.xlWBATWorksheet);
+            //    Excel.Worksheet worksheet = (Excel.Worksheet)workbook.Worksheets[1]; //取得sheet1
 
-            //写入行
-            for (int i = 0; i < dg.Columns.Count; i++)
-            {
-                worksheet.Cells[1, i + 1] = dg.Columns[i].Header;
-            }
-            for (int r = 0; r < dg.Items.Count; r++)
-            {
-                for (int i = 0; i < dg.Columns.Count; i++)
-                {
-                    //if ((dg.Columns[i].GetCellContent(dg.Items[r]).ToString() == "System.Windows.Controls.ContentPresenter"))
-                    //{
-                    //    continue; // 按钮控件类型
-                    //}
+            //    //写入行
+            //    for (int i = 0; i < dg.Columns.Count; i++)
+            //    {
+            //        worksheet.Cells[1, i + 1] = dg.Columns[i].Header;
+            //    }
+            //    for (int r = 0; r < dg.Items.Count; r++)
+            //    {
+            //        for (int i = 0; i < dg.Columns.Count; i++)
+            //        {
+            //            //if ((dg.Columns[i].GetCellContent(dg.Items[r]).ToString() == "System.Windows.Controls.ContentPresenter"))
+            //            //{
+            //            //    continue; // 按钮控件类型
+            //            //}
 
-                    worksheet.Cells[r + 2, i + 1] = (dg.Columns[i].GetCellContent(dg.Items[r]) as TextBlock).Text;   //读取DataGrid某一行某一列的信息内容
-                }
-                System.Windows.Forms.Application.DoEvents();
-            }
-            worksheet.Columns.EntireColumn.AutoFit();
-            System.Windows.MessageBox.Show(fileName + "保存成功");
-            if (saveFileName != "")
-            {
-                try
-                {
-                    workbook.Saved = true;
-                    workbook.SaveCopyAs(saveFileName);
-                }
-                catch (Exception ex)
-                {
-                    System.Windows.MessageBox.Show("导出文件可能正在被打断!" + ex.Message);
-                }
-            }
-            xlApp.Quit();
-            GC.Collect();
+            //            worksheet.Cells[r + 2, i + 1] = (dg.Columns[i].GetCellContent(dg.Items[r]) as TextBlock).Text;   //读取DataGrid某一行某一列的信息内容
+            //        }
+            //        System.Windows.Forms.Application.DoEvents();
+            //    }
+            //    worksheet.Columns.EntireColumn.AutoFit();
+            //    System.Windows.MessageBox.Show(fileName + "保存成功");
+            //    if (saveFileName != "")
+            //    {
+            //        try
+            //        {
+            //            workbook.Saved = true;
+            //            workbook.SaveCopyAs(saveFileName);
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            System.Windows.MessageBox.Show("导出文件可能正在被打断!" + ex.Message);
+            //        }
+            //    }
+            //    xlApp.Quit();
+            //    GC.Collect();
         }
 
         public DataTable GetExcelData(string path)
