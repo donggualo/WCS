@@ -21,17 +21,17 @@ using WindowManager.Datagrid.Models;
 namespace WindowManager
 {
     /// <summary>
-    /// W_ABC.xaml 的交互逻辑
+    /// W_FRT.xaml 的交互逻辑
     /// </summary>
-    public partial class W_ABC : UserControl
+    public partial class W_FRT : UserControl
     {
-        private AbcDataGrid grid;
+        private FrtDataGrid grid;
         
 
-        public W_ABC()
+        public W_FRT()
         {
             InitializeComponent();
-            grid = new AbcDataGrid();
+            grid = new FrtDataGrid();
 
             DataContext = grid;
 
@@ -45,7 +45,7 @@ namespace WindowManager
 
         private void getABCNameList()
         {
-            List<WCS_CONFIG_DEVICE> list = CommonSQL.GetDeviceNameList(TaskManager.Models.DeviceType.行车);
+            List<WCS_CONFIG_DEVICE> list = CommonSQL.GetDeviceNameList(TaskManager.Models.DeviceType.固定辊台);
             foreach(var l in list)
             {
                 grid.UpdateDeviceList(l.DEVICE,l.AREA);

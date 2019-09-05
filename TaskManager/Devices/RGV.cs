@@ -385,18 +385,18 @@ namespace TaskManager.Devices
         /// RGV 当前位置
         /// </summary>
         /// <returns></returns>
-        public int GetCurrentSite()
+        public long GetCurrentSite()
         {
-            return DataControl._mStools.BytesToInt(new byte[] { Current1site(), Current2site(), Current3site(), Current4site() }, 0);
+            return DataControl._mStools.BytesToLong(new byte[] { Current1site(), Current2site(), Current3site(), Current4site() });
         }
 
         /// <summary>
         /// RGV 目标位置
         /// </summary>
         /// <returns></returns>
-        public int GetGoodsSite()
+        public long GetGoodsSite()
         {
-            return DataControl._mStools.BytesToInt(new byte[] { Goods1site(), Goods2site(), Goods3site(), Goods4site() }, 0);
+            return DataControl._mStools.BytesToLong(new byte[] { Goods1site(), Goods2site(), Goods3site(), Goods4site() });
         }
 
         #region 运输车设备命令

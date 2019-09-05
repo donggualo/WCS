@@ -179,7 +179,7 @@
                             Header="行车信息"
                             Padding="20,0,0,0"/>
                         <TreeViewItem
-                            Tag="ARF"
+                            Tag="RGV"
                             MouseDoubleClick="TreeView_MouseDoubleClick"
                             FontSize="20"
                             Header="运输车信息"

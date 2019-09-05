@@ -47,7 +47,7 @@ namespace TaskManager.Devices
         internal byte[] GetByteBegin(int start,int lenght)
         {
             Refresh();
-            if (bData.Length < (start + lenght)) return new byte[lenght];
+            if (bData == null || bData.Length <= (start + lenght)) return new byte[lenght];
             return bData.Skip(start).Take(lenght).ToArray();
         }
 
@@ -71,7 +71,6 @@ namespace TaskManager.Devices
         /// <returns></returns>
         internal byte[] GetDoubleByte(int index)
         {
-            if (bData == null || bData.Length < (index + 2)) return new byte[]{};
             return GetByteBegin(index,2);
         }
 
@@ -82,11 +81,10 @@ namespace TaskManager.Devices
         /// <returns></returns>
         internal byte[] GetThridByte(int index)
         {
-            if (bData == null || bData.Length < (index+3)) return new byte[]{};
             return GetByteBegin(index, 3);
         }
 
-        public bool GetUpdateTime(out DateTime dateTime)
+        public bool GetUpdateTime(out string dateTime)
         {
             return DataControl._mSocket.GetUpdateTime(_name,out dateTime);
         }

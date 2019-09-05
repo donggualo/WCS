@@ -55,7 +55,7 @@ namespace TaskManager.Functions
         /// <returns></returns>
         public int BytesToInt(byte[] src, int offset = 0)
         {
-            long value = 0;
+            int value = 0;
             switch (src.Length)
             {
                 case 4:
@@ -74,7 +74,7 @@ namespace TaskManager.Functions
                     | ((src[offset + 1] & 0xFF));
                     break;
             }
-            return (int)value;
+            return value;
         }
 
         public long BytesToLong(byte[] byt)

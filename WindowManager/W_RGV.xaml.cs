@@ -23,15 +23,15 @@ namespace WindowManager
     /// <summary>
     /// W_ABC.xaml 的交互逻辑
     /// </summary>
-    public partial class W_ABC : UserControl
+    public partial class W_RGV : UserControl
     {
-        private AbcDataGrid grid;
+        private RgvDataGrid grid;
         
 
-        public W_ABC()
+        public W_RGV()
         {
             InitializeComponent();
-            grid = new AbcDataGrid();
+            grid = new RgvDataGrid();
 
             DataContext = grid;
 
@@ -45,7 +45,7 @@ namespace WindowManager
 
         private void getABCNameList()
         {
-            List<WCS_CONFIG_DEVICE> list = CommonSQL.GetDeviceNameList(TaskManager.Models.DeviceType.行车);
+            List<WCS_CONFIG_DEVICE> list = CommonSQL.GetDeviceNameList(TaskManager.Models.DeviceType.运输车);
             foreach(var l in list)
             {
                 grid.UpdateDeviceList(l.DEVICE,l.AREA);

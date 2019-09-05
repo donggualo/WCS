@@ -86,15 +86,15 @@ namespace SockManager
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
-        public bool GetUpdateTime(string name,out DateTime date)
+        public bool GetUpdateTime(string name,out string date)
         {
             SocketClient client = Clients.Find(c => { return c.Name.Equals(name); });
             if (client != null)
             {
-                date = client.UpDateTime;
+                date = client.UpDateTime.ToString("yyyy-MM-dd HH:mm:ss");
                 return true;
             }
-            date = DateTime.Now;
+            date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             return false;
         }
 

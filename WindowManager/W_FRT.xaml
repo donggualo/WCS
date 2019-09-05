@@ -1,0 +1,151 @@
+﻿<UserControl x:Class="WindowManager.W_FRT
+             "
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
+             mc:Ignorable="d"
+             d:DesignHeight="450"
+             d:DesignWidth="930">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Margin="10,0,0,0" FontSize="20" VerticalAlignment="Center"  FontFamily="MV Boli">
+                        固定棍台列表
+        </TextBlock>
+        
+        <!--操作面板-->
+        <Grid Margin="10,5,0,10" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" Content="设备："/>
+            <ComboBox Grid.Column="1"  
+                      Height="30"
+                      MinWidth="100"
+                      Margin="5,0,5,0"
+                      pu:ComboBoxHelper.Icon="&#xf109;"
+                      pu:ComboBoxHelper.HoverBrush="#E3DDDD"
+                      pu:ComboBoxHelper.SelectedBrush="#B6B6C3"
+                      ItemsSource="{Binding Path=DeviceNameList}">
+            </ComboBox>
+            <TextBox Grid.Column="2"  Height="30"
+                    Width="120" Name="xlocation"
+                    pu:TextBoxHelper.Watermark="X轴坐标"
+                    pu:TextBoxHelper.FocusedBorderBrush="#000000"
+                    pu:TextBoxHelper.FocusedShadowColor="#000000"
+                    pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
+            <TextBox Grid.Column="3"  Height="30"
+                     Margin="5,0,5,0"
+                    Width="120" Name="ylocation"
+                    pu:TextBoxHelper.Watermark="Y轴坐标"
+                    pu:TextBoxHelper.FocusedBorderBrush="#000000"
+                    pu:TextBoxHelper.FocusedShadowColor="#000000"
+                    pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
+            <TextBox Grid.Column="4"  Height="30"
+                    Width="120" Name="zlocation"
+                    pu:TextBoxHelper.Watermark="Z轴坐标"
+                    pu:TextBoxHelper.FocusedBorderBrush="#000000"
+                    pu:TextBoxHelper.FocusedShadowColor="#000000"
+                    pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
+            <Button  Grid.Column="5" Height="30" Margin="5,0,5,0"
+                    Width="80" Name="locateBtn" Click="LocateBtn_Click"
+                    Content="&#xf124; 定位"
+                    pu:ButtonHelper.ClickStyle="Sink"
+                    FontFamily="{DynamicResource FontAwesome}"
+                    pu:ButtonHelper.ButtonStyle="Hollow"
+                    BorderBrush="#FF3F3F3F"
+                    Foreground="#FF3F3F3F"
+                    pu:ButtonHelper.HoverBrush="#3F3F3F"
+                    pu:ButtonHelper.CornerRadius="6" />
+            <Button  Grid.Column="6" Height="30"
+                    Width="80" Name="loadBtn" Click="LoadBtn_Click"
+                    Content="&#xf067; 取货"
+                    pu:ButtonHelper.ClickStyle="Sink"
+                    FontFamily="{DynamicResource FontAwesome}"
+                    pu:ButtonHelper.ButtonStyle="Hollow"
+                    BorderBrush="#FF3F3F3F"
+                    Foreground="#FF3F3F3F"
+                    pu:ButtonHelper.HoverBrush="#3F3F3F"
+                    pu:ButtonHelper.CornerRadius="6" />
+            <Button  Grid.Column="7" Height="30" Margin="5,0,5,0"
+                    Width="80" Name="unloadBtn" Click="UnloadBtn_Click"
+                    Content="&#xf068; 放货"
+                    pu:ButtonHelper.ClickStyle="Sink"
+                    FontFamily="{DynamicResource FontAwesome}"
+                    pu:ButtonHelper.ButtonStyle="Hollow"
+                    BorderBrush="#FF3F3F3F"
+                    Foreground="#FF3F3F3F"
+                    pu:ButtonHelper.HoverBrush="#3F3F3F"
+                    pu:ButtonHelper.CornerRadius="6" />
+            <Button  Grid.Column="8" Height="30"
+                    Width="80" Name="relocate" Click="Relocate_Click"
+                    Content="&#xf124; 复位"
+                    pu:ButtonHelper.ClickStyle="Sink"
+                    FontFamily="{DynamicResource FontAwesome}"
+                    pu:ButtonHelper.ButtonStyle="Hollow"
+                    BorderBrush="#FF3F3F3F"
+                    Foreground="#FF3F3F3F"
+                    pu:ButtonHelper.HoverBrush="#3F3F3F"
+                    pu:ButtonHelper.CornerRadius="6" />
+            <Button  Grid.Column="9" Height="30" Margin="5,0,0,0"
+                    Width="80" Name="terminateBtn" Click="TerminateBtn_Click"
+                    Content="&#xf00d; 终止"
+                    pu:ButtonHelper.ClickStyle="Sink"
+                    FontFamily="{DynamicResource FontAwesome}"
+                    pu:ButtonHelper.ButtonStyle="Hollow"
+                    BorderBrush="#FF3F3F3F"
+                    Foreground="#FF3F3F3F"
+                    pu:ButtonHelper.HoverBrush="#3F3F3F"
+                    pu:ButtonHelper.CornerRadius="6" />
+        </Grid>
+        
+        <!--设备列表-->
+        <Grid Grid.Row="2" >
+            <Border Background="LightGray" Height="2" Grid.Row="1" VerticalAlignment="Top"></Border>
+            <ScrollViewer Grid.Row="1" Margin="0,2,0,0">
+                <DataGrid
+                        ItemsSource="{Binding Path=DeviceList}"
+                        x:Name="DgCustom"
+                        BorderBrush="LightGray"
+                        BorderThickness="1"
+                        Margin="5,0,0,0"
+                        MinWidth="500"
+                        IsReadOnly="True"
+                        SelectionMode="Single"
+                        AutoGenerateColumns="True"
+                        CanUserReorderColumns="False"
+                        CanUserSortColumns="False"
+                        CanUserAddRows="False">
+                    <pu:DataGridHelper.AutoGenerateCheckBoxStyle>
+                        <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+                            <Setter Property="pu:CheckBoxHelper.CheckBoxStyle" Value="Switch" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=(pu:CheckBoxHelper.CheckBoxStyle),RelativeSource={RelativeSource Self}}" Value="Switch">
+                                    <Setter Property="pu:CheckBoxHelper.CheckedBackground" Value="#72C81F" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </pu:DataGridHelper.AutoGenerateCheckBoxStyle>
+
+                </DataGrid>
+            </ScrollViewer>
+        </Grid>
+        <GridSplitter Width="2" Background="LightGray" Grid.RowSpan="3"/>
+        
+    </Grid>
+</UserControl>

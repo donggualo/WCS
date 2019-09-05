@@ -31,21 +31,44 @@ namespace WCS_phase1
 
         private void TreeView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            
 
             TreeViewItem item = sender as TreeViewItem;
+            string itemTag = item.Tag.ToString();
+
+            foreach(TabItem i in wcsTabControl.Items)
+            {
+                if (itemTag.Equals(i.Tag))
+                {
+                    i.IsSelected = true;
+                    return;
+                }
+            }
+
             TabItem tabItem = new TabItem();
             tabItem.Header = item.Header;
-            
-            if ("Home".Equals(item.Tag))
+        
+            if ("Home".Equals(itemTag))
             {
                 wcsTabControl.SelectedIndex = 0;
                 return;
-            }else if("ABC".Equals(item.Tag))
+            }else if("ABC".Equals(itemTag))
             {
+                tabItem.Tag = "ABC";
                 tabItem.Content = new W_ABC();
+            }else if ("RGV".Equals(itemTag))
+            {
+                tabItem.Tag = "RGV";
+                tabItem.Content = new W_RGV();
+            }
+            else if ("FRT".Equals(itemTag))
+            {
+                tabItem.Tag = "FRT";
+                tabItem.Content = new W_FRT();
             }
             else
             {
+                tabItem.Tag = "AGV";
                 tabItem.Content = new W_NdcAgv();
             }
 

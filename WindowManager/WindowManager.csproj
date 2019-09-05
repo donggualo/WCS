@@ -51,9 +51,19 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Datagrid\Models\FRTDeviceModel.cs" />
+    <Compile Include="Datagrid\FrtDataGrid.cs" />
+    <Compile Include="Datagrid\RgvDataGrid.cs" />
     <Compile Include="Datagrid\AbcDataGrid.cs" />
     <Compile Include="Datagrid\BaseDataGrid.cs" />
+    <Compile Include="Datagrid\Models\RGVDeviceModel.cs" />
     <Compile Include="Datagrid\Models\ABCDeviceModel.cs" />
+    <Compile Include="W_FRT.xaml.cs">
+      <DependentUpon>W_FRT.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="W_RGV.xaml.cs">
+      <DependentUpon>W_RGV.xaml</DependentUpon>
+    </Compile>
     <Compile Include="W_ABC.xaml.cs">
       <DependentUpon>W_ABC.xaml</DependentUpon>
     </Compile>
@@ -69,6 +79,14 @@
     <Compile Include="W_TEST.xaml.cs">
       <DependentUpon>W_TEST.xaml</DependentUpon>
     </Compile>
+    <Page Include="W_FRT.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="W_RGV.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="W_ABC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

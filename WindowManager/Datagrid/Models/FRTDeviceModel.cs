@@ -13,21 +13,21 @@ namespace WindowManager.Datagrid.Models
     /// 行车设备信息
     /// </summary>
     [Serializable]
-    public class ABCDeviceModel : BaseDataGrid
+    public class FRTDeviceModel : BaseDataGrid
     {
         private string deviceid;
         private byte actionsta;
         private byte devicesta;
         private byte commandsta;
-        private string des_x_y_z;
         private byte now_task;
-        private string now_x_y_z;
         private byte finish_task;
         private byte loadstatus;
+        private byte rollerstatus;
+        private byte rollerdirection;
         private byte errormsg;
         private bool isconnect;
         private string datatime;
-        private ABC abc;
+        private FRT frt;
 
 
 
@@ -47,7 +47,7 @@ namespace WindowManager.Datagrid.Models
         [DataGridColumn("运动状态")]
         public string ActionStatus
         {
-            get { return actionsta == ABC.Stop ? "停止" : "运行中"; }
+            get { return actionsta == FRT.Stop ? "停止" : "运行中"; }
             set
             {
                 OnPropertyChanged("ActionStatus");
@@ -57,7 +57,7 @@ namespace WindowManager.Datagrid.Models
         [DataGridColumn("设备状态")]
         public string DeviceStatus
         {
-            get { return devicesta == ABC.DeviceError ? "故障" : "正常"; }
+            get { return devicesta == FRT.DeviceError ? "故障" : "正常"; }
             set
             {
                 OnPropertyChanged("DeviceStatus");
@@ -67,7 +67,7 @@ namespace WindowManager.Datagrid.Models
         [DataGridColumn("命令状态")]
         public string CommandStatus
         {
-            get { return commandsta == ABC.CommandError ? "命令异常" : "命令正常"; }
+            get { return commandsta == FRT.CommandError ? "命令异常" : "命令正常"; }
             set
             {
                 OnPropertyChanged("CommandStatus");
@@ -75,37 +75,33 @@ namespace WindowManager.Datagrid.Models
         }
 
 
-        [DataGridColumn("目标坐标")]
-        public string Des_X_Y_Z
-        {
-            get { return des_x_y_z; }
-            set
-            {
-                des_x_y_z = value;
-                OnPropertyChanged("Des_X_Y_Z");
-            }
-        }
-
-
         [DataGridColumn("当前任务")]
         public string Now_Task
         {
-            get { return ABC.GetTaskMes(now_task); }
+            get { return now_task == FRT.TaskTake ? "辊台任务" : "停止辊台任务"; }
             set
             {
                 OnPropertyChanged("Now_Task");
             }
         }
 
-
-        [DataGridColumn("当前坐标")]
-        public string Now_X_Y_Z
+        [DataGridColumn("棍台状态")]
+        public string RollerStatus
         {
-            get { return now_x_y_z; }
+            get { return FRT.GetRollerStatusMes(rollerstatus); }
             set
             {
-                now_x_y_z = value;
-                OnPropertyChanged("Now_X_Y_Z");
+                OnPropertyChanged("RollerStatus");
+            }
+        }
+
+        [DataGridColumn("棍台方向")]
+        public string RollerDirection
+        {
+            get { return rollerdirection == FRT.RunFront ? "正向启动" : "反向启动"; }
+            set
+            {
+                OnPropertyChanged("RollerDirection");
             }
         }
 
@@ -113,24 +109,22 @@ namespace WindowManager.Datagrid.Models
         [DataGridColumn("完成任务")]
         public string Finish_Task
         {
-            get { return ABC.GetTaskMes(finish_task); }
+            get { return finish_task == FRT.TaskTake ? "辊台任务" : "停止辊台任务"; }
             set
             {
                 OnPropertyChanged("Finish_Task");
             }
         }
 
-
         [DataGridColumn("货物状态")]
         public string LoadStatus
         {
-            get { return loadstatus == ABC.GoodsNo ? "无货" : "有货"; }
+            get { return FRT.GetGoodsStatusMes(loadstatus); }
             set
             {
                 OnPropertyChanged("LoadStatus");
             }
         }
-
 
         [DataGridColumn("故障信息")]
         public string ErrorMsg
@@ -168,67 +162,69 @@ namespace WindowManager.Datagrid.Models
 
         public void Update()
         {
-            if (isconnect != abc.IsAlive())
+            if (isconnect != frt.IsAlive())
             {
-                ISConnect = abc.IsAlive();
+                ISConnect = frt.IsAlive();
             }
 
-            if (!abc.IsAlive()) return;
+            if (!frt.IsAlive()) return;
 
-            if (actionsta != abc.ActionStatus())
+            if (actionsta != frt.ActionStatus())
             {
-                actionsta = abc.ActionStatus();
+                actionsta = frt.ActionStatus();
                 ActionStatus = "";
             }
 
-            if(devicesta != abc.DeviceStatus())
+            if(devicesta != frt.DeviceStatus())
             {
-                devicesta = abc.DeviceStatus();
+                devicesta = frt.DeviceStatus();
                 DeviceStatus = "";
             }
 
-            if(commandsta != abc.CommandStatus())
+            if(commandsta != frt.CommandStatus())
             {
-                commandsta = abc.CommandStatus();
+                commandsta = frt.CommandStatus();
                 CommandStatus = "";
             }
 
-            if(des_x_y_z != abc.GetGoodsSite())
+            if (now_task != frt.CurrentTask())
             {
-                Des_X_Y_Z = abc.GetGoodsSite();
-            }
-
-            if (now_task != abc.CurrentTask())
-            {
-                now_task = abc.CurrentTask();
+                now_task = frt.CurrentTask();
                 Now_Task = "";
             }
 
-            if(now_x_y_z != abc.GetCurrentSite())
-            {
-                Now_X_Y_Z = abc.GetCurrentSite();
-            }
-
-            if(finish_task != abc.FinishTask())
+            if(finish_task != frt.FinishTask())
             {
 
-                finish_task = abc.FinishTask();
+                finish_task = frt.FinishTask();
                 Finish_Task = "";
             }
 
-            if(loadstatus != abc.GoodsStatus())
+            if(loadstatus != frt.GoodsStatus())
             {
-                loadstatus = abc.GoodsStatus();
+                loadstatus = frt.GoodsStatus();
                 LoadStatus = "";
             }
 
-            if(errormsg != abc.ErrorMessage())
+            if(rollerstatus != frt.CurrentStatus())
             {
-                errormsg = abc.ErrorMessage();
+                rollerstatus = frt.CurrentStatus();
+                RollerStatus = "";
+            }
+
+            if(rollerdirection != frt.RunDirection())
+            {
+                rollerdirection = frt.RunDirection();
+                RollerDirection = "";
+            }
+
+            if(errormsg != frt.ErrorMessage())
+            {
+                errormsg = frt.ErrorMessage();
                 ErrorMsg = "";
             }
 
-            if(abc.GetUpdateTime(out string time))
+            if(frt.GetUpdateTime(out string time))
             {
                 if(datatime != time)
                 {
@@ -237,9 +233,9 @@ namespace WindowManager.Datagrid.Models
             }
         }
 
-        public ABCDeviceModel(string devid,string area)
+        public FRTDeviceModel(string devid,string area)
         {
-            abc = new ABC(devid);
+            frt = new FRT(devid);
             DeviceID = devid;
             Area = area;
             Update();
