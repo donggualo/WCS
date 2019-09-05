@@ -279,7 +279,7 @@ namespace TaskManager.Devices
         public static byte[] _TaskControl(byte TaskType, byte ABCNum, byte[] X, byte[] Y, byte[] Z)
         {
             //                     字头     设备号   控制码       X轴坐标        Y轴坐标     Z轴坐标     结束符
-            return new byte[] { 0x90, 0x02, ABCNum, TaskType, X[0], X[1], X[2], Y[0], Y[1], Z[0], Z[1], 0xFF, 0xFE };
+            return new byte[] { 0x90, 0x02, ABCNum, TaskType, X[1], X[2], X[3], Y[2], Y[3], Z[2], Z[3], 0xFF, 0xFE }; //int转byte[]补0成4位
         }
 
         /// <summary>

@@ -16,7 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using TaskManager;
 using TaskManager.Functions;
-using TaskManager.Models;
+using ModuleManager.WCS;
 
 namespace WindowManager
 {

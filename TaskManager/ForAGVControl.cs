@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Data;
 using System.Threading;
+using ModuleManager.WCS;
 using TaskManager.Functions;
 using TaskManager.Devices;
-using ModuleManager.WCS;
 
 namespace TaskManager
 {
@@ -203,6 +203,9 @@ namespace TaskManager
                                 sqlloc = String.Format(@"update wcs_agv_info set UPDATE_TIME = NOW(), DROPSTATION = '{1}' where ID = '{0}';
                                                          update wcs_config_device set FLAG = 'U' where DEVICE = '{1}'", agv.ID, agv.DROPSTATION);
                                 DataControl._mMySql.ExcuteSql(sqlloc);
+
+                                // 发送 NDC 更新点位
+                                UpdateAGVStation(agv.ID, agv.DROPSTATION);
                             }
 
                             // 发指令请求AGV启动辊台装货
@@ -329,22 +332,6 @@ namespace TaskManager
                 // 更新AGV任务资讯
                 DataControl._mMySql.ExcuteSql(sql.ToString());
 
-                if (magic == AGVMagic.重新定位卸货)
-                {
-                    string station;
-                    // 获取任务ID对应的卸货点
-                    String sqlsta = String.Format(@"select DISTINCT DROPSTATION From wcs_agv_info where ID = '{0}'", id);
-                    DataTable dt = DataControl._mMySql.SelectAll(sqlsta);
-                    if (DataControl._mStools.IsNoData(dt))
-                    {
-                        // 定位初始值
-                        station = DataControl._mStools.GetValueByKey("AGVDropStation");
-                    }
-
-                    station = dt.Rows[0]["DROPSTATION"].ToString();
-                    // 发送 NDC 更新点位
-                    UpdateAGVStation(id, station);
-                }
             }
             catch (Exception ex)
             {
