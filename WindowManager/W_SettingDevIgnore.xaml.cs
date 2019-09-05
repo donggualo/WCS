@@ -1,24 +1,18 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using TaskManager;
 
 namespace WindowManager
 {
     /// <summary>
-    /// W_DevIgnoreSetting.xaml 的交互逻辑
+    /// W_SettingDevIgnore.xaml 的交互逻辑
     /// </summary>
-    public partial class W_DevIgnoreSetting : Window
+    public partial class W_SettingDevIgnore : UserControl
     {
-        public W_DevIgnoreSetting()
+        public W_SettingDevIgnore()
         {
             InitializeComponent();
             Refresh();
-        }
-
-        // 重写OnClosing（防止窗口关闭无法再开Bug）
-        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
-        {
-            this.Hide();
-            e.Cancel = true;
         }
 
         /// <summary>
@@ -82,5 +76,6 @@ namespace WindowManager
         {
             DataControl.IsIgnoreABC = (bool)CheckerABC.IsChecked;
         }
+
     }
 }

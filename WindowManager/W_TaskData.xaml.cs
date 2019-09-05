@@ -11,32 +11,22 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Windows.Threading;
 using TaskManager;
 using TaskManager.Models;
 
 namespace WindowManager
 {
     /// <summary>
-    /// W_TaskData.xaml 的交互逻辑
+    /// W_WcsTaskData.xaml 的交互逻辑
     /// </summary>
-    public partial class W_TaskData : Window
+    public partial class W_TaskData : UserControl
     {
-        DataTable dt;
-        String sql;
-
         public W_TaskData()
         {
             InitializeComponent();
             RefreshData();
-        }
-
-        // 重写OnClosing（防止窗口关闭无法再开Bug）
-        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
-        {
-            this.Hide();
-            e.Cancel = true;
         }
 
         // 设置时间格式
@@ -49,6 +39,9 @@ namespace WindowManager
             }
         }
 
+        DataTable dt;
+        String sql;
+
         /// <summary>
         /// 刷新清单
         /// </summary>
@@ -58,6 +51,7 @@ namespace WindowManager
         {
             RefreshData();
         }
+
         /// <summary>
         /// 刷新
         /// </summary>
@@ -141,5 +135,6 @@ namespace WindowManager
                 throw ex;
             }
         }
+
     }
 }

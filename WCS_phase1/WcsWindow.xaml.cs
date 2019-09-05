@@ -27,6 +27,10 @@ namespace WCS_phase1
         {
             InitializeComponent();
             DataControl.Init();
+
+            CheckTask.IsChecked = DataControl.IsRunTaskLogic;
+            CheckOrder.IsChecked = DataControl.IsRunTaskOrder;
+            CheckAGV.IsChecked = DataControl.IsRunSendAGV;
         }
 
         private void TreeView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -65,6 +69,21 @@ namespace WCS_phase1
             {
                 tabItem.Tag = "FRT";
                 tabItem.Content = new W_FRT();
+            }
+            else if ("DevIgnore".Equals(itemTag))
+            {
+                tabItem.Tag = "DevIgnore";
+                tabItem.Content = new W_SettingDevIgnore();
+            }
+            else if ("DevData".Equals(itemTag))
+            {
+                tabItem.Tag = "DevData";
+                tabItem.Content = new W_SettingDevData();
+            }
+            else if ("TaskData".Equals(itemTag))
+            {
+                tabItem.Tag = "TaskData";
+                tabItem.Content = new W_TaskData();
             }
             else
             {
@@ -115,6 +134,36 @@ namespace WCS_phase1
                 Notice.Show(ex.Message, "错误", 3, MessageBoxIcon.Error);
 
             }
+        }
+
+        /// <summary>
+        /// 是否执行任务生成
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CheckTask_Click(object sender, RoutedEventArgs e)
+        {
+            DataControl.IsRunTaskLogic = (bool)CheckTask.IsChecked;
+        }
+
+        /// <summary>
+        /// 是否执行指令发送
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CheckOrder_Click(object sender, RoutedEventArgs e)
+        {
+            DataControl.IsRunTaskOrder = (bool)CheckOrder.IsChecked;
+        }
+
+        /// <summary>
+        /// 是否运行AGV派送
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CheckAGV_Click(object sender, RoutedEventArgs e)
+        {
+            DataControl.IsRunSendAGV = (bool)CheckAGV.IsChecked;
         }
     }
 }

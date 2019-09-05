@@ -22,9 +22,9 @@ namespace WCS_phase1
     /// </summary>
     public partial class MainWindow : Window
     {
-        W_DevIgnoreSetting _DIS;
+        W_SettingDevIgnore _DIS;
         W_TaskData _TD;
-        W_TEST _TEST;
+        W_SettingDevData _TEST;
 
         public MainWindow()
         {
@@ -36,9 +36,9 @@ namespace WCS_phase1
             CheckAGV.IsChecked = DataControl.IsRunSendAGV;
 
             // 初始化功能界面
-            _DIS = new W_DevIgnoreSetting();
+            _DIS = new W_SettingDevIgnore();
             _TD = new W_TaskData();
-            _TEST = new W_TEST();
+            _TEST = new W_SettingDevData();
         }
 
         #region WCS
@@ -80,7 +80,7 @@ namespace WCS_phase1
         /// <param name="e"></param>
         private void BtnDIS_Click(object sender, RoutedEventArgs e)
         {
-            DataControl._mStools.ShowWindow(_DIS);
+            //DataControl._mStools.ShowWindow(_DIS);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace WCS_phase1
         /// <param name="e"></param>
         private void BtnTD_Click(object sender, RoutedEventArgs e)
         {
-            DataControl._mStools.ShowWindow(_TD);
+            //DataControl._mStools.ShowWindow(_TD);
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace WCS_phase1
         /// <param name="e"></param>
         private void BtnTEST_Click(object sender, RoutedEventArgs e)
         {
-            DataControl._mStools.ShowWindow(_TEST);
+            //DataControl._mStools.ShowWindow(_TEST);
         }
 
         #endregion

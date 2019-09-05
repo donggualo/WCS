@@ -67,17 +67,17 @@
     <Compile Include="W_ABC.xaml.cs">
       <DependentUpon>W_ABC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="W_DevIgnoreSetting.xaml.cs">
-      <DependentUpon>W_DevIgnoreSetting.xaml</DependentUpon>
-    </Compile>
     <Compile Include="W_NdcAgv.xaml.cs">
       <DependentUpon>W_NdcAgv.xaml</DependentUpon>
     </Compile>
+    <Compile Include="W_SettingDevData.xaml.cs">
+      <DependentUpon>W_SettingDevData.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="W_SettingDevIgnore.xaml.cs">
+      <DependentUpon>W_SettingDevIgnore.xaml</DependentUpon>
+    </Compile>
     <Compile Include="W_TaskData.xaml.cs">
       <DependentUpon>W_TaskData.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="W_TEST.xaml.cs">
-      <DependentUpon>W_TEST.xaml</DependentUpon>
     </Compile>
     <Page Include="W_FRT.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -91,21 +91,21 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="W_DevIgnoreSetting.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="W_NdcAgv.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="W_TaskData.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <Page Include="W_SettingDevData.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="W_TEST.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <Page Include="W_SettingDevIgnore.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="W_TaskData.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
