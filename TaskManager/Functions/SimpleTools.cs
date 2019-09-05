@@ -53,7 +53,7 @@ namespace TaskManager.Functions
         /// <param name="src"></param>
         /// <param name="offset"></param>
         /// <returns></returns>
-        public int BytesToInt(byte[] src, int offset)
+        public int BytesToInt(byte[] src, int offset = 0)
         {
             long value = 0;
             switch (src.Length)
@@ -76,6 +76,20 @@ namespace TaskManager.Functions
             }
             return (int)value;
         }
+
+        public long BytesToLong(byte[] byt)
+        {
+            long res = 0;
+            int length = byt.Length;
+            for (int i = 0; i < length; i++)
+            {
+                long a = byt[i];
+                long b = (long)Math.Pow(16, (length - i - 1) * 2);
+                res += a * b;
+            }
+            return res;
+        }
+
 
         /// <summary>
         /// byte[] 转 String

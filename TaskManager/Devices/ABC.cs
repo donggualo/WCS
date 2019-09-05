@@ -245,7 +245,7 @@ namespace TaskManager.Devices
         /// <returns></returns>
         public String GetCurrentSite()
         {
-            int x = DataControl._mStools.BytesToInt(CurrentXsite(), 0);
+            long x = DataControl._mStools.BytesToLong(CurrentXsite());
             int y = DataControl._mStools.BytesToInt(CurrentYsite(), 0);
             int z = DataControl._mStools.BytesToInt(CurrentZsite(), 0);
 
@@ -258,9 +258,9 @@ namespace TaskManager.Devices
         /// <returns></returns>
         public String GetGoodsSite()
         {
-            int x = DataControl._mStools.BytesToInt(GoodsXsite(), 0);
-            int y = DataControl._mStools.BytesToInt(GoodsYsite(), 0);
-            int z = DataControl._mStools.BytesToInt(GoodsZsite(), 0);
+            long x = DataControl._mStools.BytesToLong(GoodsXsite());
+            int y = DataControl._mStools.BytesToInt(GoodsYsite());
+            int z = DataControl._mStools.BytesToInt(GoodsZsite());
 
             return Convert.ToString(x) + "-" + Convert.ToString(y) + "-" + Convert.ToString(z);
         }
