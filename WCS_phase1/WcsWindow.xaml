@@ -205,12 +205,31 @@
                         Padding="10,0,0,0"
                         pu:TreeViewHelper.ItemIcon="&#xf013;" />
                     <TreeViewItem
-                        Tag="Setting"
+                        Tag="TaskData"
                         MouseDoubleClick="TreeView_MouseDoubleClick"
                         FontSize="20"
-                        Header="设置"
+                        Header="任务清单"
                         Padding="10,0,0,0"
-                        pu:TreeViewHelper.ItemIcon="&#xf013;" />
+                        pu:TreeViewHelper.ItemIcon="&#xf022;" />
+                    <TreeViewItem
+                        FontSize="20"
+                        Header="设置"
+                        IsExpanded="False"
+                        Padding="10,0,0,0"
+                        pu:TreeViewHelper.ItemIcon="&#xf013;">
+                        <TreeViewItem
+                            Tag="DevIgnore"
+                            Header="设备调试"
+                            MouseDoubleClick="TreeView_MouseDoubleClick"
+                            FontSize="20"
+                            Padding="20,0,0,0"/>
+                        <TreeViewItem
+                            Tag="DevData"
+                            Header="设备资料"
+                            MouseDoubleClick="TreeView_MouseDoubleClick"
+                            FontSize="20"
+                            Padding="20,0,0,0"/>
+                    </TreeViewItem>
                 </TreeView>
             </Grid>
             <Grid Grid.Column="1">
@@ -237,6 +256,15 @@
                             Margin="0,0,15,0"
                             Width="30"
                             Grid.Column="1" />
+                    <CheckBox Name="CheckAGV" Content="派送AGV" Click="CheckAGV_Click"
+                              pu:CheckBoxHelper.CheckBoxStyle="Switch2" 
+                              pu:CheckBoxHelper.CheckedBackground="#FF67DA82" Margin="380,10,-280,10" Grid.Column="1"/>
+                    <CheckBox Name="CheckTask" Content="生成任务" Click="CheckTask_Click"
+                              pu:CheckBoxHelper.CheckBoxStyle="Switch2" 
+                              pu:CheckBoxHelper.CheckedBackground="#FF67DA82" Margin="500,10,-400,10" Grid.Column="1"/>
+                    <CheckBox Name="CheckOrder" Content="发送指令" Click="CheckOrder_Click"
+                              pu:CheckBoxHelper.CheckBoxStyle="Switch2" 
+                              pu:CheckBoxHelper.CheckedBackground="#FF67DA82" Margin="620,10,-520,10" Grid.Column="1"/>
                 </Grid>
                 <Grid Grid.Row="1">
                     <Border Background="LightGray" Height="2" VerticalAlignment="Top"/>
