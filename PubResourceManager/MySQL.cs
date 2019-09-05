@@ -3,18 +3,18 @@ using System;
 using System.Configuration;
 using System.Data;
 
-namespace TaskManager.Models
+namespace PubResourceManager
 {
     public class MySQL
     {
-        static readonly String conn = ConfigurationManager.AppSettings["MySqlConn"];
+        static readonly string conn = ConfigurationManager.AppSettings["MySqlConn"];
 
         /// <summary>
         /// 获取所有字段数据
         /// </summary>
         /// <param name="sql"></param>
         /// <returns></returns>
-        public DataTable SelectAll(String sql)
+        public DataTable SelectAll(string sql)
         {
             try
             {
@@ -34,7 +34,7 @@ namespace TaskManager.Models
         /// </summary>
         /// <param name="sql"></param>
         /// <returns></returns>
-        public void ExcuteSql(String sql)
+        public void ExcuteSql(string sql)
         {
             try
             {
@@ -56,11 +56,11 @@ namespace TaskManager.Models
         /// <param name="table"></param>
         /// <param name="conditions"></param>
         /// <returns></returns>
-        public int GetCount(String table, String conditions)
+        public int GetCount(string table, string conditions)
         {
             try
             {
-                String sql = String.Format(@"select count(*) COUNT from {0} where 1 = 1 {1}", table, String.IsNullOrEmpty(conditions.Trim()) ? "" : "and" + conditions);
+                string sql = string.Format(@"select count(*) COUNT from {0} where 1 = 1 {1}", table, string.IsNullOrEmpty(conditions.Trim()) ? "" : "and" + conditions);
                 DataTable dt = SelectAll(sql);
                 int count = Convert.ToInt32(dt.Rows[0]["COUNT"].ToString());
                 return count;

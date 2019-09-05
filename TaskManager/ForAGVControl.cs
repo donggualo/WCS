@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Data;
 using System.Threading;
-using TaskManager.Models;
 using TaskManager.Functions;
 using TaskManager.Devices;
+using ModuleManager.WCS;
 
 namespace TaskManager
 {
@@ -67,7 +67,7 @@ namespace TaskManager
             try
             {
                 // 获取空闲包装线固定辊台
-                DataTable dt = DataControl._mMySql.SelectAll("select * from wcs_config_device where LEFT(AREA,1) = 'A' and FLAG = 'Y'");
+                DataTable dt = DataControl._mMySql.SelectAll("select * from wcs_config_device where TYPE='FRT' and LEFT(AREA,1) = 'A' and FLAG = 'Y'");
                 if (DataControl._mStools.IsNoData(dt))
                 {
                     return;

@@ -21,12 +21,12 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Margin="10,0,0,0" FontSize="20" VerticalAlignment="Center"  FontFamily="MV Boli">
-                        任务列表
+                        NDC AGV列表
             </TextBlock>
             <Border Background="LightGray" Height="2" Grid.Row="1" VerticalAlignment="Top"></Border>
             <ScrollViewer Grid.Row="1" Margin="0,2,0,0">
                     <DataGrid
-                        ItemsSource="{Binding}"
+                        ItemsSource="{Binding Path=NdcTaskDataList}"
                         x:Name="DgCustom"
                         BorderBrush="LightGray"
                         BorderThickness="1"

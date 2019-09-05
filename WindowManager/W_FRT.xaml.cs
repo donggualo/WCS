@@ -1,22 +1,12 @@
-﻿using System;
+﻿using ModuleManager.WCS;
+using PubResourceManager;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using Panuon.UI.Silver;
 using TaskManager;
-using TaskManager.Models;
 using WindowManager.Datagrid;
-using WindowManager.Datagrid.Models;
 
 namespace WindowManager
 {
@@ -45,7 +35,7 @@ namespace WindowManager
 
         private void getABCNameList()
         {
-            List<WCS_CONFIG_DEVICE> list = CommonSQL.GetDeviceNameList(TaskManager.Models.DeviceType.固定辊台);
+            List<WCS_CONFIG_DEVICE> list = CommonSQL.GetDeviceNameList(DataControl._mMySql,DeviceType.固定辊台);
             foreach(var l in list)
             {
                 grid.UpdateDeviceList(l.DEVICE,l.AREA);

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TaskManager.Models
+namespace ModuleManager.WCS
 {
     /// <summary>
     /// 点位配置资讯    WCS_CONFIG_LOC

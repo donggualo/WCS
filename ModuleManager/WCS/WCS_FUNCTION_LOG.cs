@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TaskManager.Models
+namespace ModuleManager.WCS
 {
     /// <summary>
     /// 任务流程方法日志    WCS_FUNCTION_LOG

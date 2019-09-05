@@ -66,7 +66,6 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommonSQL.cs" />
     <Compile Include="DataControl.cs" />
     <Compile Include="Devices\ABC.cs" />
     <Compile Include="Devices\AGV.cs" />
@@ -79,15 +78,6 @@
     <Compile Include="Functions\DataTableExtend.cs" />
     <Compile Include="Functions\SimpleTools.cs" />
     <Compile Include="Functions\TaskTools.cs" />
-    <Compile Include="Models\MySQL.cs" />
-    <Compile Include="Models\WCS_AGV_INFO.cs" />
-    <Compile Include="Models\WCS_COMMAND_MASTER.cs" />
-    <Compile Include="Models\WCS_COMMAND_V.cs" />
-    <Compile Include="Models\WCS_CONFIG_DEVICE.cs" />
-    <Compile Include="Models\WCS_CONFIG_LOC.cs" />
-    <Compile Include="Models\WCS_FUNCTION_LOG.cs" />
-    <Compile Include="Models\WCS_TASK_INFO.cs" />
-    <Compile Include="Models\WCS_TASK_ITEM.cs" />
     <Compile Include="TaskControl.cs" />
     <Compile Include="TaskForDataGrid.cs" />
     <Compile Include="TaskLogic.cs" />
@@ -117,9 +107,17 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ModuleManager\ModuleManager.csproj">
+      <Project>{36A19B28-36C5-42A8-9360-A5FFF1891DC7}</Project>
+      <Name>ModuleManager</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NdcManager\NdcManager.csproj">
       <Project>{d7f23c4b-2e0e-4a97-a0da-7af778e26a60}</Project>
       <Name>NdcManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PubResourceManager\PubResourceManager.csproj">
+      <Project>{20AFF318-2F10-47E9-A66C-AED5B9C5E5F5}</Project>
+      <Name>PubResourceManager</Name>
     </ProjectReference>
     <ProjectReference Include="..\SockManager\SockManager.csproj">
       <Project>{3F05540D-B196-4FC8-B6BE-DF7FE9245A8D}</Project>

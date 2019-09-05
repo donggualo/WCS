@@ -140,6 +140,10 @@
       <Project>{d7f23c4b-2e0e-4a97-a0da-7af778e26a60}</Project>
       <Name>NdcManager</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PubResourceManager\PubResourceManager.csproj">
+      <Project>{20AFF318-2F10-47E9-A66C-AED5B9C5E5F5}</Project>
+      <Name>PubResourceManager</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SockManager\SockManager.csproj">
       <Project>{3f05540d-b196-4fc8-b6be-df7fe9245a8d}</Project>
       <Name>SockManager</Name>

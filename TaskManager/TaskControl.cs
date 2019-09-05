@@ -8,7 +8,7 @@ using System.Configuration;
 using System.Threading;
 using ToolManager;
 using TaskManager.Devices;
-using TaskManager.Models;
+using ModuleManager.WCS;
 
 namespace TaskManager
 {

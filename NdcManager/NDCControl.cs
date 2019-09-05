@@ -776,7 +776,7 @@ namespace NdcManager
                 if (ndcItem.StatusInfo != "") log.LOG(ndcItem.StatusInfo);
                 CheckMagic(ndcItem, message);
 
-                if(ndcItem.IKey!=0 && ndcItem.OrderIndex!=0) TaskListUpdate(new NdcTaskModel(ndcItem));
+                CheckCanUpdateTaskList(ndcItem);
 
                 ///通知并更新WCS
                 //if(ndcItem.TaskID !=0 ) DataControl._mForAGVControl.SubmitAgvMagic(ndcItem.TaskID, ndcItem.CarrierId+"", ndcItem.Magic);
@@ -810,7 +810,7 @@ namespace NdcManager
                 if (ndcItem.TaskInfo != "") log.LOG(ndcItem.TaskInfo);
                 CheckStatus(ndcItem, message);
 
-                if (ndcItem.IKey != 0 && ndcItem.OrderIndex != 0) TaskListUpdate(new NdcTaskModel(ndcItem));
+                CheckCanUpdateTaskList(ndcItem);
             }
             catch (Exception e)
             {
@@ -921,7 +921,7 @@ namespace NdcManager
 
                     if(item.DirectStatus == NDCItemStatus.NeedRedirect)
                     {
-                        NoticeRedirect(new NdcTaskModel(item));
+                        NoticeRedirect(item);
                     }
                     break;
 
@@ -999,8 +999,14 @@ namespace NdcManager
         {
             if (item.TaskID != 0)
             {
-                AGVMagicUpdate(item.TaskID, item.CarrierId + "", item.Magic);
-                return;
+                try
+                {
+                    AGVMagicUpdate(item.TaskID, item.CarrierId + "", item.Magic);
+                    return;
+                }catch(Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
             }
             if (item.NdcLoadStation == null) return;
             TempItem tempItem = TempList.Find(c => { return c.NdcLoadStation == item.NdcLoadStation; });
@@ -1095,7 +1101,7 @@ namespace NdcManager
             foreach (var i in items)
             {
                 Items.Remove(i);
-                TaskListDelete(new NdcTaskModel(i));
+                TaskListDelete(i);
             }
         }
 
@@ -1220,7 +1226,7 @@ namespace NdcManager
                         item.HadDirectInfo = true;
                     }
                 }
-                TaskListUpdate(new NdcTaskModel(item));
+                CheckCanUpdateTaskList(item);
             }
 
             result = "";
@@ -1305,7 +1311,7 @@ namespace NdcManager
 
         #region 对外接口
 
-        public delegate void GridDataHandler(NdcTaskModel model);
+        public delegate void GridDataHandler(NDCItem model);
         public event GridDataHandler TaskListUpdate;
         public event GridDataHandler TaskListDelete;
         public event GridDataHandler NoticeRedirect;
@@ -1320,6 +1326,13 @@ namespace NdcManager
         public event AGVMagicHandler AGVMagicUpdate;
 
         #endregion
+
+
+        private void CheckCanUpdateTaskList(NDCItem ndcItem)
+        {
+            if (ndcItem.IKey != 0 && ndcItem.OrderIndex != 0 && ndcItem.TaskID!=0)
+                TaskListUpdate(ndcItem);
+        }
 
     }
 }

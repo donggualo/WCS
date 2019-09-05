@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Data;
-using System.Configuration;
 using System.Windows;
-using TaskManager.Models;
 using TaskManager.Devices;
+using ModuleManager.WCS;
 
 namespace TaskManager.Functions
 {

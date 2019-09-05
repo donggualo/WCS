@@ -1,4 +1,5 @@
-﻿using NdcManager.DataGrid.Models;
+﻿using ModuleManager.NDC;
+using NdcManager.DataGrid.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -18,14 +19,11 @@ namespace NdcManager.DataGrid
 
         private ObservableCollection<NdcTaskModel> _mTaskList = new ObservableCollection<NdcTaskModel>();
 
-        public NdcAgvDataGrid() { }
-
         public ObservableCollection<NdcTaskModel> NdcTaskDataList
         {
             set
             {
                 _mTaskList = value;
-                //OnPropertyChanged("NdcTaskDataList");
             }
             get
             {
@@ -33,56 +31,23 @@ namespace NdcManager.DataGrid
             }
         }
 
-        //.Netformwork4.0
-        //public event PropertyChangedEventHandler PropertyChanged;
-        //private void OnPropertyChanged(string strPropertyInfo)
-        //{
-        //    if (PropertyChanged != null)
-        //    {
-        //        PropertyChanged(this, new PropertyChangedEventArgs(strPropertyInfo));
-        //    }
-        //}
-
-
-        //.Netformwork4.5
-        //public event PropertyChangedEventHandler PropertyChanged;
-        //protected void OnPropertyChanged([CallerMemberName]string propertyName = "")
-        //{
-        //    PropertyChangedEventHandler handler = PropertyChanged;
-        //    if (handler != null)
-        //    {
-        //        handler(this, new PropertyChangedEventArgs(propertyName));
-        //    }
-        //}
-
-
-        public void UpdateTaskInList(NdcTaskModel model)
+        public void UpdateTaskInList(NDCItem item)
         {
-            NdcTaskModel m = _mTaskList.FirstOrDefault(c => { return c.IKey == model.IKey && c.Order == model.Order; });
+            NdcTaskModel m = _mTaskList.FirstOrDefault(c => { return c.IKey == item.IKey && c.Order == item.OrderIndex; });
 
             if (m != null && m.IKey != 0)
             {
-                //m = model;
-                m.TaskID = model.TaskID;
-                m.IKey = model.IKey;
-                m.Order = model.Order;
-                m.AgvName = model.AgvName;
-                m.LoadSite = model.LoadSite;
-                m.UnLoadSite = model.UnLoadSite;
-                m.RedirectSite = model.RedirectSite;
-                m.HasLoad = model.HasLoad;
-                m.HasUnLoad = model.HasUnLoad;
+                m.Update(item);
             }
-            else if (model.IKey != 0 || model.Order != 0)
+            else if (item.IKey != 0 || item.OrderIndex != 0)
             {
-                _mTaskList.Add(model);
+                _mTaskList.Add(new NdcTaskModel(item));
             }
-            //OnPropertyChanged("NdcTaskDataList");
         }
 
-        public void DeleteTask(NdcTaskModel model)
+        public void DeleteTask(NDCItem model)
         {
-            NdcTaskModel m = _mTaskList.FirstOrDefault(c => { return c.IKey == model.IKey && c.Order == model.Order; });
+            NdcTaskModel m = _mTaskList.FirstOrDefault(c => { return c.IKey == model.IKey && c.Order == model.OrderIndex; });
             if (m != null && m.IKey != 0)
             {
                 _mTaskList.Remove(m);

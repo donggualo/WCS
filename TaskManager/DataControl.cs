@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SockManager;
+﻿using SockManager;
 using WcsHttpManager;
 using NdcManager;
-using TaskManager.Models;
 using TaskManager.Functions;
+using PubResourceManager;
 
 namespace TaskManager
 {
@@ -123,7 +118,7 @@ namespace TaskManager
 
                 _mStools = new SimpleTools();
 
-                _mTaskTools = new TaskTools();
+               // _mTaskTools = new TaskTools();
 
                 _mHttpServer = new HttpServerControl();
 

@@ -1,4 +1,5 @@
-﻿using NdcManager.DataGrid;
+﻿using ModuleManager.NDC;
+using NdcManager.DataGrid;
 using NdcManager.DataGrid.Models;
 using Panuon.UI.Silver;
 using System;
@@ -28,20 +29,19 @@ namespace WindowManager
 
             taskDataGrid = new NdcAgvDataGrid();
 
-            //DataContext = taskDataGrid;
-            DgCustom.ItemsSource = taskDataGrid.NdcTaskDataList;
+            DataContext = taskDataGrid;
             DataControl._mNDCControl.TaskListUpdate += _mNDCControl_TaskListUpdate;
             DataControl._mNDCControl.TaskListDelete += _mNDCControl_TaskListDelete;
             DataControl._mNDCControl.NoticeRedirect += _mNDCControl_NoticeRedirect;
         }
 
-        private void _mNDCControl_NoticeRedirect(NdcTaskModel model)
+        private void _mNDCControl_NoticeRedirect(NDCItem model)
         {
             try
             {
                 Application.Current.Dispatcher.Invoke((System.Action)(() =>
                 {
-                    Notice.Show("任务ID:"+model.TaskID+"\nOrder:"+model.Order +"\nIkey:"+model.IKey+"\n需要重定向!!", "Notice", 10, MessageBoxIcon.Info);
+                    Notice.Show("任务ID:"+model.TaskID+"\nOrder:"+model.OrderIndex +"\nIkey:"+model.IKey+"\n需要重定向!!", "Notice", 10, MessageBoxIcon.Info);
                 }));
             }
             catch (Exception e)
@@ -50,15 +50,13 @@ namespace WindowManager
             }
         }
 
-        private void _mNDCControl_TaskListDelete(NdcTaskModel model)
+        private void _mNDCControl_TaskListDelete(NDCItem model)
         {
             try
             {
                 Application.Current.Dispatcher.Invoke((System.Action)(() =>
                 {
                     taskDataGrid.DeleteTask(model);
-                    DgCustom.Items.Refresh();
-
                 }));
             }
             catch (Exception e)
@@ -67,15 +65,13 @@ namespace WindowManager
             }
         }
 
-        private void _mNDCControl_TaskListUpdate(NdcTaskModel model)
+        private void _mNDCControl_TaskListUpdate(NDCItem item)
         {
             try
             {
                 Application.Current.Dispatcher.Invoke((System.Action)(() =>
                 {
-                    taskDataGrid.UpdateTaskInList(model);
-                    DgCustom.Items.Refresh();
-
+                    taskDataGrid.UpdateTaskInList(item);
                 }));
             }catch(Exception e)
             {

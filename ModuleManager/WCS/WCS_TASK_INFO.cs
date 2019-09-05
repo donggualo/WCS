@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TaskManager.Models
+namespace ModuleManager.WCS
 {
     /// <summary>
     /// WCS任务资讯     WCS_TASK_INFO

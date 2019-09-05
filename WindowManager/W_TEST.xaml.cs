@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ModuleManager.WCS;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Text.RegularExpressions;
@@ -8,7 +9,6 @@ using System.Windows.Input;
 using TaskManager;
 using TaskManager.Devices;
 using TaskManager.Functions;
-using TaskManager.Models;
 using WcsHttpManager;
 
 namespace WindowManager
