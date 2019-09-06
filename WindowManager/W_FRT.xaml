@@ -17,7 +17,7 @@
         <TextBlock Grid.Row="0" Margin="10,0,0,0" FontSize="20" VerticalAlignment="Center"  FontFamily="MV Boli">
                         固定棍台列表
         </TextBlock>
-        
+
         <!--操作面板-->
         <Grid Margin="10,5,0,10" Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -34,7 +34,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Label Grid.Column="0" Content="设备："/>
-            <ComboBox Grid.Column="1"  
+            <ComboBox Grid.Column="1" Name="CBdev"
                       Height="30"
                       MinWidth="100"
                       Margin="5,0,5,0"
@@ -43,66 +43,7 @@
                       pu:ComboBoxHelper.SelectedBrush="#B6B6C3"
                       ItemsSource="{Binding Path=DeviceNameList}">
             </ComboBox>
-            <TextBox Grid.Column="2"  Height="30"
-                    Width="120" Name="xlocation"
-                    pu:TextBoxHelper.Watermark="X轴坐标"
-                    pu:TextBoxHelper.FocusedBorderBrush="#000000"
-                    pu:TextBoxHelper.FocusedShadowColor="#000000"
-                    pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
-            <TextBox Grid.Column="3"  Height="30"
-                     Margin="5,0,5,0"
-                    Width="120" Name="ylocation"
-                    pu:TextBoxHelper.Watermark="Y轴坐标"
-                    pu:TextBoxHelper.FocusedBorderBrush="#000000"
-                    pu:TextBoxHelper.FocusedShadowColor="#000000"
-                    pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
-            <TextBox Grid.Column="4"  Height="30"
-                    Width="120" Name="zlocation"
-                    pu:TextBoxHelper.Watermark="Z轴坐标"
-                    pu:TextBoxHelper.FocusedBorderBrush="#000000"
-                    pu:TextBoxHelper.FocusedShadowColor="#000000"
-                    pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
-            <Button  Grid.Column="5" Height="30" Margin="5,0,5,0"
-                    Width="80" Name="locateBtn" Click="LocateBtn_Click"
-                    Content="&#xf124; 定位"
-                    pu:ButtonHelper.ClickStyle="Sink"
-                    FontFamily="{DynamicResource FontAwesome}"
-                    pu:ButtonHelper.ButtonStyle="Hollow"
-                    BorderBrush="#FF3F3F3F"
-                    Foreground="#FF3F3F3F"
-                    pu:ButtonHelper.HoverBrush="#3F3F3F"
-                    pu:ButtonHelper.CornerRadius="6" />
-            <Button  Grid.Column="6" Height="30"
-                    Width="80" Name="loadBtn" Click="LoadBtn_Click"
-                    Content="&#xf067; 取货"
-                    pu:ButtonHelper.ClickStyle="Sink"
-                    FontFamily="{DynamicResource FontAwesome}"
-                    pu:ButtonHelper.ButtonStyle="Hollow"
-                    BorderBrush="#FF3F3F3F"
-                    Foreground="#FF3F3F3F"
-                    pu:ButtonHelper.HoverBrush="#3F3F3F"
-                    pu:ButtonHelper.CornerRadius="6" />
-            <Button  Grid.Column="7" Height="30" Margin="5,0,5,0"
-                    Width="80" Name="unloadBtn" Click="UnloadBtn_Click"
-                    Content="&#xf068; 放货"
-                    pu:ButtonHelper.ClickStyle="Sink"
-                    FontFamily="{DynamicResource FontAwesome}"
-                    pu:ButtonHelper.ButtonStyle="Hollow"
-                    BorderBrush="#FF3F3F3F"
-                    Foreground="#FF3F3F3F"
-                    pu:ButtonHelper.HoverBrush="#3F3F3F"
-                    pu:ButtonHelper.CornerRadius="6" />
-            <Button  Grid.Column="8" Height="30"
-                    Width="80" Name="relocate" Click="Relocate_Click"
-                    Content="&#xf124; 复位"
-                    pu:ButtonHelper.ClickStyle="Sink"
-                    FontFamily="{DynamicResource FontAwesome}"
-                    pu:ButtonHelper.ButtonStyle="Hollow"
-                    BorderBrush="#FF3F3F3F"
-                    Foreground="#FF3F3F3F"
-                    pu:ButtonHelper.HoverBrush="#3F3F3F"
-                    pu:ButtonHelper.CornerRadius="6" />
-            <Button  Grid.Column="9" Height="30" Margin="5,0,0,0"
+            <Button  Grid.Column="2" Height="30" Margin="5,0,0,0"
                     Width="80" Name="terminateBtn" Click="TerminateBtn_Click"
                     Content="&#xf00d; 终止"
                     pu:ButtonHelper.ClickStyle="Sink"
@@ -112,8 +53,52 @@
                     Foreground="#FF3F3F3F"
                     pu:ButtonHelper.HoverBrush="#3F3F3F"
                     pu:ButtonHelper.CornerRadius="6" />
+            <ComboBox Grid.Column="3" Name="CBsite1"
+                      Height="30"
+                      MinWidth="100"
+                      Margin="5,0,5,0"
+                      pu:ComboBoxHelper.HoverBrush="#E3DDDD"
+                      pu:ComboBoxHelper.SelectedBrush="#B6B6C3"/>
+            <ComboBox Grid.Column="4" Name="CBsite2"
+                      Height="30"
+                      MinWidth="100"
+                      Margin="5,0,5,0"
+                      pu:ComboBoxHelper.HoverBrush="#E3DDDD"
+                      pu:ComboBoxHelper.SelectedBrush="#B6B6C3"/>
+            <ComboBox Grid.Column="5" Name="CBsite3"
+                      Height="30"
+                      MinWidth="100"
+                      Margin="5,0,5,0"
+                      pu:ComboBoxHelper.HoverBrush="#E3DDDD"
+                      pu:ComboBoxHelper.SelectedBrush="#B6B6C3"/>
+            <ComboBox Grid.Column="6" Name="CBsite4"
+                      Height="30"
+                      MinWidth="100"
+                      Margin="5,0,5,0"
+                      pu:ComboBoxHelper.HoverBrush="#E3DDDD"
+                      pu:ComboBoxHelper.SelectedBrush="#B6B6C3"/>
+            <Button  Grid.Column="7" Height="30"
+                    Width="80" Name="BTNrun" Click="BTNrun_Click"
+                    Content="&#xf067; 启动辊台"
+                    pu:ButtonHelper.ClickStyle="Sink"
+                    FontFamily="{DynamicResource FontAwesome}"
+                    pu:ButtonHelper.ButtonStyle="Hollow"
+                    BorderBrush="#FF3F3F3F"
+                    Foreground="#FF3F3F3F"
+                    pu:ButtonHelper.HoverBrush="#3F3F3F"
+                    pu:ButtonHelper.CornerRadius="6" />
+            <Button  Grid.Column="8" Height="30" Margin="5,0,5,0"
+                    Width="80" Name="BTNstop" Click="BTNstop_Click"
+                    Content="&#xf068; 停止辊台"
+                    pu:ButtonHelper.ClickStyle="Sink"
+                    FontFamily="{DynamicResource FontAwesome}"
+                    pu:ButtonHelper.ButtonStyle="Hollow"
+                    BorderBrush="#FF3F3F3F"
+                    Foreground="#FF3F3F3F"
+                    pu:ButtonHelper.HoverBrush="#3F3F3F"
+                    pu:ButtonHelper.CornerRadius="6" />
         </Grid>
-        
+
         <!--设备列表-->
         <Grid Grid.Row="2" >
             <Border Background="LightGray" Height="2" Grid.Row="1" VerticalAlignment="Top"></Border>
@@ -146,6 +131,6 @@
             </ScrollViewer>
         </Grid>
         <GridSplitter Width="2" Background="LightGray" Grid.RowSpan="3"/>
-        
+
     </Grid>
 </UserControl>

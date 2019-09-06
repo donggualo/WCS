@@ -16,7 +16,7 @@
         <TextBlock Grid.Row="0" Margin="10,0,0,0" FontSize="20" VerticalAlignment="Center"  FontFamily="MV Boli">
                         行车列表
         </TextBlock>
-        
+
         <!--操作面板-->
         <Grid Margin="10,5,0,10" Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -33,7 +33,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Label Grid.Column="0" Content="设备："/>
-            <ComboBox Grid.Column="1"  
+            <ComboBox Grid.Column="1" Name="CBdev"
                       Height="30"
                       MinWidth="100"
                       Margin="5,0,5,0"
@@ -43,24 +43,27 @@
                       ItemsSource="{Binding Path=DeviceNameList}">
             </ComboBox>
             <TextBox Grid.Column="2"  Height="30"
-                    Width="120" Name="xlocation"
-                    pu:TextBoxHelper.Watermark="X轴坐标"
-                    pu:TextBoxHelper.FocusedBorderBrush="#000000"
-                    pu:TextBoxHelper.FocusedShadowColor="#000000"
-                    pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
+                     Width="120" Name="xlocation"
+                     InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum"
+                     pu:TextBoxHelper.Watermark="X轴坐标"
+                     pu:TextBoxHelper.FocusedBorderBrush="#000000"
+                     pu:TextBoxHelper.FocusedShadowColor="#000000"
+                     pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
             <TextBox Grid.Column="3"  Height="30"
                      Margin="5,0,5,0"
-                    Width="120" Name="ylocation"
-                    pu:TextBoxHelper.Watermark="Y轴坐标"
-                    pu:TextBoxHelper.FocusedBorderBrush="#000000"
-                    pu:TextBoxHelper.FocusedShadowColor="#000000"
-                    pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
+                     Width="120" Name="ylocation"
+                     InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum"
+                     pu:TextBoxHelper.Watermark="Y轴坐标"
+                     pu:TextBoxHelper.FocusedBorderBrush="#000000"
+                     pu:TextBoxHelper.FocusedShadowColor="#000000"
+                     pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
             <TextBox Grid.Column="4"  Height="30"
-                    Width="120" Name="zlocation"
-                    pu:TextBoxHelper.Watermark="Z轴坐标"
-                    pu:TextBoxHelper.FocusedBorderBrush="#000000"
-                    pu:TextBoxHelper.FocusedShadowColor="#000000"
-                    pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
+                     Width="120" Name="zlocation"
+                     InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum"
+                     pu:TextBoxHelper.Watermark="Z轴坐标"
+                     pu:TextBoxHelper.FocusedBorderBrush="#000000"
+                     pu:TextBoxHelper.FocusedShadowColor="#000000"
+                     pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
             <Button  Grid.Column="5" Height="30" Margin="5,0,5,0"
                     Width="80" Name="locateBtn" Click="LocateBtn_Click"
                     Content="&#xf124; 定位"
@@ -112,7 +115,7 @@
                     pu:ButtonHelper.HoverBrush="#3F3F3F"
                     pu:ButtonHelper.CornerRadius="6" />
         </Grid>
-        
+
         <!--设备列表-->
         <Grid Grid.Row="2" >
             <Border Background="LightGray" Height="2" Grid.Row="1" VerticalAlignment="Top"></Border>
@@ -145,6 +148,6 @@
             </ScrollViewer>
         </Grid>
         <GridSplitter Width="2" Background="LightGray" Grid.RowSpan="3"/>
-        
+
     </Grid>
 </UserControl>
