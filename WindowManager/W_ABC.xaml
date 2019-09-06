@@ -18,7 +18,8 @@
         </TextBlock>
 
         <!--操作面板-->
-        <Grid Margin="10,5,0,10" Grid.Row="1">
+        <StackPanel Margin="10,5,0,10" Grid.Row="1" Orientation="Horizontal">
+            <!--
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
@@ -32,6 +33,7 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
+            -->
             <Label Grid.Column="0" Content="设备："/>
             <ComboBox Grid.Column="1" Name="CBdev"
                       Height="30"
@@ -114,7 +116,7 @@
                     Foreground="#FF3F3F3F"
                     pu:ButtonHelper.HoverBrush="#3F3F3F"
                     pu:ButtonHelper.CornerRadius="6" />
-        </Grid>
+        </StackPanel>
 
         <!--设备列表-->
         <Grid Grid.Row="2" >

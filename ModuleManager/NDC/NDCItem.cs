@@ -1,4 +1,5 @@
 ﻿using ModuleManager.NDC.Message;
+using ModuleManager.NDC.SQL;
 using NDC8.ACINET.ACI;
 using System;
 using System.Collections.Generic;
@@ -10,17 +11,14 @@ namespace ModuleManager.NDC
 {
     public class NDCItem
     {
-        /// <summary>
-        /// 任务唯一标识
-        /// </summary>
-        public int TaskID;
+
+        public WCS_NDC_TASK _mTask;
 
         public _sMessage s;
         public _bMessage b;
         public _vpilMessage v;
 
-        public int OrderIndex;
-        public int IKey;
+
         public int Magic;
         public int Status;
         public int CarrierId;//分配的agv小车
@@ -30,7 +28,7 @@ namespace ModuleManager.NDC
         /// 车重定位任务的状态
         /// </summary>
         public NDCItemStatus DirectStatus;
-        public bool HadLoad, HadUnload, HadDirectInfo;
+        public bool HadDirectInfo;
 
         /// <summary>
         /// 小车PLC状态
@@ -40,16 +38,6 @@ namespace ModuleManager.NDC
         public string StatusInfo;
         public string TaskInfo;
         public string VpiInfo;
-
-        //原始区域数据
-        public string LoadStation;
-        public string UnloadStation;
-        public string RedirectUnloadStation;
-
-        //Ndc处理数据
-        public string NdcLoadStation;
-        public string NdcUnloadStation;
-        public string NdcRedirectUnloadStation;
 
         //重新定位数据计算
         public DateTime lastDirectTime;
@@ -115,6 +103,8 @@ namespace ModuleManager.NDC
 
         public NDCItem()
         {
+            _mTask = new WCS_NDC_TASK();
+
             s = new _sMessage();
 
             b = new _bMessage();
@@ -144,7 +134,7 @@ namespace ModuleManager.NDC
             s.Magic3 = message.Magic3;
             s.CarrierId = message.CarrierNumber;
             s.Station = message.CarrierStation;
-            NdcLoadStation = message.CarrierStation != 0 ? message.CarrierStation + "" : "";
+            _mTask.NDCLOADSITE = message.CarrierStation != 0 ? message.CarrierStation + "" : "";
             StatusInfo = s.ToString();
         }
 

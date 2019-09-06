@@ -11,14 +11,16 @@ namespace ModuleManager.NDC
     /// </summary>
     public class TempItem
     {
-        public string IKey;
+        public int IKey;
         public string Prio;
         public int TaskID;
-        public string LoadStation;
-        public string UnloadStation;
-        public string NdcLoadStation;
-        public string NdcUnloadStation;
-        public string RedirectUnloadStation;
+        public string LoadSite;
+        public string UnloadSite;
+        public string RedirectSite;
+
+        public string NdcLoadSite;
+        public string NdcUnloadSite;
+        public string NdcRedirectSite;
 
         public DateTime addTime = DateTime.Now;
 

@@ -41,7 +41,7 @@ namespace WindowManager
             {
                 Application.Current.Dispatcher.Invoke((System.Action)(() =>
                 {
-                    Notice.Show("任务ID:"+model.TaskID+"\nOrder:"+model.OrderIndex +"\nIkey:"+model.IKey+"\n需要重定向!!", "Notice", 10, MessageBoxIcon.Info);
+                    Notice.Show("任务ID:"+model._mTask.TASKID+"\nOrder:"+model._mTask.ORDERINDEX +"\nIkey:"+model._mTask.IKEY+"\n需要重定向!!", "Notice", 10, MessageBoxIcon.Info);
                 }));
             }
             catch (Exception e)

@@ -163,7 +163,10 @@ namespace TaskManager
 
                 if (_mHttpServer != null) _mHttpServer.StopServer();
 
-                if (_mNDCControl != null) _mNDCControl.DoDisConnectNDC();
+                if (_mNDCControl != null)
+                {
+                    _mNDCControl.BeforeClose();
+                }
             }
             return true;
         }

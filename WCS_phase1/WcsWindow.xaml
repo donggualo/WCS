@@ -198,12 +198,24 @@
                             Padding="20,0,0,0" />
                     </TreeViewItem>
                     <TreeViewItem
-                        Tag="AGV"
-                        MouseDoubleClick="TreeView_MouseDoubleClick"
                         FontSize="20"
-                        Header="激光AGV"
+                        Header="NDC"
+                        IsExpanded="True"
                         Padding="10,0,0,0"
-                        pu:TreeViewHelper.ItemIcon="&#xf013;" />
+                        pu:TreeViewHelper.ItemIcon="&#xf022;">
+                        <TreeViewItem
+                            Tag="AGV"
+                            MouseDoubleClick="TreeView_MouseDoubleClick"
+                            FontSize="20"
+                            Header="AGV信息"
+                            Padding="20,0,0,0" />
+                        <TreeViewItem
+                            Tag="WcsNdcSite"
+                            MouseDoubleClick="TreeView_MouseDoubleClick"
+                            FontSize="20"
+                            Header="站点信息"
+                            Padding="20,0,0,0" />
+                    </TreeViewItem>
                     <TreeViewItem
                         Tag="TaskData"
                         MouseDoubleClick="TreeView_MouseDoubleClick"
@@ -274,11 +286,11 @@
                                 pu:TabControlHelper.SelectedForeground="#FFFFFF"
                                 pu:TabControlHelper.SelectedBackground="#666666"
                                 Background="#FFFFFF"
-                                pu:TabControlHelper.CanRemove="False"
-                                pu:TabControlHelper.RemoveCommand=""
+                                pu:TabControlHelper.CanRemove="True"
                                 pu:TabControlHelper.Removed="WcsTabControl_Removed"
                                 Margin="0,2,0,0">
                         <TabItem Header="概况"
+                                 Name="Home" Tag="Home"
                                 pu:TabControlHelper.CanRemove="False">
                             
                         </TabItem>

@@ -37,6 +37,8 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -79,6 +81,9 @@
     <Compile Include="W_TaskData.xaml.cs">
       <DependentUpon>W_TaskData.xaml</DependentUpon>
     </Compile>
+    <Compile Include="W_WcsNdcSite.xaml.cs">
+      <DependentUpon>W_WcsNdcSite.xaml</DependentUpon>
+    </Compile>
     <Page Include="W_FRT.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -104,6 +109,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="W_TaskData.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="W_WcsNdcSite.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -49,8 +49,11 @@
     <Compile Include="NDC\NDCMagic.cs" />
     <Compile Include="NDC\NDCPlcStatus.cs" />
     <Compile Include="NDC\NDCStatus.cs" />
+    <Compile Include="NDC\SQL\WCS_NDC_SITE.cs" />
+    <Compile Include="NDC\SQL\WCS_NDC_TASK.cs" />
     <Compile Include="NDC\TempItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PUB\WCS_PARAM.cs" />
     <Compile Include="WCS\WCS_AGV_INFO.cs" />
     <Compile Include="WCS\WCS_COMMAND_MASTER.cs" />
     <Compile Include="WCS\WCS_COMMAND_V.cs" />
@@ -66,5 +69,6 @@
       <Name>ACINET</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

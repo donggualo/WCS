@@ -149,64 +149,64 @@ namespace NdcManager.DataGrid.Models
 
         public void Update(NDCItem item)
         {
-            if (taskid != item.TaskID)
+            if (taskid != item._mTask.TASKID)
             {
-                TaskID = item.TaskID;
+                TaskID = item._mTask.TASKID;
             }
-            if (ikey != item.IKey)
+            if (ikey != item._mTask.IKEY)
             {
-                IKey = item.IKey;
+                IKey = item._mTask.IKEY;
             }
-            if (order != item.OrderIndex)
+            if (order != item._mTask.ORDERINDEX)
             {
-                Order = item.OrderIndex;
+                Order = item._mTask.ORDERINDEX;
             }
             if (agvname != item.CarrierId )
             {
                 agvname = item.CarrierId;
             }
-            if (loadsite != item.LoadStation)
+            if (loadsite != item._mTask.LOADSITE)
             {
-                LoadSite = item.LoadStation;
+                LoadSite = item._mTask.LOADSITE;
             }
-            if (unloadsite != item.UnloadStation)
+            if (unloadsite != item._mTask.UNLOADSITE)
             {
-                UnLoadSite = item.UnloadStation;
+                UnLoadSite = item._mTask.UNLOADSITE;
             }
-            if (redirectsite != item.RedirectUnloadStation)
+            if (redirectsite != item._mTask.REDIRECTSITE)
             {
-                RedirectSite = item.RedirectUnloadStation;
+                RedirectSite = item._mTask.REDIRECTSITE;
             }
-            if (hasload = item.HadLoad)
+            if (hasload = item._mTask.HADLOAD)
             {
-                HasLoad = item.HadLoad;
+                HasLoad = item._mTask.HADLOAD;
             }
-            if (hasunload = item.HadUnload)
+            if (hasunload = item._mTask.HADUNLOAD)
             {
-                HasUnLoad = item.HadUnload;
+                HasUnLoad = item._mTask.HADUNLOAD;
             }
         }
 
         public NdcTaskModel(TempItem item)
         {
-            IKey = int.Parse(item.IKey);
+            IKey = item.IKey;
             TaskID = item.TaskID;
-            LoadSite = item.LoadStation;
-            UnLoadSite = item.UnloadStation;
-            RedirectSite = item.RedirectUnloadStation;
+            LoadSite = item.LoadSite;
+            UnLoadSite = item.UnloadSite;
+            RedirectSite = item.RedirectSite;
         }
 
         public NdcTaskModel(NDCItem item)
         {
-            IKey = item.IKey;
-            TaskID = item.TaskID;
-            Order = item.OrderIndex;
+            IKey = item._mTask.IKEY;
+            TaskID = item._mTask.TASKID;
+            Order = item._mTask.ORDERINDEX;
             agvname = item.CarrierId;
-            LoadSite = item.LoadStation;
-            UnLoadSite = item.UnloadStation;
-            RedirectSite = item.RedirectUnloadStation;
-            HasLoad = item.HadLoad;
-            HasUnLoad = item.HadUnload;
+            LoadSite = item._mTask.LOADSITE;
+            UnLoadSite = item._mTask.UNLOADSITE;
+            RedirectSite = item._mTask.REDIRECTSITE;
+            HasLoad = item._mTask.HADLOAD;
+            HasUnLoad = item._mTask.HADUNLOAD;
         }
     }
 }

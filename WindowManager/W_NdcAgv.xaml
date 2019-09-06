@@ -7,25 +7,128 @@
              mc:Ignorable="d"
              d:DesignHeight="450"
              d:DesignWidth="930">
-        <Grid >
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="40"/>
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <!--任务列表-->
-            <Grid Grid.Column="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="50"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+            <CheckBox Grid.Row="0" Grid.Column="4" Name="ndcConnectCB"
+                    Content="连接NDC" Click="NdcConnectCB_Click"
+                    pu:CheckBoxHelper.CheckBoxStyle="Switch2"
+                    pu:CheckBoxHelper.BoxHeight="25"
+                    pu:CheckBoxHelper.BoxWidth="60"
+                    pu:CheckBoxHelper.CheckedBackground="#2100FF"
+                      VerticalAlignment="Center"
+                      HorizontalAlignment="Left" FontFamily="MV Boli"/>
+            <Label Grid.Row="0"  Content="任务管理" FontSize="20" VerticalAlignment="Center"  FontFamily="MV Boli"/>
+            <TextBox Grid.Row="1" Grid.RowSpan="3"  Grid.Column="0" Height="50" Text=""
+                    Width="160" Name="taskId"
+                    pu:TextBoxHelper.Watermark="任务ID"
+                    pu:TextBoxHelper.FocusedBorderBrush="#000000"
+                    pu:TextBoxHelper.FocusedShadowColor="#000000"
+                    pu:TextBoxHelper.CornerRadius="8"  FontFamily="MV Boli"/>
+
+            <TextBox Grid.Row="1" Grid.Column="1"  Height="30" Text="B02"
+                    Width="160" Name="loadSite"
+                    pu:TextBoxHelper.Watermark="接货点"
+                    pu:TextBoxHelper.FocusedBorderBrush="#000000"
+                    pu:TextBoxHelper.FocusedShadowColor="#000000"
+                    pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
+
+            <TextBox Grid.Row="1" Grid.Column="2"  Height="30" Text="C03"
+                    Width="160" Name="unloadSite"
+                    pu:TextBoxHelper.Watermark="卸货点"
+                    pu:TextBoxHelper.FocusedBorderBrush="#000000"
+                    pu:TextBoxHelper.FocusedShadowColor="#000000"
+                    pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
+
+            <Button  Grid.Row="1" Grid.Column="3"  Height="30"
+                    Width="120" Name="addTaskBtn" Click="AddTaskBtn_Click"
+                    Content="&#xf04b; 添加"
+                    pu:ButtonHelper.ClickStyle="Sink"
+                    FontFamily="{DynamicResource FontAwesome}"
+                    pu:ButtonHelper.ButtonStyle="Hollow"
+                    BorderBrush="#FF3F3F3F"
+                    Foreground="#FF3F3F3F"
+                    pu:ButtonHelper.HoverBrush="#3F3F3F"
+                    pu:ButtonHelper.CornerRadius="6" />
+
+            <TextBox Grid.Row="2" Grid.Column="1"  Height="30"
+                    Width="160" IsReadOnly="True" Name="agvName"
+                    pu:TextBoxHelper.Watermark="AGV"
+                    pu:TextBoxHelper.FocusedBorderBrush="#000000"
+                    pu:TextBoxHelper.FocusedShadowColor="#000000"
+                    pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
+            <Button Grid.Row="2" Grid.Column="3"  Height="30"
+                    Width="130" Name="loadAgvBtn" Click="LoadAgvBtn_Click"
+                    Content="&#xf067; 装货"
+                    pu:ButtonHelper.ClickStyle="Sink"
+                    FontFamily="{DynamicResource FontAwesome}"
+                    pu:ButtonHelper.ButtonStyle="Hollow"
+                    BorderBrush="#FF3F3F3F"
+                    Foreground="#FF3F3F3F"
+                    pu:ButtonHelper.HoverBrush="#3F3F3F"
+                    pu:ButtonHelper.CornerRadius="6" />
+            <Button Grid.Row="2" Grid.Column="4"  Height="30"
+                    Width="130" Name="unloadAgvBtn" Click="UnloadAgvBtn_Click"
+                    Content="&#xf068; 卸货"
+                    pu:ButtonHelper.ClickStyle="Sink"
+                    FontFamily="{DynamicResource FontAwesome}"
+                    pu:ButtonHelper.ButtonStyle="Hollow"
+                    BorderBrush="#FF3F3F3F"
+                    Foreground="#FF3F3F3F"
+                    pu:ButtonHelper.HoverBrush="#3F3F3F"
+                    pu:ButtonHelper.CornerRadius="6" />
+            <TextBox Grid.Row="3" Grid.Column="1"  Height="30" Text="C03-C02-001"
+                    Width="160" Name="redirectArea"
+                    pu:TextBoxHelper.Watermark="重定向区域"
+                    pu:TextBoxHelper.FocusedBorderBrush="#000000"
+                    pu:TextBoxHelper.FocusedShadowColor="#000000"
+                    pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
+            <TextBox Grid.Row="3"  Grid.Column="2" Height="30" Text=""
+                    Width="160" Name="order"
+                    pu:TextBoxHelper.Watermark="Order"
+                    pu:TextBoxHelper.FocusedBorderBrush="#000000"
+                    pu:TextBoxHelper.FocusedShadowColor="#000000"
+                    pu:TextBoxHelper.CornerRadius="8"  FontFamily="MV Boli"/>
+            <Button Grid.Row="3" Grid.Column="3"  Height="30"
+                    Width="130" Name="redirectBtn" Click="RedirectBtn_Click"
+                    Content="&#xf090; 重定向"
+                    pu:ButtonHelper.ClickStyle="Sink"
+                    FontFamily="{DynamicResource FontAwesome}"
+                    pu:ButtonHelper.ButtonStyle="Hollow"
+                    BorderBrush="#FF3F3F3F"
+                    Foreground="#FF3F3F3F"
+                    pu:ButtonHelper.HoverBrush="#3F3F3F"
+                    pu:ButtonHelper.CornerRadius="6" />
+        </Grid>
+        <Grid Grid.Row="1">
             <TextBlock Grid.Row="0" Margin="10,0,0,0" FontSize="20" VerticalAlignment="Center"  FontFamily="MV Boli">
-                        NDC AGV列表
+                        任务列表
             </TextBlock>
             <Border Background="LightGray" Height="2" Grid.Row="1" VerticalAlignment="Top"></Border>
-            <ScrollViewer Grid.Row="1" Margin="0,2,0,0">
-                    <DataGrid
+
+        </Grid>
+        <Grid Grid.Row="2">
+            <!--任务列表-->
+            <ScrollViewer Margin="0,2,0,0">
+                <DataGrid
                         ItemsSource="{Binding Path=NdcTaskDataList}"
                         x:Name="DgCustom"
                         BorderBrush="LightGray"
@@ -38,137 +141,19 @@
                         CanUserSortColumns="False"
                         MouseDoubleClick="DgCustom_MouseDoubleClick"
                         CanUserAddRows="False">
-                        <pu:DataGridHelper.AutoGenerateCheckBoxStyle>
-                            <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
-                                <Setter Property="pu:CheckBoxHelper.CheckBoxStyle" Value="Switch" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Path=(pu:CheckBoxHelper.CheckBoxStyle),RelativeSource={RelativeSource Self}}" Value="Switch">
-                                        <Setter Property="pu:CheckBoxHelper.CheckedBackground" Value="#72C81F" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </pu:DataGridHelper.AutoGenerateCheckBoxStyle>
+                    <pu:DataGridHelper.AutoGenerateCheckBoxStyle>
+                        <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+                            <Setter Property="pu:CheckBoxHelper.CheckBoxStyle" Value="Switch" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=(pu:CheckBoxHelper.CheckBoxStyle),RelativeSource={RelativeSource Self}}" Value="Switch">
+                                    <Setter Property="pu:CheckBoxHelper.CheckedBackground" Value="#72C81F" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </pu:DataGridHelper.AutoGenerateCheckBoxStyle>
 
-                    </DataGrid>
+                </DataGrid>
             </ScrollViewer>
-            </Grid>
-            <GridSplitter Grid.Column="1" Width="2" Background="LightGray"/>
-            <!--操作面板-->
-            <Grid Grid.Column="2" Margin="20,0,0,0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-            <CheckBox Grid.Row="0" Grid.ColumnSpan="2" Height="30" Name="ndcConnectCB"
-                    Content="连接NDC" Click="NdcConnectCB_Click"
-                    pu:CheckBoxHelper.CheckBoxStyle="Switch2"
-                    pu:CheckBoxHelper.BoxHeight="25"
-                    pu:CheckBoxHelper.BoxWidth="60"
-                    pu:CheckBoxHelper.CheckedBackground="#2100FF"
-                      VerticalAlignment="Center"
-                      HorizontalAlignment="Left" FontFamily="MV Boli"/>
-            <Label Grid.Row="1" Grid.ColumnSpan="2"  Content="添加任务" FontSize="18" VerticalAlignment="Center"  FontFamily="MV Boli"/>
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="任务ID:" VerticalAlignment="Center" FontSize="16"  FontFamily="MV Boli"/>
-            <TextBox Grid.Row="2"  Grid.Column="1" Height="30" Text=""
-                    Width="160" Name="taskId"
-                    pu:TextBoxHelper.Watermark="任务ID"
-                    pu:TextBoxHelper.FocusedBorderBrush="#000000"
-                    pu:TextBoxHelper.FocusedShadowColor="#000000"
-                    pu:TextBoxHelper.CornerRadius="8"  FontFamily="MV Boli"/>
-
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="接货点:" VerticalAlignment="Center" FontSize="16"  FontFamily="MV Boli"/>
-            <TextBox Grid.Row="3" Grid.Column="1"  Height="30" Text="B02"
-                    Width="160" Name="loadSite"
-                    pu:TextBoxHelper.Watermark="接货点"
-                    pu:TextBoxHelper.FocusedBorderBrush="#000000"
-                    pu:TextBoxHelper.FocusedShadowColor="#000000"
-                    pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
-
-            <TextBlock Grid.Row="4" Grid.Column="0" Text="卸货点:" VerticalAlignment="Center" FontSize="16" FontFamily="MV Boli"/>
-            <TextBox Grid.Row="4" Grid.Column="1"  Height="30" Text="C03"
-                    Width="160" Name="unloadSite"
-                    pu:TextBoxHelper.Watermark="卸货点"
-                    pu:TextBoxHelper.FocusedBorderBrush="#000000"
-                    pu:TextBoxHelper.FocusedShadowColor="#000000"
-                    pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
-
-                <Button  Grid.Column="1" Grid.Row="5" Height="30"
-                    Width="120" Name="addTaskBtn" Click="AddTaskBtn_Click"
-                    Content="&#xf04b; 添加"
-                    pu:ButtonHelper.ClickStyle="Sink"
-                    FontFamily="{DynamicResource FontAwesome}"
-                    pu:ButtonHelper.ButtonStyle="Hollow"
-                    BorderBrush="#FF3F3F3F"
-                    Foreground="#FF3F3F3F"
-                    pu:ButtonHelper.HoverBrush="#3F3F3F"
-                    pu:ButtonHelper.CornerRadius="6" />
-
-
-            <TextBlock Grid.Row="6" Grid.Column="0" Text="AGV:" VerticalAlignment="Center" FontSize="16" FontFamily="MV Boli"/>
-                <TextBox Grid.Row="6" Grid.Column="1"  Height="30"
-                    Width="160" IsReadOnly="True" Name="agvName"
-                    pu:TextBoxHelper.Watermark="AGV"
-                    pu:TextBoxHelper.FocusedBorderBrush="#000000"
-                    pu:TextBoxHelper.FocusedShadowColor="#000000"
-                    pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
-                <Button Grid.Row="7" Grid.Column="1"  Height="30"
-                    Width="130" Name="loadAgvBtn" Click="LoadAgvBtn_Click"
-                    Content="&#xf067; 装货"
-                    pu:ButtonHelper.ClickStyle="Sink"
-                    FontFamily="{DynamicResource FontAwesome}"
-                    pu:ButtonHelper.ButtonStyle="Hollow"
-                    BorderBrush="#FF3F3F3F"
-                    Foreground="#FF3F3F3F"
-                    pu:ButtonHelper.HoverBrush="#3F3F3F"
-                    pu:ButtonHelper.CornerRadius="6" />                
-                <Button Grid.Row="7" Grid.Column="2"  Height="30"
-                    Width="130" Name="unloadAgvBtn" Click="UnloadAgvBtn_Click"
-                    Content="&#xf068; 卸货"
-                    pu:ButtonHelper.ClickStyle="Sink"
-                    FontFamily="{DynamicResource FontAwesome}"
-                    pu:ButtonHelper.ButtonStyle="Hollow"
-                    BorderBrush="#FF3F3F3F"
-                    Foreground="#FF3F3F3F"
-                    pu:ButtonHelper.HoverBrush="#3F3F3F"
-                    pu:ButtonHelper.CornerRadius="6" />
-            <TextBlock Grid.Row="8" Grid.Column="0" Text="重定向区域:" VerticalAlignment="Center" FontSize="16" Margin="0,0,10,0" FontFamily="MV Boli"/>
-            <TextBox Grid.Row="8" Grid.Column="1"  Height="30" Text="C03-C02-001"
-                    Width="160" Name="redirectArea"
-                    pu:TextBoxHelper.Watermark="重定向区域"
-                    pu:TextBoxHelper.FocusedBorderBrush="#000000"
-                    pu:TextBoxHelper.FocusedShadowColor="#000000"
-                    pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
-            <TextBox Grid.Row="8"  Grid.Column="2" Height="30" Text=""
-                    Width="160" Name="order"
-                    pu:TextBoxHelper.Watermark="Order"
-                    pu:TextBoxHelper.FocusedBorderBrush="#000000"
-                    pu:TextBoxHelper.FocusedShadowColor="#000000"
-                    pu:TextBoxHelper.CornerRadius="8"  FontFamily="MV Boli"/>
-            <Button Grid.Row="9" Grid.Column="1"  Height="30"
-                    Width="130" Name="redirectBtn" Click="RedirectBtn_Click"
-                    Content="&#xf090; 重定向"
-                    pu:ButtonHelper.ClickStyle="Sink"
-                    FontFamily="{DynamicResource FontAwesome}"
-                    pu:ButtonHelper.ButtonStyle="Hollow"
-                    BorderBrush="#FF3F3F3F"
-                    Foreground="#FF3F3F3F"
-                    pu:ButtonHelper.HoverBrush="#3F3F3F"
-                    pu:ButtonHelper.CornerRadius="6" />
         </Grid>
-        </Grid>
+    </Grid>
 </UserControl>

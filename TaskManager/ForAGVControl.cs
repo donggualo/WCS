@@ -107,7 +107,7 @@ namespace TaskManager
                 }
 
                 // 数据库新增AGV任务资讯
-                String sql = String.Format(@"insert into wcs_agv_info(ID,PICKSTATION,DROPSTATION) values('{0}','{1}','{2}')", ID, PickStation, DropStation);
+                string sql = string.Format(@"insert into wcs_agv_info(ID,PICKSTATION,DROPSTATION) values('{0}','{1}','{2}')", ID, PickStation, DropStation);
                 DataControl._mMySql.ExcuteSql(sql);
             }
             catch (Exception ex)

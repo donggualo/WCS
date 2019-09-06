@@ -57,6 +57,7 @@
     <Compile Include="NDCControl.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NDCSQLControl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -87,6 +88,10 @@
     <ProjectReference Include="..\ModuleManager\ModuleManager.csproj">
       <Project>{36a19b28-36c5-42a8-9360-a5fff1891dc7}</Project>
       <Name>ModuleManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PubResourceManager\PubResourceManager.csproj">
+      <Project>{20AFF318-2F10-47E9-A66C-AED5B9C5E5F5}</Project>
+      <Name>PubResourceManager</Name>
     </ProjectReference>
     <ProjectReference Include="..\ToolManager\ToolManager.csproj">
       <Project>{b65231a1-c544-4279-ac1a-c62194c4ad3f}</Project>
