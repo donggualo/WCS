@@ -133,6 +133,7 @@ namespace ModuleManager.NDC
             s.Magic2 = message.Magic2;
             s.Magic3 = message.Magic3;
             s.CarrierId = message.CarrierNumber;
+            CarrierId = message.CarrierNumber;
             s.Station = message.CarrierStation;
             _mTask.NDCLOADSITE = message.CarrierStation != 0 ? message.CarrierStation + "" : "";
             StatusInfo = s.ToString();

@@ -64,7 +64,7 @@ namespace NdcManager.DataGrid.Models
 
 
         [DataGridColumn("AGV")]
-        public int AgvNames
+        public int AgvName
         {
             get
             {
@@ -163,7 +163,7 @@ namespace NdcManager.DataGrid.Models
             }
             if (agvname != item.CarrierId )
             {
-                agvname = item.CarrierId;
+                AgvName = item.CarrierId;
             }
             if (loadsite != item._mTask.LOADSITE)
             {

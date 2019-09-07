@@ -118,7 +118,7 @@ namespace TaskManager
 
                 _mStools = new SimpleTools();
 
-               // _mTaskTools = new TaskTools();
+                _mTaskTools = new TaskTools();
 
                 _mHttpServer = new HttpServerControl();
 

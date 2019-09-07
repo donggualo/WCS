@@ -169,12 +169,19 @@ namespace ToolManager
         /// <param name="text"></param>
         void WriteToLogFile(string text)
         {
-            //Write to current tracefile
-            using (StreamWriter write = new StreamWriter(traceName, appendFile))
+            try
             {
-                write.WriteLine(DateTime.Now.ToString("HH:mm:ss ") + text);
+
+                //Write to current tracefile
+                using (StreamWriter write = new StreamWriter(traceName, appendFile))
+                {
+                    write.WriteLine(DateTime.Now.ToString("HH:mm:ss ") + text);
+                }
+                appendFile = true;
+            }catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
             }
-            appendFile = true;
         }
 
         #endregion

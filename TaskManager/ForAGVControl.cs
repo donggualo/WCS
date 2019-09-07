@@ -110,7 +110,7 @@ namespace TaskManager
 
                 // 数据库新增AGV任务资讯
                 string sql = string.Format(@"insert into wcs_agv_info(ID,PICKSTATION,DROPSTATION) values('{0}','{1}','{2}');
-                                             update wcs_config_device set FLAG = 'Y' where DEVICE = '{1}'", ID, PickStation, DropStation);
+                                             update wcs_config_device set FLAG = 'L' where DEVICE = '{1}'", ID, PickStation, DropStation);
                 DataControl._mMySql.ExcuteSql(sql);
             }
             catch (Exception ex)

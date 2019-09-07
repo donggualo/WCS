@@ -30,6 +30,7 @@ namespace NdcManager
         //Port number for the ACI connection
         private int Port = 30001;
 
+        public bool Closing = false;
         /// <summary>
         /// 日志保存
         /// </summary>
@@ -178,6 +179,8 @@ namespace NdcManager
         public void BeforeClose()
         {
             DoDisConnectNDC();
+
+            Closing = true;
 
             if (Ikey >= 99) Ikey = 1;
             NDCSQLControl control = new NDCSQLControl();
@@ -978,7 +981,7 @@ namespace NdcManager
         /// </summary>
         private void CheckItemTask()
         {
-            while (true)
+            while (true && !Closing)
             {
                 Thread.Sleep(3000);
 

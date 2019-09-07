@@ -168,13 +168,20 @@ namespace WindowManager
 
         private void NdcConnectCB_Click(object sender, RoutedEventArgs e)
         {
-            if (ndcConnectCB.IsChecked != null && (bool)ndcConnectCB.IsChecked)
+            try
             {
-                DataControl._mNDCControl.DoConnectNDC();
-            }
-            else
-            {
+
+                if (ndcConnectCB.IsChecked != null && (bool)ndcConnectCB.IsChecked)
+                {
+                    DataControl._mNDCControl.DoConnectNDC();
+                }
+                else
+                {
                 DataControl._mNDCControl.DoDisConnectNDC();
+                }
+            }catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
 
         }
