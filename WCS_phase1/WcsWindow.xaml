@@ -185,6 +185,12 @@
                             Header="运输车信息"
                             Padding="20,0,0,0" />
                         <TreeViewItem
+                            Tag="ARF"
+                            MouseDoubleClick="TreeView_MouseDoubleClick"
+                            FontSize="20"
+                            Header="摆渡车信息"
+                            Padding="20,0,0,0" />
+                        <TreeViewItem
                             Tag="FRT"
                             MouseDoubleClick="TreeView_MouseDoubleClick"
                             FontSize="20"

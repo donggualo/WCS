@@ -76,6 +76,44 @@ namespace WindowManager
         {
             Regex re = new Regex("[^0-9]+");
             e.Handled = re.IsMatch(e.Text);
+
+            if (int.TryParse(e.Text,out int result))
+            {
+                if (xlocation.IsFocused)    
+                {
+                    if (Convert.ToInt32((string.IsNullOrEmpty(xlocation.Text.Trim()) ? "0" : xlocation.Text.Trim()) + e.Text)
+                        >
+                        DataControl._mStools.BytesToInt(new byte[] { 0xFF, 0xFF, 0xFF }))   // 3位 byte
+                    {
+                        Notice.Show("输入值过大！请重新输入！", "提示", 3, MessageBoxIcon.Info);
+                        xlocation.Text = "";
+                        return;
+                    }
+                }
+                else if (ylocation.IsFocused)
+                {
+                    if (Convert.ToInt32((string.IsNullOrEmpty(ylocation.Text.Trim()) ? "0" : ylocation.Text.Trim()) + e.Text)
+                        >
+                        DataControl._mStools.BytesToInt(new byte[] { 0xFF, 0xFF })) // 2位 byte
+                    {
+                        Notice.Show("输入值过大！请重新输入！", "提示", 3, MessageBoxIcon.Info);
+                        ylocation.Text = "";
+                        return;
+                    }
+                }
+                else 
+                {
+                    if (Convert.ToInt32((string.IsNullOrEmpty(zlocation.Text.Trim()) ? "0" : zlocation.Text.Trim()) + e.Text)
+                        >
+                        DataControl._mStools.BytesToInt(new byte[] { 0xFF, 0xFF })) // 2位 byte
+                    {
+                        Notice.Show("输入值过大！请重新输入！", "提示", 3, MessageBoxIcon.Info);
+                        zlocation.Text = "";
+                        return;
+                    }
+                }
+            }
+            
         }
 
         /// <summary>

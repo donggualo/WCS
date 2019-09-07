@@ -10,10 +10,10 @@ using TaskManager.Devices;
 namespace WindowManager.Datagrid.Models
 {
     /// <summary>
-    /// 行车设备信息
+    /// 摆渡车设备信息
     /// </summary>
     [Serializable]
-    public class RGVDeviceModel : BaseDataGrid
+    public class ARFDeviceModel : BaseDataGrid
     {
         private string deviceid;
         private byte actionsta;
@@ -29,27 +29,29 @@ namespace WindowManager.Datagrid.Models
         private byte errormsg;
         private bool isconnect;
         private string datatime;
-        private RGV rgv;
+        private ARF arf;
 
 
 
         [DataGridColumn("设备号")]
-        public string DeviceID {
+        public string DeviceID
+        {
             get { return deviceid; }
-            set {
+            set
+            {
                 deviceid = value;
                 OnPropertyChanged("DeviceID");
             }
         }
 
         [DataGridColumn("区域")]
-        public string Area{ set; get; }
+        public string Area { set; get; }
 
 
         [DataGridColumn("运动状态")]
         public string ActionStatus
         {
-            get { return actionsta == RGV.Stop ? "停止" : "运行中"; }
+            get { return actionsta == ARF.Stop ? "停止" : "运行中"; }
             set
             {
                 OnPropertyChanged("ActionStatus");
@@ -59,7 +61,7 @@ namespace WindowManager.Datagrid.Models
         [DataGridColumn("设备状态")]
         public string DeviceStatus
         {
-            get { return devicesta == RGV.DeviceError ? "故障" : "正常"; }
+            get { return devicesta == ARF.DeviceError ? "故障" : "正常"; }
             set
             {
                 OnPropertyChanged("DeviceStatus");
@@ -69,7 +71,7 @@ namespace WindowManager.Datagrid.Models
         [DataGridColumn("命令状态")]
         public string CommandStatus
         {
-            get { return commandsta == RGV.CommandError ? "命令异常" : "命令正常"; }
+            get { return commandsta == ARF.CommandError ? "命令异常" : "命令正常"; }
             set
             {
                 OnPropertyChanged("CommandStatus");
@@ -92,7 +94,7 @@ namespace WindowManager.Datagrid.Models
         [DataGridColumn("当前任务")]
         public string Now_Task
         {
-            get { return RGV.GetTaskMes(now_task); }
+            get { return ARF.GetTaskMes(now_task); }
             set
             {
                 OnPropertyChanged("Now_Task");
@@ -114,7 +116,7 @@ namespace WindowManager.Datagrid.Models
         [DataGridColumn("棍台状态")]
         public string RollerStatus
         {
-            get { return RGV.GetRollerStatusMes(rollerstatus); }
+            get { return ARF.GetRollerStatusMes(rollerstatus); }
             set
             {
                 OnPropertyChanged("RollerStatus");
@@ -124,7 +126,7 @@ namespace WindowManager.Datagrid.Models
         [DataGridColumn("棍台方向")]
         public string RollerDirection
         {
-            get { return rollerdirection == RGV.RunFront ? "正向启动" : "反向启动"; }
+            get { return rollerdirection == ARF.RunFront ? "正向启动" : "反向启动"; }
             set
             {
                 OnPropertyChanged("RollerDirection");
@@ -135,7 +137,7 @@ namespace WindowManager.Datagrid.Models
         [DataGridColumn("完成任务")]
         public string Finish_Task
         {
-            get { return RGV.GetTaskMes(finish_task); }
+            get { return ARF.GetTaskMes(finish_task); }
             set
             {
                 OnPropertyChanged("Finish_Task");
@@ -145,7 +147,7 @@ namespace WindowManager.Datagrid.Models
         [DataGridColumn("货物状态")]
         public string LoadStatus
         {
-            get { return RGV.GetGoodsStatusMes(loadstatus); }
+            get { return ARF.GetGoodsStatusMes(loadstatus); }
             set
             {
                 OnPropertyChanged("LoadStatus");
@@ -188,90 +190,90 @@ namespace WindowManager.Datagrid.Models
 
         public void Update()
         {
-            if (isconnect != rgv.IsAlive())
+            if (isconnect != arf.IsAlive())
             {
-                ISConnect = rgv.IsAlive();
+                ISConnect = arf.IsAlive();
             }
 
-            if (!rgv.IsAlive()) return;
+            if (!arf.IsAlive()) return;
 
-            if (actionsta != rgv.ActionStatus())
+            if (actionsta != arf.ActionStatus())
             {
-                actionsta = rgv.ActionStatus();
+                actionsta = arf.ActionStatus();
                 ActionStatus = "";
             }
 
-            if(devicesta != rgv.DeviceStatus())
+            if (devicesta != arf.DeviceStatus())
             {
-                devicesta = rgv.DeviceStatus();
+                devicesta = arf.DeviceStatus();
                 DeviceStatus = "";
             }
 
-            if(commandsta != rgv.CommandStatus())
+            if (commandsta != arf.CommandStatus())
             {
-                commandsta = rgv.CommandStatus();
+                commandsta = arf.CommandStatus();
                 CommandStatus = "";
             }
 
-            if(des_x_y_z != rgv.GetGoodsSite())
+            if (des_x_y_z != arf.Goods1site())
             {
-                Des_X_Y_Z = rgv.GetGoodsSite();
+                Des_X_Y_Z = arf.Goods1site();
             }
 
-            if (now_task != rgv.CurrentTask())
+            if (now_task != arf.CurrentTask())
             {
-                now_task = rgv.CurrentTask();
+                now_task = arf.CurrentTask();
                 Now_Task = "";
             }
 
-            if(now_x_y_z != rgv.GetCurrentSite())
+            if (now_x_y_z != arf.CurrentSite())
             {
-                Now_X_Y_Z = rgv.GetCurrentSite();
+                Now_X_Y_Z = arf.CurrentSite();
             }
 
-            if(finish_task != rgv.FinishTask())
+            if (finish_task != arf.FinishTask())
             {
 
-                finish_task = rgv.FinishTask();
+                finish_task = arf.FinishTask();
                 Finish_Task = "";
             }
 
-            if(loadstatus != rgv.GoodsStatus())
+            if (loadstatus != arf.GoodsStatus())
             {
-                loadstatus = rgv.GoodsStatus();
+                loadstatus = arf.GoodsStatus();
                 LoadStatus = "";
             }
 
-            if(rollerstatus != rgv.CurrentStatus())
+            if (rollerstatus != arf.CurrentStatus())
             {
-                rollerstatus = rgv.CurrentStatus();
+                rollerstatus = arf.CurrentStatus();
                 RollerStatus = "";
             }
 
-            if(rollerdirection != rgv.RunDirection())
+            if (rollerdirection != arf.RunDirection())
             {
-                rollerdirection = rgv.RunDirection();
+                rollerdirection = arf.RunDirection();
                 RollerDirection = "";
             }
 
-            if(errormsg != rgv.ErrorMessage())
+            if (errormsg != arf.ErrorMessage())
             {
-                errormsg = rgv.ErrorMessage();
+                errormsg = arf.ErrorMessage();
                 ErrorMsg = "";
             }
 
-            if(rgv.GetUpdateTime(out string time))
+            if (arf.GetUpdateTime(out string time))
             {
-                if(datatime != time)
+                if (datatime != time)
                 {
                     DataTime = time;
                 }
             }
         }
 
-        public RGVDeviceModel(string devid,string area)
+        public ARFDeviceModel(string devid, string area)
         {
-            rgv = new RGV(devid);
+            arf = new ARF(devid);
             DeviceID = devid;
             Area = area;
             Update();

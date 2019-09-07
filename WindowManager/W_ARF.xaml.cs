@@ -1,11 +1,13 @@
-﻿using ModuleManager.WCS;
-using Panuon.UI.Silver;
-using PubResourceManager;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using ModuleManager.WCS;
+using Panuon.UI.Silver;
+using PubResourceManager;
 using TaskManager;
 using TaskManager.Devices;
 using WindowManager.Datagrid;
@@ -13,21 +15,21 @@ using WindowManager.Datagrid;
 namespace WindowManager
 {
     /// <summary>
-    /// W_FRT.xaml 的交互逻辑
+    /// W_ARF.xaml 的交互逻辑
     /// </summary>
-    public partial class W_FRT : UserControl
+    public partial class W_ARF : UserControl
     {
-        private FrtDataGrid grid;
+        private ArfDataGrid grid;
 
 
-        public W_FRT()
+        public W_ARF()
         {
             InitializeComponent();
-            grid = new FrtDataGrid();
+            grid = new ArfDataGrid();
 
             DataContext = grid;
 
-            GetFRTNameList();
+            getARFNameList();
             AddCombBox();
 
             new Thread(DoRefresh)
@@ -36,9 +38,34 @@ namespace WindowManager
             }.Start();
         }
 
-        private void GetFRTNameList()
+        /// <summary>
+        /// 限制仅输入数字
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void InputNum(object sender, TextCompositionEventArgs e)
         {
-            List<WCS_CONFIG_DEVICE> list = CommonSQL.GetDeviceNameList(DataControl._mMySql, DeviceType.固定辊台);
+            Regex re = new Regex("[^0-9]+");
+            e.Handled = re.IsMatch(e.Text);
+
+            if (int.TryParse(e.Text, out int result))
+            {
+                if (location.IsFocused)
+                {
+                    if (Convert.ToInt32((string.IsNullOrEmpty(location.Text.Trim()) ? "0" : location.Text.Trim()) + e.Text)
+                        > 255)   // 1位 byte
+                    {
+                        Notice.Show("输入值过大！请重新输入！", "提示", 3, MessageBoxIcon.Info);
+                        location.Text = "";
+                        return;
+                    }
+                }
+            }
+        }
+
+        private void getARFNameList()
+        {
+            List<WCS_CONFIG_DEVICE> list = CommonSQL.GetDeviceNameList(DataControl._mMySql, DeviceType.摆渡车);
             foreach (var l in list)
             {
                 grid.UpdateDeviceList(l.DEVICE, l.AREA);
@@ -89,6 +116,51 @@ namespace WindowManager
         }
 
         /// <summary>
+        /// 定位任务
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void LocateBtn_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (CBdev.SelectedIndex == -1)
+                {
+                    Notice.Show("请选择设备！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
+                if (string.IsNullOrEmpty(location.Text.Trim()))
+                {
+                    Notice.Show("请填写目的坐标！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
+                string dev = CBdev.Text;
+
+                ARF arf = new ARF(dev);
+                if (arf.ActionStatus() == ARF.Run)
+                {
+                    throw new Exception("设备运行中！");
+                }
+                if (arf.DeviceStatus() == ARF.DeviceError)
+                {
+                    throw new Exception("设备故障！");
+                }
+
+                int loc = Convert.ToInt32(location.Text.Trim());
+                byte[] order = ARF._Position(arf.ARFNum(), (byte)loc);
+                if (!DataControl._mSocket.SendToClient(dev, order, out string result))
+                {
+                    throw new Exception(result);
+                }
+                Notice.Show("定位任务 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
+            }
+            catch (Exception ex)
+            {
+                Notice.Show("指令发送失败：" + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
         /// 启动辊台
         /// </summary>
         /// <param name="sender"></param>
@@ -103,46 +175,46 @@ namespace WindowManager
                     return;
                 }
                 string dev = CBdev.Text;
-                FRT frt = new FRT(dev);
-                if (frt.ActionStatus() == FRT.Run)
+                ARF arf = new ARF(dev);
+                if (arf.ActionStatus() == ARF.Run)
                 {
                     throw new Exception("设备运行中！");
                 }
-                if (frt.DeviceStatus() == FRT.DeviceError)
+                if (arf.DeviceStatus() == ARF.DeviceError)
                 {
                     throw new Exception("设备故障！");
                 }
 
                 // 方式
-                byte site1 = FRT.RollerRun1;
+                byte site1 = ARF.RollerRun1;
                 if (CBsite1.SelectedValue.ToString() == "启动2#辊台")
                 {
-                    site1 = FRT.RollerRun2;
+                    site1 = ARF.RollerRun2;
                 }
                 if (CBsite1.SelectedValue.ToString() == "启动全部辊台")
                 {
-                    site1 = FRT.RollerRunAll;
+                    site1 = ARF.RollerRunAll;
                 }
                 // 方向
-                byte site2 = FRT.RunFront;
+                byte site2 = ARF.RunFront;
                 if (CBsite2.SelectedValue.ToString() == "反向启动")
                 {
-                    site2 = FRT.RunObverse;
+                    site2 = ARF.RunObverse;
                 }
                 // 类型
-                byte site3 = FRT.GoodsReceive;
+                byte site3 = ARF.GoodsReceive;
                 if (CBsite3.SelectedValue.ToString() == "送货")
                 {
-                    site3 = FRT.GoodsDeliver;
+                    site3 = ARF.GoodsDeliver;
                 }
                 // 数量
-                byte site4 = FRT.GoodsQty1;
+                byte site4 = ARF.GoodsQty1;
                 if (CBsite4.SelectedValue.ToString() == "货物数量2")
                 {
-                    site4 = FRT.GoodsQty2;
+                    site4 = ARF.GoodsQty2;
                 }
 
-                byte[] order = FRT._RollerControl(frt.FRTNum(), site1, site2, site3, site4);
+                byte[] order = ARF._RollerControl(arf.ARFNum(), site1, site2, site3, site4);
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
                     throw new Exception(result);
@@ -170,13 +242,13 @@ namespace WindowManager
                     return;
                 }
                 string dev = CBdev.Text;
-                FRT frt = new FRT(dev);
-                if (frt.DeviceStatus() == FRT.DeviceError)
+                ARF arf = new ARF(dev);
+                if (arf.DeviceStatus() == ARF.DeviceError)
                 {
                     throw new Exception("设备故障！");
                 }
 
-                byte[] order = FRT._StopRoller(frt.FRTNum());
+                byte[] order = ARF._StopRoller(arf.ARFNum());
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
                     throw new Exception(result);
@@ -204,13 +276,13 @@ namespace WindowManager
                     return;
                 }
                 string dev = CBdev.Text;
-                FRT frt = new FRT(dev);
-                if (frt.DeviceStatus() == FRT.DeviceError)
+                ARF arf = new ARF(dev);
+                if (arf.DeviceStatus() == ARF.DeviceError)
                 {
                     throw new Exception("设备故障！");
                 }
 
-                byte[] order = FRT._StopTask(frt.FRTNum());
+                byte[] order = ARF._StopTask(arf.ARFNum());
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
                     throw new Exception(result);
@@ -222,5 +294,6 @@ namespace WindowManager
                 Notice.Show("指令发送失败：" + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
             }
         }
+
     }
 }

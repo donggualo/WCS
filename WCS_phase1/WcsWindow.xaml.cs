@@ -70,6 +70,11 @@ namespace WCS_phase1
                 tabItem.Tag = "FRT";
                 tabItem.Content = new W_FRT();
             }
+            else if ("ARF".Equals(itemTag))//
+            {
+                tabItem.Tag = "ARF";
+                tabItem.Content = new W_ARF();
+            }
             else if ("DevIgnore".Equals(itemTag))//
             {
                 tabItem.Tag = "DevIgnore";

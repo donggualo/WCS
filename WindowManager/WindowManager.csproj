@@ -53,6 +53,8 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Datagrid\ArfDataGrid.cs" />
+    <Compile Include="Datagrid\Models\ARFDeviceModel.cs" />
     <Compile Include="Datagrid\Models\FRTDeviceModel.cs" />
     <Compile Include="Datagrid\FrtDataGrid.cs" />
     <Compile Include="Datagrid\RgvDataGrid.cs" />
@@ -60,6 +62,9 @@
     <Compile Include="Datagrid\BaseDataGrid.cs" />
     <Compile Include="Datagrid\Models\RGVDeviceModel.cs" />
     <Compile Include="Datagrid\Models\ABCDeviceModel.cs" />
+    <Compile Include="W_ARF.xaml.cs">
+      <DependentUpon>W_ARF.xaml</DependentUpon>
+    </Compile>
     <Compile Include="W_FRT.xaml.cs">
       <DependentUpon>W_FRT.xaml</DependentUpon>
     </Compile>
@@ -84,6 +89,10 @@
     <Compile Include="W_WcsNdcSite.xaml.cs">
       <DependentUpon>W_WcsNdcSite.xaml</DependentUpon>
     </Compile>
+    <Page Include="W_ARF.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="W_FRT.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
