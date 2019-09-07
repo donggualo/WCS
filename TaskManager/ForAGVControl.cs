@@ -103,11 +103,14 @@ namespace TaskManager
                 // 发送 NDC
                 if (!DataControl._mNDCControl.AddNDCTask(ID, PickStation, DropStation, out string result))
                 {
-                    throw new Exception(result);
+                    // LOG
+                    DataControl._mTaskTools.RecordTaskErrLog("SendAGV()", "调度AGV装货卸货[固定辊台设备号]", frt.DEVICE, "", result);
+                    return;
                 }
 
                 // 数据库新增AGV任务资讯
-                string sql = string.Format(@"insert into wcs_agv_info(ID,PICKSTATION,DROPSTATION) values('{0}','{1}','{2}')", ID, PickStation, DropStation);
+                string sql = string.Format(@"insert into wcs_agv_info(ID,PICKSTATION,DROPSTATION) values('{0}','{1}','{2}');
+                                             update wcs_config_device set FLAG = 'Y' where DEVICE = '{1}'", ID, PickStation, DropStation);
                 DataControl._mMySql.ExcuteSql(sql);
             }
             catch (Exception ex)
