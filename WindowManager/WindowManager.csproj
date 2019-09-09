@@ -68,6 +68,9 @@
     <Compile Include="W_FRT.xaml.cs">
       <DependentUpon>W_FRT.xaml</DependentUpon>
     </Compile>
+    <Compile Include="W_ManualWms.xaml.cs">
+      <DependentUpon>W_ManualWms.xaml</DependentUpon>
+    </Compile>
     <Compile Include="W_RGV.xaml.cs">
       <DependentUpon>W_RGV.xaml</DependentUpon>
     </Compile>
@@ -96,6 +99,10 @@
     <Page Include="W_FRT.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="W_ManualWms.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="W_RGV.xaml">
       <Generator>MSBuild:Compile</Generator>
