@@ -364,10 +364,12 @@ namespace NdcManager
                         }
                         else
                         {
-                            Items.Add(new NDCItem()
+                            NDCItem it = new NDCItem()
                             {
                                 _mTask = i
-                            });
+                            };
+                            Items.Add(it);
+                            CheckCanUpdateTaskList(it);
                         }
                     }
 
@@ -1299,8 +1301,11 @@ namespace NdcManager
 
         private void CheckCanUpdateTaskList(NDCItem ndcItem)
         {
-            if (ndcItem._mTask.IKEY != 0 && ndcItem._mTask.ORDERINDEX != 0 && ndcItem._mTask.TASKID!=0)
-                TaskListUpdate(ndcItem);
+            if (ndcItem._mTask.IKEY != 0 && ndcItem._mTask.ORDERINDEX != 0 && ndcItem._mTask.TASKID != 0)
+            {
+                TaskListUpdate?.Invoke(ndcItem);
+            }
+                
         }
 
     }

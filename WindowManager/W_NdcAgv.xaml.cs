@@ -98,31 +98,18 @@ namespace WindowManager
         {
             if (!int.TryParse(taskId.Text, out int taskid))
             {
-                var rs = MessageBoxX.Show("任务ID必须是整型数字", "Error", System.Windows.Application.Current.MainWindow, MessageBoxButton.YesNo, new MessageBoxXConfigurations()
-                {
-                    MessageBoxIcon = MessageBoxIcon.Error,
-                    ThemeBrush = "#FF4C4C".ToColor().ToBrush(),
-                });
-                //MessageBox.Show("任务ID必须是整型数字");
+                Notice.Show("任务ID必须是整型数字", "错误", 3, MessageBoxIcon.Error);
                 return;
             }
             if (!int.TryParse(agvName.Text, out int agvid))
             {
-                var rs = MessageBoxX.Show("AGVID必须是整型数字", "Error", System.Windows.Application.Current.MainWindow, MessageBoxButton.YesNo, new MessageBoxXConfigurations()
-                {
-                    MessageBoxIcon = MessageBoxIcon.Error,
-                    ThemeBrush = "#FF4C4C".ToColor().ToBrush(),
-                });
-                //MessageBox.Show("AGVID必须是整型数字");
+
+                Notice.Show("AGVID必须是整型数字", "错误", 3, MessageBoxIcon.Error);
                 return;
             }
             if (!DataControl._mNDCControl.DoLoad(taskid, agvid, out string result))
             {
-                var rs = MessageBoxX.Show(result, "Error", System.Windows.Application.Current.MainWindow, MessageBoxButton.YesNo, new MessageBoxXConfigurations()
-                {
-                    MessageBoxIcon = MessageBoxIcon.Error,
-                    ThemeBrush = "#FF4C4C".ToColor().ToBrush(),
-                });
+                Notice.Show(result, "错误", 3, MessageBoxIcon.Error);
             }
         }
 
@@ -170,7 +157,6 @@ namespace WindowManager
         {
             try
             {
-
                 if (ndcConnectCB.IsChecked != null && (bool)ndcConnectCB.IsChecked)
                 {
                     DataControl._mNDCControl.DoConnectNDC();
@@ -193,8 +179,6 @@ namespace WindowManager
             {
 
             }
-
-            //DgCustom.Items.Refresh();
         }
 
         public void OnWindowClosing()

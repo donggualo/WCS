@@ -63,6 +63,7 @@ namespace WcsHttpManager
             if (httpServer != null)
             {
                 httpServer.StopHttpServer = true;
+                
             }
         }
     }
