@@ -24,6 +24,9 @@ namespace WindowManager
             // 选项框
             AddCombBoxForWMS("A01", CBfrt_P);
             AddCombBoxForWMS("B01", CBfrt_D);
+
+            //明细
+            GetInfo();
         }
 
         // 限制仅输入数字
@@ -31,6 +34,16 @@ namespace WindowManager
         {
             Regex re = new Regex("[^0-9]+");
             e.Handled = re.IsMatch(e.Text);
+        }
+
+        // 设置时间格式
+        private void DataGrid_TimeFormat(object sender, DataGridAutoGeneratingColumnEventArgs e)
+        {
+            if (e.PropertyType == typeof(System.DateTime))
+            {
+                (e.Column as DataGridTextColumn).IsReadOnly = true;
+                (e.Column as DataGridTextColumn).Binding.StringFormat = "yyyy/MM/dd HH:mm:ss";
+            }
         }
 
         /// <summary>
@@ -42,7 +55,7 @@ namespace WindowManager
         {
             try
             {
-                string sql = string.Format(@"select distinct DEVICE from wcs_config_device where TYPE = 'FRT' and AREA = '{0}' and (FLAG = 'Y'
+                string sql = string.Format(@"select distinct DEVICE from wcs_config_device where TYPE = 'FRT' and AREA = '{0}' and (FLAG in ('Y','U')
                                                  or LOCK_WCS_NO not in (select WCS_NO From wcs_command_master where TASK_UID_2 is not null))", area);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
@@ -59,6 +72,70 @@ namespace WindowManager
             catch (Exception e)
             {
                 MessageBox.Show(e.ToString(), "Error");
+            }
+        }
+
+        /// <summary>
+        /// 获取资讯
+        /// </summary>
+        private void GetInfo()
+        {
+            try
+            {
+                // 清空数据
+                DGinfo.ItemsSource = null;
+
+                string sql = @"select a.ID AGV任务ID, a.AGV AGV设备号, a.PICKSTATION AGV装货点, a.DROPSTATION AGV卸货点, 
+             (case when a.MAGIC = '1' then '任务生成'
+			       when a.MAGIC = '2' then '分配装货卸货点'
+				   when a.MAGIC = '3' then '前往装货点'
+				   when a.MAGIC = '4' then '到达装货点'
+				   when a.MAGIC = '6' then '装货完成'
+				   when a.MAGIC = '8' then '到达卸货点'
+				   when a.MAGIC = '10' then '卸货完成'
+				   when a.MAGIC = '11' then '任务完成'
+				   when a.MAGIC = '254' then '重新定位卸货' else NULL end) AGV当前步骤,
+                 a.CREATION_TIME AGV任务生成时间, B.CREATION_TIME WCS任务生成时间,
+                 b.TASK_UID WCS任务ID, b.BARCODE 货物码, b.W_S_LOC 起点, b.W_D_LOC 终点,
+			 (case when b.TASK_TYPE = '1' then '入库任务'
+			       when b.TASK_TYPE = '2' then '出库任务'
+				   when b.TASK_TYPE = '3' then '移仓任务'
+				   when b.TASK_TYPE = '4' then '盘点任务'
+				   when b.TASK_TYPE = '0' then 'AGV搬运' else NULL end) WCS任务类型,
+			 (case when b.SITE = 'N' then '未执行'
+			       when b.SITE = 'W' then '任务中'
+				   when b.SITE = 'Y' then '完成'
+				   when b.SITE = 'X' then '失效' else NULL end) WCS任务状态
+	          from wcs_agv_info a left join wcs_task_info b on a.TASK_UID = b.TASK_UID";
+                // 获取数据
+                DGinfo.ItemsSource = DataControl._mMySql.SelectAll(sql).DefaultView;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private void DGinfo_DoubleClick(object sender, System.EventArgs e)
+        {
+            try
+            {
+                CBfrt_P.Text = (DGinfo.SelectedItem as DataRowView)["AGV装货点"].ToString();
+                CBfrt_D.Text = (DGinfo.SelectedItem as DataRowView)["AGV卸货点"].ToString();
+                TBcode.Text = (DGinfo.SelectedItem as DataRowView)["货物码"].ToString();
+
+                string loc = (DGinfo.SelectedItem as DataRowView)["终点"].ToString();
+                if (!string.IsNullOrEmpty(loc))
+                {
+                    string[] LOC = loc.Split('-');
+                    TBlocX.Text = LOC[0].ToString();
+                    TBlocY.Text = LOC[1].ToString();
+                    TBlocZ.Text = LOC[2].ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
         }
 
@@ -101,8 +178,8 @@ namespace WindowManager
                     Task_UID = "NW" + System.DateTime.Now.ToString("yyMMddHHmmss"),
                     Task_type = WmsStatus.StockInTask,
                     Barcode = code,
-                    W_S_Loc = frtP,
-                    W_D_Loc = frtD
+                    W_S_Loc = DataControl._mTaskTools.GetArea(frtP),
+                    W_D_Loc = DataControl._mTaskTools.GetArea(frtD)
                 };
                 // 写入数据库
                 if (new ForWMSControl().WriteTaskToWCS(wms, out string result))
@@ -171,7 +248,7 @@ namespace WindowManager
                 string taskuid = dt.Rows[0]["TASK_UID"].ToString();
                 // 更新任务资讯
                 sql = String.Format(@"update WCS_TASK_INFO set UPDATE_TIME = NOW(), TASK_TYPE = '{0}', W_S_LOC = '{1}', W_D_LOC = '{2}' where TASK_UID = '{3}'",
-                    TaskType.入库, frtD, LOC, taskuid);
+                    TaskType.入库, DataControl._mTaskTools.GetArea(frtD), LOC, taskuid);
                 DataControl._mMySql.ExcuteSql(sql);
 
                 // 对应 WCS 清单
