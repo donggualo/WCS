@@ -9,6 +9,7 @@ using System.Threading;
 using ToolManager;
 using TaskManager.Devices;
 using ModuleManager.WCS;
+using PubResourceManager;
 
 namespace TaskManager
 {
@@ -160,7 +161,7 @@ namespace TaskManager
                 }
 
                 #region 调试
-                if (DataControl.IsIgnoreFRT) //add调试判断
+                if (PublicParam.IsIgnoreFRT) //add调试判断
                 {
                     if (_device.ActionStatus() == FRT.Stop)
                     {
@@ -263,7 +264,7 @@ namespace TaskManager
                 }
 
                 #region 调试
-                if (DataControl.IsIgnoreFRT) //add调试判断
+                if (PublicParam.IsIgnoreFRT) //add调试判断
                 {
                     if (_device.ActionStatus() == FRT.Stop)
                     {
@@ -388,7 +389,7 @@ namespace TaskManager
                 if (ITEM.ITEM_ID.Substring(0, 2) == "11")
                 {
                     #region 调试
-                    if (DataControl.IsIgnoreARF) //add调试判断
+                    if (PublicParam.IsIgnoreARF) //add调试判断
                     {
                         if (_device.ActionStatus() == ARF.Stop)
                         {
@@ -589,7 +590,7 @@ namespace TaskManager
                 if (ITEM.ITEM_ID.Substring(0, 2) == "11")
                 {
                     #region 调试
-                    if (DataControl.IsIgnoreRGV) //add调试判断
+                    if (PublicParam.IsIgnoreRGV) //add调试判断
                     {
                         if (_device.ActionStatus() == RGV.Stop)
                         {
@@ -788,7 +789,7 @@ namespace TaskManager
                 }
 
                 #region 调试
-                if (DataControl.IsIgnoreABC) //add调试判断
+                if (PublicParam.IsIgnoreABC) //add调试判断
                 {
                     if (_device.ActionStatus() == ABC.Stop)
                     {
@@ -918,7 +919,7 @@ namespace TaskManager
             while (PowerSwitch)
             {
                 Thread.Sleep(500);
-                if (!DataControl.IsRunTaskOrder)
+                if (!PublicParam.IsRunTaskOrder)
                 {
                     continue;
                 }

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using PubResourceManager;
+using System.Windows;
 using System.Windows.Controls;
 using TaskManager;
 
@@ -20,11 +21,11 @@ namespace WindowManager
         /// </summary>
         private void Refresh()
         {
-            CheckerAGV.IsChecked = DataControl.IsIgnoreAGV;
-            CheckerFRT.IsChecked = DataControl.IsIgnoreFRT;
-            CheckerARF.IsChecked = DataControl.IsIgnoreARF;
-            CheckerRGV.IsChecked = DataControl.IsIgnoreRGV;
-            CheckerABC.IsChecked = DataControl.IsIgnoreABC;
+            CheckerAGV.IsChecked = PublicParam.IsIgnoreAGV;
+            CheckerFRT.IsChecked = PublicParam.IsIgnoreFRT;
+            CheckerARF.IsChecked = PublicParam.IsIgnoreARF;
+            CheckerRGV.IsChecked = PublicParam.IsIgnoreRGV;
+            CheckerABC.IsChecked = PublicParam.IsIgnoreABC;
         }
 
         /// <summary>
@@ -34,7 +35,7 @@ namespace WindowManager
         /// <param name="e"></param>
         private void CheckerAGV_Click(object sender, RoutedEventArgs e)
         {
-            DataControl.IsIgnoreAGV = (bool)CheckerAGV.IsChecked;
+            PublicParam.IsIgnoreAGV = (bool)CheckerAGV.IsChecked;
         }
 
         /// <summary>
@@ -44,7 +45,7 @@ namespace WindowManager
         /// <param name="e"></param>
         private void CheckerFRT_Click(object sender, RoutedEventArgs e)
         {
-            DataControl.IsIgnoreFRT = (bool)CheckerFRT.IsChecked;
+            PublicParam.IsIgnoreFRT = (bool)CheckerFRT.IsChecked;
         }
 
         /// <summary>
@@ -54,7 +55,7 @@ namespace WindowManager
         /// <param name="e"></param>
         private void CheckerARF_Click(object sender, RoutedEventArgs e)
         {
-            DataControl.IsIgnoreARF = (bool)CheckerARF.IsChecked;
+            PublicParam.IsIgnoreARF = (bool)CheckerARF.IsChecked;
         }
 
         /// <summary>
@@ -64,7 +65,7 @@ namespace WindowManager
         /// <param name="e"></param>
         private void CheckerRGV_Click(object sender, RoutedEventArgs e)
         {
-            DataControl.IsIgnoreRGV = (bool)CheckerRGV.IsChecked;
+            PublicParam.IsIgnoreRGV = (bool)CheckerRGV.IsChecked;
         }
 
         /// <summary>
@@ -74,7 +75,7 @@ namespace WindowManager
         /// <param name="e"></param>
         private void CheckerABC_Click(object sender, RoutedEventArgs e)
         {
-            DataControl.IsIgnoreABC = (bool)CheckerABC.IsChecked;
+            PublicParam.IsIgnoreABC = (bool)CheckerABC.IsChecked;
         }
 
     }

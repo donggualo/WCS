@@ -58,53 +58,11 @@ namespace TaskManager
         ///// </summary>
         public static ForAGVControl _mForAGVControl;
 
-
+        /// <summary>
+        /// 对接WMS服务
+        /// </summary>
         public static ForWMSControl _mForWmsControl;
 
-        #region 设定
-
-        /// <summary>
-        /// 是否运行生成任务逻辑
-        /// </summary>
-        public static bool IsRunTaskLogic = false;
-
-        /// <summary>
-        /// 是否运行任务指令发送
-        /// </summary>
-        public static bool IsRunTaskOrder = false;
-
-        /// <summary>
-        /// 是否运行AGV派送
-        /// </summary>
-        public static bool IsRunSendAGV = false;
-
-
-        /// <summary>
-        /// 是否无视AGV货物状态
-        /// </summary>
-        public static bool IsIgnoreAGV = false;
-
-        /// <summary>
-        /// 是否无视固定辊台货物状态
-        /// </summary>
-        public static bool IsIgnoreFRT = false;
-
-        /// <summary>
-        /// 是否无视摆渡车货物状态
-        /// </summary>
-        public static bool IsIgnoreARF = false;
-
-        /// <summary>
-        /// 是否无视运输车货物状态
-        /// </summary>
-        public static bool IsIgnoreRGV = false;
-
-        /// <summary>
-        /// 是否无视行车货物状态
-        /// </summary>
-        public static bool IsIgnoreABC = false;
-
-        #endregion
 
         private static bool init = false;//是否已经初始化
 
@@ -112,6 +70,8 @@ namespace TaskManager
         {
             if (!init)
             {
+                init = true;
+
                 _mSocket = new SocketControl();
 
                 _mMySql = new MySQL();
@@ -139,7 +99,7 @@ namespace TaskManager
 
                 _mHttpServer.WmsModelAdd += _mForWmsControl.WriteTaskToWCS;
 
-                init = true;
+
             }
         }
 
@@ -147,7 +107,7 @@ namespace TaskManager
         {
             if (init)
             {
-                if(_mHttpServer != null && _mForWmsControl != null)
+                if (_mHttpServer != null && _mForWmsControl != null)
                 {
                     _mHttpServer.WmsModelAdd -= _mForWmsControl.WriteTaskToWCS;
                 }
@@ -159,14 +119,9 @@ namespace TaskManager
                 }
 
 
-                if(_mSocket!=null)_mSocket.CloseClient();
-
-                if (_mHttpServer != null) _mHttpServer.StopServer();
-
-                if (_mNDCControl != null)
-                {
-                    _mNDCControl.BeforeClose();
-                }
+                if (_mSocket != null) _mSocket.Close();
+                if (_mHttpServer != null) _mHttpServer.Close();
+                if (_mNDCControl != null) _mNDCControl.Close();
 
                 if (_mRunTask != null) _mRunTask.Close();
                 if (_mTaskControler != null) _mTaskControler.Close();

@@ -75,7 +75,6 @@
     <Compile Include="Devices\RGV.cs" />
     <Compile Include="ForAGVControl.cs" />
     <Compile Include="ForWMSControl.cs" />
-    <Compile Include="Functions\DataTableExtend.cs" />
     <Compile Include="Functions\SimpleTools.cs" />
     <Compile Include="Functions\TaskTools.cs" />
     <Compile Include="TaskControl.cs" />

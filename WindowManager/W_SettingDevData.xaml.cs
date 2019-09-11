@@ -17,6 +17,7 @@ using System.Windows.Shapes;
 using TaskManager;
 using TaskManager.Functions;
 using ModuleManager.WCS;
+using PubResourceManager;
 
 namespace WindowManager
 {

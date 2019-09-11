@@ -11,6 +11,7 @@ using ModuleManager.WCS;
 using WcsHttpManager;
 using System.Windows.Threading;
 using Panuon.UI.Silver;
+using PubResourceManager;
 
 namespace WindowManager
 {

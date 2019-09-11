@@ -5,6 +5,7 @@ using System.Threading;
 using TaskManager.Functions;
 using TaskManager.Devices;
 using ModuleManager.WCS;
+using PubResourceManager;
 
 namespace TaskManager
 {
@@ -1715,7 +1716,7 @@ namespace TaskManager
             while (PowerSwitch)
             {
                 Thread.Sleep(5000);
-                if (!DataControl.IsRunTaskLogic)
+                if (!PublicParam.IsRunTaskLogic)
                 {
                     continue;
                 }

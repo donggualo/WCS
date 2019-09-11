@@ -30,8 +30,8 @@ namespace WindowManager
             taskDataGrid = new NdcAgvDataGrid();
 
             DataContext = taskDataGrid;
-            DataControl._mNDCControl.TaskListUpdate += _mNDCControl_TaskListUpdate;
-            DataControl._mNDCControl.TaskListDelete += _mNDCControl_TaskListDelete;
+            DataControl._mNDCControl.TaskGridUpdate += _mNDCControl_TaskListUpdate;
+            DataControl._mNDCControl.TaskGridDelete += _mNDCControl_TaskListDelete;
             DataControl._mNDCControl.NoticeRedirect += _mNDCControl_NoticeRedirect;
         }
 
@@ -183,8 +183,8 @@ namespace WindowManager
 
         public void OnWindowClosing()
         {
-            DataControl._mNDCControl.TaskListUpdate -= _mNDCControl_TaskListUpdate;
-            DataControl._mNDCControl.TaskListDelete -= _mNDCControl_TaskListDelete;
+            DataControl._mNDCControl.TaskGridUpdate -= _mNDCControl_TaskListUpdate;
+            DataControl._mNDCControl.TaskGridDelete -= _mNDCControl_TaskListDelete;
             DataControl._mNDCControl.NoticeRedirect -= _mNDCControl_NoticeRedirect;
         }
     }

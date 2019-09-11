@@ -5,6 +5,7 @@ using System.Data;
 using System.Windows;
 using TaskManager.Devices;
 using ModuleManager.WCS;
+using PubResourceManager;
 
 namespace TaskManager.Functions
 {
@@ -44,7 +45,7 @@ namespace TaskManager.Functions
             try
             {
                 // 清空设备
-                DataControl._mSocket.CloseClient();
+                DataControl._mSocket.Close();
                 // 获取设备设定档资讯
                 String sql = "select * from wcs_config_device";
                 DataTable dt = DataControl._mMySql.SelectAll(sql);

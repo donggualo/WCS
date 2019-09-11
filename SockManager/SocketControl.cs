@@ -141,7 +141,7 @@ namespace SockManager
         /// 关闭设备连接
         /// </summary>
         /// <param name="name">名字为null 关闭所有设备， 指定名字则关闭指定设备</param>
-        public void CloseClient(string name = null)
+        public void Close(string name = null)
         {
             if (name == null)
             {

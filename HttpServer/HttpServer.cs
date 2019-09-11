@@ -18,42 +18,62 @@ namespace MHttpServer
         #region Fields
 
         private int Port;
-        private TcpListener Listener;
-        private HttpProcessor Processor;
-        private bool IsActive = true;
-        public bool StopHttpServer = false;
+        private TcpListener _mListener;
+        private HttpProcessor _mProcessor;
+        private bool RunningServer = true;
 
         #endregion
 
         private static readonly ILog log = LogManager.GetLogger(typeof(HttpServer));
 
         #region Public Methods
+
+        /// <summary>
+        /// 服务构造函数
+        /// </summary>
+        /// <param name="port">服务端口</param>
+        /// <param name="routes">处理路由</param>
         public HttpServer(int port, List<Route> routes)
         {
-            this.Port = port;
-            this.Processor = new HttpProcessor();
+            Port = port;
+            _mProcessor = new HttpProcessor();
 
             foreach (var route in routes)
             {
-                this.Processor.AddRoute(route);
+                _mProcessor.AddRoute(route);
             }
         }
 
+        /// <summary>
+        /// 启动任务监听
+        /// </summary>
         public void Listen()
         {
-            this.Listener = new TcpListener(IPAddress.Any, this.Port);
-            this.Listener.Start();
-            while (this.IsActive && !StopHttpServer)
+            try
             {
-                TcpClient s = this.Listener.AcceptTcpClient();
-                //Console.WriteLine("请求开始："+DateTime.Now.ToString("yyyyMMddHHmmss"));
-                Thread thread = new Thread(() =>
+                _mListener = new TcpListener(IPAddress.Any, this.Port);
+                _mListener.Start();
+                while (RunningServer)
                 {
-                    this.Processor.HandleClient(s);
-                });
-                thread.Start();
-                Thread.Sleep(1);
+                    TcpClient s = _mListener.AcceptTcpClient();
+                    new Thread(() =>
+                    {
+                        _mProcessor.HandleClient(s);
+                    }).Start();
+                    Thread.Sleep(1);
+                }
+            }catch(Exception e)
+            {
+                log.Error(e);
             }
+        }
+
+        /// <summary>
+        /// 停止服务
+        /// </summary>
+        public void Close()
+        {
+            RunningServer = false;
         }
 
         #endregion

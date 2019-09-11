@@ -144,6 +144,10 @@
       <Project>{D7F23C4B-2E0E-4A97-A0DA-7AF778E26A60}</Project>
       <Name>NdcManager</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PubResourceManager\PubResourceManager.csproj">
+      <Project>{20AFF318-2F10-47E9-A66C-AED5B9C5E5F5}</Project>
+      <Name>PubResourceManager</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TaskManager\TaskManager.csproj">
       <Project>{0F7B97C2-6B7E-46B0-8D3D-005C4971ED64}</Project>
       <Name>TaskManager</Name>

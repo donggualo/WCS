@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using NDC8.ACINET.ACI;
-using System.Text;
 using ToolManager;
 using ModuleManager.NDC;
-using NdcManager.DataGrid.Models;
 using ModuleManager.NDC.SQL;
 
 namespace NdcManager
@@ -14,29 +12,46 @@ namespace NdcManager
     public class NDCControl
     {
         #region Param
-        //Parameter that will keep track of if system is halted or not
+        
+        /// <summary>
+        /// 是否暂停处理NDC过来的信息
+        /// </summary>
         private bool systemHalted;
 
-        //Keep track if disconnected by button or communication is down.
+        /// <summary>
+        /// 人工干预停止
+        /// </summary>
         private bool disconnectedByUser = false;
 
-        //Check if connecting
+        /// <summary>
+        /// 使用重连
+        /// </summary>
         private bool connecting = false;
 
-        //IP address where System Manager is located
+        /// <summary>
+        /// NDC 服务IP
+        /// </summary>
         private string IPaddress = "10.9.30.120";
-        //private const string IPaddress = "127.0.0.1";
 
-        //Port number for the ACI connection
+        /// <summary>
+        /// NDC服务端口
+        /// </summary>
         private int Port = 30001;
 
-        public bool Closing = false;
+        /// <summary>
+        /// 运行开关
+        /// </summary>
+        private bool ControlRunning = true;
+
+
+
         /// <summary>
         /// 日志保存
         /// </summary>
         Log log;
 
         private List<NDCItem> _items = new List<NDCItem>();
+        private List<NDCItem> _initItems = new List<NDCItem>();
         /// <summary>
         /// 保存所有任务
         /// </summary>
@@ -176,11 +191,11 @@ namespace NdcManager
         /// <summary>
         /// 关闭任务前保存数据
         /// </summary>
-        public void BeforeClose()
+        public void Close()
         {
             DoDisConnectNDC();
 
-            Closing = true;
+            ControlRunning = false;
 
             if (Ikey >= 99) Ikey = 1;
             NDCSQLControl control = new NDCSQLControl();
@@ -873,7 +888,7 @@ namespace NdcManager
 
                     if(item.DirectStatus == NDCItemStatus.NeedRedirect)
                     {
-                        NoticeRedirect(item);
+                        NoticeRedirect?.Invoke(item);
                     }
                     break;
 
@@ -914,8 +929,7 @@ namespace NdcManager
                 item.PLCStatus = NDCPlcStatus.Loading;
                 LoadItemList.Remove(item._mTask.ORDERINDEX);
                 //通知WCS
-                //DataControl._mForAGVControl.SubmitAgvLoading(item.TaskID, item.CarrierId + "");
-                AGVDataUpdate(item._mTask.TASKID, item.CarrierId + "");
+                AGVDataUpdate?.Invoke(item._mTask.TASKID, item.CarrierId + "");
             }
             else if (v.PlcLp1 == 29 && v.Value1 == 2)
             {
@@ -949,27 +963,34 @@ namespace NdcManager
         /// <param name="item"></param>
         private void GetTempInfo(NDCItem item)
         {
-            if (item._mTask.TASKID != 0)
+            try
             {
-                try
+                if (item._mTask.TASKID != 0)
                 {
-                    AGVMagicUpdate(item._mTask.TASKID, item.CarrierId + "", item.Magic);
-                    return;
-                }catch(Exception e)
-                {
-                    Console.WriteLine(e.Message);
+                    try
+                    {
+                        AGVMagicUpdate?.Invoke(item._mTask.TASKID, item.CarrierId + "", item.Magic);
+                        return;
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
                 }
-            }
-            if (item._mTask.NDCLOADSITE == null) return;
-            TempItem tempItem = TempList.Find(c => { return c.NdcLoadSite == item._mTask.NDCLOADSITE; });
-            if (tempItem != null)
+                if (item._mTask.NDCLOADSITE == null) return;
+                TempItem tempItem = TempList.Find(c => { return c.NdcLoadSite == item._mTask.NDCLOADSITE; });
+                if (tempItem != null)
+                {
+                    item._mTask.TASKID = tempItem.TaskID;
+                    item._mTask.LOADSITE = tempItem.LoadSite;
+                    item._mTask.UNLOADSITE = tempItem.UnloadSite;
+                    item._mTask.REDIRECTSITE = tempItem.RedirectSite;
+                    item._mTask.NDCREDIRECTSITE = tempItem.NdcRedirectSite;
+                    TempList.Remove(tempItem);
+                }
+            }catch(Exception e)
             {
-                item._mTask.TASKID = tempItem.TaskID;
-                item._mTask.LOADSITE = tempItem.LoadSite;
-                item._mTask.UNLOADSITE = tempItem.UnloadSite;
-                item._mTask.REDIRECTSITE = tempItem.RedirectSite;
-                item._mTask.NDCREDIRECTSITE = tempItem.NdcRedirectSite;
-                TempList.Remove(tempItem);
+                Console.WriteLine(e.Message);
             }
         }
 
@@ -983,22 +1004,29 @@ namespace NdcManager
         /// </summary>
         private void CheckItemTask()
         {
-            while (true && !Closing)
+            try
             {
-                Thread.Sleep(3000);
+                while (ControlRunning)
+                {
+                    Thread.Sleep(3000);
 
-                CheckReDirect();
+                    CheckReDirect();
 
-                CheckLoadPlcStatus();
+                    CheckLoadPlcStatus();
 
-                CheckUnLoadPlcStatus();
+                    CheckUnLoadPlcStatus();
 
-                ClearFinishItem();
+                    ClearFinishItem();
 
-                ClearEmptyItem();
+                    ClearEmptyItem();
+
+
+                }
+            }catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
             }
         }
-
 
         /// <summary>
         /// //重定向任务
@@ -1054,11 +1082,13 @@ namespace NdcManager
             foreach (var i in items)
             {
                 Items.Remove(i);
-                TaskListDelete(i);
+                TaskGridDelete?.Invoke(i);
             }
         }
 
-
+        /// <summary>
+        /// 清除空信息
+        /// </summary>
         private void ClearEmptyItem()
         {
             List<NDCItem> items = Items.FindAll(c => { return c._mTask.IKEY == 0 && c._mTask.TASKID ==0 && c._mTask.ORDERINDEX ==0; });
@@ -1066,6 +1096,11 @@ namespace NdcManager
             {
                 Items.Remove(i);
             }
+        }
+
+        private void RefreshInitGrid()
+        {
+
         }
 
         #endregion
@@ -1282,31 +1317,61 @@ namespace NdcManager
 
         #region 对外接口
 
+        /// <summary>
+        /// 句柄更新类型
+        /// </summary>
+        /// <param name="model"></param>
         public delegate void GridDataHandler(NDCItem model);
-        public event GridDataHandler TaskListUpdate;
-        public event GridDataHandler TaskListDelete;
+
+        /// <summary>
+        /// 任务Grid数据更新句柄
+        /// </summary>
+        public event GridDataHandler TaskGridUpdate;
+        /// <summary>
+        /// 任务Grid数据删除句柄
+        /// </summary>
+        public event GridDataHandler TaskGridDelete;
+        /// <summary>
+        /// 界面展示需要重定向句柄
+        /// </summary>
         public event GridDataHandler NoticeRedirect;
 
         //通知任务车辆信息
         //装货状态通知
         public delegate void AGVDataHandler(int taskid,string agvid);
+        /// <summary>
+        /// AGV 装货中 通知句柄
+        /// </summary>
         public event AGVDataHandler AGVDataUpdate;
 
         //AGV Magic状态通知
         public delegate void AGVMagicHandler(int id, string agv, int magic);
+
+        /// <summary>
+        /// 更新AGV当前任务状态
+        /// </summary>
         public event AGVMagicHandler AGVMagicUpdate;
 
         #endregion
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ndcItem"></param>
         private void CheckCanUpdateTaskList(NDCItem ndcItem)
         {
             if (ndcItem._mTask.IKEY != 0 && ndcItem._mTask.ORDERINDEX != 0 && ndcItem._mTask.TASKID != 0)
             {
-                TaskListUpdate?.Invoke(ndcItem);
-            }
-                
-        }
+                if (TaskGridUpdate != null)
+                {
+                    TaskGridUpdate(ndcItem);
+                }
+                else
+                {
 
+                }
+                
+            }
+        }
     }
 }

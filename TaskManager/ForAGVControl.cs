@@ -6,6 +6,7 @@ using System.Threading;
 using ModuleManager.WCS;
 using TaskManager.Functions;
 using TaskManager.Devices;
+using PubResourceManager;
 
 namespace TaskManager
 {
@@ -42,7 +43,7 @@ namespace TaskManager
             while (PowerSwitch)
             {
                 Thread.Sleep(5000);
-                if (!DataControl.IsRunSendAGV)
+                if (!PublicParam.IsRunSendAGV)
                 {
                     continue;
                 }
@@ -181,7 +182,7 @@ namespace TaskManager
                         }
                         // 是否存在货物
                         //if (frt.GoodsStatus() == FRT.GoodsYesAll)
-                        if (frt.GoodsStatus() == FRT.GoodsYesAll || DataControl.IsIgnoreFRT)  //add调试判断
+                        if (frt.GoodsStatus() == FRT.GoodsYesAll || PublicParam.IsIgnoreFRT)  //add调试判断
                         {
                             // 分配 WMS TASK
                             if (String.IsNullOrEmpty(agv.TASK_UID.Trim()))
@@ -251,7 +252,7 @@ namespace TaskManager
                             byte[] order = null;
                             // 当辊台都无货
                             //if (frtdrop.GoodsStatus() == FRT.GoodsNoAll)
-                            if (frtdrop.GoodsStatus() == FRT.GoodsNoAll || DataControl.IsIgnoreFRT) //add调试判断
+                            if (frtdrop.GoodsStatus() == FRT.GoodsNoAll || PublicParam.IsIgnoreFRT) //add调试判断
                             {
                                 // 获取指令-- 启动所有辊台 正向接货
                                 order = FRT._RollerControl(frtdrop.FRTNum(), FRT.RollerRunAll, FRT.RunFront, FRT.GoodsReceive, FRT.GoodsQty1);

@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Panuon.UI.Silver;
+using PubResourceManager;
 using TaskManager;
 using WcsHttpManager;
 using WindowManager;
@@ -28,9 +29,9 @@ namespace WCS_phase1
             InitializeComponent();
             DataControl.Init();
 
-            CheckTask.IsChecked = DataControl.IsRunTaskLogic;
-            CheckOrder.IsChecked = DataControl.IsRunTaskOrder;
-            CheckAGV.IsChecked = DataControl.IsRunSendAGV;
+            CheckTask.IsChecked = PublicParam.IsRunTaskLogic;
+            CheckOrder.IsChecked = PublicParam.IsRunTaskOrder;
+            CheckAGV.IsChecked = PublicParam.IsRunSendAGV;
         }
 
         private void TreeView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -153,7 +154,7 @@ namespace WCS_phase1
         /// <param name="e"></param>
         private void CheckTask_Click(object sender, RoutedEventArgs e)
         {
-            DataControl.IsRunTaskLogic = (bool)CheckTask.IsChecked;
+            PublicParam.IsRunTaskLogic = (bool)CheckTask.IsChecked;
         }
 
         /// <summary>
@@ -163,7 +164,7 @@ namespace WCS_phase1
         /// <param name="e"></param>
         private void CheckOrder_Click(object sender, RoutedEventArgs e)
         {
-            DataControl.IsRunTaskOrder = (bool)CheckOrder.IsChecked;
+            PublicParam.IsRunTaskOrder = (bool)CheckOrder.IsChecked;
         }
 
         /// <summary>
@@ -173,7 +174,7 @@ namespace WCS_phase1
         /// <param name="e"></param>
         private void CheckAGV_Click(object sender, RoutedEventArgs e)
         {
-            DataControl.IsRunSendAGV = (bool)CheckAGV.IsChecked;
+            PublicParam.IsRunSendAGV = (bool)CheckAGV.IsChecked;
         }
     }
 }
