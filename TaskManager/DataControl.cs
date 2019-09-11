@@ -167,6 +167,10 @@ namespace TaskManager
                 {
                     _mNDCControl.BeforeClose();
                 }
+
+                if (_mRunTask != null) _mRunTask.Close();
+                if (_mTaskControler != null) _mTaskControler.Close();
+                if (_mForAGVControl != null) _mForAGVControl.Close();
             }
             return true;
         }

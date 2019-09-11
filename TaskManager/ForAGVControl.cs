@@ -18,6 +18,8 @@ namespace TaskManager
 
         Thread _thread;
 
+        public bool PowerSwitch = true; // 线程开关
+
         /// <summary>
         /// 构造函数
         /// </summary>
@@ -37,7 +39,7 @@ namespace TaskManager
         /// </summary>
         private void ThreadFunc()
         {
-            while (true)
+            while (PowerSwitch)
             {
                 Thread.Sleep(5000);
                 if (!DataControl.IsRunSendAGV)
@@ -53,6 +55,14 @@ namespace TaskManager
                 {
                 }
             }
+        }
+
+        /// <summary>
+        /// 关闭任务
+        /// </summary>
+        public void Close()
+        {
+            PowerSwitch = false;
         }
 
         #endregion

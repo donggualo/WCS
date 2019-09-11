@@ -21,7 +21,8 @@
         </Grid.RowDefinitions>
         <DataGrid Name="DGcommand" Margin="10,0,10,5" IsReadOnly="True" Grid.Row="1" Grid.ColumnSpan="2"
                    AutoGeneratingColumn="DataGrid_TimeFormat" MouseDoubleClick="DGcommand_DoubleClick" />
-        <DataGrid Name="DGitem" Margin="10,0,0,5" IsReadOnly="True" Grid.Row="2" Grid.RowSpan="2"/>
+        
+        <DataGrid Name="DGitem" Margin="10,0,0,5" IsReadOnly="True" Grid.Row="2" Grid.RowSpan="2" AutoGeneratingColumn="DataGrid_TimeFormat"/>
 
         <Button Name="Refresh" Content="刷新" Margin="10,5,10,5" Click="Refresh_Click" Grid.Row="2" Grid.Column="1"/>
 

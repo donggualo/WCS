@@ -1680,6 +1680,8 @@ namespace TaskManager
     {
         // 线程
         Thread _thread;
+        // 线程开关
+        public bool PowerSwitch = true; 
         // 执行对象
         TaskLogic _task = new TaskLogic();
 
@@ -1698,11 +1700,19 @@ namespace TaskManager
         }
 
         /// <summary>
+        /// 关闭任务
+        /// </summary>
+        public void Close()
+        {
+            PowerSwitch = false;
+        }
+
+        /// <summary>
         /// 事务线程
         /// </summary>
         private void ThreadFunc()
         {
-            while (true)
+            while (PowerSwitch)
             {
                 Thread.Sleep(5000);
                 if (!DataControl.IsRunTaskLogic)

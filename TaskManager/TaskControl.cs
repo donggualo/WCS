@@ -881,6 +881,8 @@ namespace TaskManager
     {
         // 线程
         Thread _thread;
+        // 线程开关
+        public bool PowerSwitch = true; 
         private readonly object _ans = new object();
         // 执行对象
         List<Task> _taskList = new List<Task>();
@@ -900,12 +902,20 @@ namespace TaskManager
         }
 
         /// <summary>
+        /// 关闭任务
+        /// </summary>
+        public void Close()
+        {
+            PowerSwitch = false;
+        }
+
+        /// <summary>
         /// 事务线程
         /// </summary>
         private void ThreadFunc()
         {
             List<Task> taskList = new List<Task>();
-            while (true)
+            while (PowerSwitch)
             {
                 Thread.Sleep(500);
                 if (!DataControl.IsRunTaskOrder)

@@ -9,6 +9,8 @@ using TaskManager;
 using TaskManager.Functions;
 using ModuleManager.WCS;
 using WcsHttpManager;
+using System.Windows.Threading;
+using Panuon.UI.Silver;
 
 namespace WindowManager
 {
@@ -27,6 +29,7 @@ namespace WindowManager
 
             //明细
             GetInfo();
+            OnTimeToLoadData();
         }
 
         // 限制仅输入数字
@@ -71,7 +74,7 @@ namespace WindowManager
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.ToString(), "Error");
+                Notice.Show(e.ToString(), "错误", 3, MessageBoxIcon.Error);
             }
         }
 
@@ -110,9 +113,9 @@ namespace WindowManager
                 // 获取数据
                 DGinfo.ItemsSource = DataControl._mMySql.SelectAll(sql).DefaultView;
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                throw ex;
+                Notice.Show(e.ToString(), "错误", 3, MessageBoxIcon.Error);
             }
         }
 
@@ -135,7 +138,7 @@ namespace WindowManager
             }
             catch (Exception ex)
             {
-                throw ex;
+                Notice.Show(e.ToString(), "错误", 3, MessageBoxIcon.Error);
             }
         }
 
@@ -146,61 +149,68 @@ namespace WindowManager
         /// <param name="e"></param>
         private void BtnFRT_Click(object sender, RoutedEventArgs e)
         {
-            string frtP = CBfrt_P.Text.Trim();
-            string code = TBcode.Text.Trim();
-            string frtD = CBfrt_D.Text.Trim();
-
-            if (string.IsNullOrEmpty(frtP) || string.IsNullOrEmpty(code))
+            try
             {
-                MessageBox.Show("包装线辊台设备号 / 货物条码 不能为空！", "Error");
-                return;
-            }
+                string frtP = CBfrt_P.Text.Trim();
+                string code = TBcode.Text.Trim();
+                string frtD = CBfrt_D.Text.Trim();
 
-            if ((bool)CheckWMS.IsChecked)
-            {
-                if (string.IsNullOrEmpty(frtD))
+                if (string.IsNullOrEmpty(frtP) || string.IsNullOrEmpty(code))
                 {
-                    MessageBox.Show("卸货点不能为空！", "Error");
+                    Notice.Show("包装线辊台设备号 / 货物条码 不能为空！", "错误", 3, MessageBoxIcon.Error);
                     return;
                 }
-                // 获取Task资讯
-                String sql = String.Format(@"select * from wcs_task_info where SITE <> '{1}' and BARCODE = '{0}'", code, TaskSite.完成);
-                DataTable dt = DataControl._mMySql.SelectAll(sql);
-                if (!DataControl._mStools.IsNoData(dt))
+
+                if ((bool)CheckWMS.IsChecked)
                 {
-                    MessageBox.Show("货物条码已存在任务！");
-                    return;
-                }
-                // 无Task资讯则新增
-                // 呼叫WMS 请求入库资讯---区域
-                WmsModel wms = new WmsModel()
-                {
-                    Task_UID = "NW" + System.DateTime.Now.ToString("yyMMddHHmmss"),
-                    Task_type = WmsStatus.StockInTask,
-                    Barcode = code,
-                    W_S_Loc = DataControl._mTaskTools.GetArea(frtP),
-                    W_D_Loc = DataControl._mTaskTools.GetArea(frtD)
-                };
-                // 写入数据库
-                if (new ForWMSControl().WriteTaskToWCS(wms, out string result))
-                {
-                    MessageBox.Show("完成！");
+                    if (string.IsNullOrEmpty(frtD))
+                    {
+                        Notice.Show("卸货点不能为空！", "错误", 3, MessageBoxIcon.Error);
+                        return;
+                    }
+                    // 获取Task资讯
+                    String sql = String.Format(@"select * from wcs_task_info where SITE <> '{1}' and BARCODE = '{0}'", code, TaskSite.完成);
+                    DataTable dt = DataControl._mMySql.SelectAll(sql);
+                    if (!DataControl._mStools.IsNoData(dt))
+                    {
+                        Notice.Show("货物条码已存在任务！", "提示", 3, MessageBoxIcon.Info);
+                        return;
+                    }
+                    // 无Task资讯则新增
+                    // 呼叫WMS 请求入库资讯---区域
+                    WmsModel wms = new WmsModel()
+                    {
+                        Task_UID = "NW" + System.DateTime.Now.ToString("yyMMddHHmmss"),
+                        Task_type = WmsStatus.StockInTask,
+                        Barcode = code,
+                        W_S_Loc = DataControl._mTaskTools.GetArea(frtP),
+                        W_D_Loc = DataControl._mTaskTools.GetArea(frtD)
+                    };
+                    // 写入数据库
+                    if (new ForWMSControl().WriteTaskToWCS(wms, out string result))
+                    {
+                        Notice.Show("完成！", "成功", 3, MessageBoxIcon.Success);
+                    }
+                    else
+                    {
+                        Notice.Show("失败:" + result, "错误", 3, MessageBoxIcon.Error);
+                    }
                 }
                 else
                 {
-                    MessageBox.Show("失败:" + result);
+                    if (new ForWMSControl().ScanCodeTask(frtP, code))
+                    {
+                        Notice.Show("完成！", "成功", 3, MessageBoxIcon.Success);
+                    }
+                    else
+                    {
+                        Notice.Show("失败！", "错误", 3, MessageBoxIcon.Error);
+                    }
                 }
             }
-            else
+            catch (Exception ex)
             {
-                if (new ForWMSControl().ScanCodeTask(frtP, code))
-                {
-                    MessageBox.Show("完成！");
-                }
-                else
-                {
-                    MessageBox.Show("失败！");
-                }
+                Notice.Show(ex.ToString(), "错误", 3, MessageBoxIcon.Error);
             }
         }
 
@@ -211,60 +221,67 @@ namespace WindowManager
         /// <param name="e"></param>
         private void BtnLOC_Click(object sender, RoutedEventArgs e)
         {
-            string frtP = CBfrt_P.Text.Trim();
-            string code = TBcode.Text.Trim();
-            string frtD = CBfrt_D.Text.Trim();
-
-            if (string.IsNullOrEmpty(frtP) || string.IsNullOrEmpty(code))
+            try
             {
-                MessageBox.Show("包装线辊台设备号 / 货物条码 不能为空！", "Error");
-                return;
-            }
+                string frtP = CBfrt_P.Text.Trim();
+                string code = TBcode.Text.Trim();
+                string frtD = CBfrt_D.Text.Trim();
 
-            if ((bool)CheckWMS.IsChecked)
-            {
-                if (string.IsNullOrEmpty(frtD))
+                if (string.IsNullOrEmpty(frtP) || string.IsNullOrEmpty(code))
                 {
-                    MessageBox.Show("卸货点不能为空！", "Error");
-                    return;
-                }
-                if (string.IsNullOrEmpty(TBlocX.Text.Trim()) && string.IsNullOrEmpty(TBlocY.Text.Trim()) && string.IsNullOrEmpty(TBlocZ.Text.Trim()))
-                {
-                    MessageBox.Show("货位不能为空！", "Error");
-                    return;
-                }
-                // 货位
-                string LOC = "C" + TBlocX.Text.Trim().PadLeft(3, '0') + "-" + TBlocY.Text.Trim().PadLeft(2, '0') + "-" + TBlocZ.Text.Trim().PadLeft(2, '0');
-                // 获取Task资讯
-                String sql = String.Format(@"select TASK_UID from wcs_task_info where TASK_TYPE = '{1}' and BARCODE = '{0}'", code, TaskType.入库);
-                DataTable dt = DataControl._mMySql.SelectAll(sql);
-                if (DataControl._mStools.IsNoData(dt))
-                {
-                    MessageBox.Show("不存在任务Task资讯！", "Error");
+                    Notice.Show("包装线辊台设备号 / 货物条码 不能为空！", "错误", 3, MessageBoxIcon.Error);
                     return;
                 }
 
-                // 获取对应任务ID
-                string taskuid = dt.Rows[0]["TASK_UID"].ToString();
-                // 更新任务资讯
-                sql = String.Format(@"update WCS_TASK_INFO set UPDATE_TIME = NOW(), TASK_TYPE = '{0}', W_S_LOC = '{1}', W_D_LOC = '{2}' where TASK_UID = '{3}'",
-                    TaskType.入库, DataControl._mTaskTools.GetArea(frtD), LOC, taskuid);
-                DataControl._mMySql.ExcuteSql(sql);
-
-                // 对应 WCS 清单
-                DataControl._mTaskTools.CreateCommandIn(taskuid, frtD);
-                MessageBox.Show("完成！");
-            }
-            else
-            {
-                if (new ForWMSControl().ScanCodeTask_Loc(frtP, code))
+                if ((bool)CheckWMS.IsChecked)
                 {
-                    MessageBox.Show("完成！");
+                    if (string.IsNullOrEmpty(frtD))
+                    {
+                        Notice.Show("卸货点不能为空！", "错误", 3, MessageBoxIcon.Error);
+                        return;
+                    }
+                    if (string.IsNullOrEmpty(TBlocX.Text.Trim()) && string.IsNullOrEmpty(TBlocY.Text.Trim()) && string.IsNullOrEmpty(TBlocZ.Text.Trim()))
+                    {
+                        Notice.Show("货位不能为空！", "错误", 3, MessageBoxIcon.Error);
+                        return;
+                    }
+                    // 货位
+                    string LOC = "C" + TBlocX.Text.Trim().PadLeft(3, '0') + "-" + TBlocY.Text.Trim().PadLeft(2, '0') + "-" + TBlocZ.Text.Trim().PadLeft(2, '0');
+                    // 获取Task资讯
+                    String sql = String.Format(@"select TASK_UID from wcs_task_info where TASK_TYPE = '{1}' and BARCODE = '{0}'", code, TaskType.入库);
+                    DataTable dt = DataControl._mMySql.SelectAll(sql);
+                    if (DataControl._mStools.IsNoData(dt))
+                    {
+                        Notice.Show("不存在任务Task资讯！", "错误", 3, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    // 获取对应任务ID
+                    string taskuid = dt.Rows[0]["TASK_UID"].ToString();
+                    // 更新任务资讯
+                    sql = String.Format(@"update WCS_TASK_INFO set UPDATE_TIME = NOW(), TASK_TYPE = '{0}', W_S_LOC = '{1}', W_D_LOC = '{2}' where TASK_UID = '{3}'",
+                        TaskType.入库, DataControl._mTaskTools.GetArea(frtD), LOC, taskuid);
+                    DataControl._mMySql.ExcuteSql(sql);
+
+                    // 对应 WCS 清单
+                    DataControl._mTaskTools.CreateCommandIn(taskuid, frtD);
+                    Notice.Show("完成！", "成功", 3, MessageBoxIcon.Success);
                 }
                 else
                 {
-                    MessageBox.Show("失败！");
+                    if (new ForWMSControl().ScanCodeTask_Loc(frtP, code))
+                    {
+                        Notice.Show("完成！", "成功", 3, MessageBoxIcon.Success);
+                    }
+                    else
+                    {
+                        Notice.Show("失败！", "错误", 3, MessageBoxIcon.Error);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Notice.Show(ex.ToString(), "错误", 3, MessageBoxIcon.Error);
             }
         }
 
@@ -282,12 +299,12 @@ namespace WindowManager
             string frtD = CBfrt_D.Text.Trim();
             if (string.IsNullOrEmpty(frtD))
             {
-                MessageBox.Show("卸货点不能为空！", "Error");
+                Notice.Show("卸货点不能为空！", "错误", 3, MessageBoxIcon.Error);
                 return;
             }
             if (string.IsNullOrEmpty(TBlocX.Text.Trim()) && string.IsNullOrEmpty(TBlocY.Text.Trim()) && string.IsNullOrEmpty(TBlocZ.Text.Trim()))
             {
-                MessageBox.Show("货位不能为空！", "Error");
+                Notice.Show("货位不能为空！", "错误", 3, MessageBoxIcon.Error);
                 return;
             }
             // 货位
@@ -300,7 +317,7 @@ namespace WindowManager
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (!DataControl._mStools.IsNoData(dt))
                 {
-                    MessageBox.Show("该货位已存在出库任务！");
+                    Notice.Show("该货位已存在出库任务！", "错误", 3, MessageBoxIcon.Error);
                     return;
                 }
                 // 无Task资讯则新增
@@ -316,18 +333,47 @@ namespace WindowManager
                 // 写入数据库
                 if (new ForWMSControl().WriteTaskToWCS(wms, out string result))
                 {
-                    MessageBox.Show("完成！");
+                    Notice.Show("完成！", "成功", 3, MessageBoxIcon.Success);
                 }
                 else
                 {
                     MessageBox.Show("失败！" + result);
+                    Notice.Show("失败！" + result, "错误", 3, MessageBoxIcon.Error);
                 }
             }
             else
             {
-                MessageBox.Show("无法请求WMS出库！");
+                Notice.Show("无法请求WMS出库！", "错误", 3, MessageBoxIcon.Error);
             }
         }
 
+        #region 定时刷新数据    
+
+        /// <summary>
+        /// 每隔一个时间段执行一段代码
+        /// </summary>
+        private void OnTimeToLoadData()
+        {
+            DispatcherTimer ShowTimer = new DispatcherTimer();
+            //起个Timer一直获取当前时间
+            ShowTimer.Tick += OnTimeLoadData;
+            ShowTimer.Interval = new TimeSpan(0, 0, 0, 5, 0); //天，时，分，秒，毫秒
+            ShowTimer.Start();
+        }
+
+        /// <summary>
+        /// 计时加载数据
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnTimeLoadData(object sender, EventArgs e)
+        {
+            if (CBrefresh.IsChecked == true)
+            {
+                GetInfo(); // 获取数据
+            }
+        }
+
+        #endregion
     }
 }
