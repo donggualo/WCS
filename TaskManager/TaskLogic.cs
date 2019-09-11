@@ -203,13 +203,13 @@ namespace TaskManager
         public void CreateTask_ARF_RGV(WCS_TASK_ITEM item)
         {
             int id_R = 0;
-            String wcsno_R = "";
-            String itemid_R = "";
-            String device_R = "";
+            string wcsno_R = "";
+            string itemid_R = "";
+            string device_R = "";
             try
             {
                 // 查看运输车是否到位
-                String sql_R = String.Format(@"select ID, WCS_NO, ITEM_ID, DEVICE from WCS_TASK_ITEM where STATUS = 'R' and WCS_NO = '{0}' and ITEM_ID = '{1}'", item.WCS_NO, ItemId.运输车复位1);
+                string sql_R = string.Format(@"select ID, WCS_NO, ITEM_ID, DEVICE from WCS_TASK_ITEM where STATUS = 'R' and WCS_NO = '{0}' and ITEM_ID = '{1}'", item.WCS_NO, ItemId.运输车复位1);
                 DataTable dtitem_R = DataControl._mMySql.SelectAll(sql_R);
                 if (DataControl._mStools.IsNoData(dtitem_R))
                 {
@@ -262,13 +262,13 @@ namespace TaskManager
         public void CreateTask_RGV_RGV(WCS_TASK_ITEM item)
         {
             int id_R = 0;
-            String wcsno_R = "";
-            String itemid_R = "";
-            String device_R = "";
+            string wcsno_R = "";
+            string itemid_R = "";
+            string device_R = "";
             try
             {
                 // 查看运输车是否在运输车对接待命点
-                String sql_R = String.Format(@"select ID, WCS_NO, ITEM_ID, DEVICE from WCS_TASK_ITEM where STATUS = 'R' and WCS_NO = '{0}' and ITEM_ID = '{1}'", item.WCS_NO, ItemId.运输车复位2);
+                string sql_R = string.Format(@"select ID, WCS_NO, ITEM_ID, DEVICE from WCS_TASK_ITEM where STATUS = 'R' and WCS_NO = '{0}' and ITEM_ID = '{1}'", item.WCS_NO, ItemId.运输车复位2);
                 DataTable dtitem_R = DataControl._mMySql.SelectAll(sql_R);
                 if (DataControl._mStools.IsNoData(dtitem_R))
                 {

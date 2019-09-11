@@ -394,12 +394,12 @@ namespace SockManager
         /// <param name="ipAddresses"></param>
         /// <param name="port"></param>
         /// <param name="innerException"></param>
-        //private void RaiseServerExceptionOccurred(
-        //  IPAddress[] ipAddresses, int port, Exception innerException)
-        //{
-        //    ServerExceptionOccurred?.Invoke(this,
-        //        new TcpServerExceptionOccurredEventArgs(ipAddresses, port, innerException));
-        //}
+        private void RaiseServerExceptionOccurred(
+          IPAddress[] ipAddresses, int port, Exception innerException)
+        {
+            ServerExceptionOccurred?.Invoke(this,
+                new TcpServerExceptionOccurredEventArgs(ipAddresses, port, innerException));
+        }
 
         #endregion
 

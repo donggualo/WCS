@@ -139,7 +139,7 @@ namespace WindowManager
             }
             catch (Exception ex)
             {
-                Notice.Show(e.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show(ex.ToString(), "错误", 3, MessageBoxIcon.Error);
             }
         }
 
