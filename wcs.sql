@@ -11,7 +11,7 @@
  Target Server Version : 80013
  File Encoding         : 65001
 
- Date: 12/09/2019 08:08:56
+ Date: 12/09/2019 09:02:53
 */
 
 SET NAMES utf8mb4;
@@ -148,6 +148,69 @@ CREATE TABLE `wcs_function_log`  (
   `CREATION_TIME` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`ID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 366 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for wcs_ndc_site
+-- ----------------------------
+DROP TABLE IF EXISTS `wcs_ndc_site`;
+CREATE TABLE `wcs_ndc_site`  (
+  `WCSSITE` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `NDCSITE` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `TYPE` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`WCSSITE`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of wcs_ndc_site
+-- ----------------------------
+INSERT INTO `wcs_ndc_site` VALUES ('FRT01', '2371', 'unloadarea');
+INSERT INTO `wcs_ndc_site` VALUES ('FRT02', '2366', 'unloadsite');
+INSERT INTO `wcs_ndc_site` VALUES ('FRT99', '1380', 'loadsite');
+
+-- ----------------------------
+-- Table structure for wcs_ndc_task
+-- ----------------------------
+DROP TABLE IF EXISTS `wcs_ndc_task`;
+CREATE TABLE `wcs_ndc_task`  (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `TASKID` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `IKEY` int(10) NULL DEFAULT NULL,
+  `ORDERINDEX` int(10) NULL DEFAULT NULL,
+  `LOADSITE` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `UNLOADSITE` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `REDIRECTSITE` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `NDCLOADSITE` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `NDCUNLOADSITE` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `NDCREDIRECTSITE` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `HADLOAD` int(1) NULL DEFAULT NULL,
+  `HADUNLOAD` int(1) NULL DEFAULT NULL,
+  `CREATETIME` datetime(6) NULL DEFAULT NULL,
+  PRIMARY KEY (`ID`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for wcs_param
+-- ----------------------------
+DROP TABLE IF EXISTS `wcs_param`;
+CREATE TABLE `wcs_param`  (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `NAME` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `INFO` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `VALUE1` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `VALUE2` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `VALUE3` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `VALUE4` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `VALUE5` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `VALUE6` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`ID`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of wcs_param
+-- ----------------------------
+INSERT INTO `wcs_param` VALUES (1, 'NDC_SERVER_IP', 'NDC服务IP', '10.9.30.120', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `wcs_param` VALUES (2, 'NDC_SERVER_PORT', 'NDC服务端口', '30001', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `wcs_param` VALUES (3, 'NDC_TASK_IKEY', '用于计算生成任务的IKEY值', '68', NULL, NULL, NULL, NULL, NULL);
 
 -- ----------------------------
 -- Table structure for wcs_task_backup
