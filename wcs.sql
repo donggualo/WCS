@@ -11,7 +11,7 @@
  Target Server Version : 80013
  File Encoding         : 65001
 
- Date: 15/08/2019 15:58:53
+ Date: 12/09/2019 08:08:56
 */
 
 SET NAMES utf8mb4;
@@ -36,10 +36,10 @@ CREATE TABLE `wcs_agv_info`  (
 -- ----------------------------
 -- Records of wcs_agv_info
 -- ----------------------------
-INSERT INTO `wcs_agv_info` VALUES (1, NULL, 'AGV02', 'FRT99', 'FRT01', 0, '2019-08-02 08:50:03', NULL);
-INSERT INTO `wcs_agv_info` VALUES (2, '1907312', 'AGV02', 'FRT99', 'FRT01', 3, '2019-08-02 14:54:59', NULL);
+INSERT INTO `wcs_agv_info` VALUES (1, NULL, 'AGV01', 'FRT99', 'FRT01', 0, '2019-08-02 08:50:03', NULL);
+INSERT INTO `wcs_agv_info` VALUES (2, '1907312', 'AGV01', 'FRT99', 'FRT01', 3, '2019-08-02 14:54:59', NULL);
 INSERT INTO `wcs_agv_info` VALUES (13083606, NULL, 'AGV02', 'FRT99', 'FRT01', 4, '2019-08-13 08:36:22', NULL);
-INSERT INTO `wcs_agv_info` VALUES (13094937, NULL, NULL, 'FRT99', 'FRT01', 1, '2019-08-13 09:49:48', NULL);
+INSERT INTO `wcs_agv_info` VALUES (13094937, NULL, 'AGV03', 'FRT99', 'FRT03', 1, '2019-08-13 09:49:48', NULL);
 
 -- ----------------------------
 -- Table structure for wcs_command_master
@@ -66,6 +66,9 @@ CREATE TABLE `wcs_command_master`  (
 -- Records of wcs_command_master
 -- ----------------------------
 INSERT INTO `wcs_command_master` VALUES ('1908141610', 'FRT01', '1907311', '1907312', '3', '2019-08-14 16:11:12', '2019-08-14 17:06:01');
+INSERT INTO `wcs_command_master` VALUES ('I190820110522', '', 'Test0820110043', NULL, '1', '2019-08-20 11:05:23', NULL);
+INSERT INTO `wcs_command_master` VALUES ('I190829102122', 'FRT03', 'NW190829102101', 'NW190829102337', '2', '2019-08-29 10:21:22', '2019-08-29 10:23:39');
+INSERT INTO `wcs_command_master` VALUES ('I190909165121', 'FRT01', '1907312', NULL, '1', '2019-09-09 16:51:21', NULL);
 
 -- ----------------------------
 -- Table structure for wcs_config_device
@@ -75,29 +78,31 @@ CREATE TABLE `wcs_config_device`  (
   `DEVICE` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '设备',
   `IP` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'IP地址',
   `PORT` int(11) NOT NULL COMMENT '端口',
-  `FLAG` varchar(2) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '状态(N:未知；Y:可用；L:锁定)',
+  `FLAG` varchar(2) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '状态(N:未知；Y:可用；U:已用一个辊台；L:锁定)',
   `LOCK_WCS_NO` varchar(15) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '锁定的清单号',
   `TYPE` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '类别',
   `AREA` varchar(5) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '区域',
   `REMARK` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注说明',
   `CREATION_TIME` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `UPDATE_TIME` timestamp(0) NULL DEFAULT NULL COMMENT '更新时间',
-  PRIMARY KEY (`DEVICE`, `IP`, `PORT`) USING BTREE,
+  PRIMARY KEY (`DEVICE`) USING BTREE,
+  UNIQUE INDEX `IP_UNIQUE`(`IP`) USING BTREE,
+  UNIQUE INDEX `PORT_UNIQUE`(`PORT`) USING BTREE,
   UNIQUE INDEX `DEVICE_UNIQUE`(`DEVICE`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '设备资讯   ' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of wcs_config_device
 -- ----------------------------
-INSERT INTO `wcs_config_device` VALUES ('ABC01', '127.0.0.81', 6001, 'Y', NULL, 'ABC', 'B01', '行车', '2019-07-04 09:58:36', NULL);
+INSERT INTO `wcs_config_device` VALUES ('ABC01', '127.0.0.81', 6001, 'L', '1908141610', 'ABC', 'B01', '行车', '2019-07-04 09:58:36', NULL);
 INSERT INTO `wcs_config_device` VALUES ('ABC02', '127.0.0.82', 6002, 'Y', NULL, 'ABC', 'B01', '行车', '2019-07-04 09:58:57', NULL);
 INSERT INTO `wcs_config_device` VALUES ('ARF01', '127.0.0.41', 5001, 'Y', NULL, 'ARF', 'B01', '摆渡车', '2019-07-04 09:54:44', NULL);
 INSERT INTO `wcs_config_device` VALUES ('ARF02', '127.0.0.42', 5002, 'Y', NULL, 'ARF', 'B01', '摆渡车', '2019-07-04 09:55:05', NULL);
 INSERT INTO `wcs_config_device` VALUES ('FRT01', '127.0.0.11', 4001, 'Y', NULL, 'FRT', 'B01', '固定辊台', '2019-07-04 09:50:33', NULL);
-INSERT INTO `wcs_config_device` VALUES ('FRT02', '127.0.0.12', 4002, 'Y', NULL, 'FRT', 'B01', '固定辊台', '2019-07-04 09:51:16', NULL);
-INSERT INTO `wcs_config_device` VALUES ('FRT03', '127.0.0.13', 4003, 'Y', NULL, 'FRT', 'B01', '固定辊台', '2019-07-04 09:51:39', NULL);
-INSERT INTO `wcs_config_device` VALUES ('FRT99', '127.0.0.111', 9001, 'Y', NULL, 'FRT', 'A01', '固定辊台', '2019-07-04 09:50:33', NULL);
-INSERT INTO `wcs_config_device` VALUES ('RGV01', '127.0.0.61', 3001, 'Y', NULL, 'RGV', 'B01', '运输车', '2019-07-04 09:55:31', NULL);
+INSERT INTO `wcs_config_device` VALUES ('FRT02', '127.0.0.12', 4002, 'Y', NULL, 'FRT', 'B01', '固定辊台', '2019-07-04 09:49:16', NULL);
+INSERT INTO `wcs_config_device` VALUES ('FRT03', '127.0.0.13', 4003, 'U', NULL, 'FRT', 'B01', '固定辊台', '2019-07-04 09:51:39', NULL);
+INSERT INTO `wcs_config_device` VALUES ('FRT99', '127.0.0.111', 9001, 'Y', NULL, 'FRT', 'A01', '固定辊台', '2019-07-04 09:50:33', '2019-09-05 14:46:34');
+INSERT INTO `wcs_config_device` VALUES ('RGV01', '127.0.0.61', 3001, 'Y', NULL, 'RGV', 'B01', '运输车', '2019-07-04 09:55:31', '2019-09-05 11:05:42');
 INSERT INTO `wcs_config_device` VALUES ('RGV02', '127.0.0.62', 3002, 'Y', NULL, 'RGV', 'B01', '运输车', '2019-07-04 09:55:46', NULL);
 
 -- ----------------------------
@@ -116,7 +121,7 @@ CREATE TABLE `wcs_config_loc`  (
   `ABC_LOC_STOCK` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '行车库存定位',
   `CREATION_TIME` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '依据WMS回馈位置定义各设备目的点位  ' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '依据WMS回馈位置定义各设备目的点位  ' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of wcs_config_loc
@@ -142,26 +147,7 @@ CREATE TABLE `wcs_function_log`  (
   `MESSAGE` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '讯息',
   `CREATION_TIME` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 335 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of wcs_function_log
--- ----------------------------
-INSERT INTO `wcs_function_log` VALUES (159, 'CreateAndAddTaskList()', '生成并加入设备指令任务链表', 'I190704140255', '031', 'NG', 'System.NullReferenceException: 未将对象引用设置到对象的实例。\r\n   在 WCS_phase1.Functions.SimpleTools.BytetToString(Byte[] byteArray) 位置 D:CodeWCSWCS_phase1FunctionsSimpleTools.cs:行号 68\r\n   在 WCS_phase1.Action.TaskLogic.CreateAndAddTaskList(WCS_TASK_ITEM item) 位置 D:CodeWCSWCS_phase1ActionTaskLogic.cs:行号 1529', '2019-07-26 15:44:37');
-INSERT INTO `wcs_function_log` VALUES (160, 'CreateAndAddTaskList()', '生成并加入设备指令任务链表', 'I190704140255', '113', 'NG', 'System.NullReferenceException: 未将对象引用设置到对象的实例。\r\n   在 WCS_phase1.Action.TaskLogic.CreateAndAddTaskList(WCS_TASK_ITEM item) 位置 D:CodeWCSWCS_phase1ActionTaskLogic.cs:行号 1455', '2019-07-26 15:51:40');
-INSERT INTO `wcs_function_log` VALUES (161, 'CreateAndAddTaskList()', '生成并加入设备指令任务链表', 'I190704140255', '111', 'NG', 'System.NullReferenceException: 未将对象引用设置到对象的实例。\r\n   在 WCS_phase1.Action.TaskLogic.CreateAndAddTaskList(WCS_TASK_ITEM item) 位置 D:CodeWCSWCS_phase1ActionTaskLogic.cs:行号 1445', '2019-07-26 15:51:53');
-INSERT INTO `wcs_function_log` VALUES (162, 'CreateAndAddTaskList()', '生成并加入设备指令任务链表', 'I190704140255', '032', 'NG', 'System.FormatException: 输入字符串的格式不正确。\r\n   在 System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)\r\n   在 System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)\r\n   在 System.Convert.ToInt32(String value)\r\n   在 WCS_phase1.Action.TaskLogic.CreateAndAddTaskList(WCS_TASK_ITEM item)', '2019-07-26 16:47:04');
-INSERT INTO `wcs_function_log` VALUES (163, 'CreateAndAddTaskList()', '生成并加入设备指令任务链表', 'I190704140255', '032', 'NG', 'System.IndexOutOfRangeException: 索引超出了数组界限。\r\n   在 WCS_phase1.Action.TaskLogic.CreateAndAddTaskList(WCS_TASK_ITEM item)', '2019-07-26 16:48:14');
-INSERT INTO `wcs_function_log` VALUES (164, 'CreateAndAddTaskList()', '生成并加入设备指令任务链表', 'I190704140255', '032', 'NG', 'System.FormatException: 输入字符串的格式不正确。\r\n   在 System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)\r\n   在 System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)\r\n   在 System.Convert.ToInt32(String value)\r\n   在 WCS_phase1.Action.TaskLogic.CreateAndAddTaskList(WCS_TASK_ITEM item) 位置 D:CodeWCSWCS_phase1ActionTaskLogic.cs:行号 1501', '2019-07-26 17:06:42');
-INSERT INTO `wcs_function_log` VALUES (165, 'CreateAndAddTaskList()', '生成并加入设备指令任务链表', 'I190704140255', '032', 'NG', 'System.NullReferenceException: 未将对象引用设置到对象的实例。\r\n   在 WCS_phase1.Functions.SimpleTools.BytetToString(Byte[] byteArray) 位置 D:CodeWCSWCS_phase1FunctionsSimpleTools.cs:行号 68\r\n   在 WCS_phase1.Action.TaskLogic.CreateAndAddTaskList(WCS_TASK_ITEM item) 位置 D:CodeWCSWCS_phase1ActionTaskLogic.cs:行号 1531', '2019-07-26 17:55:31');
-INSERT INTO `wcs_function_log` VALUES (166, 'CreateAndAddTaskList()', '生成并加入设备指令任务链表', 'I190704140255', '118', 'NG', 'System.NullReferenceException: 未将对象引用设置到对象的实例。\r\n   在 WCS_phase1.Functions.SimpleTools.BytetToString(Byte[] byteArray) 位置 D:CodeWCSWCS_phase1FunctionsSimpleTools.cs:行号 68\r\n   在 WCS_phase1.Action.TaskLogic.CreateAndAddTaskList(WCS_TASK_ITEM item) 位置 D:CodeWCSWCS_phase1ActionTaskLogic.cs:行号 1533', '2019-07-27 09:40:16');
-INSERT INTO `wcs_function_log` VALUES (167, 'SendAGV()', '调度AGV装货卸货[固定辊台设备号]', 'FRT99', '', 'NG', 'System.NullReferenceException: 未将对象引用设置到对象的实例。\r\n   在 WCS_phase1.Action.ForAGVControl.SendAGV(WCS_CONFIG_DEVICE frt) 位置 D:CodeWCSWCS_phase1ActionForAGVControl.cs:行号 65', '2019-08-08 08:25:26');
-INSERT INTO `wcs_function_log` VALUES (323, 'SendAGV()', '调度AGV装货卸货[固定辊台设备号]', 'FRT99', '', 'NG', 'System.NullReferenceException: 未将对象引用设置到对象的实例。\r\n   在 WCS_phase1.Action.ForAGVControl.SendAGV(WCS_CONFIG_DEVICE frt) 位置 D:CodeWCSWCS_phase1ActionForAGVControl.cs:行号 104', '2019-08-12 09:40:41');
-INSERT INTO `wcs_function_log` VALUES (324, 'SendAGV()', '调度AGV装货卸货[固定辊台设备号]', 'FRT99', '', 'NG', 'System.NullReferenceException: 未将对象引用设置到对象的实例。\r\n   在 WCS_phase1.Action.ForAGVControl.SendAGV(WCS_CONFIG_DEVICE frt) 位置 D:CodeWCSWCS_phase1ActionForAGVControl.cs:行号 104', '2019-08-12 09:40:46');
-INSERT INTO `wcs_function_log` VALUES (325, 'SendAGV()', '调度AGV装货卸货[固定辊台设备号]', 'FRT99', '', 'NG', 'System.NullReferenceException: 未将对象引用设置到对象的实例。\r\n   在 WCS_phase1.Action.ForAGVControl.SendAGV(WCS_CONFIG_DEVICE frt) 位置 D:CodeWCSWCS_phase1ActionForAGVControl.cs:行号 104', '2019-08-12 09:41:43');
-INSERT INTO `wcs_function_log` VALUES (326, 'SendAGV()', '调度AGV装货卸货[固定辊台设备号]', 'FRT99', '', 'NG', 'System.NullReferenceException: 未将对象引用设置到对象的实例。\r\n   在 WCS_phase1.Action.ForAGVControl.SendAGV(WCS_CONFIG_DEVICE frt) 位置 D:CodeWCSWCS_phase1ActionForAGVControl.cs:行号 104', '2019-08-12 09:44:24');
-INSERT INTO `wcs_function_log` VALUES (327, 'SendAGV()', '调度AGV装货卸货[固定辊台设备号]', 'FRT99', '', 'NG', 'System.NullReferenceException: 未将对象引用设置到对象的实例。\r\n   在 WCS_phase1.Action.ForAGVControl.SendAGV(WCS_CONFIG_DEVICE frt) 位置 D:CodeWCSWCS_phase1ActionForAGVControl.cs:行号 104', '2019-08-13 08:41:16');
-INSERT INTO `wcs_function_log` VALUES (328, 'CreatOrderTask()', 'AGV辊台任务[AGV任务ID]', '13083606', '', 'NG', 'System.Exception: 无对应 WMS Task 目标位置！\r\n   在 WCS_phase1.Action.ForAGVControl.CreatOrderTask(WCS_AGV_INFO agv) 位置 D:CodeWCSWCS_phase1ActionForAGVControl.cs:行号 198', '2019-08-13 09:16:05');
+) ENGINE = InnoDB AUTO_INCREMENT = 366 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for wcs_task_backup
@@ -169,24 +155,16 @@ INSERT INTO `wcs_function_log` VALUES (328, 'CreatOrderTask()', 'AGV辊台任务
 DROP TABLE IF EXISTS `wcs_task_backup`;
 CREATE TABLE `wcs_task_backup`  (
   `ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `WCS_NO` varchar(15) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'WCS单号',
-  `TASK_UID` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '任务UID',
-  `FRT` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '固定辊台',
-  `TASK_TYPE` varchar(2) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '任务类型(\n0:AGV运输；1:入库；\n2:出库；\n3:移仓；\n4:盘点)',
-  `BARCODE` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '货物码',
-  `W_S_LOC` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '来源货位',
-  `W_D_LOC` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '目标货位',
+  `WCS_NO` varchar(15) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'WCS单号',
+  `TASK_UID` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '任务UID',
+  `FRT` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '固定辊台',
+  `TASK_TYPE` varchar(2) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '任务类型(\n0:AGV运输；1:入库；\n2:出库；\n3:移仓；\n4:盘点)',
+  `BARCODE` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '货物码',
+  `W_S_LOC` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '来源货位',
+  `W_D_LOC` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '目标货位',
   `BACKUP_TIME` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP COMMENT '备份时间',
   PRIMARY KEY (`ID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of wcs_task_backup
--- ----------------------------
-INSERT INTO `wcs_task_backup` VALUES (1, 'I666', '1', '666', '11', '111', '1111', '11111', '2019-07-27 09:17:53');
-INSERT INTO `wcs_task_backup` VALUES (2, 'I666', '2', '666', '22', '222', '2222', '22222', '2019-07-27 09:17:53');
-INSERT INTO `wcs_task_backup` VALUES (3, 'I190704140255', 'TEST1', 'FRT02', '1', '1111', 'B01', 'C001-001-001', '2019-07-27 09:43:28');
-INSERT INTO `wcs_task_backup` VALUES (4, 'I190704140255', 'TEST2', 'FRT02', '1', '2222', 'B01', 'C001-001-002', '2019-07-27 09:43:28');
 
 -- ----------------------------
 -- Table structure for wcs_task_info
@@ -209,7 +187,11 @@ CREATE TABLE `wcs_task_info`  (
 -- Records of wcs_task_info
 -- ----------------------------
 INSERT INTO `wcs_task_info` VALUES ('1907311', '1', '1907311', 'B01', 'C001-001-001', 'W', '2019-07-31 16:48:54', '2019-08-14 17:06:01');
-INSERT INTO `wcs_task_info` VALUES ('1907312', '1', '1907312', 'B01', 'C001-001-002', 'W', '2019-07-31 16:49:28', '2019-08-14 17:06:01');
+INSERT INTO `wcs_task_info` VALUES ('1907312', '1', '1907312', 'FRT01', 'CC001-001-002', 'W', '2019-07-31 16:49:28', '2019-09-09 16:51:21');
+INSERT INTO `wcs_task_info` VALUES ('NW190829102020', '2', '', 'C012-001-001', 'FRT03', 'N', '2019-08-29 10:20:20', NULL);
+INSERT INTO `wcs_task_info` VALUES ('NW190829102101', '1', '123321123321', 'FRT03', 'C012-002-002', 'N', '2019-08-29 10:21:01', '2019-08-29 10:21:22');
+INSERT INTO `wcs_task_info` VALUES ('NW190829102337', '1', '12332113', 'FRT03', 'C012-002-001', 'N', '2019-08-29 10:23:37', '2019-08-29 10:23:39');
+INSERT INTO `wcs_task_info` VALUES ('Test0820110043', '1', '5555', '', 'C005-005-005', 'N', '2019-08-20 11:01:11', '2019-08-20 11:05:14');
 
 -- ----------------------------
 -- Table structure for wcs_task_item
@@ -226,19 +208,47 @@ CREATE TABLE `wcs_task_item`  (
   `CREATION_TIME` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `UPDATE_TIME` timestamp(0) NULL DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 38 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = 'WCS指令资讯  ' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 37 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = 'WCS指令资讯  ' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of wcs_task_item
 -- ----------------------------
 INSERT INTO `wcs_task_item` VALUES (35, '1908141610', '012', NULL, NULL, '2', 'N', '2019-08-14 17:06:01', NULL);
 INSERT INTO `wcs_task_item` VALUES (36, '1908141610', '022', NULL, NULL, '001', 'N', '2019-08-14 17:06:01', NULL);
-INSERT INTO `wcs_task_item` VALUES (37, '1908141610', '031', NULL, NULL, '001-004-001', 'N', '2019-08-14 17:06:01', NULL);
+INSERT INTO `wcs_task_item` VALUES (37, '1908141610', '031', 'ABC01', '0-0-0', '001-004-001', 'Q', '2019-08-14 17:06:01', '2019-09-05 14:45:29');
 
 -- ----------------------------
 -- View structure for wcs_command_v
 -- ----------------------------
 DROP VIEW IF EXISTS `wcs_command_v`;
 CREATE ALGORITHM = UNDEFINED DEFINER = `root`@`localhost` SQL SECURITY DEFINER VIEW `wcs_command_v` AS select `a`.`WCS_NO` AS `WCS_NO`,`a`.`FRT` AS `FRT`,`a`.`STEP` AS `STEP`,`b`.`TASK_TYPE` AS `TASK_TYPE`,`a`.`CREATION_TIME` AS `CREATION_TIME`,`a`.`TASK_UID_1` AS `TASK_UID_1`,`b`.`W_S_LOC` AS `LOC_FROM_1`,`b`.`W_D_LOC` AS `LOC_TO_1`,`b`.`SITE` AS `SITE_1`,`a`.`TASK_UID_2` AS `TASK_UID_2`,`c`.`W_S_LOC` AS `LOC_FROM_2`,`c`.`W_D_LOC` AS `LOC_TO_2`,`c`.`SITE` AS `SITE_2` from ((`wcs_command_master` `a` left join `wcs_task_info` `b` on((`a`.`TASK_UID_1` = `b`.`TASK_UID`))) left join `wcs_task_info` `c` on((`a`.`TASK_UID_2` = `c`.`TASK_UID`)));
+
+-- ----------------------------
+-- Procedure structure for DELETE_DATA
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `DELETE_DATA`;
+delimiter ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DELETE_DATA`()
+BEGIN
+	/*仅保留 30 天的备份任务数据*/
+	delete from wcs_task_backup where DATEDIFF(CURRENT_DATE,BACKUP_TIME) >= 30;
+	/*仅保留 7 天的程序异常数据*/
+	delete from wcs_function_log where DATEDIFF(CURRENT_DATE,CREATION_TIME) >= 7;
+END
+;;
+delimiter ;
+
+-- ----------------------------
+-- Event structure for DELETE_DATA_EVENT
+-- ----------------------------
+DROP EVENT IF EXISTS `DELETE_DATA_EVENT`;
+delimiter ;;
+CREATE DEFINER = `root`@`localhost` EVENT `DELETE_DATA_EVENT`
+ON SCHEDULE
+EVERY '1' DAY STARTS '2019-09-12 00:00:00'
+COMMENT '每日一次删除过期无效的历史数据'
+DO CALL DELETE_DATA()
+;;
+delimiter ;
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -223,6 +223,13 @@
                             Padding="20,0,0,0" />
                     </TreeViewItem>
                     <TreeViewItem
+                        Tag="ManualWms"
+                        MouseDoubleClick="TreeView_MouseDoubleClick"
+                        FontSize="20"
+                        Header="手动WMS"
+                        Padding="10,0,0,0"
+                        pu:TreeViewHelper.ItemIcon="&#xf022;" />
+                    <TreeViewItem
                         Tag="TaskData"
                         MouseDoubleClick="TreeView_MouseDoubleClick"
                         FontSize="20"

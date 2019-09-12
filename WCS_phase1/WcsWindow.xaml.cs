@@ -57,11 +57,13 @@ namespace WCS_phase1
             {
                 wcsTabControl.SelectedIndex = 0;
                 return;
-            }else if("ABC".Equals(itemTag))//
+            }
+            else if ("ABC".Equals(itemTag))//
             {
                 tabItem.Tag = "ABC";
                 tabItem.Content = new W_ABC();
-            }else if ("RGV".Equals(itemTag))//
+            }
+            else if ("RGV".Equals(itemTag))//
             {
                 tabItem.Tag = "RGV";
                 tabItem.Content = new W_RGV();
@@ -86,14 +88,20 @@ namespace WCS_phase1
                 tabItem.Tag = "DevData";
                 tabItem.Content = new W_SettingDevData();
             }
+            else if ("ManualWms".Equals(itemTag))//
+            {
+                tabItem.Tag = "ManualWms";
+                tabItem.Content = new W_ManualWms();
+            }
             else if ("TaskData".Equals(itemTag))//
             {
                 tabItem.Tag = "TaskData";
                 tabItem.Content = new W_TaskData();
-            }else if ("WcsNdcSite".Equals(itemTag))
+            }
+            else if ("WcsNdcSite".Equals(itemTag))
             {
                 tabItem.Tag = "WcsNdcSite";
-                
+
                 tabItem.Content = new W_WcsNdcSite();
             }
             else
