@@ -94,6 +94,14 @@
       <Project>{9e139539-c272-488a-bfcf-caddf458df9d}</Project>
       <Name>MHttpServer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ModuleManager\ModuleManager.csproj">
+      <Project>{36A19B28-36C5-42A8-9360-A5FFF1891DC7}</Project>
+      <Name>ModuleManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PubResourceManager\PubResourceManager.csproj">
+      <Project>{20AFF318-2F10-47E9-A66C-AED5B9C5E5F5}</Project>
+      <Name>PubResourceManager</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

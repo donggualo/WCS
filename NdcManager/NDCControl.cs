@@ -522,7 +522,7 @@ namespace NdcManager
 
                     ClearEmptyItem();
 
-
+                    RefreshInitGrid();
                 }
             }catch(Exception e)
             {

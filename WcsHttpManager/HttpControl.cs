@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using ModuleManager.PUB;
+using Newtonsoft.Json;
+using PubResourceManager;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,7 +22,21 @@ namespace WcsHttpManager
 
         public HttpControl()
         {
-            wcsUrl = "http://10.9.31.66/wms.php";
+            //wcsUrl = "http://10.9.31.66/wms.php";
+
+            ReadWmsServerUrl();
+        }
+
+        private void ReadWmsServerUrl()
+        {
+            if(CommonSQL.GetWcsParamValue(new MySQL(), "WMS_SERVER_URL", out WCS_PARAM param))
+            {
+                wcsUrl = param.VALUE1;
+            }
+            else
+            {
+                Console.WriteLine("在wcs_param表找不到(WMS_SERVER_URL)WMS服务配置内容");
+            }
         }
 
         #region 入库任务

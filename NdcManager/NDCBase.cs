@@ -205,7 +205,7 @@ namespace NdcManager
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void D_DeleteOrder(List<string> DeleteOrderList)
+        private void D_DeleteOrder(List<string> DeleteOrderList)
         {
             //The "real" parse function is already done, so only numbers as strings in the list
             ushort Index = ushort.Parse(DeleteOrderList[0]);
@@ -219,7 +219,7 @@ namespace NdcManager
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void Q_StartOrder(List<string> orderList)
+        private void Q_StartOrder(List<string> orderList)
         {
             List<int> StartOrderList = new List<int>();
 
@@ -243,7 +243,7 @@ namespace NdcManager
         /// Event when order list is started
         /// </summary>
         /// <param name="StartOrderSeqEventData"></param>
-        void Q_StartOrderSeq(List<string[]> StartOrderSeqEventData)
+        private void Q_StartOrderSeq(List<string[]> StartOrderSeqEventData)
         {
             int count = 0;
             string datetime = " ";

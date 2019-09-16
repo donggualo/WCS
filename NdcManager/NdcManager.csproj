@@ -54,6 +54,7 @@
     <Compile Include="Datagrid\BaseDataGrid.cs" />
     <Compile Include="Datagrid\Models\NdcTaskModel.cs" />
     <Compile Include="Datagrid\NdcAgvDataGrid.cs" />
+    <Compile Include="NDCBase.cs" />
     <Compile Include="NDCControl.cs" />
   </ItemGroup>
   <ItemGroup>
