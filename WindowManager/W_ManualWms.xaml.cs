@@ -30,7 +30,7 @@ namespace WindowManager
 
             //明细
             GetInfo();
-            OnTimeToLoadData();
+            //OnTimeToLoadData();
         }
 
         // 限制仅输入数字
@@ -118,6 +118,11 @@ namespace WindowManager
             {
                 Notice.Show(e.ToString(), "错误", 3, MessageBoxIcon.Error);
             }
+        }
+
+        private void BtnRefresh_Click(object sender, EventArgs e)
+        {
+            GetInfo();
         }
 
         private void DGinfo_DoubleClick(object sender, System.EventArgs e)
@@ -353,27 +358,27 @@ namespace WindowManager
         /// <summary>
         /// 每隔一个时间段执行一段代码
         /// </summary>
-        private void OnTimeToLoadData()
-        {
-            DispatcherTimer ShowTimer = new DispatcherTimer();
-            //起个Timer一直获取当前时间
-            ShowTimer.Tick += OnTimeLoadData;
-            ShowTimer.Interval = new TimeSpan(0, 0, 0, 5, 0); //天，时，分，秒，毫秒
-            ShowTimer.Start();
-        }
+        //private void OnTimeToLoadData()
+        //{
+        //    DispatcherTimer ShowTimer = new DispatcherTimer();
+        //    //起个Timer一直获取当前时间
+        //    ShowTimer.Tick += OnTimeLoadData;
+        //    ShowTimer.Interval = new TimeSpan(0, 0, 0, 5, 0); //天，时，分，秒，毫秒
+        //    ShowTimer.Start();
+        //}
 
         /// <summary>
         /// 计时加载数据
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OnTimeLoadData(object sender, EventArgs e)
-        {
-            if (CBrefresh.IsChecked == true)
-            {
-                GetInfo(); // 获取数据
-            }
-        }
+        //private void OnTimeLoadData(object sender, EventArgs e)
+        //{
+        //    if (CBrefresh.IsChecked == true)
+        //    {
+        //        GetInfo(); // 获取数据
+        //    }
+        //}
 
         #endregion
     }

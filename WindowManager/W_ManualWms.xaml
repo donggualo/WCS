@@ -29,12 +29,13 @@
         <TextBlock Grid.ColumnSpan="3" Margin="10,0,0,0" FontSize="20" FontFamily="MV Boli">
                         AGV 装卸货任务列表
         </TextBlock>
-        <CheckBox Grid.Column="4" Name="CBrefresh"
+        <!--<CheckBox Grid.Column="4" Name="CBrefresh"
                   Content="自动刷新列表" IsChecked="True"
                   pu:CheckBoxHelper.CheckBoxStyle="Switch2"
                   pu:CheckBoxHelper.BoxHeight="25"
                   pu:CheckBoxHelper.BoxWidth="60"
-                  pu:CheckBoxHelper.CheckedBackground="#2100FF" FontFamily="MV Boli"/>
+                  pu:CheckBoxHelper.CheckedBackground="#2100FF" FontFamily="MV Boli"/>-->
+        <Button Name="BtnRefresh" Content="刷新列表" Click="BtnRefresh_Click" Grid.Column="3"/>
         <DataGrid Name="DGinfo"  Grid.Row="1" Grid.ColumnSpan="6" IsReadOnly="True" AutoGeneratingColumn="DataGrid_TimeFormat" MouseDoubleClick="DGinfo_DoubleClick"/>
         <Label Content="包装线辊台设备号：" Grid.Row="2" Grid.Column="1"/>
         <ComboBox Name="CBfrt_P" Margin="5,5,5,5" Grid.Column="2" Grid.Row="2"/>

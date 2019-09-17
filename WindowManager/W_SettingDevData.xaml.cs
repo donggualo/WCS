@@ -96,9 +96,11 @@ namespace WindowManager
                 string sql = @"select DEVICE 设备号, IP, PORT, AREA 所属区域, REMARK 备注, 
              (case when TYPE = 'FRT' then '固定辊台'
 			       when TYPE = 'ARF' then '摆渡车'
-						 when TYPE = 'RGV' then '运输车' else '行车' end) 设备类型, 
+				   when TYPE = 'RGV' then '运输车'
+                   when TYPE = 'ABC' then '行车'else NULL end) 设备类型, 
 			 (case when FLAG = 'L' then '锁定'
-					   when FLAG = 'Y' then '空闲' else '未知' end) 状态, LOCK_WCS_NO 锁定清单号, CREATION_TIME 创建时间, UPDATE_TIME 更新时间
+				   when FLAG = 'U' then '仅占用1个辊台'
+				   when FLAG = 'Y' then '空闲' else '未知' end) 状态, LOCK_WCS_NO 锁定清单号, CREATION_TIME 创建时间, UPDATE_TIME 更新时间
              from wcs_config_device where 1=1";
                 if (!string.IsNullOrWhiteSpace(CBdev.Text))
                 {
@@ -295,7 +297,7 @@ namespace WindowManager
                     return;
                 }
 
-                String sqlinsert = String.Format(@"insert into wcs_config_device(DEVICE,IP,PORT,AREA,REMARK,TYPE,FLAG) VALUES('{0}','{1}','{2}','{3}','{4}','{5}','N')",
+                String sqlinsert = String.Format(@"insert into wcs_config_device(DEVICE,IP,PORT,AREA,REMARK,TYPE,FLAG) VALUES('{0}','{1}','{2}','{3}','{4}','{5}','Y')",
                     device, ip, port, area, remark, type);
                 DataControl._mMySql.ExcuteSql(sqlinsert);
 
@@ -353,6 +355,83 @@ namespace WindowManager
             catch (Exception ex)
             {
                 Notice.Show("删除失败： " + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// 失效
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FailDev_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (DGdevice.SelectedItem == null)
+                {
+                    return;
+                }
+                string flag = (DGdevice.SelectedItem as DataRowView)["状态"].ToString();
+                if (flag != "空闲")
+                {
+                    Notice.Show("该设备暂无法失效！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
+                string device = (DGdevice.SelectedItem as DataRowView)["设备号"].ToString();
+
+                MessageBoxResult result = MessageBoxX.Show("确认失效设备号【" + device + "】的数据？！", "提示", System.Windows.Application.Current.MainWindow, MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.No)
+                {
+                    return;
+                }
+
+                String sqldelete = String.Format(@"update wcs_config_device set FLAG = 'N' where DEVICE = '{0}'", device);
+                DataControl._mMySql.ExcuteSql(sqldelete);
+
+                Notice.Show("失效成功！", "成功", 3, MessageBoxIcon.Success);
+                RefreshDev_Click(sender, e);
+            }
+            catch (Exception ex)
+            {
+                Notice.Show("失效失败： " + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// 生效
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void WorkDev_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (DGdevice.SelectedItem == null)
+                {
+                    return;
+                }
+                string flag = (DGdevice.SelectedItem as DataRowView)["状态"].ToString();
+                if (flag != "未知")
+                {
+                    return;
+                }
+                string device = (DGdevice.SelectedItem as DataRowView)["设备号"].ToString();
+
+                MessageBoxResult result = MessageBoxX.Show("确认生效设备号【" + device + "】的数据？！", "提示", System.Windows.Application.Current.MainWindow, MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.No)
+                {
+                    return;
+                }
+
+                String sqldelete = String.Format(@"update wcs_config_device set FLAG = 'N' where DEVICE = '{0}'", device);
+                DataControl._mMySql.ExcuteSql(sqldelete);
+
+                Notice.Show("生效成功！", "成功", 3, MessageBoxIcon.Success);
+                RefreshDev_Click(sender, e);
+            }
+            catch (Exception ex)
+            {
+                Notice.Show("生效失败： " + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
             }
         }
 

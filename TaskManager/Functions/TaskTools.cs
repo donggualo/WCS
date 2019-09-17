@@ -47,7 +47,7 @@ namespace TaskManager.Functions
                 // 清空设备
                 DataControl._mSocket.Close();
                 // 获取设备设定档资讯
-                String sql = "select * from wcs_config_device";
+                String sql = "select * from wcs_config_device order by CREATION_TIME";
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {
@@ -100,7 +100,7 @@ namespace TaskManager.Functions
             {
                 StringBuilder result = new StringBuilder();
                 // 获取区域内可复位设备
-                String sql = String.Format(@"select * from wcs_config_device where AREA = '{0}' and TYPE = '{1}' order by FLAG desc", area, type);
+                String sql = String.Format(@"select * from wcs_config_device where FLAG = 'Y' and AREA = '{0}' and TYPE = '{1}' order by FLAG desc", area, type);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {
@@ -212,11 +212,11 @@ namespace TaskManager.Functions
                     mes = dev[0].DEVICE + " 摆渡车目前无法操作复位任务; \r";
                 }
 
-                if (dev[0].FLAG == "Y")
+                if (dev[1].FLAG == "Y")
                 {
                     DataControl._mTaskControler.StartTask(new ARFTack(item2, DeviceType.摆渡车, order2));
                 }
-
+                else
                 {
                     mes = mes + dev[0].DEVICE + " 摆渡车目前无法操作复位任务; \r";
                 }
@@ -306,13 +306,13 @@ namespace TaskManager.Functions
                     mes = dev[0].DEVICE + " 运输车目前无法操作复位任务; \r";
                 }
 
-                if (dev[0].FLAG == "Y")
+                if (dev[1].FLAG == "Y")
                 {
-                    DataControl._mTaskControler.StartTask(new ARFTack(item2, DeviceType.摆渡车, order2));
+                    DataControl._mTaskControler.StartTask(new ARFTack(item2, DeviceType.运输车, order2));
                 }
-
+                else
                 {
-                    mes = mes + dev[0].DEVICE + " 运输车目前无法操作复位任务; \r";
+                    mes = mes + dev[1].DEVICE + " 运输车目前无法操作复位任务; \r";
                 }
             }
             catch (Exception ex)
@@ -402,13 +402,13 @@ namespace TaskManager.Functions
                     mes = dev[0].DEVICE + " 行车目前无法操作复位任务; \r";
                 }
 
-                if (dev[0].FLAG == "Y")
+                if (dev[1].FLAG == "Y")
                 {
                     DataControl._mTaskControler.StartTask(new ABCTack(item2, DeviceType.行车, order2));
                 }
-
+                else
                 {
-                    mes = mes + dev[0].DEVICE + " 行车目前无法操作复位任务; \r";
+                    mes = mes + dev[1].DEVICE + " 行车目前无法操作复位任务; \r";
                 }
             }
             catch (Exception ex)
