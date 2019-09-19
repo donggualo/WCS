@@ -63,11 +63,13 @@ namespace WindowManager
                 sql = @"select WCS_NO WCS清单号,FRT 固定辊台,CREATION_TIME 创建时间,
              (case when STEP = '1' then '生成单号' 
                    when STEP = '2' then '请求执行' 
-                   when STEP = '3' then '执行中' else '结束' end) 清单状态,
+                   when STEP = '3' then '执行中' 
+                   when STEP = '4' then '结束' else '' end) 清单状态,
 			 (case when TASK_TYPE = '0' then 'AGV运输' 
                    when TASK_TYPE = '1' then '入库' 
                    when TASK_TYPE = '2' then '出库' 
-                   when TASK_TYPE = '3' then '移仓' else '盘点' end) 任务类型,
+                   when TASK_TYPE = '3' then '移仓' 
+                   when TASK_TYPE = '4' then '盘点' else '' end) 任务类型,
 			 TASK_UID_1 货物①任务号,LOC_FROM_1 货物①来源,LOC_TO_1 货物①目的,
 			 (case when SITE_1 = 'N' then '未执行'
 				   when SITE_1 = 'W' then '任务中'
@@ -77,7 +79,7 @@ namespace WindowManager
 			 (case when SITE_2 = 'N' then '未执行'
 				   when SITE_2 = 'W' then '任务中'
 				   when SITE_2 = 'Y' then '完成'
-				   when SITE_1 = 'X' then '失效' else '' end) 货物②任务状态 from wcs_command_v";
+				   when SITE_2 = 'X' then '失效' else '' end) 货物②任务状态 from wcs_command_v";
                 // 获取数据
                 dt = DataControl._mMySql.SelectAll(sql);
                 DGcommand.ItemsSource = dt.DefaultView;
@@ -114,7 +116,8 @@ namespace WindowManager
 				   when STATUS = 'W' then '任务中'
 				   when STATUS = 'R' then '交接中'
 				   when STATUS = 'E' then '出现异常'
-				   when STATUS = 'Y' then '完成任务' else '失效' end) 作业状态,CREATION_TIME 创建时间
+				   when STATUS = 'Y' then '完成任务'
+				   when STATUS = 'X' then '失效' else '' end) 作业状态,CREATION_TIME 创建时间
              from wcs_task_item where WCS_NO = '{0}'", wcs_no);
                 // 获取数据
                 dt = DataControl._mMySql.SelectAll(sql);

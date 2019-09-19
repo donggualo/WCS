@@ -78,7 +78,8 @@ namespace TaskManager
             try
             {
                 // 获取空闲包装线固定辊台
-                DataTable dt = DataControl._mMySql.SelectAll("select * from wcs_config_device where TYPE='FRT' and LEFT(AREA,1) = 'A' and FLAG = 'Y'");
+                String sql = String.Format(@"select * from wcs_config_device where TYPE='{1}' and LEFT(AREA,1) = 'A' and FLAG = '{0}'", DeviceFlag.空闲, DeviceType.固定辊台);
+                DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {
                     return;
@@ -119,9 +120,9 @@ namespace TaskManager
                     return;
                 }
 
-                // 数据库新增AGV任务资讯
+                // 数据库新增AGV任务资讯; 锁定包装线辊台
                 string sql = string.Format(@"insert into wcs_agv_info(ID,PICKSTATION,DROPSTATION) values('{0}','{1}','{2}');
-                                             update wcs_config_device set FLAG = 'L' where DEVICE = '{1}'", ID, PickStation, DropStation);
+                                             update wcs_config_device set FLAG = '{3}' where DEVICE = '{1}'", ID, PickStation, DropStation, DeviceFlag.锁定);
                 DataControl._mMySql.ExcuteSql(sql);
             }
             catch (Exception ex)
@@ -143,7 +144,8 @@ namespace TaskManager
             try
             {
                 //获取满足启动辊台条件的AGV任务---位于装货卸货点状态
-                DataTable dt = DataControl._mMySql.SelectAll("select * from wcs_agv_info where MAGIC in(4,8) and AGV is not null order by CREATION_TIME");
+                String sql = String.Format("select * from wcs_agv_info where MAGIC in('{0}','{1}') and AGV is not null order by CREATION_TIME", AGVMagic.到达装货点, AGVMagic.到达卸货点);
+                DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {
                     return;
@@ -205,8 +207,8 @@ namespace TaskManager
                             if (agv.UPDATE_TIME == null)
                             {
                                 // 获取 WMS 任务目标点
-                                String sqlloc = String.Format(@"select distinct DEVICE from wcs_config_device where FLAG in('U','Y') and TYPE = 'FRT' and AREA in (
-                                    select W_D_LOC from wcs_task_info where TASK_UID = '{0}') order by FLAG,CREATION_TIME", agv.TASK_UID);
+                                String sqlloc = String.Format(@"select distinct DEVICE from wcs_config_device where FLAG in('{1}','{2}') and TYPE = '{3}' and AREA in (
+                                    select W_D_LOC from wcs_task_info where TASK_UID = '{0}') order by FLAG,CREATION_TIME", agv.TASK_UID, DeviceFlag.占用, DeviceFlag.空闲, DeviceType.固定辊台);
                                 DataTable dtloc = DataControl._mMySql.SelectAll(sqlloc);
                                 if (DataControl._mStools.IsNoData(dtloc))
                                 {
@@ -215,7 +217,7 @@ namespace TaskManager
                                 // 更新AGV任务资讯-- 卸货点
                                 agv.DROPSTATION = dtloc.Rows[0]["DEVICE"].ToString();
                                 sqlloc = String.Format(@"update wcs_agv_info set UPDATE_TIME = NOW(), DROPSTATION = '{1}' where ID = '{0}';
-                                                         update wcs_config_device set FLAG = 'U' where DEVICE = '{1}'", agv.ID, agv.DROPSTATION);
+                                                         update wcs_config_device set FLAG = '{2}' where DEVICE = '{1}'", agv.ID, agv.DROPSTATION, DeviceFlag.占用);
                                 DataControl._mMySql.ExcuteSql(sqlloc);
 
                                 // 发送 NDC 更新点位
@@ -340,7 +342,7 @@ namespace TaskManager
                 if (magic == AGVMagic.装货完成)
                 {
                     // 更新对应包装线辊台状态，允许新任务派车前往
-                    sql.Append(String.Format(@";update wcs_config_device set FLAG = 'Y' where DEVICE in (select distinct PICKSTATION from wcs_agv_info where ID = '{0}')", id));
+                    sql.Append(String.Format(@";update wcs_config_device set FLAG = '{1}' where DEVICE in (select distinct PICKSTATION from wcs_agv_info where ID = '{0}')", id, DeviceFlag.空闲));
                 }
 
                 // 更新AGV任务资讯

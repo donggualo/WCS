@@ -80,7 +80,7 @@ namespace TaskManager.Functions
             try
             {
                 // 将所有 [任务中] 的Item 变为 [请求执行]
-                String sql = "update wcs_task_item set STATUS = 'Q' where STATUS = 'W'";
+                String sql = String.Format("update wcs_task_item set STATUS = '{0}' where STATUS = '{1}'", ItemStatus.请求执行, ItemStatus.任务中);
                 DataControl._mMySql.ExcuteSql(sql);
             }
             catch (Exception ex)
@@ -100,7 +100,7 @@ namespace TaskManager.Functions
             {
                 StringBuilder result = new StringBuilder();
                 // 获取区域内可复位设备
-                String sql = String.Format(@"select * from wcs_config_device where FLAG = 'Y' and AREA = '{0}' and TYPE = '{1}' order by FLAG desc", area, type);
+                String sql = String.Format(@"select * from wcs_config_device where FLAG = '{2}' and AREA = '{0}' and TYPE = '{1}' order by FLAG desc", area, type, DeviceFlag.空闲);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {
@@ -203,7 +203,7 @@ namespace TaskManager.Functions
                 }
                 // 加入任务作业链表
                 mes = null;
-                if (dev[0].FLAG == "Y")
+                if (dev[0].FLAG == DeviceFlag.空闲)
                 {
                     DataControl._mTaskControler.StartTask(new ARFTack(item1, DeviceType.摆渡车, order1));
                 }
@@ -212,7 +212,7 @@ namespace TaskManager.Functions
                     mes = dev[0].DEVICE + " 摆渡车目前无法操作复位任务; \r";
                 }
 
-                if (dev[1].FLAG == "Y")
+                if (dev[1].FLAG == DeviceFlag.空闲)
                 {
                     DataControl._mTaskControler.StartTask(new ARFTack(item2, DeviceType.摆渡车, order2));
                 }
@@ -297,7 +297,7 @@ namespace TaskManager.Functions
                 }
                 // 加入任务作业链表
                 mes = null;
-                if (dev[0].FLAG == "Y")
+                if (dev[0].FLAG == DeviceFlag.空闲)
                 {
                     DataControl._mTaskControler.StartTask(new RGVTack(item1, DeviceType.运输车, order1));
                 }
@@ -306,7 +306,7 @@ namespace TaskManager.Functions
                     mes = dev[0].DEVICE + " 运输车目前无法操作复位任务; \r";
                 }
 
-                if (dev[1].FLAG == "Y")
+                if (dev[1].FLAG == DeviceFlag.空闲)
                 {
                     DataControl._mTaskControler.StartTask(new ARFTack(item2, DeviceType.运输车, order2));
                 }
@@ -349,7 +349,7 @@ namespace TaskManager.Functions
                 WCS_TASK_ITEM item1;
                 WCS_TASK_ITEM item2;
 
-                if (DataControl._mStools.BytesToInt(a1.CurrentXsite(),0) < DataControl._mStools.BytesToInt(a2.CurrentXsite(), 0))
+                if (DataControl._mStools.BytesToInt(a1.CurrentXsite(), 0) < DataControl._mStools.BytesToInt(a2.CurrentXsite(), 0))
                 {
                     // 定位任务指令
                     order1 = ABC._TaskControl(ABC.TaskLocate, a1.ABCNum(), DataControl._mStools.IntToBytes(locX1), DataControl._mStools.IntToBytes(locY), DataControl._mStools.IntToBytes(locZ));
@@ -393,7 +393,7 @@ namespace TaskManager.Functions
                 }
                 // 加入任务作业链表
                 mes = null;
-                if (dev[0].FLAG == "Y")
+                if (dev[0].FLAG == DeviceFlag.空闲)
                 {
                     DataControl._mTaskControler.StartTask(new ABCTack(item1, DeviceType.行车, order1));
                 }
@@ -402,7 +402,7 @@ namespace TaskManager.Functions
                     mes = dev[0].DEVICE + " 行车目前无法操作复位任务; \r";
                 }
 
-                if (dev[1].FLAG == "Y")
+                if (dev[1].FLAG == DeviceFlag.空闲)
                 {
                     DataControl._mTaskControler.StartTask(new ABCTack(item2, DeviceType.行车, order2));
                 }
@@ -722,7 +722,7 @@ namespace TaskManager.Functions
                 {
                     return true;
                 }
-                if (dt.Rows[0]["FLAG"].ToString() == "Y")
+                if (dt.Rows[0]["FLAG"].ToString() == DeviceFlag.空闲)
                 {
                     return false;
                 }
@@ -746,7 +746,7 @@ namespace TaskManager.Functions
         {
             try
             {
-                String sql = String.Format(@"update wcs_config_device set FLAG = 'L', LOCK_WCS_NO = '{0}' where DEVICE = '{1}'", wcs_no, device);
+                String sql = String.Format(@"update wcs_config_device set FLAG = '{2}', LOCK_WCS_NO = '{0}' where DEVICE = '{1}'", wcs_no, device, DeviceFlag.锁定);
                 DataControl._mMySql.ExcuteSql(sql);
             }
             catch (Exception ex)
@@ -763,7 +763,7 @@ namespace TaskManager.Functions
         {
             try
             {
-                String sql = String.Format(@"update wcs_config_device set FLAG = 'Y', LOCK_WCS_NO = null where DEVICE = '{0}' or LOCK_WCS_NO = '{0}'", devOrwcs);
+                String sql = String.Format(@"update wcs_config_device set FLAG = '{1}', LOCK_WCS_NO = null where DEVICE = '{0}' or LOCK_WCS_NO = '{0}'", devOrwcs, DeviceFlag.空闲);
                 DataControl._mMySql.ExcuteSql(sql);
             }
             catch (Exception ex)
@@ -809,7 +809,7 @@ namespace TaskManager.Functions
             String sql;
             try
             {
-                sql = String.Format(@"select * From WCS_TASK_ITEM where STATUS = 'R' and ITEM_ID = '{0}' order by CREATION_TIME", item_id);
+                sql = String.Format(@"select * From WCS_TASK_ITEM where STATUS = '{1}' and ITEM_ID = '{0}' order by CREATION_TIME", item_id, ItemStatus.交接中);
                 DataTable dtitem = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dtitem))
                 {
@@ -833,8 +833,8 @@ namespace TaskManager.Functions
         {
             try
             {
-                String sql = String.Format(@"select CASE WHEN (TASK_UID_1 is not null and SITE_1 <>'Y') 
-             AND (TASK_UID_2 is not null and SITE_1 <>'Y') THEN 2 ELSE 1 END AS QTY from wcs_command_v where WCS_NO = '{0}'", wcs_no);
+                String sql = String.Format(@"select CASE WHEN (TASK_UID_1 is not null and SITE_1 <>'{1}') 
+             AND (TASK_UID_2 is not null and SITE_1 <>'{1}') THEN 2 ELSE 1 END AS QTY from wcs_command_v where WCS_NO = '{0}'", wcs_no, TaskSite.完成);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {
@@ -1037,11 +1037,11 @@ namespace TaskManager.Functions
             {
                 if (String.IsNullOrEmpty(item_id.Trim()))
                 {
-                    sql = String.Format(@"delete from WCS_TASK_ITEM where STATUS in ('N','Q') and WCS_NO = '{0}'", wcs_no);
+                    sql = String.Format(@"delete from WCS_TASK_ITEM where STATUS in ('{1}','{2}') and WCS_NO = '{0}'", wcs_no, ItemStatus.不可执行, ItemStatus.请求执行);
                 }
                 else
                 {
-                    sql = String.Format(@"delete from WCS_TASK_ITEM where STATUS in ('N','Q') and WCS_NO = '{0}' and ITEM_ID = '{1}'", wcs_no, item_id);
+                    sql = String.Format(@"delete from WCS_TASK_ITEM where STATUS in ('{1}','{2}') and WCS_NO = '{0}' and ITEM_ID = '{3}'", wcs_no, ItemStatus.不可执行, ItemStatus.请求执行, item_id);
                 }
 
                 DataControl._mMySql.ExcuteSql(sql);
@@ -1064,7 +1064,7 @@ namespace TaskManager.Functions
     /*备份*/
     insert into wcs_task_backup(WCS_NO, FRT, TASK_UID, TASK_TYPE, BARCODE, W_S_LOC, W_D_LOC)
 select a.WCS_NO, a.FRT, b.TASK_UID, b.TASK_TYPE, b.BARCODE, b.W_S_LOC, b.W_D_LOC from wcs_command_master a , wcs_task_info b 
-where (a.TASK_UID_1 = b.TASK_UID or a.TASK_UID_2 = b.TASK_UID) and a.STEP = '4' and WCS_NO = '{0}';
+where (a.TASK_UID_1 = b.TASK_UID or a.TASK_UID_2 = b.TASK_UID) and a.STEP = '{1}' and WCS_NO = '{0}';
     /*清Item*/
     delete from wcs_task_item where WCS_NO = '{0}';
     /*清Task*/
@@ -1073,7 +1073,7 @@ where (a.TASK_UID_1 = b.TASK_UID or a.TASK_UID_2 = b.TASK_UID) and a.STEP = '4' 
       union
      select TASK_UID_2 TASK_UID from wcs_command_master where WCS_NO = '{0}');
     /*清Command*/
-    delete from wcs_command_master where WCS_NO = '{0}'", wcs_no);
+    delete from wcs_command_master where WCS_NO = '{0}'", wcs_no, CommandStep.结束);
                 DataControl._mMySql.ExcuteSql(sql);
             }
             catch (Exception ex)

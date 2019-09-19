@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Threading;
-using TaskManager.Functions;
 using TaskManager.Devices;
 using ModuleManager.WCS;
 using PubResourceManager;
@@ -25,7 +24,8 @@ namespace TaskManager
             try
             {
                 // 获取可执行的入库清单
-                DataTable dtcommand = DataControl._mMySql.SelectAll("select * from wcs_command_v where TASK_TYPE = '1' and STEP = '2' order by CREATION_TIME");
+                String sql = String.Format(@"select * from wcs_command_v where TASK_TYPE = '{0}' and STEP = '{1}' order by CREATION_TIME", TaskType.入库, CommandStep.请求执行);
+                DataTable dtcommand = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dtcommand))
                 {
                     return;
@@ -209,7 +209,7 @@ namespace TaskManager
             try
             {
                 // 查看运输车是否到位
-                string sql_R = string.Format(@"select ID, WCS_NO, ITEM_ID, DEVICE from WCS_TASK_ITEM where STATUS = 'R' and WCS_NO = '{0}' and ITEM_ID = '{1}'", item.WCS_NO, ItemId.运输车复位1);
+                string sql_R = string.Format(@"select ID, WCS_NO, ITEM_ID, DEVICE from WCS_TASK_ITEM where STATUS = '{2}' and WCS_NO = '{0}' and ITEM_ID = '{1}'", item.WCS_NO, ItemId.运输车复位1, ItemStatus.交接中);
                 DataTable dtitem_R = DataControl._mMySql.SelectAll(sql_R);
                 if (DataControl._mStools.IsNoData(dtitem_R))
                 {
@@ -268,7 +268,7 @@ namespace TaskManager
             try
             {
                 // 查看运输车是否在运输车对接待命点
-                string sql_R = string.Format(@"select ID, WCS_NO, ITEM_ID, DEVICE from WCS_TASK_ITEM where STATUS = 'R' and WCS_NO = '{0}' and ITEM_ID = '{1}'", item.WCS_NO, ItemId.运输车复位2);
+                string sql_R = string.Format(@"select ID, WCS_NO, ITEM_ID, DEVICE from WCS_TASK_ITEM where STATUS = '{2}' and WCS_NO = '{0}' and ITEM_ID = '{1}'", item.WCS_NO, ItemId.运输车复位2, ItemStatus.交接中);
                 DataTable dtitem_R = DataControl._mMySql.SelectAll(sql_R);
                 if (DataControl._mStools.IsNoData(dtitem_R))
                 {
@@ -325,7 +325,7 @@ namespace TaskManager
             try
             {
                 // 查看运输车是否在运输车对接待命点
-                String sql_R = String.Format(@"select ID, WCS_NO, ITEM_ID, DEVICE from WCS_TASK_ITEM where STATUS = 'R' and WCS_NO = '{0}' and ITEM_ID = '{1}'", item.WCS_NO, ItemId.运输车定位);
+                String sql_R = String.Format(@"select ID, WCS_NO, ITEM_ID, DEVICE from WCS_TASK_ITEM where STATUS = '{2}' and WCS_NO = '{0}' and ITEM_ID = '{1}'", item.WCS_NO, ItemId.运输车定位, ItemStatus.交接中);
                 DataTable dtitem_R = DataControl._mMySql.SelectAll(sql_R);
                 if (DataControl._mStools.IsNoData(dtitem_R))
                 {
@@ -494,7 +494,7 @@ namespace TaskManager
             try
             {
                 // 获取对应清单
-                String sql = String.Format(@"select * from wcs_command_v where STEP <>'4' and WCS_NO = '{0}'", wcs_no);
+                String sql = String.Format(@"select * from wcs_command_v where STEP <>'{1}' and WCS_NO = '{0}'", wcs_no, CommandStep.结束);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {
@@ -613,7 +613,7 @@ namespace TaskManager
                     case ItemId.运输车正向:  //目的设备为对接的运输车，可直接加以分配
                         #region 将运输车移至行车对接位置
                         // 判断是否作业过运输车定位对接行车任务
-                        String sqlrr = String.Format(@"select * from wcs_task_item where ITEM_ID = '033' and STATUS not in ('E','X') and WCS_NO = '{0}'", item.WCS_NO);
+                        String sqlrr = String.Format(@"select * from wcs_task_item where ITEM_ID = '{3}' and STATUS not in ('{1}','{2}') and WCS_NO = '{0}'", item.WCS_NO, ItemStatus.出现异常, ItemStatus.失效, ItemId.行车取货);
                         DataTable dtrr = DataControl._mMySql.SelectAll(sqlrr);
                         if (DataControl._mStools.IsNoData(dt))
                         {
@@ -680,7 +680,7 @@ namespace TaskManager
                     case ItemId.行车放货:
                         #region 行车定位
                         // 未完成的任务目标点
-                        loc = command.SITE_1 == "Y" ? command.LOC_TO_2 : command.LOC_TO_1;
+                        loc = command.SITE_1 == TaskSite.完成 ? command.LOC_TO_2 : command.LOC_TO_1;
                         // 行车到运输车对接取货点
                         String ABCloc = DataControl._mTaskTools.GetABCTrackLoc(loc); //获取对应行车位置
                         // 生成行车轨道定位任务
@@ -828,23 +828,23 @@ namespace TaskManager
                     String area = dr[0].ToString();
 
                     // 判断当前区域是否存在出库请求
-                    int taskcount = DataControl._mMySql.GetCount("wcs_task_info", String.Format(@"TASK_TYPE = '2' and SITE = 'N' and W_D_LOC = '{0}'", area));
+                    int taskcount = DataControl._mMySql.GetCount("wcs_task_info", String.Format(@"TASK_TYPE = '{2}' and SITE = '{1}' and W_D_LOC = '{0}'", area, TaskSite.未执行, TaskType.出库));
                     if (taskcount == 0) //无则退出
                     {
                         continue;
                     }
 
                     // 判断当前区域是否存在执行中的任务
-                    int commandcount = DataControl._mMySql.GetCount("wcs_command_master", String.Format(@"STEP = '3' and FRT in
-                                                   (select distinct DEVICE from wcs_config_device where TYPE = 'FRT' and AREA = '{0}')", area));
+                    int commandcount = DataControl._mMySql.GetCount("wcs_command_master", String.Format(@"STEP = '{1}' and FRT in
+                                                   (select distinct DEVICE from wcs_config_device where TYPE = '{2}' and AREA = '{0}')", area, CommandStep.执行中, DeviceType.固定辊台));
                     if (commandcount > 0) //有则退出
                     {
                         continue;
                     }
 
                     // 判断当前区域是否存在满足入库条件的任务
-                    int incount = DataControl._mMySql.GetCount("wcs_command_v", String.Format(@"TASK_TYPE = '1' and STEP = '2' and FRT in
-                                                  (select distinct DEVICE from wcs_config_device where TYPE = 'FRT' and AREA = '{0}')", area));
+                    int incount = DataControl._mMySql.GetCount("wcs_command_v", String.Format(@"TASK_TYPE = '{2}' and STEP = '{1}' and FRT in
+                                                  (select distinct DEVICE from wcs_config_device where TYPE = '{3}' and AREA = '{0}')", area, CommandStep.请求执行, TaskType.入库, DeviceType.固定辊台));
                     if (incount > 0) //有则退出
                     {
                         continue;
@@ -869,7 +869,7 @@ namespace TaskManager
             try
             {
                 // 获取空闲的行车资讯
-                String sql = String.Format(@"select * from wcs_config_device where TYPE = 'ABC' and AREA = '{0}'", area);
+                String sql = String.Format(@"select * from wcs_config_device where TYPE = '{1}' and AREA = '{0}'", area, DeviceType.行车);
                 DataTable dtabc = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dtabc))
                 {
@@ -947,10 +947,10 @@ namespace TaskManager
 						 when t.X < {0} then ({0} - t.X)
 			       else t.X end) as loc , t.TASK_UID
   from (select a.TASK_UID, (b.STOCK_X + 0) X
-          from (select distinct TASK_UID, W_S_LOC from wcs_task_info where TASK_TYPE = '2' and SITE = 'N') a, 
+          from (select distinct TASK_UID, W_S_LOC from wcs_task_info where TASK_TYPE = '{4}' and SITE = '{3}') a, 
 	             (select distinct WMS_LOC, SUBSTRING_INDEX(ABC_LOC_STOCK,'-',1) STOCK_X from wcs_config_loc) b
          where a.W_S_LOC = b.WMS_LOC and (b.STOCK_X + 0) {1} {2}
-       ) t order by loc", X, sign, AA);
+       ) t order by loc", X, sign, AA, TaskSite.未执行, TaskType.出库);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {
@@ -988,7 +988,7 @@ namespace TaskManager
             try
             {
                 // 获取该区域可用的固定辊台
-                String sqlfrt = String.Format(@"select MAX(device) FRT from wcs_config_device where FLAG = 'Y' and TYPE = 'FRT' and AREA = '{0}'", area);
+                String sqlfrt = String.Format(@"select MAX(device) FRT from wcs_config_device where FLAG = '{1}' and TYPE = '{2}' and AREA = '{0}'", area, DeviceFlag.空闲, DeviceType.固定辊台);
                 DataTable dtfrt = DataControl._mMySql.SelectAll(sqlfrt);
                 if (DataControl._mStools.IsNoData(dtfrt))
                 {
@@ -1053,7 +1053,8 @@ namespace TaskManager
             try
             {
                 // 获取待分配设备任务
-                DataTable dtitem = DataControl._mMySql.SelectAll("select * from WCS_TASK_ITEM where STATUS = 'N' and DEVICE is null order by CREATION_TIME");
+                String sql = String.Format(@"select * from WCS_TASK_ITEM where STATUS = '{0}' and DEVICE is null order by CREATION_TIME", ItemStatus.不可执行);
+                DataTable dtitem = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dtitem))
                 {
                     return;
@@ -1414,7 +1415,8 @@ namespace TaskManager
             try
             {
                 // 获取 请求执行 的任务对应的 ITEM 资讯
-                DataTable dtitem = DataControl._mMySql.SelectAll("select * from WCS_TASK_ITEM where STATUS = 'Q' order by CREATION_TIME");
+                String sql = String.Format(@"select * from WCS_TASK_ITEM where STATUS = '{0}' order by CREATION_TIME", ItemStatus.请求执行);
+                DataTable dtitem = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dtitem))
                 {
                     return;
@@ -1682,7 +1684,7 @@ namespace TaskManager
         // 线程
         Thread _thread;
         // 线程开关
-        public bool PowerSwitch = true; 
+        public bool PowerSwitch = true;
         // 执行对象
         TaskLogic _task = new TaskLogic();
 

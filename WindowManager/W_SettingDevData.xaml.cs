@@ -2,20 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using TaskManager;
-using TaskManager.Functions;
 using ModuleManager.WCS;
 using PubResourceManager;
 
@@ -97,10 +86,11 @@ namespace WindowManager
              (case when TYPE = 'FRT' then '固定辊台'
 			       when TYPE = 'ARF' then '摆渡车'
 				   when TYPE = 'RGV' then '运输车'
-                   when TYPE = 'ABC' then '行车'else NULL end) 设备类型, 
+                   when TYPE = 'ABC' then '行车'else '' end) 设备类型, 
 			 (case when FLAG = 'L' then '锁定'
-				   when FLAG = 'U' then '仅占用1个辊台'
-				   when FLAG = 'Y' then '空闲' else '未知' end) 状态, LOCK_WCS_NO 锁定清单号, CREATION_TIME 创建时间, UPDATE_TIME 更新时间
+				   when FLAG = 'U' then '已占用1个辊台'
+				   when FLAG = 'Y' then '空闲'
+				   when FLAG = 'N' then '失效' else '' end) 状态, LOCK_WCS_NO 锁定清单号, CREATION_TIME 创建时间, UPDATE_TIME 更新时间
              from wcs_config_device where 1=1";
                 if (!string.IsNullOrWhiteSpace(CBdev.Text))
                 {
@@ -180,9 +170,9 @@ namespace WindowManager
                 }
 
                 string flag = (DGdevice.SelectedItem as DataRowView)["状态"].ToString();
-                if (flag == "锁定")
+                if (flag == "锁定" || flag == "已占用1个辊台")
                 {
-                    Notice.Show("设备已锁定，暂无法修改！", "提示", 3, MessageBoxIcon.Info);
+                    Notice.Show("设备使用中，暂无法修改！", "提示", 3, MessageBoxIcon.Info);
                     return;
                 }
 
@@ -297,8 +287,8 @@ namespace WindowManager
                     return;
                 }
 
-                String sqlinsert = String.Format(@"insert into wcs_config_device(DEVICE,IP,PORT,AREA,REMARK,TYPE,FLAG) VALUES('{0}','{1}','{2}','{3}','{4}','{5}','Y')",
-                    device, ip, port, area, remark, type);
+                String sqlinsert = String.Format(@"insert into wcs_config_device(DEVICE,IP,PORT,AREA,REMARK,TYPE,FLAG) VALUES('{0}','{1}','{2}','{3}','{4}','{5}','{6}')",
+                    device, ip, port, area, remark, type, DeviceFlag.空闲);
                 DataControl._mMySql.ExcuteSql(sqlinsert);
 
                 Notice.Show("添加成功！", "成功", 3, MessageBoxIcon.Success);
@@ -385,7 +375,7 @@ namespace WindowManager
                     return;
                 }
 
-                String sqldelete = String.Format(@"update wcs_config_device set FLAG = 'N' where DEVICE = '{0}'", device);
+                String sqldelete = String.Format(@"update wcs_config_device set FLAG = '{1}' where DEVICE = '{0}'", device, DeviceFlag.失效);
                 DataControl._mMySql.ExcuteSql(sqldelete);
 
                 Notice.Show("失效成功！", "成功", 3, MessageBoxIcon.Success);
@@ -411,7 +401,7 @@ namespace WindowManager
                     return;
                 }
                 string flag = (DGdevice.SelectedItem as DataRowView)["状态"].ToString();
-                if (flag != "未知")
+                if (flag != "失效")
                 {
                     return;
                 }
@@ -423,7 +413,7 @@ namespace WindowManager
                     return;
                 }
 
-                String sqldelete = String.Format(@"update wcs_config_device set FLAG = 'N' where DEVICE = '{0}'", device);
+                String sqldelete = String.Format(@"update wcs_config_device set FLAG = '{1}' where DEVICE = '{0}'", device, DeviceFlag.空闲);
                 DataControl._mMySql.ExcuteSql(sqldelete);
 
                 Notice.Show("生效成功！", "成功", 3, MessageBoxIcon.Success);

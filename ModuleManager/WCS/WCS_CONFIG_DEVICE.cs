@@ -74,4 +74,11 @@ namespace ModuleManager.WCS
         public const string 固定辊台 = "FRT";
     }
 
+    public class DeviceFlag
+    {
+        public const string 失效 = "N";
+        public const string 空闲 = "Y";
+        public const string 占用 = "U";  // 已使用其中一个辊台
+        public const string 锁定 = "L";
+    }
 }
