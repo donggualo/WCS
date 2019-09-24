@@ -104,7 +104,6 @@ namespace TaskManager
                 DataControl._mTaskTools.UpdateItem(_ITEM.ID, _ITEM.WCS_NO, _ITEM.ITEM_ID, ItemColumnName.作业状态, ItemStatus.完成任务);
                 // 任务完成
                 _isSuc = true;
-                DataControl._mSocket.SwithRefresh(_ITEM.DEVICE, true);
             }
         }
         /// <summary>
@@ -171,7 +170,6 @@ namespace TaskManager
                         {
                             throw new Exception(result);
                         }
-                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
                         // LOG
                         log.LOG(String.Format(@"【SendOrder】{0}：WMS任务ID[ {1} ]，AGV任务ID[ {2} ]，设备号[ {3} ], 指令[ {4} ].",
                         ITEM.ITEM_ID, ITEM.WCS_NO, ITEM.ID, ITEM.DEVICE, DataControl._mStools.BytetToString(Order)));

@@ -47,7 +47,7 @@ namespace TaskManager.Functions
                 // 清空设备
                 DataControl._mSocket.Close();
                 // 获取设备设定档资讯
-                String sql = "select * from wcs_config_device where FLAG <> 'N' order by CREATION_TIME";
+                String sql = "select * from wcs_config_device order by CREATION_TIME";
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {

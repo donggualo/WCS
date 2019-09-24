@@ -160,7 +160,6 @@ namespace WindowManager
                     throw new Exception(result);
                 }
                 Notice.Show("定位任务 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
-                DataControl._mSocket.SwithRefresh(dev, false);
             }
             catch (Exception ex)
             {
@@ -228,7 +227,6 @@ namespace WindowManager
                     throw new Exception(result);
                 }
                 Notice.Show("启动辊台 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
-                DataControl._mSocket.SwithRefresh(dev, false);
             }
             catch (Exception ex)
             {
@@ -263,7 +261,6 @@ namespace WindowManager
                     throw new Exception(result);
                 }
                 Notice.Show("停止辊台 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
-                DataControl._mSocket.SwithRefresh(dev, true);
             }
             catch (Exception ex)
             {
@@ -298,7 +295,6 @@ namespace WindowManager
                     throw new Exception(result);
                 }
                 Notice.Show("终止任务 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
-                DataControl._mSocket.SwithRefresh(dev, true);
             }
             catch (Exception ex)
             {
