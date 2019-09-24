@@ -17,6 +17,7 @@ namespace SockManager
         internal string Sdata;//字符串数据
         internal DateTime UpDateTime;
         internal bool IsAlive;
+        internal bool DoRefresh = true;//
 
         private string IP;//服务端IP
         private int Port;//服务端端口
@@ -50,6 +51,7 @@ namespace SockManager
         public void Refresh()
         {
             if (!IsConnect()) return;
+            if (!DoRefresh) return;
             Send(RefreshByte);
         }
 

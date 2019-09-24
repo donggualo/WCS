@@ -55,7 +55,7 @@ namespace SockManager
         {
             while (runRefresh)
             {
-                Thread.Sleep(800);
+                Thread.Sleep(5000);
                 foreach (var client in Clients)
                 {
                     client.Refresh();
@@ -216,6 +216,15 @@ namespace SockManager
             else result = "客户端未连接";
             return false;
         }
+
+        public void SwithRefresh(string name,bool onoff)
+        {
+            SocketClient client = Clients.Find(c => { return name.Equals(c.Name); });
+            if (client != null && client.IsConnect())
+            {
+                client.DoRefresh = onoff;
+            }
+         }
 
         /// <summary>
         /// 获得添加校验码后的结果
