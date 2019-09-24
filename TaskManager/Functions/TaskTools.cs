@@ -951,7 +951,7 @@ namespace TaskManager.Functions
                 {
                     // 有则更新
                     wcs_no = dt.Rows[0]["WCS_NO"].ToString();
-                    sql = String.Format(@"update wcs_command_master set UPDATE_TIME = NOW(), STEP = '{0}', TASK_UID_2 = '{1}' where WCS_NO = '{2}'", CommandStep.请求执行, task_uid, wcs_no);
+                    sql = String.Format(@"update wcs_command_master set UPDATE_TIME = NOW(), TASK_UID_2 = '{0}' where WCS_NO = '{1}'", task_uid, wcs_no);
                     // 锁定设备
                     DataControl._mTaskTools.DeviceLock(wcs_no, frt);
                 }

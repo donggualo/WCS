@@ -207,8 +207,10 @@ namespace TaskManager
                             if (agv.UPDATE_TIME == null)
                             {
                                 // 获取 WMS 任务目标点
-                                String sqlloc = String.Format(@"select distinct DEVICE from wcs_config_device where FLAG in('{1}','{2}') and TYPE = '{3}' and AREA in (
-                                    select W_D_LOC from wcs_task_info where TASK_UID = '{0}') order by FLAG,CREATION_TIME", agv.TASK_UID, DeviceFlag.占用, DeviceFlag.空闲, DeviceType.固定辊台);
+                                String sqlloc = String.Format(@"select distinct DEVICE from wcs_config_device where FLAG in('{1}','{2}') and TYPE = '{3}' 
+                                                                   and AREA in (select W_D_LOC from wcs_task_info where TASK_UID = '{0}')
+	                                                               and DEVICE in (select distinct DROPSTATION From wcs_agv_info where MAGIC <> {4} group by DROPSTATION HAVING count(DROPSTATION) < {5})
+                                                                 order by FLAG,CREATION_TIME", agv.TASK_UID, DeviceFlag.占用, DeviceFlag.空闲, DeviceType.固定辊台, AGVMagic.任务完成, 3);//最多三辆车
                                 DataTable dtloc = DataControl._mMySql.SelectAll(sqlloc);
                                 if (DataControl._mStools.IsNoData(dtloc))
                                 {

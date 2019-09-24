@@ -14,6 +14,51 @@ namespace TaskManager
     /// </summary>
     public class TaskLogic
     {
+        #region 入库呼叫WMS分配库位
+
+        /// <summary>
+        /// 执行单托入库库位/双托入库库位分配
+        /// </summary>
+        public void Run_InCallWMS()
+        {
+            try
+            {
+                // 获取单托任务清单
+                String sql1 = String.Format(@"select * from wcs_command_v where TASK_UID_1 is not null and TASK_UID_2 is null and TASK_TYPE = '{0}' and STEP = '{1}' 
+                    and TRUNCATE((UNIX_TIMESTAMP(NOW())-UNIX_TIMESTAMP(CREATION_TIME))/60,0) >= {2}", TaskType.入库, CommandStep.生成单号, DataControl._mStools.GetValueByKey("InTimeMax")); // 等待时间
+                DataTable dtcommand1 = DataControl._mMySql.SelectAll(sql1);
+                if (DataControl._mStools.IsNoData(dtcommand1))
+                {
+                    return;
+                }
+                List<WCS_COMMAND_V> comList1 = dtcommand1.ToDataList<WCS_COMMAND_V>();
+                // 遍历执行单托任务请求WMS分配库位
+                foreach (WCS_COMMAND_V com1 in comList1)
+                {
+                }
+
+                // 获取双托任务清单
+                String sql2 = String.Format(@"select * from wcs_command_v where TASK_UID_1 is not null and TASK_UID_2 is not null and  TASK_TYPE = '{0}' and STEP = '{1}' order by CREATION_TIME",
+                    TaskType.入库, CommandStep.生成单号);
+                DataTable dtcommand2 = DataControl._mMySql.SelectAll(sql2);
+                if (DataControl._mStools.IsNoData(dtcommand2))
+                {
+                    return;
+                }
+                List<WCS_COMMAND_V> comList2 = dtcommand2.ToDataList<WCS_COMMAND_V>();
+                // 遍历执行双托任务请求WMS分配库位
+                foreach (WCS_COMMAND_V com2 in comList2)
+                {
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        #endregion
+
         #region 初步入库任务
 
         /// <summary>
