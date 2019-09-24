@@ -117,7 +117,8 @@ namespace TaskManager.Devices
         /// <returns></returns>
         public byte ABCNum()
         {
-            return GetSingleByte(2);
+            //return GetSingleByte(2);
+            return 0x01;
         }
 
         /// <summary>
@@ -266,6 +267,16 @@ namespace TaskManager.Devices
         }
 
         #region 行车设备命令
+
+        /// <summary>
+        /// 行车—获取当前数据
+        /// </summary>
+        /// <returns></returns>
+        public static byte[] _GetData()
+        {
+            //                     字头   设备号 控制码      X轴坐标        Y轴坐标     Z轴坐标     结束符
+            return new byte[] { 0x90, 0x02, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFE };
+        }
 
         /// <summary>
         /// 行车—任务控制

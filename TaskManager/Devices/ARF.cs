@@ -224,7 +224,8 @@ namespace TaskManager.Devices
         /// <returns></returns>
         public byte ARFNum()
         {
-            return GetSingleByte(2);
+            //return GetSingleByte(2);
+            return 0x01;
         }
 
         /// <summary>
@@ -356,6 +357,16 @@ namespace TaskManager.Devices
         #endregion
 
         #region 摆渡车设备命令
+
+        /// <summary>
+        /// 摆渡车—获取当前数据
+        /// </summary>
+        /// <returns></returns>
+        public static byte[] _GetData()
+        {
+            //                     字头   设备号 控制码  值1   值2   值3   值4    结束符
+            return new byte[] { 0x94, 0x02, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFE };
+        }
 
         /// <summary>
         /// 摆渡车—定位任务

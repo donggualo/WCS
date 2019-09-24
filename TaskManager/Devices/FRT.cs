@@ -203,7 +203,8 @@ namespace TaskManager.Devices
         /// <returns></returns>
         public byte FRTNum()
         {
-            return GetSingleByte(2);
+            //return GetSingleByte(2);
+            return 0x01;
         }
 
         /// <summary>
@@ -326,6 +327,16 @@ namespace TaskManager.Devices
         #endregion
 
         #region 固定辊台设备指令
+
+        /// <summary>
+        /// 固定辊台—获取当前数据
+        /// </summary>
+        /// <returns></returns>
+        public static byte[] _GetData()
+        {
+            //                     字头   设备号 控制码  值1   值2   值3   值4    结束符
+            return new byte[] { 0x92, 0x02, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFE };
+        }
 
         /// <summary>
         /// 固定辊台—辊台控制
