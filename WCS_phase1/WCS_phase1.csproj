@@ -140,6 +140,10 @@
       <Project>{9E139539-C272-488A-BFCF-CADDF458DF9D}</Project>
       <Name>MHttpServer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ModuleManager\ModuleManager.csproj">
+      <Project>{36A19B28-36C5-42A8-9360-A5FFF1891DC7}</Project>
+      <Name>ModuleManager</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NdcManager\NdcManager.csproj">
       <Project>{D7F23C4B-2E0E-4A97-A0DA-7AF778E26A60}</Project>
       <Name>NdcManager</Name>

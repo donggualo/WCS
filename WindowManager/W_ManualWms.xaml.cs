@@ -12,13 +12,14 @@ using WcsHttpManager;
 using System.Windows.Threading;
 using Panuon.UI.Silver;
 using PubResourceManager;
+using ModuleManager;
 
 namespace WindowManager
 {
     /// <summary>
     /// W_ManualWms.xaml 的交互逻辑
     /// </summary>
-    public partial class W_ManualWms : UserControl
+    public partial class W_ManualWms : UserControl, ITabWin
     {
         public W_ManualWms()
         {
@@ -32,7 +33,13 @@ namespace WindowManager
             GetInfo();
             //OnTimeToLoadData();
         }
+        /// <summary>
+        /// 关闭窗口的时候执行释放的动作
+        /// </summary>
+        public void Close()
+        {
 
+        }
         // 限制仅输入数字
         private void InputNum(object sender, TextCompositionEventArgs e)
         {

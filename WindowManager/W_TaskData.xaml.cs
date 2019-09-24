@@ -1,4 +1,5 @@
-﻿using ModuleManager.WCS;
+﻿using ModuleManager;
+using ModuleManager.WCS;
 using System;
 using System.Data;
 using System.Windows;
@@ -17,14 +18,20 @@ namespace WindowManager
     /// <summary>
     /// W_WcsTaskData.xaml 的交互逻辑
     /// </summary>
-    public partial class W_TaskData : UserControl
+    public partial class W_TaskData : UserControl, ITabWin
     {
         public W_TaskData()
         {
             InitializeComponent();
             RefreshData();
         }
+        /// <summary>
+        /// 关闭窗口的时候执行释放的动作
+        /// </summary>
+        public void Close()
+        {
 
+        }
         // 设置时间格式
         private void DataGrid_TimeFormat(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {

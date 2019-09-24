@@ -7,20 +7,27 @@ using System.Windows.Controls;
 using TaskManager;
 using ModuleManager.WCS;
 using PubResourceManager;
+using ModuleManager;
 
 namespace WindowManager
 {
     /// <summary>
     /// W_DevSetting.xaml 的交互逻辑
     /// </summary>
-    public partial class W_SettingDevData : UserControl
+    public partial class W_SettingDevData : UserControl, ITabWin
     {
         public W_SettingDevData()
         {
             InitializeComponent();
             AddCombBoxForDEV();
         }
+        /// <summary>
+        /// 关闭窗口的时候执行释放的动作
+        /// </summary>
+        public void Close()
+        {
 
+        }
         // 设置时间格式
         private void DataGrid_TimeFormat(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {

@@ -5,6 +5,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using ModuleManager;
 using ModuleManager.WCS;
 using Panuon.UI.Silver;
 using PubResourceManager;
@@ -17,10 +18,10 @@ namespace WindowManager
     /// <summary>
     /// W_RGV.xaml 的交互逻辑
     /// </summary>
-    public partial class W_RGV : UserControl
+    public partial class W_RGV : UserControl, ITabWin
     {
         private RgvDataGrid grid;
-        
+        private bool runRefresh = true;
 
         public W_RGV()
         {
@@ -37,7 +38,13 @@ namespace WindowManager
                 IsBackground = true
             }.Start();
         }
-
+        /// <summary>
+        /// 关闭窗口的时候执行释放的动作
+        /// </summary>
+        public void Close()
+        {
+            runRefresh = false;
+        }
         /// <summary>
         /// 限制仅输入数字
         /// </summary>
@@ -98,7 +105,7 @@ namespace WindowManager
         {
             try
             {
-                while (true)
+                while (runRefresh)
                 {
                     Thread.Sleep(1000);
 

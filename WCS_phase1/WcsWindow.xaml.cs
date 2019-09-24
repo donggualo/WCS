@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ModuleManager;
 using Panuon.UI.Silver;
 using PubResourceManager;
 using TaskManager;
@@ -116,7 +117,18 @@ namespace WCS_phase1
 
         private void WcsTabControl_Removed(object sender, RoutedPropertyChangedEventArgs<TabItem> e)
         {
-            wcsTabControl.SelectedIndex = 0;//wcsTabControl.Items.Count - 1;
+            try
+            {
+                wcsTabControl.SelectedIndex = wcsTabControl.Items.Count - 2;
+                TabItem t = e.NewValue as TabItem;
+                ITabWin _a = t.Content as ITabWin;
+                _a.Close();
+                wcsTabControl.Items.Remove(e.NewValue);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+            }
         }
 
         private void WindowX_Closing(object sender, System.ComponentModel.CancelEventArgs e)

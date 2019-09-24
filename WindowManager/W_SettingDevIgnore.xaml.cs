@@ -1,4 +1,5 @@
-﻿using PubResourceManager;
+﻿using ModuleManager;
+using PubResourceManager;
 using System.Windows;
 using System.Windows.Controls;
 using TaskManager;
@@ -8,14 +9,20 @@ namespace WindowManager
     /// <summary>
     /// W_SettingDevIgnore.xaml 的交互逻辑
     /// </summary>
-    public partial class W_SettingDevIgnore : UserControl
+    public partial class W_SettingDevIgnore : UserControl, ITabWin
     {
         public W_SettingDevIgnore()
         {
             InitializeComponent();
             Refresh();
         }
+        /// <summary>
+        /// 关闭窗口的时候执行释放的动作
+        /// </summary>
+        public void Close()
+        {
 
+        }
         /// <summary>
         /// 刷新
         /// </summary>

@@ -1,4 +1,5 @@
-﻿using ModuleManager.WCS;
+﻿using ModuleManager;
+using ModuleManager.WCS;
 using Panuon.UI.Silver;
 using PubResourceManager;
 using System;
@@ -15,10 +16,10 @@ namespace WindowManager
     /// <summary>
     /// W_FRT.xaml 的交互逻辑
     /// </summary>
-    public partial class W_FRT : UserControl
+    public partial class W_FRT : UserControl, ITabWin
     {
         private FrtDataGrid grid;
-
+        private bool runRefresh = true;
 
         public W_FRT()
         {
@@ -35,7 +36,13 @@ namespace WindowManager
                 IsBackground = true
             }.Start();
         }
-
+        /// <summary>
+        /// 关闭窗口的时候执行释放的动作
+        /// </summary>
+        public void Close()
+        {
+            runRefresh = false;
+        }
         private void GetFRTNameList()
         {
             List<WCS_CONFIG_DEVICE> list = CommonSQL.GetDeviceNameList(DataControl._mMySql, DeviceType.固定辊台);
@@ -71,7 +78,7 @@ namespace WindowManager
         {
             try
             {
-                while (true)
+                while (runRefresh)
                 {
                     Thread.Sleep(1000);
 

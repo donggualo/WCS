@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ModuleManager;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -19,14 +20,20 @@ namespace WindowManager
     /// <summary>
     /// W_WcsNdcSite.xaml 的交互逻辑
     /// </summary>
-    public partial class W_WcsNdcSite : UserControl
+    public partial class W_WcsNdcSite : UserControl, ITabWin
     {
         public W_WcsNdcSite()
         {
             InitializeComponent();
             RefreshSite();
         }
+        /// <summary>
+        /// 关闭窗口的时候执行释放的动作
+        /// </summary>
+        public void Close()
+        {
 
+        }
 
         private void SiteDG_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
