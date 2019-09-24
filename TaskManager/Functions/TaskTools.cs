@@ -57,7 +57,12 @@ namespace TaskManager.Functions
                 // 遍历加入网络设备
                 foreach (WCS_CONFIG_DEVICE dev in devList)
                 {
-                    if (!DataControl._mSocket.AddClient(dev.DEVICE, dev.IP, dev.PORT, out string result))
+                    byte[] refreshB = new byte[4];
+                    refreshB[0] = 0x00;
+                    refreshB[1] = 0x01;
+                    refreshB[2] = 0x02;
+                    refreshB[3] = 0x03;
+                    if (!DataControl._mSocket.AddClient(dev.DEVICE, dev.IP, dev.PORT,refreshB, out string result))
                     {
                         throw new Exception(result);
                     }

@@ -119,7 +119,7 @@ namespace TaskManager
                 }
 
 
-                if (_mSocket != null) _mSocket.Close();
+                if (_mSocket != null) _mSocket.Exiting();
                 if (_mHttpServer != null) _mHttpServer.Close();
                 if (_mNDCControl != null) _mNDCControl.Close();
 

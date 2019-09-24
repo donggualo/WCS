@@ -13,6 +13,7 @@ namespace SockManager
     class SocketClient
     {
         internal byte[] Bdata;//字节数据
+        internal byte[] RefreshByte;//用于查询的数据
         internal string Sdata;//字符串数据
         internal DateTime UpDateTime;
         internal bool IsAlive;
@@ -31,14 +32,25 @@ namespace SockManager
         /// <param name="ip"></param>
         /// <param name="port"></param>
         /// <param name="name"></param>
-        public SocketClient(string ip, int port, string name)
+        public SocketClient(string ip, int port, string name,byte[] refreshB)
         {
             IP = ip;
             Port = port;
             Name = name;
+            RefreshByte = refreshB;
+
             ConnectToService();
 
             log = new Log(name);
+        }
+
+        /// <summary>
+        /// 发送设备查询信息
+        /// </summary>
+        public void Refresh()
+        {
+            if (!IsConnect()) return;
+            Send(RefreshByte);
         }
 
         /// <summary>

@@ -7,6 +7,7 @@
             xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
             mc:Ignorable="d"
             Title="NavbarWindow"
+            Icon="/WCS_phase1;component/Resources/wcs.png"
             WindowStartupLocation="CenterScreen"
             MinHeight="700"
             Height="700"

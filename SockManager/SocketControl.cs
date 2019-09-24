@@ -19,6 +19,7 @@ namespace SockManager
     public class SocketControl
     {
         private readonly object _obj = new object();
+        private bool runRefresh = true;
         
         /// <summary>
         /// 设备列表
@@ -44,8 +45,22 @@ namespace SockManager
         public SocketControl()
         {
             //测试
-            //AddClient("AGV01", "127.0.0.1", 2000);
+            new Thread(RefreshClient)
+            {
+                IsBackground = true
+            }.Start();
+        }
 
+        private void RefreshClient()
+        {
+            while (runRefresh)
+            {
+                Thread.Sleep(800);
+                foreach (var client in Clients)
+                {
+                    client.Refresh();
+                }
+            }
         }
 
         /// <summary>
@@ -106,7 +121,7 @@ namespace SockManager
         /// <param name="ip"></param>
         /// <param name="port"></param>
         /// <returns>bool</returns>
-        public bool AddClient(string name, string ip, int port,out string result)
+        public bool AddClient(string name, string ip, int port, byte[] refreshB, out string result)
         {
             if (!IsIP(ip))
             {
@@ -128,7 +143,7 @@ namespace SockManager
 
             if (Clients.Find(c => { return c.Name.Equals(name); }) == null)
             {
-                Clients.Add(new SocketClient(ip, port, name));
+                Clients.Add(new SocketClient(ip, port, name,GetCRCByte(refreshB)));
                 result = "";
                 return true;
             }
@@ -137,6 +152,11 @@ namespace SockManager
             return false;
         }
 
+        public void Exiting()
+        {
+            runRefresh = false;
+            Close();
+        }
         /// <summary>
         /// 关闭设备连接
         /// </summary>
@@ -184,16 +204,30 @@ namespace SockManager
             SocketClient clinet = Clients.Find(c => { return name.Equals(c.Name); });
             if (clinet != null && clinet.IsConnect())
             {
-                byte[] b = new byte[msg.Length + 2];
-                msg.CopyTo(b, 0);
-                CRCMethod.ToModbusCRC16Byte(msg).CopyTo(b, msg.Length);
-                clinet.Send(b);
+                //byte[] b = new byte[msg.Length + 2];
+                //msg.CopyTo(b, 0);
+                //CRCMethod.ToModbusCRC16Byte(msg).CopyTo(b, msg.Length);
+                //clinet.Send(b);
+                clinet.Send(GetCRCByte(msg));
                 result = "";
                 return true;
             }
             if (clinet == null) result = "未找到该客户端";
             else result = "客户端未连接";
             return false;
+        }
+
+        /// <summary>
+        /// 获得添加校验码后的结果
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <returns></returns>
+        public byte[] GetCRCByte(byte[] msg)
+        {
+            byte[] b = new byte[msg.Length + 2];
+            msg.CopyTo(b, 0);
+            CRCMethod.ToModbusCRC16Byte(msg).CopyTo(b, msg.Length);
+            return b;
         }
 
 

@@ -204,7 +204,7 @@ namespace WindowManager
                 }
                 else
                 {
-                    if (new ForWMSControl().ScanCodeTask(frtP, code))
+                    if (new ForWMSControl().ScanCodeTask_P(frtP, code))
                     {
                         Notice.Show("完成！", "成功", 3, MessageBoxIcon.Success);
                     }
