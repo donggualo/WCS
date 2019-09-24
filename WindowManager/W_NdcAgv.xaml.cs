@@ -1,4 +1,5 @@
-﻿using ModuleManager.NDC;
+﻿using ModuleManager;
+using ModuleManager.NDC;
 using NdcManager.DataGrid;
 using NdcManager.DataGrid.Models;
 using Panuon.UI.Silver;
@@ -14,7 +15,7 @@ namespace WindowManager
     /// <summary>
     /// W_NdcAgv.xaml 的交互逻辑
     /// </summary>
-    public partial class W_NdcAgv : UserControl
+    public partial class W_NdcAgv : UserControl, ITabWin
     {
 
         #region Property
@@ -34,7 +35,15 @@ namespace WindowManager
             DataControl._mNDCControl.TaskGridDelete += _mNDCControl_TaskListDelete;
             DataControl._mNDCControl.NoticeRedirect += _mNDCControl_NoticeRedirect;
         }
-
+        /// <summary>
+        /// 关闭窗口的时候执行释放的动作
+        /// </summary>
+        public void Close()
+        {
+            DataControl._mNDCControl.TaskGridUpdate -= _mNDCControl_TaskListUpdate;
+            DataControl._mNDCControl.TaskGridDelete -= _mNDCControl_TaskListDelete;
+            DataControl._mNDCControl.NoticeRedirect -= _mNDCControl_NoticeRedirect;
+        }
         private void _mNDCControl_NoticeRedirect(NDCItem model)
         {
             try
@@ -179,13 +188,6 @@ namespace WindowManager
             {
 
             }
-        }
-
-        public void OnWindowClosing()
-        {
-            DataControl._mNDCControl.TaskGridUpdate -= _mNDCControl_TaskListUpdate;
-            DataControl._mNDCControl.TaskGridDelete -= _mNDCControl_TaskListDelete;
-            DataControl._mNDCControl.NoticeRedirect -= _mNDCControl_NoticeRedirect;
         }
     }
 
