@@ -60,7 +60,7 @@ namespace PubResourceManager
         {
             try
             {
-                string sql = string.Format(@"select count(*) COUNT from {0} where 1 = 1 {1}", table, string.IsNullOrEmpty(conditions.Trim()) ? "" : "and" + conditions);
+                string sql = string.Format(@"select count(*) COUNT from {0} where 1 = 1 {1}", table, string.IsNullOrEmpty(conditions.Trim()) ? "" : "and " + conditions);
                 DataTable dt = SelectAll(sql);
                 int count = Convert.ToInt32(dt.Rows[0]["COUNT"].ToString());
                 return count;

@@ -133,6 +133,11 @@ namespace WindowManager
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(wcsNO))
+                {
+                    return;
+                }
+
                 // 清空数据
                 dt = null;
                 DGitem.ItemsSource = null;
@@ -225,6 +230,7 @@ namespace WindowManager
                 DataControl._mTaskTools.DeviceUnLock(wcs);
 
                 RefreshData();
+                GetDGitemInfo();
 
                 Notice.Show("结束成功！", "完成", 3, MessageBoxIcon.Success);
             }
@@ -250,6 +256,9 @@ namespace WindowManager
                 _TASK.Run_LinkDevice();
                 _TASK.Run_OutFollow();
 
+                RefreshData();
+                GetDGitemInfo();
+
                 Notice.Show("执行完成！", "完成", 3, MessageBoxIcon.Success);
             }
             catch (Exception ex)
@@ -267,20 +276,22 @@ namespace WindowManager
         {
             try
             {
-                Notice.Show("开始分配！", "提示", 3, MessageBoxIcon.Info);
-
                 // 获取清单号
                 if (DGcommand.SelectedItem == null)
                 {
+                    Notice.Show("请选择需要分配设备的清单！", "提示", 3, MessageBoxIcon.Info);
                     return;
                 }
                 string wcs = (DGcommand.SelectedItem as DataRowView).Row[0].ToString();
+
+                Notice.Show("开始分配！", "提示", 3, MessageBoxIcon.Info);
 
                 // 获取待分配设备任务
                 String sql = String.Format(@"select * from WCS_TASK_ITEM where DEVICE is null and STATUS = '{1}' and WCS_NO = '{0}' order by CREATION_TIME", wcs, ItemStatus.不可执行);
                 DataTable dtitem = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dtitem))
                 {
+                    Notice.Show("无可分配任务！", "错误", 3, MessageBoxIcon.Error);
                     return;
                 }
                 List<WCS_TASK_ITEM> itemList = dtitem.ToDataList<WCS_TASK_ITEM>();
@@ -289,6 +300,9 @@ namespace WindowManager
                 {
                     _TASK.ReadDevice(item);
                 }
+
+                RefreshData();
+                GetDGitemInfo();
 
                 Notice.Show("分配完成！", "完成", 3, MessageBoxIcon.Success);
             }
@@ -307,20 +321,22 @@ namespace WindowManager
         {
             try
             {
-                Notice.Show("开始生成！", "提示", 3, MessageBoxIcon.Info);
-
                 // 获取清单号
                 if (DGcommand.SelectedItem == null)
                 {
+                    Notice.Show("请选择需要生成指令的清单！", "提示", 3, MessageBoxIcon.Info);
                     return;
                 }
                 string wcs = (DGcommand.SelectedItem as DataRowView).Row[0].ToString();
+
+                Notice.Show("开始生成！", "提示", 3, MessageBoxIcon.Info);
 
                 // 获取 请求执行 的任务对应的 ITEM 资讯
                 String sql = String.Format(@"select * from WCS_TASK_ITEM where STATUS in ('{1}','{2}') and WCS_NO = '{0}' order by CREATION_TIME", wcs, ItemStatus.请求执行, ItemStatus.任务中);
                 DataTable dtitem = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dtitem))
                 {
+                    Notice.Show("无可生成指令的任务！", "错误", 3, MessageBoxIcon.Error);
                     return;
                 }
                 List<WCS_TASK_ITEM> itemList = dtitem.ToDataList<WCS_TASK_ITEM>();
@@ -329,6 +345,9 @@ namespace WindowManager
                 {
                     _TASK.CreateAndAddTaskList(item);
                 }
+
+                RefreshData();
+                GetDGitemInfo();
 
                 Notice.Show("生成完成！", "完成", 3, MessageBoxIcon.Success);
             }
