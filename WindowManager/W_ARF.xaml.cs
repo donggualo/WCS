@@ -146,18 +146,21 @@ namespace WindowManager
                 ARF arf = new ARF(dev);
                 if (arf.ActionStatus() == ARF.Run)
                 {
-                    throw new Exception("设备运行中！");
+                    Notice.Show("指令发送失败：设备运行中！", "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
                 if (arf.DeviceStatus() == ARF.DeviceError)
                 {
-                    throw new Exception("设备故障！");
+                    Notice.Show("指令发送失败：设备故障！", "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
 
                 int loc = Convert.ToInt32(location.Text.Trim());
                 byte[] order = ARF._Position(arf.ARFNum(), (byte)loc);
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
-                    throw new Exception(result);
+                    Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
                 Notice.Show("定位任务 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
                 DataControl._mSocket.SwithRefresh(dev, false);
@@ -186,11 +189,13 @@ namespace WindowManager
                 ARF arf = new ARF(dev);
                 if (arf.ActionStatus() == ARF.Run)
                 {
-                    throw new Exception("设备运行中！");
+                    Notice.Show("指令发送失败：设备运行中！", "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
                 if (arf.DeviceStatus() == ARF.DeviceError)
                 {
-                    throw new Exception("设备故障！");
+                    Notice.Show("指令发送失败：设备故障！", "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
 
                 // 方式
@@ -225,7 +230,8 @@ namespace WindowManager
                 byte[] order = ARF._RollerControl(arf.ARFNum(), site1, site2, site3, site4);
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
-                    throw new Exception(result);
+                    Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
                 Notice.Show("启动辊台 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
                 DataControl._mSocket.SwithRefresh(dev, false);
@@ -254,13 +260,15 @@ namespace WindowManager
                 ARF arf = new ARF(dev);
                 if (arf.DeviceStatus() == ARF.DeviceError)
                 {
-                    throw new Exception("设备故障！");
+                    Notice.Show("指令发送失败：设备故障！", "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
 
                 byte[] order = ARF._StopRoller(arf.ARFNum());
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
-                    throw new Exception(result);
+                    Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
                 Notice.Show("停止辊台 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
                 DataControl._mSocket.SwithRefresh(dev, true);
@@ -289,13 +297,15 @@ namespace WindowManager
                 ARF arf = new ARF(dev);
                 if (arf.DeviceStatus() == ARF.DeviceError)
                 {
-                    throw new Exception("设备故障！");
+                    Notice.Show("指令发送失败：设备故障！", "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
 
                 byte[] order = ARF._StopTask(arf.ARFNum());
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
-                    throw new Exception(result);
+                    Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
                 Notice.Show("终止任务 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
                 DataControl._mSocket.SwithRefresh(dev, true);

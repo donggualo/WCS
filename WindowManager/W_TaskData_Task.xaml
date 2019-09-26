@@ -1,0 +1,45 @@
+﻿<Window x:Class="WindowManager.W_TaskData_Task"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WindowManager"
+        mc:Ignorable="d"
+        Title="细项任务" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="20*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="158*"/>
+            <ColumnDefinition Width="517*"/>
+            <ColumnDefinition Width="117*"/>
+        </Grid.ColumnDefinitions>
+        <Label Content="清单号：" Margin="10"/>
+        <TextBox Name="TBwcsno" Margin="10" TextWrapping="Wrap" Grid.Column="1" Grid.ColumnSpan="2"/>
+
+        <Label Content="来源：" Margin="10" Grid.Row="1"/>
+        <TextBox Name="TBlocfrom" Margin="10" TextWrapping="Wrap" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2"/>
+
+        <Label Content="目的：" Margin="10" Grid.Row="2"/>
+        <TextBox Name="TBlocto" Margin="10" TextWrapping="Wrap" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2"/>
+
+        <Label Content="作业类型：" Margin="10" Grid.Row="3"/>
+        <ComboBox Name="CBitemid" Margin="10" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="2"/>
+
+        <Label Content="设备号：" Margin="10" Grid.Row="4"/>
+        <ComboBox Name="CBdevice" Margin="10" Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2"/>
+
+        <Label Content="作业状态：" Margin="10" Grid.Row="5"/>
+        <ComboBox Name="CBstatus" Margin="10" Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="2"/>
+
+        <Button Name="BTNuse" Content="确认" Grid.Column="2" Margin="20,60,10,10" Grid.Row="6" Click="Finish_Click"/>
+
+    </Grid>
+</Window>

@@ -150,11 +150,13 @@ namespace WindowManager
                 ABC abc = new ABC(dev);
                 if (abc.ActionStatus() == ABC.Run)
                 {
-                    throw new Exception("设备运行中！");
+                    Notice.Show("指令发送失败：设备运行中！", "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
-                if (abc.DeviceStatus() == FRT.DeviceError)
+                if (abc.DeviceStatus() == ABC.DeviceError)
                 {
-                    throw new Exception("设备故障！");
+                    Notice.Show("指令发送失败：设备故障！", "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
 
                 int x = Convert.ToInt32(xlocation.Text.Trim());
@@ -163,9 +165,11 @@ namespace WindowManager
                 byte[] order = ABC._TaskControl(ABC.TaskLocate, abc.ABCNum(), DataControl._mStools.IntToBytes(x), DataControl._mStools.IntToBytes(y), DataControl._mStools.IntToBytes(z));
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
-                    throw new Exception(result);
+                    Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
                 Notice.Show("定位任务 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
+                DataControl._mSocket.SwithRefresh(dev, false);
             }
             catch (Exception ex)
             {
@@ -197,11 +201,13 @@ namespace WindowManager
                 ABC abc = new ABC(dev);
                 if (abc.ActionStatus() == ABC.Run)
                 {
-                    throw new Exception("设备运行中！");
+                    Notice.Show("指令发送失败：设备运行中！", "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
-                if (abc.DeviceStatus() == FRT.DeviceError)
+                if (abc.DeviceStatus() == ABC.DeviceError)
                 {
-                    throw new Exception("设备故障！");
+                    Notice.Show("指令发送失败：设备故障！", "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
 
                 int x = Convert.ToInt32(xlocation.Text.Trim());
@@ -210,9 +216,11 @@ namespace WindowManager
                 byte[] order = ABC._TaskControl(ABC.TaskTake, abc.ABCNum(), DataControl._mStools.IntToBytes(x), DataControl._mStools.IntToBytes(y), DataControl._mStools.IntToBytes(z));
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
-                    throw new Exception(result);
+                    Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
                 Notice.Show("取货任务 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
+                DataControl._mSocket.SwithRefresh(dev, false);
             }
             catch (Exception ex)
             {
@@ -244,11 +252,13 @@ namespace WindowManager
                 ABC abc = new ABC(dev);
                 if (abc.ActionStatus() == ABC.Run)
                 {
-                    throw new Exception("设备运行中！");
+                    Notice.Show("指令发送失败：设备运行中！", "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
-                if (abc.DeviceStatus() == FRT.DeviceError)
+                if (abc.DeviceStatus() == ABC.DeviceError)
                 {
-                    throw new Exception("设备故障！");
+                    Notice.Show("指令发送失败：设备故障！", "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
 
                 int x = Convert.ToInt32(xlocation.Text.Trim());
@@ -257,9 +267,11 @@ namespace WindowManager
                 byte[] order = ABC._TaskControl(ABC.TaskRelease, abc.ABCNum(), DataControl._mStools.IntToBytes(x), DataControl._mStools.IntToBytes(y), DataControl._mStools.IntToBytes(z));
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
-                    throw new Exception(result);
+                    Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
                 Notice.Show("放货任务 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
+                DataControl._mSocket.SwithRefresh(dev, false);
             }
             catch (Exception ex)
             {
@@ -293,17 +305,20 @@ namespace WindowManager
                 }
                 string dev = CBdev.Text;
                 ABC abc = new ABC(dev);
-                if (abc.DeviceStatus() == FRT.DeviceError)
+                if (abc.DeviceStatus() == ABC.DeviceError)
                 {
-                    throw new Exception("设备故障！");
+                    Notice.Show("指令发送失败：设备故障！", "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
 
                 byte[] order = ABC._StopTask(abc.ABCNum());
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
-                    throw new Exception(result);
+                    Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
                 Notice.Show("终止任务 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
+                DataControl._mSocket.SwithRefresh(dev, true);
             }
             catch (Exception ex)
             {

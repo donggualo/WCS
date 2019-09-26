@@ -79,18 +79,27 @@ namespace TaskManager
                 DataTable dt1 = DataControl._mMySql.SelectAll(sql1);
                 if (DataControl._mStools.IsNoData(dt1)) // 不满足第1次扫码条件
                 {
+                    string errmes;
                     // 获取Task资讯(重复扫码)
                     String sql2 = String.Format(@"select * from wcs_task_info where BARCODE = '{0}' and W_S_LOC = '{1}' and TASK_TYPE = '{2}'", code, area, TaskType.入库);
                     DataTable dt2 = DataControl._mMySql.SelectAll(sql2);
                     if (DataControl._mStools.IsNoData(dt2)) 
                     {
                         // 不存在Task
-                        throw new Exception(string.Format(@"固定辊台[{0}]承载货物编号[{1}]：不存在WMS入库任务ID！", frt, code));
+                        errmes = string.Format(@"固定辊台[{0}]承载货物编号[{1}]：不存在WMS入库任务ID！", frt, code);
+
+                        // LOG
+                        DataControl._mTaskTools.RecordTaskErrLog("ScanCodeTask_D()", "扫码任务(卸货区)[扫码位置,码数]", frt, code, errmes.ToString());
+                        return false;
                     }
                     else
                     {
                         // 存在Task
-                        throw new Exception(string.Format(@"固定辊台[{0}]承载货物编号[{1}]：重复货物码！", frt, code));
+                        errmes = string.Format(@"固定辊台[{0}]承载货物编号[{1}]：重复货物码！", frt, code);
+
+                        // LOG
+                        DataControl._mTaskTools.RecordTaskErrLog("ScanCodeTask_D()", "扫码任务(卸货区)[扫码位置,码数]", frt, code, errmes.ToString());
+                        return false;
                     }
                 }
                 else // 满足第1次扫码条件
@@ -179,7 +188,10 @@ namespace TaskManager
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {
-                    throw new Exception(string.Format(@"固定辊台[{0}]承载货物编号[{1}]：不存在WMS入库任务ID！", frt, code));
+                    string errmes = string.Format(@"固定辊台[{0}]承载货物编号[{1}]：不存在WMS入库任务ID！", frt, code);
+                    // LOG
+                    DataControl._mTaskTools.RecordTaskErrLog("ScanCodeTask()", "扫码任务-分配库位[扫码位置,码数]", frt, code, errmes.ToString());
+                    return false;
                 }
 
                 // 获取对应任务ID

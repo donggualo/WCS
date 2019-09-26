@@ -113,11 +113,13 @@ namespace WindowManager
                 FRT frt = new FRT(dev);
                 if (frt.ActionStatus() == FRT.Run)
                 {
-                    throw new Exception("设备运行中！");
+                    Notice.Show("指令发送失败：设备运行中！", "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
                 if (frt.DeviceStatus() == FRT.DeviceError)
                 {
-                    throw new Exception("设备故障！");
+                    Notice.Show("指令发送失败：设备故障！", "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
 
                 // 方式
@@ -152,7 +154,8 @@ namespace WindowManager
                 byte[] order = FRT._RollerControl(frt.FRTNum(), site1, site2, site3, site4);
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
-                    throw new Exception(result);
+                    Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
                 Notice.Show("启动辊台 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
                 DataControl._mSocket.SwithRefresh(dev, false);
@@ -181,13 +184,15 @@ namespace WindowManager
                 FRT frt = new FRT(dev);
                 if (frt.DeviceStatus() == FRT.DeviceError)
                 {
-                    throw new Exception("设备故障！");
+                    Notice.Show("指令发送失败：设备故障！", "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
 
                 byte[] order = FRT._StopRoller(frt.FRTNum());
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
-                    throw new Exception(result);
+                    Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
                 Notice.Show("停止辊台 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
                 DataControl._mSocket.SwithRefresh(dev, true);
@@ -216,13 +221,15 @@ namespace WindowManager
                 FRT frt = new FRT(dev);
                 if (frt.DeviceStatus() == FRT.DeviceError)
                 {
-                    throw new Exception("设备故障！");
+                    Notice.Show("指令发送失败：设备故障！", "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
 
                 byte[] order = FRT._StopTask(frt.FRTNum());
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
-                    throw new Exception(result);
+                    Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
                 Notice.Show("终止任务 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
                 DataControl._mSocket.SwithRefresh(dev, true);

@@ -195,7 +195,9 @@ namespace TaskManager
                                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                                 if (DataControl._mStools.IsNoData(dt))
                                 {
-                                    throw new Exception("无对应 WMS Task！");
+                                    // LOG
+                                    DataControl._mTaskTools.RecordTaskErrLog("CreatOrderTask()", "AGV辊台任务[AGV任务ID]", agv.ID.ToString(), "", "无对应 WMS Task！");
+                                    return;
                                 }
                                 // 更新AGV任务资讯-- WMS TASK ID
                                 agv.TASK_UID = dt.Rows[0]["TASK_UID"].ToString();
@@ -214,7 +216,9 @@ namespace TaskManager
                                 DataTable dtloc = DataControl._mMySql.SelectAll(sqlloc);
                                 if (DataControl._mStools.IsNoData(dtloc))
                                 {
-                                    throw new Exception("无对应 WMS Task 目标位置！");
+                                    // LOG
+                                    DataControl._mTaskTools.RecordTaskErrLog("CreatOrderTask()", "AGV辊台任务[AGV任务ID]", agv.ID.ToString(), "", "无对应 WMS Task 目标位置！");
+                                    return;
                                 }
                                 // 更新AGV任务资讯-- 卸货点
                                 agv.DROPSTATION = dtloc.Rows[0]["DEVICE"].ToString();
@@ -229,7 +233,9 @@ namespace TaskManager
                             // 发指令请求AGV启动辊台装货
                             if (!DataControl._mNDCControl.DoLoad(agv.ID, Convert.ToInt32(agv.AGV), out string result))
                             {
-                                throw new Exception(result);
+                                // LOG
+                                DataControl._mTaskTools.RecordTaskErrLog("CreatOrderTask()", "AGV辊台任务[AGV任务ID]", agv.ID.ToString(), "", result.ToString());
+                                return;
                             }
                         }
 
@@ -246,7 +252,9 @@ namespace TaskManager
                                 // 发指令请求AGV启动辊台装货
                                 if (!DataControl._mNDCControl.DoUnLoad(agv.ID, Convert.ToInt32(agv.AGV), out string result))
                                 {
-                                    throw new Exception(result);
+                                    // LOG
+                                    DataControl._mTaskTools.RecordTaskErrLog("CreatOrderTask()", "AGV辊台任务[AGV任务ID]", agv.ID.ToString(), "", result.ToString());
+                                    return;
                                 }
                             }
                             return;
@@ -307,7 +315,9 @@ namespace TaskManager
                 // 发送 NDC
                 if (!DataControl._mNDCControl.DoReDerect(id, station, out string result))
                 {
-                    throw new Exception(result);
+                    // LOG
+                    DataControl._mTaskTools.RecordTaskErrLog("UpdateAGVStation()", "更新AGV卸货点[AGV任务ID]", id.ToString(), "", result.ToString());
+                    return;
                 }
             }
             catch (Exception ex)
@@ -371,7 +381,9 @@ namespace TaskManager
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {
-                    throw new Exception("找不到对应AGV任务资讯！");
+                    // LOG
+                    DataControl._mTaskTools.RecordTaskErrLog("SubmitNDCPlcLoading()", "AGV装货中[AGV任务ID，AGV设备号]", id.ToString(), agv, "找不到对应AGV任务资讯！");
+                    return;
                 }
                 WCS_AGV_INFO info = dt.ToDataEntity<WCS_AGV_INFO>();
                 // 生成包装线固定辊台指令

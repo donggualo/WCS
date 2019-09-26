@@ -89,6 +89,12 @@
     <Compile Include="W_TaskData.xaml.cs">
       <DependentUpon>W_TaskData.xaml</DependentUpon>
     </Compile>
+    <Compile Include="W_TaskData_CMD.xaml.cs">
+      <DependentUpon>W_TaskData_CMD.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="W_TaskData_Task.xaml.cs">
+      <DependentUpon>W_TaskData_Task.xaml</DependentUpon>
+    </Compile>
     <Compile Include="W_WcsNdcSite.xaml.cs">
       <DependentUpon>W_WcsNdcSite.xaml</DependentUpon>
     </Compile>
@@ -125,6 +131,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="W_TaskData.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="W_TaskData_CMD.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="W_TaskData_Task.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

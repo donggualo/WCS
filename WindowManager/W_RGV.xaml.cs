@@ -145,20 +145,24 @@ namespace WindowManager
                 RGV rgv = new RGV(dev);
                 if (rgv.ActionStatus() == RGV.Run)
                 {
-                    throw new Exception("设备运行中！");
+                    Notice.Show("指令发送失败：设备运行中！", "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
                 if (rgv.DeviceStatus() == RGV.DeviceError)
                 {
-                    throw new Exception("设备故障！");
+                    Notice.Show("指令发送失败：设备故障！", "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
 
                 int loc = Convert.ToInt32(location.Text.Trim());
                 byte[] order = RGV._Position(rgv.RGVNum(), DataControl._mStools.IntToBytes(loc));
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
-                    throw new Exception(result);
+                    Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
                 Notice.Show("定位任务 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
+                DataControl._mSocket.SwithRefresh(dev, false);
             }
             catch (Exception ex)
             {
@@ -184,11 +188,13 @@ namespace WindowManager
                 RGV rgv = new RGV(dev);
                 if (rgv.ActionStatus() == RGV.Run)
                 {
-                    throw new Exception("设备运行中！");
+                    Notice.Show("指令发送失败：设备运行中！", "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
                 if (rgv.DeviceStatus() == RGV.DeviceError)
                 {
-                    throw new Exception("设备故障！");
+                    Notice.Show("指令发送失败：设备故障！", "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
 
                 // 方式
@@ -223,9 +229,11 @@ namespace WindowManager
                 byte[] order = RGV._RollerControl(rgv.RGVNum(), site1, site2, site3, site4);
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
-                    throw new Exception(result);
+                    Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
                 Notice.Show("启动辊台 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
+                DataControl._mSocket.SwithRefresh(dev, false);
             }
             catch (Exception ex)
             {
@@ -251,15 +259,18 @@ namespace WindowManager
                 RGV rgv = new RGV(dev);
                 if (rgv.DeviceStatus() == RGV.DeviceError)
                 {
-                    throw new Exception("设备故障！");
+                    Notice.Show("指令发送失败：设备故障！", "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
 
                 byte[] order = RGV._StopRoller(rgv.RGVNum());
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
-                    throw new Exception(result);
+                    Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
                 Notice.Show("停止辊台 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
+                DataControl._mSocket.SwithRefresh(dev, true);
             }
             catch (Exception ex)
             {
@@ -285,15 +296,18 @@ namespace WindowManager
                 RGV rgv = new RGV(dev);
                 if (rgv.DeviceStatus() == RGV.DeviceError)
                 {
-                    throw new Exception("设备故障！");
+                    Notice.Show("指令发送失败：设备故障！", "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
 
                 byte[] order = FRT._StopTask(rgv.RGVNum());
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
-                    throw new Exception(result);
+                    Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
+                    return;
                 }
                 Notice.Show("终止任务 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
+                DataControl._mSocket.SwithRefresh(dev, true);
             }
             catch (Exception ex)
             {

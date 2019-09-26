@@ -14,15 +14,36 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="200*"/>
+            <RowDefinition Height="210*"/>
             <RowDefinition Height="40*"/>
             <RowDefinition Height="200*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <DataGrid Name="DGcommand" Margin="10,0,10,5" IsReadOnly="True" Grid.Row="1" Grid.ColumnSpan="2"
-                   AutoGeneratingColumn="DataGrid_TimeFormat" MouseDoubleClick="DGcommand_DoubleClick" />
-        
-        <DataGrid Name="DGitem" Margin="10,0,0,5" IsReadOnly="True" Grid.Row="2" Grid.RowSpan="2" AutoGeneratingColumn="DataGrid_TimeFormat"/>
+                   AutoGeneratingColumn="DataGrid_TimeFormat" MouseDoubleClick="DGcommand_DoubleClick" >
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="生成清单" Click="CreateCMD_Click"/>
+                    <MenuItem Header="更新清单" Click="UpdateCMD_Click"/>
+                    <MenuItem Header="结束清单" Click="DeleteCMD_Click"/>
+                    <MenuItem Header="作业操作">
+                        <MenuItem Header="逻辑执行" Click="Logic_Click"/>
+                        <MenuItem Header="设备分配" Click="DevPortion_Click"/>
+                        <MenuItem Header="指令生成" Click="SendOrder_Click"/>
+                    </MenuItem>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+        </DataGrid>
+
+        <DataGrid Name="DGitem" Margin="10,0,0,5" IsReadOnly="True" Grid.Row="2" Grid.RowSpan="2" AutoGeneratingColumn="DataGrid_TimeFormat">
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="生成任务" Click="CreateTask_Click"/>
+                    <MenuItem Header="更新任务" Click="UpdateTask_Click"/>
+                    <MenuItem Header="删除任务" Click="DeleteTask_Click"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+        </DataGrid>
 
         <Button Name="Refresh" Content="刷新" Margin="10,5,10,5" Click="Refresh_Click" Grid.Row="2" Grid.Column="1"/>
 
