@@ -225,6 +225,8 @@ namespace WindowManager
                 DataControl._mTaskTools.DeviceUnLock(wcs);
 
                 RefreshData();
+
+                Notice.Show("结束成功！", "完成", 3, MessageBoxIcon.Success);
             }
             catch (Exception ex)
             {
@@ -241,10 +243,14 @@ namespace WindowManager
         {
             try
             {
+                Notice.Show("开始执行！", "提示", 3, MessageBoxIcon.Info);
+
                 _TASK.Run_TaskContinued();
                 _TASK.Run_InInitial();
                 _TASK.Run_LinkDevice();
                 _TASK.Run_OutFollow();
+
+                Notice.Show("执行完成！", "完成", 3, MessageBoxIcon.Success);
             }
             catch (Exception ex)
             {
@@ -261,6 +267,8 @@ namespace WindowManager
         {
             try
             {
+                Notice.Show("开始分配！", "提示", 3, MessageBoxIcon.Info);
+
                 // 获取清单号
                 if (DGcommand.SelectedItem == null)
                 {
@@ -281,6 +289,8 @@ namespace WindowManager
                 {
                     _TASK.ReadDevice(item);
                 }
+
+                Notice.Show("分配完成！", "完成", 3, MessageBoxIcon.Success);
             }
             catch (Exception ex)
             {
@@ -297,6 +307,8 @@ namespace WindowManager
         {
             try
             {
+                Notice.Show("开始生成！", "提示", 3, MessageBoxIcon.Info);
+
                 // 获取清单号
                 if (DGcommand.SelectedItem == null)
                 {
@@ -317,6 +329,8 @@ namespace WindowManager
                 {
                     _TASK.CreateAndAddTaskList(item);
                 }
+
+                Notice.Show("生成完成！", "完成", 3, MessageBoxIcon.Success);
             }
             catch (Exception ex)
             {
@@ -403,6 +417,8 @@ namespace WindowManager
                 DataControl._mTaskControler.IDeletTask(id);
 
                 GetDGitemInfo();
+
+                Notice.Show("删除成功！", "完成", 3, MessageBoxIcon.Success);
             }
             catch (Exception ex)
             {

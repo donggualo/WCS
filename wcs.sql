@@ -3,15 +3,15 @@
 
  Source Server         : TEST
  Source Server Type    : MySQL
- Source Server Version : 80013
+ Source Server Version : 80016
  Source Host           : localhost:3306
  Source Schema         : wcs
 
  Target Server Type    : MySQL
- Target Server Version : 80013
+ Target Server Version : 80016
  File Encoding         : 65001
 
- Date: 12/09/2019 09:02:53
+ Date: 26/09/2019 08:11:42
 */
 
 SET NAMES utf8mb4;
@@ -86,24 +86,17 @@ CREATE TABLE `wcs_config_device`  (
   `CREATION_TIME` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `UPDATE_TIME` timestamp(0) NULL DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`DEVICE`) USING BTREE,
-  UNIQUE INDEX `IP_UNIQUE`(`IP`) USING BTREE,
-  UNIQUE INDEX `PORT_UNIQUE`(`PORT`) USING BTREE,
   UNIQUE INDEX `DEVICE_UNIQUE`(`DEVICE`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '设备资讯   ' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of wcs_config_device
 -- ----------------------------
-INSERT INTO `wcs_config_device` VALUES ('ABC01', '127.0.0.81', 6001, 'L', '1908141610', 'ABC', 'B01', '行车', '2019-07-04 09:58:36', NULL);
-INSERT INTO `wcs_config_device` VALUES ('ABC02', '127.0.0.82', 6002, 'Y', NULL, 'ABC', 'B01', '行车', '2019-07-04 09:58:57', NULL);
-INSERT INTO `wcs_config_device` VALUES ('ARF01', '127.0.0.41', 5001, 'Y', NULL, 'ARF', 'B01', '摆渡车', '2019-07-04 09:54:44', NULL);
-INSERT INTO `wcs_config_device` VALUES ('ARF02', '127.0.0.42', 5002, 'Y', NULL, 'ARF', 'B01', '摆渡车', '2019-07-04 09:55:05', NULL);
-INSERT INTO `wcs_config_device` VALUES ('FRT01', '127.0.0.11', 4001, 'Y', NULL, 'FRT', 'B01', '固定辊台', '2019-07-04 09:50:33', NULL);
-INSERT INTO `wcs_config_device` VALUES ('FRT02', '127.0.0.12', 4002, 'Y', NULL, 'FRT', 'B01', '固定辊台', '2019-07-04 09:49:16', NULL);
-INSERT INTO `wcs_config_device` VALUES ('FRT03', '127.0.0.13', 4003, 'U', NULL, 'FRT', 'B01', '固定辊台', '2019-07-04 09:51:39', NULL);
-INSERT INTO `wcs_config_device` VALUES ('FRT99', '127.0.0.111', 9001, 'Y', NULL, 'FRT', 'A01', '固定辊台', '2019-07-04 09:50:33', '2019-09-05 14:46:34');
-INSERT INTO `wcs_config_device` VALUES ('RGV01', '127.0.0.61', 3001, 'Y', NULL, 'RGV', 'B01', '运输车', '2019-07-04 09:55:31', '2019-09-05 11:05:42');
-INSERT INTO `wcs_config_device` VALUES ('RGV02', '127.0.0.62', 3002, 'Y', NULL, 'RGV', 'B01', '运输车', '2019-07-04 09:55:46', NULL);
+INSERT INTO `wcs_config_device` VALUES ('ARF01', '192.168.8.80', 2000, 'N', NULL, 'ARF', 'B01', '摆渡车Test', '2019-07-04 09:54:44', '2019-09-23 14:49:14');
+INSERT INTO `wcs_config_device` VALUES ('FRT01', '192.168.8.90', 2000, 'N', NULL, 'FRT', 'B01', 'Test1', '2019-09-23 16:52:50', NULL);
+INSERT INTO `wcs_config_device` VALUES ('FRT02', '192.168.8.90', 2001, 'N', NULL, 'FRT', 'B01', 'Test2', '2019-09-23 17:06:49', NULL);
+INSERT INTO `wcs_config_device` VALUES ('FRT03', '192.168.8.90', 2002, 'N', NULL, 'FRT', 'B01', 'Test3', '2019-09-23 17:06:55', NULL);
+INSERT INTO `wcs_config_device` VALUES ('RGV01', '192.168.8.71', 2002, 'Y', NULL, 'RGV', 'B01', '运输车Test', '2019-09-24 17:06:52', '2019-09-24 17:07:38');
 
 -- ----------------------------
 -- Table structure for wcs_config_loc
@@ -121,7 +114,7 @@ CREATE TABLE `wcs_config_loc`  (
   `ABC_LOC_STOCK` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '行车库存定位',
   `CREATION_TIME` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '依据WMS回馈位置定义各设备目的点位  ' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '依据WMS回馈位置定义各设备目的点位  ' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of wcs_config_loc
@@ -271,7 +264,7 @@ CREATE TABLE `wcs_task_item`  (
   `CREATION_TIME` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `UPDATE_TIME` timestamp(0) NULL DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 37 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = 'WCS指令资讯  ' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 38 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = 'WCS指令资讯  ' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of wcs_task_item
