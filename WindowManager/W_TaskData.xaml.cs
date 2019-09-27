@@ -82,12 +82,12 @@ namespace WindowManager
                    when TASK_TYPE = '2' then '出库' 
                    when TASK_TYPE = '3' then '移仓' 
                    when TASK_TYPE = '4' then '盘点' else '' end) 作业类型,
-			 TASK_UID_1 货物①任务号,LOC_FROM_1 货物①来源,LOC_TO_1 货物①目的,
+			 TASK_UID_1 货物①任务号,CODE_1 货物①码,LOC_FROM_1 货物①来源,LOC_TO_1 货物①目的,
 			 (case when SITE_1 = 'N' then '未执行'
 				   when SITE_1 = 'W' then '任务中'
 				   when SITE_1 = 'Y' then '完成'
 				   when SITE_1 = 'X' then '失效' else '' end) 货物①任务状态,
-			 TASK_UID_2 货物②任务号,LOC_FROM_2 货物②来源,LOC_TO_2 货物②目的,
+			 TASK_UID_2 货物②任务号,CODE_2 货物②码,LOC_FROM_2 货物②来源,LOC_TO_2 货物②目的,
 			 (case when SITE_2 = 'N' then '未执行'
 				   when SITE_2 = 'W' then '任务中'
 				   when SITE_2 = 'Y' then '完成'
@@ -179,9 +179,20 @@ namespace WindowManager
         {
             try
             {
+                int num = 1;
+                MessageBoxResult result = MessageBoxX.Show("选择【不】生成单托任务；\r选择【是的】生成双托任务，请确认！！！", "提示", System.Windows.Application.Current.MainWindow, MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
+                {
+                    num = 2;
+                }
+                W_TaskData_CMD _cmd = new W_TaskData_CMD("", 0, num);
+                _cmd.ShowDialog();
+
+                RefreshData();
             }
             catch (Exception ex)
             {
+                Notice.Show("生成失败： " + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
             }
         }
 
@@ -194,9 +205,21 @@ namespace WindowManager
         {
             try
             {
+                // 获取清单号
+                if (DGcommand.SelectedItem == null)
+                {
+                    return;
+                }
+                string wcs = (DGcommand.SelectedItem as DataRowView).Row[0].ToString();
+
+                W_TaskData_CMD _cmd = new W_TaskData_CMD(wcs, 1, 0);
+                _cmd.ShowDialog();
+
+                RefreshData();
             }
             catch (Exception ex)
             {
+                Notice.Show("更新失败： " + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
             }
         }
 
@@ -431,11 +454,15 @@ namespace WindowManager
                 }
 
                 string id = (DGitem.SelectedItem as DataRowView)["ID"].ToString();
+                string dev = (DGitem.SelectedItem as DataRowView)["绑定设备号"].ToString();
                 DataControl._mMySql.ExcuteSql(string.Format(@"delete from wcs_task_item where id = '{0}'", id));
 
                 DataControl._mTaskControler.IDeletTask(id);
 
                 GetDGitemInfo();
+
+                // 解锁对应清单所有设备数据状态
+                DataControl._mTaskTools.DeviceUnLock(dev);
 
                 Notice.Show("删除成功！", "完成", 3, MessageBoxIcon.Success);
             }

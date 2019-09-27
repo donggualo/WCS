@@ -42,6 +42,11 @@ namespace ModuleManager.WCS
         public String TASK_UID_1 { get; set; }
 
         /// <summary>
+        /// 货物码1
+        /// </summary>
+        public String CODE_1 { get; set; }
+
+        /// <summary>
         /// 来源位置1
         /// </summary>
         public String LOC_FROM_1 { get; set; }
@@ -60,6 +65,11 @@ namespace ModuleManager.WCS
         /// 任务2
         /// </summary>
         public String TASK_UID_2 { get; set; }
+
+        /// <summary>
+        /// 货物码2
+        /// </summary>
+        public String CODE_2 { get; set; }
 
         /// <summary>
         /// 来源位置2

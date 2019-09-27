@@ -52,7 +52,8 @@ namespace WindowManager
                     break;
                 default:
                     Notice.Show("TYPE 不可识别！", "错误", 3, MessageBoxIcon.Error);
-                    return;
+                    this.Close();
+                    break;
             }
 
         }
@@ -171,7 +172,8 @@ namespace WindowManager
             DataTable dt = DataControl._mMySql.SelectAll(sql);
             if (DataControl._mStools.IsNoData(dt))
             {
-                return;
+                Notice.Show("异常：找不到资讯！", "错误", 3, MessageBoxIcon.Error);
+                this.Close();
             }
             WCS_TASK_ITEM item = dt.ToDataEntity<WCS_TASK_ITEM>();
             // 锁定
@@ -201,7 +203,7 @@ namespace WindowManager
                     return;
                 }
 
-                string sql = "";
+                string sql;
                 switch (_TYPE)
                 {
                     case 0:
@@ -212,6 +214,9 @@ namespace WindowManager
                         }
                         sql = string.Format(@"insert into wcs_task_item(WCS_NO,ITEM_ID,LOC_FROM,LOC_TO) VALUES('{0}','{1}','{2}','{3}')",
                             _WCSNO, CBitemid.Text.Trim().Substring(0, 3), TBlocfrom.Text.Trim(), TBlocto.Text.Trim());
+
+                        DataControl._mMySql.ExcuteSql(sql);
+
                         break;
                     case 1:
                         if (string.IsNullOrEmpty(TBlocfrom.Text.Trim()) || string.IsNullOrEmpty(TBlocto.Text.Trim()) || string.IsNullOrEmpty(CBdevice.Text.Trim()) || string.IsNullOrEmpty(CBstatus.Text.Trim()))
@@ -219,22 +224,26 @@ namespace WindowManager
                             Notice.Show("请将资讯填写完整！", "错误", 3, MessageBoxIcon.Error);
                             return;
                         }
+                        string sta = CBstatus.Text.Trim().Substring(0, 1);
                         sql = string.Format(@"update wcs_task_item set LOC_FROM = '{1}',LOC_TO = '{2}',DEVICE = '{3}',STATUS = '{4}' where ID = '{0}'",
-                            _ID, TBlocfrom.Text.Trim(), TBlocto.Text.Trim(), CBdevice.Text.Trim(), CBstatus.Text.Trim().Substring(0, 1));
+                            _ID, TBlocfrom.Text.Trim(), TBlocto.Text.Trim(), CBdevice.Text.Trim(), sta);
+
+                        DataControl._mMySql.ExcuteSql(sql);
 
                         // 解锁设备数据状态
                         DataControl._mTaskTools.DeviceUnLock(_DEV);
                         // 锁定设备
                         DataControl._mTaskTools.DeviceLock(_WCSNO, CBdevice.Text.Trim());
+
+                        // 结束指令
+                        if (sta == ItemStatus.出现异常 || sta == ItemStatus.失效 || sta == ItemStatus.完成任务)
+                        {
+                            DataControl._mTaskControler.IDeletTask(_ID);
+                        }
                         break;
                     default:
                         Notice.Show("TYPE 不可识别！", "错误", 3, MessageBoxIcon.Error);
                         return;
-                }
-
-                if (!string.IsNullOrWhiteSpace(sql))
-                {
-                    DataControl._mMySql.ExcuteSql(sql);
                 }
 
                 this.Close();

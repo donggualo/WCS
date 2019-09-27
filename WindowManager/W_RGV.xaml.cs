@@ -300,7 +300,7 @@ namespace WindowManager
                     return;
                 }
 
-                byte[] order = FRT._StopTask(rgv.RGVNum());
+                byte[] order = RGV._StopTask(rgv.RGVNum());
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
                     Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);

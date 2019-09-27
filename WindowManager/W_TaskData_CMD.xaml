@@ -14,7 +14,8 @@
             <RowDefinition Height="10*"/>
             <RowDefinition Height="10*"/>
             <RowDefinition Height="10*"/>
-            <RowDefinition Height="20*"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="10*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="100*"/>
@@ -40,6 +41,9 @@
 
         <Label Content="1#任务状态：" Margin="10" Grid.Row="5"/>
         <ComboBox Name="CBsite1" Margin="10" Grid.Column="1" Grid.Row="5" />
+        
+        <Label Content="1#货物码：" Margin="10" Grid.Row="6"/>
+        <TextBox Name="TBcode1" Margin="10" TextWrapping="Wrap" Grid.Column="1" Grid.Row="6" />
 
         <Label Content="固定辊台：" Margin="10" Grid.Column="2"/>
         <ComboBox Name="CBfrt" Margin="10" Grid.Column="3"/>
@@ -58,8 +62,11 @@
 
         <Label Content="2#任务状态：" Margin="10" Grid.Column="2" Grid.Row="5"/>
         <ComboBox Name="CBsite2" Margin="10" Grid.Column="3" Grid.Row="5" />
+        
+        <Label Content="2#货物码：" Margin="10" Grid.Row="6" Grid.Column="2"/>
+        <TextBox Name="TBcode2" Margin="10" TextWrapping="Wrap" Grid.Column="3" Grid.Row="6" />
 
-        <Button Name="BTNuse" Content="确认" Grid.Column="3" Margin="200,60,10,10" Grid.Row="6" Click="Finish_Click"/>
+        <Button Name="BTNuse" Content="确认" Grid.Column="3" Margin="200,10,10,10" Grid.Row="7" Click="Finish_Click"/>
 
     </Grid>
 </Window>
