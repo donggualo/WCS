@@ -457,8 +457,8 @@ namespace TaskManager
             try
             {
                 // 以wcs_no为单位提取最后一笔对接任务
-                DataTable dtlast = DataControl._mMySql.SelectAll(@"select * from WCS_TASK_ITEM where LEFT(ITEM_ID,2) = '11' and (WCS_NO,CREATION_TIME) in 
-                                                    (select WCS_NO, MAX(CREATION_TIME) from WCS_TASK_ITEM group by WCS_NO) order by CREATION_TIME");
+                DataTable dtlast = DataControl._mMySql.SelectAll(@"select * from WCS_TASK_ITEM where LEFT(ITEM_ID,2) = '11' and (WCS_NO,ID) in 
+                                                    (select WCS_NO, MAX(ID) from WCS_TASK_ITEM group by WCS_NO) order by CREATION_TIME");
                 if (DataControl._mStools.IsNoData(dtlast))
                 {
                     return;
@@ -685,6 +685,8 @@ namespace TaskManager
                         String loc_Y = "";  //有货辊台对应目标点
                         String loc_N = "";  //无货辊台对应目标点
 
+                        bool isNoGoodsRGV = false; // 运输车是否无货
+
                         // 根据当前运输车坐标及任务目标，生成对应运输车定位/对接运输车任务
                         if (RGV.GoodsStatus() == RGV.GoodsYes1) // 辊台①有货
                         {
@@ -700,24 +702,35 @@ namespace TaskManager
                         {
                             // 辊台已无货，即解锁设备数据状态
                             DataControl._mTaskTools.DeviceUnLock(rgv);
-                            break;
+                            isNoGoodsRGV = true;
                         }
 
-                        // 判断是否需要对接到运输车[内]范围内作业
-                        if (Convert.ToInt32(loc_Y) >= Convert.ToInt32(R))  // 需对接运输车[内]
+                        if (!isNoGoodsRGV)
                         {
-                            // 生成运输车[内]复位任务
-                            DataControl._mTaskTools.CreateItem(item.WCS_NO, ItemId.运输车复位2, R);    // 待分配设备
-                                                                                                  // 生成运输车[外]对接位任务
-                            DataControl._mTaskTools.CreateCustomItem(item.WCS_NO, ItemId.运输车对接定位, rgv, "", RR, ItemStatus.请求执行);
+                            // 判断是否需要对接到运输车[内]范围内作业
+                            if (Convert.ToInt32(loc_Y) >= Convert.ToInt32(R))  // 需对接运输车[内]
+                            {
+                                // 生成运输车[内]复位任务
+                                DataControl._mTaskTools.CreateItem(item.WCS_NO, ItemId.运输车复位2, R);    // 待分配设备
+                                                                                                      // 生成运输车[外]对接位任务
+                                DataControl._mTaskTools.CreateCustomItem(item.WCS_NO, ItemId.运输车对接定位, rgv, "", RR, ItemStatus.请求执行);
+                            }
+                            else
+                            {
+                                // 生成运输车[外]定位任务
+                                DataControl._mTaskTools.CreateCustomItem(item.WCS_NO, ItemId.运输车定位, rgv, "", loc_Y, ItemStatus.请求执行);
+                            }
+                        }
+
+                        // 生成行车库存定位任务
+                        if (String.IsNullOrEmpty(loc_N) && String.IsNullOrEmpty(loc_Y))
+                        {
+                            loc = command.SITE_1 == TaskSite.完成 ? command.LOC_TO_2 : command.LOC_TO_1;
                         }
                         else
                         {
-                            // 生成运输车[外]定位任务
-                            DataControl._mTaskTools.CreateCustomItem(item.WCS_NO, ItemId.运输车定位, rgv, "", loc_Y, ItemStatus.请求执行);
+                            loc = loc_N == loc_1 ? command.LOC_TO_1 : command.LOC_TO_2;
                         }
-                        // 生成行车库存定位任务
-                        loc = loc_N == loc_1 ? command.LOC_TO_1 : command.LOC_TO_2;
                         DataControl._mTaskTools.CreateCustomItem(item.WCS_NO, ItemId.行车库存定位, item.DEVICE, "", DataControl._mTaskTools.GetABCStockLoc(loc), ItemStatus.请求执行);
                         #endregion
 
@@ -779,7 +792,13 @@ namespace TaskManager
                     case ItemId.行车取货:
                         #region 行车轨道定位与运输车对接点
                         // 生成行车库存定位任务
-                        DataControl._mTaskTools.CreateCustomItem(item.WCS_NO, ItemId.行车轨道定位, item.DEVICE, "", DataControl._mTaskTools.GetABCTrackLoc(item.LOC_TO), ItemStatus.请求执行);
+                        String sqlloc = String.Format(@"select distinct ABC_LOC_TRACK from WCS_CONFIG_LOC where ABC_LOC_STOCK = '{0}'", item.LOC_TO);
+                        DataTable dtloc = DataControl._mMySql.SelectAll(sqlloc);
+                        if (DataControl._mStools.IsNoData(dtloc))
+                        {
+                            return;
+                        }
+                        DataControl._mTaskTools.CreateCustomItem(item.WCS_NO, ItemId.行车轨道定位, item.DEVICE, "", dtloc.Rows[0]["ABC_LOC_TRACK"].ToString(), ItemStatus.请求执行);
                         #endregion
 
                         break;
@@ -815,7 +834,7 @@ namespace TaskManager
                             // 生成运输车定位任务
                             DataControl._mTaskTools.CreateCustomItem(item.WCS_NO, ItemId.运输车定位, rgv, "", loc_2, ItemStatus.请求执行);
                             // 生成行车库存定位任务
-                            DataControl._mTaskTools.CreateCustomItem(item.WCS_NO, ItemId.行车库存定位, item.DEVICE, "", DataControl._mTaskTools.GetABCTrackLoc(command.LOC_FROM_2), ItemStatus.请求执行);
+                            DataControl._mTaskTools.CreateCustomItem(item.WCS_NO, ItemId.行车库存定位, item.DEVICE, "", DataControl._mTaskTools.GetABCStockLoc(command.LOC_FROM_2), ItemStatus.请求执行);
                         }
 
                         #endregion
@@ -990,12 +1009,12 @@ namespace TaskManager
                 // 获取X轴值与当前行车X轴值差值最小的任务UID
                 String sql = String.Format(@"select (case when t.X > {0} then (t.X - {0})
 						 when t.X < {0} then ({0} - t.X)
-			       else t.X end) as loc , t.TASK_UID
-  from (select a.TASK_UID, (b.STOCK_X + 0) X
-          from (select distinct TASK_UID, W_S_LOC from wcs_task_info where TASK_TYPE = '{4}' and SITE = '{3}') a, 
-	             (select distinct WMS_LOC, SUBSTRING_INDEX(ABC_LOC_STOCK,'-',1) STOCK_X from wcs_config_loc) b
+			       else t.X end) as locX, t.TASK_UID, t.Z
+  from (select a.TASK_UID, (b.STOCK_X + 0) X, (b.STOCK_Z + 0) Z
+          from (select distinct TASK_UID, W_S_LOC from wcs_task_info where SITE = '{3}' and TASK_TYPE = '{4}') a, 
+	             (select distinct WMS_LOC, SUBSTRING_INDEX(ABC_LOC_STOCK,'-',1) STOCK_X, SUBSTRING_INDEX(ABC_LOC_STOCK,'-',-1) STOCK_Z from wcs_config_loc) b
          where a.W_S_LOC = b.WMS_LOC and (b.STOCK_X + 0) {1} {2}
-       ) t order by loc", X, sign, AA, TaskSite.未执行, TaskType.出库);
+       ) t order by locX asc, Z desc", X, sign, AA, TaskSite.未执行, TaskType.出库);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {
@@ -1032,27 +1051,45 @@ namespace TaskManager
             String wcs_no = "O" + System.DateTime.Now.ToString("yyMMddHHmmss");
             try
             {
-                // 获取该区域可用的固定辊台
-                String sqlfrt = String.Format(@"select MAX(device) FRT from wcs_config_device where FLAG = '{1}' and TYPE = '{2}' and AREA = '{0}'", area, DeviceFlag.空闲, DeviceType.固定辊台);
-                DataTable dtfrt = DataControl._mMySql.SelectAll(sqlfrt);
-                if (DataControl._mStools.IsNoData(dtfrt))
+                String frt;
+                // 自动生成 / 手动
+                string sqlwcs = string.Format(@"select * from wcs_command_v where TASK_UID_1 = '{0}' ", taskuid_1);
+                if (!String.IsNullOrEmpty(taskuid_2.Trim()))
                 {
-                    return;
+                    sqlwcs += string.Format(@" and TASK_UID_2 = '{0}'", taskuid_2);
                 }
-                String frt = dtfrt.Rows[0]["FRT"].ToString();
+                DataTable dtwcs = DataControl._mMySql.SelectAll(sqlwcs);
+                if (DataControl._mStools.IsNoData(dtwcs))
+                {
+                    // 获取该区域可用的固定辊台
+                    String sqlfrt = String.Format(@"select MAX(device) FRT from wcs_config_device where FLAG = '{1}' and TYPE = '{2}' and AREA = '{0}'", area, DeviceFlag.空闲, DeviceType.固定辊台);
+                    DataTable dtfrt = DataControl._mMySql.SelectAll(sqlfrt);
+                    if (DataControl._mStools.IsNoData(dtfrt))
+                    {
+                        return;
+                    }
+                    frt = dtfrt.Rows[0]["FRT"].ToString();
+
+                    // 自动生成 COMMAND
+                    String sql = String.Format(@"insert into wcs_command_master(WCS_NO, FRT, TASK_UID_1, TASK_UID_2) values('{0}','{1}','{2}','{3}')",
+                            wcs_no, frt, taskuid_1, String.IsNullOrEmpty(taskuid_2.Trim()) ? null : taskuid_2);
+                    DataControl._mMySql.ExcuteSql(sql);
+                }
+                else
+                {
+                    // 手动
+                    WCS_COMMAND_V cmd = dtwcs.ToDataEntity<WCS_COMMAND_V>();
+                    wcs_no = cmd.WCS_NO;
+                    frt = cmd.FRT;
+                }
 
                 // 默认先处理任务1：获取对应的任务1资讯
                 DataTable dttask = DataControl._mMySql.SelectAll(String.Format(@"select * From wcs_task_info where task_uid = '{0}'", taskuid_1));
-                if (DataControl._mStools.IsNoData(dtfrt))
+                if (DataControl._mStools.IsNoData(dttask))
                 {
                     return;
                 }
                 WCS_TASK_INFO info = dttask.ToDataEntity<WCS_TASK_INFO>();
-
-                //生成 COMMAND
-                String sql = String.Format(@"insert into wcs_command_master(WCS_NO, FRT, TASK_UID_1, TASK_UID_2) values('{0}','{1}','{2}','{3}')",
-                    wcs_no, frt, taskuid_1, String.IsNullOrEmpty(taskuid_2.Trim()) ? null : taskuid_2);
-                DataControl._mMySql.ExcuteSql(sql);
 
                 //生成 ITEM
                 // 生成行车库存定位任务
@@ -1080,6 +1117,8 @@ namespace TaskManager
                 DataControl._mTaskTools.DeleteCommand(wcs_no);
                 DataControl._mTaskTools.UpdateTaskByWCSNo(wcs_no, TaskSite.未执行);
                 DataControl._mTaskTools.DeleteItem(wcs_no, "");
+                // 解锁设备数据状态
+                DataControl._mTaskTools.DeviceUnLock(wcs_no);
                 // 记录LOG
                 DataControl._mTaskTools.RecordTaskErrLog("CreateOutJob()", "生成WCS出库清单", null, null, ex.ToString());
             }
@@ -1098,7 +1137,7 @@ namespace TaskManager
             try
             {
                 // 获取待分配设备任务
-                String sql = String.Format(@"select * from WCS_TASK_ITEM where STATUS = '{0}' and DEVICE is null order by CREATION_TIME", ItemStatus.不可执行);
+                String sql = String.Format(@"select * from WCS_TASK_ITEM where STATUS = '{0}' and DEVICE is null order by ID", ItemStatus.不可执行);
                 DataTable dtitem = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dtitem))
                 {
@@ -1460,7 +1499,7 @@ namespace TaskManager
             try
             {
                 // 获取 请求执行 的任务对应的 ITEM 资讯
-                String sql = String.Format(@"select * from WCS_TASK_ITEM where STATUS = '{0}' order by CREATION_TIME", ItemStatus.请求执行);
+                String sql = String.Format(@"select * from WCS_TASK_ITEM where STATUS = '{0}' order by ID", ItemStatus.请求执行);
                 DataTable dtitem = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dtitem))
                 {

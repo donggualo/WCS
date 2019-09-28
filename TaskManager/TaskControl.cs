@@ -142,7 +142,7 @@ namespace TaskManager
         public AGVFRTTack(WCS_TASK_ITEM item, string deviceType, byte[] order) : base(item, deviceType, order)
         {
             _device = new FRT(ITEM.DEVICE);
-            log = new Log("AGV_FRT-" + ITEM.DEVICE + "-");
+            log = new Log("AGV_FRT-" + ITEM.ID + "-");
             // 记录生成指令LOG
             log.LOG(String.Format(@"【CreatOrder】{0}：WMS任务ID[ {1} ]，AGV任务ID[ {2} ]，设备号[ {3} ], 指令[ {4} ].",
                 item.ITEM_ID, item.WCS_NO, item.ID, item.DEVICE, DataControl._mStools.BytetToString(order)));
@@ -249,7 +249,7 @@ namespace TaskManager
         public FRTTack(WCS_TASK_ITEM item, string deviceType, byte[] order) : base(item, deviceType, order)
         {
             _device = new FRT(ITEM.DEVICE);
-            log = new Log("Task_FRT-" + ITEM.DEVICE + "-");
+            log = new Log("Task_FRT-" + ITEM.ID + "-");
             // 记录生成指令LOG
             log.LOG(DataControl._mTaskTools.GetLogMessC(item, order));
         }
@@ -374,7 +374,7 @@ namespace TaskManager
         public ARFTack(WCS_TASK_ITEM item, string deviceType, byte[] order) : base(item, deviceType, order)
         {
             _device = new ARF(ITEM.DEVICE);
-            log = new Log("Task_ARF-" + ITEM.DEVICE + "-");
+            log = new Log("Task_ARF-" + ITEM.ID + "-");
             // 记录生成指令LOG
             log.LOG(DataControl._mTaskTools.GetLogMessC(item, order));
         }
@@ -578,7 +578,7 @@ namespace TaskManager
         public RGVTack(WCS_TASK_ITEM item, string deviceType, byte[] order) : base(item, deviceType, order)
         {
             _device = new RGV(ITEM.DEVICE);
-            log = new Log("Task_RGV-" + ITEM.DEVICE + "-");
+            log = new Log("Task_RGV-" + ITEM.ID + "-");
             // 记录生成指令LOG
             log.LOG(DataControl._mTaskTools.GetLogMessC(item, order));
         }
@@ -782,7 +782,7 @@ namespace TaskManager
         public ABCTack(WCS_TASK_ITEM item, string deviceType, byte[] order) : base(item, deviceType, order)
         {
             _device = new ABC(ITEM.DEVICE);
-            log = new Log("Task_ABC-" + ITEM.DEVICE + "-");
+            log = new Log("Task_ABC-" + ITEM.ID + "-");
             // 记录生成指令LOG
             log.LOG(DataControl._mTaskTools.GetLogMessC(item, order));
         }

@@ -95,6 +95,18 @@ namespace WindowManager
                 CBdevice.Items.Add(device);
                 CBstatus.Items.Add(status);
 
+                CBdevice.SelectedIndex = 0;
+
+                // 作业状态
+                CBstatus.Items.Add(ItemStatus.不可执行 + " - 不可执行");
+                CBstatus.Items.Add(ItemStatus.请求执行 + " - 请求执行");
+                CBstatus.Items.Add(ItemStatus.任务中 + " - 任务中");
+                CBstatus.Items.Add(ItemStatus.失效 + " - 失效");
+                CBstatus.Items.Add(ItemStatus.交接中 + " - 交接中");
+                CBstatus.Items.Add(ItemStatus.出现异常 + " - 出现异常");
+                CBstatus.Items.Add(ItemStatus.完成任务 + " - 完成任务");
+                CBstatus.SelectedIndex = 0;
+
                 string devtype = "";
                 switch (CBitemid.Text.Substring(0, 3))
                 {
@@ -137,17 +149,6 @@ namespace WindowManager
                 {
                     CBdevice.Items.Add(dev.DEVICE);
                 }
-                CBdevice.SelectedIndex = 0;
-
-                // 作业状态
-                CBstatus.Items.Add(ItemStatus.不可执行 + " - 不可执行");
-                CBstatus.Items.Add(ItemStatus.请求执行 + " - 请求执行");
-                CBstatus.Items.Add(ItemStatus.任务中 + " - 任务中");
-                CBstatus.Items.Add(ItemStatus.失效 + " - 失效");
-                CBstatus.Items.Add(ItemStatus.交接中 + " - 交接中");
-                CBstatus.Items.Add(ItemStatus.出现异常 + " - 出现异常");
-                CBstatus.Items.Add(ItemStatus.完成任务 + " - 完成任务");
-                CBstatus.SelectedIndex = 0;
             }
             catch (Exception e)
             {

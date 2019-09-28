@@ -251,7 +251,7 @@ namespace WindowManager
                             return;
                         }
                         // 生成单号
-                        TBwcsno.Text = (CBtype.Text.Substring(0, 1) == TaskType.入库 ? "I" : "U") + System.DateTime.Now.ToString("yyMMddHHmmss");
+                        TBwcsno.Text = (CBtype.Text.Substring(0, 1) == TaskType.入库 ? "I" : "O") + System.DateTime.Now.ToString("yyMMddHHmmss");
 
                         // 单托
                         TBtaskid1.Text = "T1" + System.DateTime.Now.ToString("yyMMddHHmmss");
@@ -300,7 +300,7 @@ namespace WindowManager
                         sql = string.Format(@"update wcs_task_info set W_S_LOC = '{1}', W_D_LOC = '{2}', SITE = '{3}' where TASK_UID = '{0}';",
                                 TBtaskid1.Text, TBlocfrom1.Text.Trim(), TBlocto1.Text.Trim(), CBsite1.Text.Substring(0, 1));
 
-                        if (string.IsNullOrEmpty(TBtaskid2.Text))
+                        if (!string.IsNullOrEmpty(TBtaskid2.Text))
                         {
                             if (string.IsNullOrEmpty(TBlocfrom2.Text.Trim()) || string.IsNullOrEmpty(TBlocto2.Text.Trim()) ||
                                 string.IsNullOrEmpty(TBcode2.Text.Trim()) || string.IsNullOrEmpty(CBsite1.Text.Substring(0, 1)))
