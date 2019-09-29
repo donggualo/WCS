@@ -208,7 +208,7 @@ namespace WindowManager
                 switch (_TYPE)
                 {
                     case 0:
-                        if (string.IsNullOrEmpty(TBlocfrom.Text.Trim()) || string.IsNullOrEmpty(TBlocto.Text.Trim()) || string.IsNullOrEmpty(CBitemid.Text.Trim()))
+                        if (string.IsNullOrEmpty(CBitemid.Text.Trim()))
                         {
                             Notice.Show("请将资讯填写完整！", "错误", 3, MessageBoxIcon.Error);
                             return;
@@ -220,7 +220,7 @@ namespace WindowManager
 
                         break;
                     case 1:
-                        if (string.IsNullOrEmpty(TBlocfrom.Text.Trim()) || string.IsNullOrEmpty(TBlocto.Text.Trim()) || string.IsNullOrEmpty(CBdevice.Text.Trim()) || string.IsNullOrEmpty(CBstatus.Text.Trim()))
+                        if (string.IsNullOrEmpty(CBdevice.Text.Trim()) || string.IsNullOrEmpty(CBstatus.Text.Trim()))
                         {
                             Notice.Show("请将资讯填写完整！", "错误", 3, MessageBoxIcon.Error);
                             return;

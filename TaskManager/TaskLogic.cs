@@ -97,8 +97,8 @@ namespace TaskManager
             try
             {
                 // 选择目的货位最靠外的货物优先处理
-                String loc1 = DataControl._mTaskTools.GetRGVLoc(2, command.LOC_TO_1); //运输车辊台②任务1
-                String loc2 = DataControl._mTaskTools.GetRGVLoc(1, command.LOC_TO_2); //运输车辊台①任务2
+                String loc1 = DataControl._mTaskTools.GetRGVLoc(1, command.LOC_TO_1); //运输车辊台①任务1
+                String loc2 = DataControl._mTaskTools.GetRGVLoc(2, command.LOC_TO_2); //运输车辊台②任务2
                 String loc = DataControl._mTaskTools.GetLocByRgvToLoc(loc1, loc2); //处理货位
                 if (loc == "NG")
                 {
@@ -615,9 +615,9 @@ namespace TaskManager
                 }
                 WCS_COMMAND_V command = dt.ToDataEntity<WCS_COMMAND_V>();
 
-                // 默认入库时 taskid1对接运输车设备辊台②、taskid2对接运输车设备辊台①
-                String loc_1 = DataControl._mTaskTools.GetRGVLoc(2, command.LOC_TO_1); //辊台②任务1
-                String loc_2 = DataControl._mTaskTools.GetRGVLoc(1, command.LOC_TO_2); //辊台①任务2
+                // 默认入库时 taskid1对接运输车设备辊台①、taskid2对接运输车设备辊台②
+                String loc_1 = DataControl._mTaskTools.GetRGVLoc(1, command.LOC_TO_1); //辊台①任务1
+                String loc_2 = DataControl._mTaskTools.GetRGVLoc(2, command.LOC_TO_2); //辊台②任务2
                 String loc; //执行目标
 
                 switch (item.ITEM_ID)   //根据最后的设备指令，可得货物已在流程中该设备对接的下一设备处
@@ -676,7 +676,7 @@ namespace TaskManager
                         break;
                     case ItemId.行车取货:
                         #region 将运输车移至行车对接位置 && 行车定位
-                        // 默认入库时 taskid1对接运输车设备辊台②、taskid2对接运输车设备辊台①
+                        // 默认入库时 taskid1对接运输车设备辊台①、taskid2对接运输车设备辊台②
                         // 获取当前运输车加以分配
                         string rgv = DataControl._mTaskTools.GetItemDeviceLast(item.WCS_NO, ItemId.运输车定位);
                         // 获取当前运输车资讯
@@ -685,34 +685,34 @@ namespace TaskManager
                         String loc_Y = "";  //有货辊台对应目标点
                         String loc_N = "";  //无货辊台对应目标点
 
-                        bool isNoGoodsRGV = false; // 运输车是否无货
+                        bool isNoGoodsRGV = true; // 运输车是否有货
 
                         // 根据当前运输车坐标及任务目标，生成对应运输车定位/对接运输车任务
                         if (RGV.GoodsStatus() == RGV.GoodsYes1) // 辊台①有货
                         {
-                            loc_Y = loc_2;
-                            loc_N = loc_1;
+                            loc_Y = loc_1;
+                            loc_N = loc_2;
                         }
                         else if (RGV.GoodsStatus() == RGV.GoodsYes2) // 辊台②有货
                         {
-                            loc_Y = loc_1;
-                            loc_N = loc_2;
+                            loc_Y = loc_2;
+                            loc_N = loc_1;
                         }
                         else
                         {
                             // 辊台已无货，即解锁设备数据状态
                             DataControl._mTaskTools.DeviceUnLock(rgv);
-                            isNoGoodsRGV = true;
+                            isNoGoodsRGV = false;
                         }
 
-                        if (!isNoGoodsRGV)
+                        if (isNoGoodsRGV)
                         {
                             // 判断是否需要对接到运输车[内]范围内作业
                             if (Convert.ToInt32(loc_Y) >= Convert.ToInt32(R))  // 需对接运输车[内]
                             {
                                 // 生成运输车[内]复位任务
                                 DataControl._mTaskTools.CreateItem(item.WCS_NO, ItemId.运输车复位2, R);    // 待分配设备
-                                                                                                      // 生成运输车[外]对接位任务
+                                // 生成运输车[外]对接位任务
                                 DataControl._mTaskTools.CreateCustomItem(item.WCS_NO, ItemId.运输车对接定位, rgv, "", RR, ItemStatus.请求执行);
                             }
                             else
@@ -723,9 +723,16 @@ namespace TaskManager
                         }
 
                         // 生成行车库存定位任务
-                        if (String.IsNullOrEmpty(loc_N) && String.IsNullOrEmpty(loc_Y))
+                        if (String.IsNullOrEmpty(loc_N) && String.IsNullOrEmpty(loc_Y)) // 运输车无货时
                         {
-                            loc = command.SITE_1 == TaskSite.完成 ? command.LOC_TO_2 : command.LOC_TO_1;
+                            if (string.IsNullOrEmpty(command.TASK_UID_2)) // 单托
+                            {
+                                loc = command.LOC_TO_1;
+                            }
+                            else
+                            {
+                                loc = command.SITE_1 == TaskSite.完成 ? command.LOC_TO_2 : command.LOC_TO_1;
+                            }
                         }
                         else
                         {
@@ -1208,7 +1215,7 @@ namespace TaskManager
 
                         // 获取作业区域内的运输车
                         List<WCS_CONFIG_DEVICE> dList_RGV = DataControl._mTaskTools.GetDeviceList(area, DeviceType.运输车);
-                        // 确认其中最适合的摆渡车
+                        // 确认其中最适合的运输车
                         String rgv = GetSuitableRGV(item.LOC_TO, dList_RGV);
                         if (String.IsNullOrEmpty(rgv.Trim()))
                         {
@@ -1554,23 +1561,23 @@ namespace TaskManager
                         site1 = FRT.RollerRunAll;   // 初始默认辊台全启
                         if (site2 == FRT.RunFront && site3 == FRT.GoodsReceive) // 正向接货
                         {
-                            // 当只有2#辊台有货则只启动1#辊台
-                            if (frt.GoodsStatus() == FRT.GoodsYes2) { site1 = FRT.RollerRun1; }
-                        }
-                        else if (site2 == FRT.RunFront && site3 == FRT.GoodsDeliver) // 正向送货
-                        {
-                            // 当只有2#辊台有货则只启动2#辊台
-                            if (frt.GoodsStatus() == FRT.GoodsYes2) { site1 = FRT.RollerRun2; }
-                        }
-                        else if (site2 == FRT.RunObverse && site3 == FRT.GoodsReceive) // 反向接货
-                        {
                             // 当只有1#辊台有货则只启动2#辊台
                             if (frt.GoodsStatus() == FRT.GoodsYes1) { site1 = FRT.RollerRun2; }
                         }
-                        else if (site2 == FRT.RunObverse && site3 == FRT.GoodsDeliver) // 反向送货
+                        else if (site2 == FRT.RunFront && site3 == FRT.GoodsDeliver) // 正向送货
                         {
                             // 当只有1#辊台有货则只启动1#辊台
                             if (frt.GoodsStatus() == FRT.GoodsYes1) { site1 = FRT.RollerRun1; }
+                        }
+                        else if (site2 == FRT.RunObverse && site3 == FRT.GoodsReceive) // 反向接货
+                        {
+                            // 当只有2#辊台有货则只启动1#辊台
+                            if (frt.GoodsStatus() == FRT.GoodsYes2) { site1 = FRT.RollerRun1; }
+                        }
+                        else if (site2 == FRT.RunObverse && site3 == FRT.GoodsDeliver) // 反向送货
+                        {
+                            // 当只有2#辊台有货则只启动2#辊台
+                            if (frt.GoodsStatus() == FRT.GoodsYes2) { site1 = FRT.RollerRun2; }
                         }
 
                         // 确认辊台货物数量
@@ -1601,23 +1608,23 @@ namespace TaskManager
                         site1 = ARF.RollerRunAll;   // 初始默认辊台全启
                         if (site2 == ARF.RunFront && site3 == ARF.GoodsReceive) // 正向接货
                         {
-                            // 当只有2#辊台有货则只启动1#辊台
-                            if (arf.GoodsStatus() == ARF.GoodsYes2) { site1 = ARF.RollerRun1; }
-                        }
-                        else if (site2 == ARF.RunFront && site3 == ARF.GoodsDeliver) // 正向送货
-                        {
-                            // 当只有2#辊台有货则只启动2#辊台
-                            if (arf.GoodsStatus() == ARF.GoodsYes2) { site1 = ARF.RollerRun2; }
-                        }
-                        else if (site2 == ARF.RunObverse && site3 == ARF.GoodsReceive) // 反向接货
-                        {
                             // 当只有1#辊台有货则只启动2#辊台
                             if (arf.GoodsStatus() == ARF.GoodsYes1) { site1 = ARF.RollerRun2; }
                         }
-                        else if (site2 == ARF.RunObverse && site3 == ARF.GoodsDeliver) // 反向送货
+                        else if (site2 == ARF.RunFront && site3 == ARF.GoodsDeliver) // 正向送货
                         {
                             // 当只有1#辊台有货则只启动1#辊台
                             if (arf.GoodsStatus() == ARF.GoodsYes1) { site1 = ARF.RollerRun1; }
+                        }
+                        else if (site2 == ARF.RunObverse && site3 == ARF.GoodsReceive) // 反向接货
+                        {
+                            // 当只有2#辊台有货则只启动1#辊台
+                            if (arf.GoodsStatus() == ARF.GoodsYes2) { site1 = ARF.RollerRun1; }
+                        }
+                        else if (site2 == ARF.RunObverse && site3 == ARF.GoodsDeliver) // 反向送货
+                        {
+                            // 当只有2#辊台有货则只启动2#辊台
+                            if (arf.GoodsStatus() == ARF.GoodsYes2) { site1 = ARF.RollerRun2; }
                         }
 
                         // 确认辊台货物数量
@@ -1648,23 +1655,23 @@ namespace TaskManager
                         site1 = RGV.RollerRunAll;   // 初始默认辊台全启
                         if (site2 == RGV.RunFront && site3 == RGV.GoodsReceive) // 正向接货
                         {
-                            // 当只有2#辊台有货则只启动1#辊台
-                            if (rgv.GoodsStatus() == RGV.GoodsYes2) { site1 = RGV.RollerRun1; }
-                        }
-                        else if (site2 == RGV.RunFront && site3 == RGV.GoodsDeliver) // 正向送货
-                        {
-                            // 当只有2#辊台有货则只启动2#辊台
-                            if (rgv.GoodsStatus() == RGV.GoodsYes2) { site1 = RGV.RollerRun2; }
-                        }
-                        else if (site2 == RGV.RunObverse && site3 == RGV.GoodsReceive) // 反向接货
-                        {
                             // 当只有1#辊台有货则只启动2#辊台
                             if (rgv.GoodsStatus() == RGV.GoodsYes1) { site1 = RGV.RollerRun2; }
                         }
-                        else if (site2 == RGV.RunObverse && site3 == RGV.GoodsDeliver) // 反向送货
+                        else if (site2 == RGV.RunFront && site3 == RGV.GoodsDeliver) // 正向送货
                         {
                             // 当只有1#辊台有货则只启动1#辊台
                             if (rgv.GoodsStatus() == RGV.GoodsYes1) { site1 = RGV.RollerRun1; }
+                        }
+                        else if (site2 == RGV.RunObverse && site3 == RGV.GoodsReceive) // 反向接货
+                        {
+                            // 当只有2#辊台有货则只启动1#辊台
+                            if (rgv.GoodsStatus() == RGV.GoodsYes2) { site1 = RGV.RollerRun1; }
+                        }
+                        else if (site2 == RGV.RunObverse && site3 == RGV.GoodsDeliver) // 反向送货
+                        {
+                            // 当只有2#辊台有货则只启动2#辊台
+                            if (rgv.GoodsStatus() == RGV.GoodsYes2) { site1 = RGV.RollerRun2; }
                         }
 
                         // 确认辊台货物数量

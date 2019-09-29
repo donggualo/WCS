@@ -541,13 +541,13 @@ namespace TaskManager.Functions
         {
             try
             {
-                // 辊台号顺序由port口往入库方向从小到大定
+                // 辊台号顺序由port口往入库方向从大到小定
                 String sql;
-                if (id == 1)    // 运输车辊台①[外]定位
+                if (id == 1)    // 运输车辊台①[内]定位
                 {
                     sql = String.Format(@"select distinct RGV_LOC_1 LOC from WCS_CONFIG_LOC where WMS_LOC = '{0}'", loc);
                 }
-                else if (id == 2)   // 运输车辊台②[内]定位
+                else if (id == 2)   // 运输车辊台②[外]定位
                 {
                     sql = String.Format(@"select distinct RGV_LOC_2 LOC from WCS_CONFIG_LOC where WMS_LOC = '{0}'", loc);
                 }
@@ -580,12 +580,16 @@ namespace TaskManager.Functions
             {
                 String loc = "NG";
                 // 不能都为0，即不能没有目的位置
-                if (Convert.ToInt32(loc_front) == 0 || Convert.ToInt32(loc_behind) == 0)
+                if (Convert.ToInt32(loc_front) == 0 && Convert.ToInt32(loc_behind) == 0)
                 {
                     return loc;
                 }
+
+                if (Convert.ToInt32(loc_front) == 0) return loc_behind;
+                if (Convert.ToInt32(loc_behind) == 0) return loc_front;
+
                 // 比较
-                if (Convert.ToInt32(loc_behind) >= Convert.ToInt32(loc_front))
+                if (Convert.ToInt32(loc_front) <= Convert.ToInt32(loc_behind))
                 {
                     loc = loc_front;
                 }

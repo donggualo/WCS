@@ -272,8 +272,6 @@ namespace WindowManager
         {
             try
             {
-                Notice.Show("开始执行！", "提示", 3, MessageBoxIcon.Info);
-
                 _TASK.Run_TaskContinued();
                 _TASK.Run_InInitial();
                 _TASK.Run_LinkDevice();
@@ -306,8 +304,6 @@ namespace WindowManager
                     return;
                 }
                 string wcs = (DGcommand.SelectedItem as DataRowView).Row[0].ToString();
-
-                Notice.Show("开始分配！", "提示", 3, MessageBoxIcon.Info);
 
                 // 获取待分配设备任务
                 String sql = String.Format(@"select * from WCS_TASK_ITEM where DEVICE is null and STATUS = '{1}' and WCS_NO = '{0}' order by CREATION_TIME", wcs, ItemStatus.不可执行);
@@ -351,8 +347,6 @@ namespace WindowManager
                     return;
                 }
                 string wcs = (DGcommand.SelectedItem as DataRowView).Row[0].ToString();
-
-                Notice.Show("开始生成！", "提示", 3, MessageBoxIcon.Info);
 
                 // 获取 请求执行 的任务对应的 ITEM 资讯
                 String sql = String.Format(@"select * from WCS_TASK_ITEM where STATUS in ('{1}','{2}') and WCS_NO = '{0}' order by CREATION_TIME", wcs, ItemStatus.请求执行, ItemStatus.任务中);
