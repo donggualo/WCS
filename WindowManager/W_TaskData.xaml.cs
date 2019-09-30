@@ -91,7 +91,7 @@ namespace WindowManager
 			 (case when SITE_2 = 'N' then '未执行'
 				   when SITE_2 = 'W' then '任务中'
 				   when SITE_2 = 'Y' then '完成'
-				   when SITE_2 = 'X' then '失效' else '' end) 货物②任务状态 from wcs_command_v";
+				   when SITE_2 = 'X' then '失效' else '' end) 货物②任务状态 from wcs_command_v order by CREATION_TIME desc";
                 // 获取数据
                 dt = DataControl._mMySql.SelectAll(sql);
                 DGcommand.ItemsSource = dt.DefaultView;
@@ -150,7 +150,7 @@ namespace WindowManager
 				   when STATUS = 'E' then '出现异常'
 				   when STATUS = 'Y' then '完成任务'
 				   when STATUS = 'X' then '失效' else '' end) 作业状态,CREATION_TIME 创建时间,ID
-             from wcs_task_item where WCS_NO = '{0}'", wcsNO);
+             from wcs_task_item where WCS_NO = '{0}' order by ID desc", wcsNO);
                 // 获取数据
                 dt = DataControl._mMySql.SelectAll(sql);
                 DGitem.ItemsSource = dt.DefaultView;

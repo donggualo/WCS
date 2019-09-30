@@ -660,7 +660,7 @@ namespace TaskManager
                         // 判断是否作业过运输车定位对接行车任务
                         String sqlrr = String.Format(@"select * from wcs_task_item where ITEM_ID = '{3}' and STATUS not in ('{1}','{2}') and WCS_NO = '{0}'", item.WCS_NO, ItemStatus.出现异常, ItemStatus.失效, ItemId.行车取货);
                         DataTable dtrr = DataControl._mMySql.SelectAll(sqlrr);
-                        if (DataControl._mStools.IsNoData(dt))
+                        if (DataControl._mStools.IsNoData(dtrr)) // 不曾对接过
                         {
                             loc = DataControl._mTaskTools.GetLocByRgvToLoc(loc_1, loc_2);
                             if (loc == "NG")
@@ -668,9 +668,13 @@ namespace TaskManager
                                 //不能没有货物目的位置
                                 break;
                             }
-                            // 生成运输车定位任务
-                            DataControl._mTaskTools.CreateCustomItem(item.WCS_NO, ItemId.运输车定位, item.LOC_TO, "", loc, ItemStatus.请求执行);
                         }
+                        else // 已被取走1托货
+                        {
+                            loc = dtrr.Rows[0]["LOC_TO"].ToString() == DataControl._mTaskTools.GetABCTrackLoc(command.LOC_TO_1) ? loc_2 : loc_1;
+                        }
+                        // 生成运输车定位任务
+                        DataControl._mTaskTools.CreateCustomItem(item.WCS_NO, ItemId.运输车定位, item.LOC_TO, "", loc, ItemStatus.请求执行);
                         #endregion
 
                         break;
@@ -708,7 +712,7 @@ namespace TaskManager
                         if (isNoGoodsRGV)
                         {
                             // 判断是否需要对接到运输车[内]范围内作业
-                            if (Convert.ToInt32(loc_Y) >= Convert.ToInt32(R))  // 需对接运输车[内]
+                            if (Convert.ToInt32(loc_Y) >= Convert.ToInt32(R) && RGV.GetCurrentSite() <= Convert.ToInt32(R))  // 需对接运输车[内]
                             {
                                 // 生成运输车[内]复位任务
                                 DataControl._mTaskTools.CreateItem(item.WCS_NO, ItemId.运输车复位2, R);    // 待分配设备
@@ -717,7 +721,7 @@ namespace TaskManager
                             }
                             else
                             {
-                                // 生成运输车[外]定位任务
+                                // 生成运输车 定位任务
                                 DataControl._mTaskTools.CreateCustomItem(item.WCS_NO, ItemId.运输车定位, rgv, "", loc_Y, ItemStatus.请求执行);
                             }
                         }

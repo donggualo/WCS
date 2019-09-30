@@ -235,12 +235,6 @@ namespace WindowManager
         {
             try
             {
-                MessageBoxResult result = MessageBoxX.Show("确认使用此数据内容？！", "提示", System.Windows.Application.Current.MainWindow, MessageBoxButton.YesNo);
-                if (result == MessageBoxResult.No)
-                {
-                    return;
-                }
-
                 string sql;
                 switch (_TYPE)
                 {
