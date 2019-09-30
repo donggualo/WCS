@@ -91,6 +91,7 @@ namespace TaskManager
                 DataControl._mTaskTools.UpdateItem(_ITEM.ID, _ITEM.WCS_NO, _ITEM.ITEM_ID, ItemColumnName.作业状态, ItemStatus.交接中);
                 // 任务完成
                 _isSuc = true;
+                DataControl._mSocket.SwithRefresh(_ITEM.DEVICE, true);
             }
         }
         /// <summary>

@@ -174,17 +174,47 @@ namespace TaskManager
                 #endregion
 
                 #region 运输车 <==> 行车
-                // 获取已完成对接阶段的运输车任务
+                // 获取已完成对接阶段的行车任务
                 List<WCS_TASK_ITEM> itemList_ABC = DataControl._mTaskTools.GetItemList_R(ItemId.行车轨道定位);
                 // 遍历生成夹具取放任务
                 foreach (WCS_TASK_ITEM item_ABC in itemList_ABC)
                 {
                     CreateTask_RGV_ABC(item_ABC);
                 }
+
+
+                /* [特殊情况]：
+                 * 同一清单中当第二托任务入库时，
+                 * 运输车完成定位等待对接，
+                 * 没有生成对应的行车轨道定位任务 */
+                List<WCS_TASK_ITEM> itemList_RGV = DataControl._mTaskTools.GetItemList_R(ItemId.运输车定位);
+                foreach (WCS_TASK_ITEM item_RGV in itemList_RGV)
+                {
+                    // 只看入库
+                    if (item_RGV.WCS_NO.Substring(0, 1) == "I")
+                    {
+                        // 行车轨道定位任务
+                        int count = DataControl._mMySql.GetCount("wcs_task_item", String.Format(@"WCS_NO ='{0}' and ITEM_ID = '{1}' and STATUS not in ('{2}','{3}')",
+                            item_RGV.WCS_NO, ItemId.行车轨道定位, ItemStatus.出现异常, ItemStatus.失效));
+                        if (count < 2) // 当不满足2托入库行车轨道定位
+                        {
+                            // 获取最新的行车放货完成任务
+                            String sql = String.Format(@"select * From WCS_TASK_ITEM where WCS_NO ='{0}' and ITEM_ID = '{1}' and STATUS = '{2}'", item_RGV.WCS_NO, ItemId.行车放货, ItemStatus.完成任务);
+                            DataTable dtitem = DataControl._mMySql.SelectAll(sql);
+                            if (DataControl._mStools.IsNoData(dtitem))
+                            {
+                                continue;
+                            }
+                            WCS_TASK_ITEM item = dtitem.ToDataEntity<WCS_TASK_ITEM>();
+
+                            ProcessInTask(item);
+                        }
+                    }
+                }
                 #endregion
 
                 #region 行车 <==> 库存货位
-                // 获取已完成对接阶段的运输车任务
+                // 获取已完成对接阶段的行车任务
                 List<WCS_TASK_ITEM> itemList_LOC = DataControl._mTaskTools.GetItemList_R(ItemId.行车库存定位);
                 // 遍历生成夹具取放任务
                 foreach (WCS_TASK_ITEM item_LOC in itemList_LOC)
@@ -491,7 +521,8 @@ namespace TaskManager
                 }
 
                 // 当ITEM任务为出入库最后流程时
-                if (item.ITEM_ID == ItemId.行车放货 || item.ITEM_ID == ItemId.摆渡车反向)
+                if ((item.WCS_NO.Substring(0, 1) == "I" && item.ITEM_ID == ItemId.行车放货) || 
+                    (item.WCS_NO.Substring(0, 1) == "O" && item.ITEM_ID == ItemId.摆渡车反向))
                 {
                     // 目的位置比对检测是否抵达——>完成任务
                     CheckTask(item.WCS_NO, item.LOC_TO);
@@ -574,10 +605,16 @@ namespace TaskManager
                         {
                             // 更新清单完成
                             DataControl._mTaskTools.UpdateTask(command.TASK_UID_1, TaskSite.完成);
-                            DataControl._mTaskTools.UpdateTask(command.TASK_UID_2, TaskSite.完成);
                             // 通知WMS完成
                             DataControl._mHttp.DoStockOutFinishTask(command.LOC_TO_1, command.TASK_UID_1);
-                            DataControl._mHttp.DoStockOutFinishTask(command.LOC_TO_2, command.TASK_UID_2);
+
+                            if (!string.IsNullOrEmpty(command.TASK_UID_2))
+                            {
+                                // 更新清单完成
+                                DataControl._mTaskTools.UpdateTask(command.TASK_UID_2, TaskSite.完成);
+                                // 通知WMS完成
+                                DataControl._mHttp.DoStockOutFinishTask(command.LOC_TO_2, command.TASK_UID_2);
+                            }
                         }
 
                         break;
@@ -605,6 +642,8 @@ namespace TaskManager
                 String R = DataControl._mStools.GetValueByKey("StandbyR2");
                 // 运输车于运输车对接点
                 String RR = DataControl._mStools.GetValueByKey("StandbyRR");
+                // 行车区域划分中间点X轴值
+                String AA = DataControl._mStools.GetValueByKey("CenterX");
 
                 // 获取对应清单
                 String sql = String.Format(@"select * from wcs_command_v where WCS_NO = '{0}'", item.WCS_NO);
@@ -750,10 +789,23 @@ namespace TaskManager
                         #region 行车定位
                         // 未完成的任务目标点
                         loc = command.SITE_1 == TaskSite.完成 ? command.LOC_TO_2 : command.LOC_TO_1;
-                        // 行车到运输车对接取货点
-                        String ABCloc = DataControl._mTaskTools.GetABCTrackLoc(loc); //获取对应行车位置
-                        // 生成行车轨道定位任务
-                        DataControl._mTaskTools.CreateCustomItem(item.WCS_NO, ItemId.行车轨道定位, item.DEVICE, "", ABCloc, ItemStatus.请求执行);
+
+                        // 是否需要换行车作业
+                        string lotX1 = DataControl._mTaskTools.GetABCStockLoc(command.LOC_TO_1).Split('-')[0];
+                        string lotX2 = DataControl._mTaskTools.GetABCStockLoc(command.LOC_TO_2).Split('-')[0];
+                        if ((Convert.ToInt32(lotX1) >= Convert.ToInt32(AA) && Convert.ToInt32(lotX2) < Convert.ToInt32(AA)) ||
+                            (Convert.ToInt32(lotX2) >= Convert.ToInt32(AA) && Convert.ToInt32(lotX1) < Convert.ToInt32(AA)))
+                        {
+                            // 生成行车轨道定位任务
+                            DataControl._mTaskTools.CreateItem(item.WCS_NO, ItemId.行车轨道定位, loc); // 待分配设备
+                        }
+                        else
+                        {
+                            // 行车到运输车对接取货点
+                            String ABCloc = DataControl._mTaskTools.GetABCTrackLoc(loc);  // 获取对应行车位置
+                            // 生成行车轨道定位任务
+                            DataControl._mTaskTools.CreateCustomItem(item.WCS_NO, ItemId.行车轨道定位, item.DEVICE, "", ABCloc, ItemStatus.请求执行);
+                        }
                         #endregion
 
                         break;
