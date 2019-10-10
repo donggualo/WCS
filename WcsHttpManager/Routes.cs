@@ -184,6 +184,7 @@ namespace WcsHttpManager
 
             if (msg.Length != 0)
             {
+                Console.WriteLine("请求错误：" + msg);
                 return new HttpResponse()
                 {
                     ContentAsUTF8 = msg,
@@ -227,6 +228,36 @@ namespace WcsHttpManager
 
         private HttpResponse HomeIndex(HttpRequest request)
         {
+            //try
+            //{
+            //    if (request.Content != null)
+            //    {
+            //        WmsModel model = JsonConvert.DeserializeObject<WmsModel>(request.Content);
+            //        HttpResponse response;
+            //        switch (model.Task_type)
+            //        {
+            //            case WmsStatus.StockInTask:
+            //                response = CheckWmsModel(model, WmsStatus.StockCheckTask, false);
+            //                break;
+            //            case WmsStatus.StockOutTask:
+            //                response = CheckWmsModel(model, WmsStatus.StockCheckTask, false);
+            //                break;
+            //            case WmsStatus.StockMoveTask:
+            //                response = CheckWmsModel(model, WmsStatus.StockCheckTask, false);
+            //                break;
+            //        }
+            //        if (response != null) return response;
+            //        if (!WmsModelAdd(model, out string result))
+            //        {
+            //            return FailResponse(result);
+            //        }
+            //        return OkResponse();
+            //    }
+            //}
+            //catch (Exception e)
+            //{
+            //    Console.WriteLine(e.Message);
+            //}
             return HttpBuilder.NotFound();
             //string value = "";
             //if (request.Headers.ContainsKey("WMS_DATA"))

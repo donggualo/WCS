@@ -18,7 +18,7 @@ namespace WcsHttpManager
     {
         public string wcsUrl = "";
         public string serverName = "WMS";
-        public string CommandEnd = ",END";
+        public string CommandEnd = "END";
 
         public HttpControl()
         {
@@ -50,12 +50,14 @@ namespace WcsHttpManager
         {
             StringBuilder url = new StringBuilder();
             url.Append(wcsUrl + "/" + serverName + "/");
-            url.Append(WmsParam.Status + "=" + WmsStatus.StockInTask+",");
+            url.Append(WmsParam.GetAllStockInTask + ",");
+            url.Append(WmsParam.Status + "=" + (int)WmsStatus.StockInTask+",");
             url.Append(WmsParam.From + "=" + from + ",");
             url.Append(WmsParam.Barcode + "=" + barcode + ",");
             url.Append(WmsParam.DateTime + "=" + DateTime.Now.ToString("yyyyMMddHHmmss") + ",");
             url.Append(CommandEnd);
 
+            Console.WriteLine(url.ToString());
             string result = DoPost(url.ToString());
             return JsonConvert.DeserializeObject<WmsModel>(result);
         }
@@ -68,12 +70,14 @@ namespace WcsHttpManager
         {
             StringBuilder url = new StringBuilder();
             url.Append(wcsUrl + "/" + serverName + "/");
-            url.Append(WmsParam.Status + "=" + WmsStatus.SiteArrived + ",");
+            url.Append(WmsParam.GetAllStockInTask + ",");
+            url.Append(WmsParam.Status + "=" + (int)WmsStatus.SiteArrived + ",");
             url.Append(WmsParam.From + "=" + from + ",");
             url.Append(WmsParam.TaskUID + "=" + taskuid + ",");
             url.Append(WmsParam.DateTime + "=" + DateTime.Now.ToString("yyyyMMddHHmmss") + ",");
             url.Append(CommandEnd);
 
+            Console.WriteLine(url.ToString());
             string result = DoPost(url.ToString());
             return JsonConvert.DeserializeObject<WmsModel>(result);
         }
@@ -89,12 +93,14 @@ namespace WcsHttpManager
         {
             StringBuilder url = new StringBuilder();
             url.Append(wcsUrl + "/" + serverName + "/");
-            url.Append(WmsParam.Status + "=" + WmsStatus.TaskFinish + ",");
+            url.Append(WmsParam.GetAllStockInTask + ",");
+            url.Append(WmsParam.Status + "=" + (int)WmsStatus.TaskFinish + ",");
             url.Append(WmsParam.From + "=" + from + ",");
             url.Append(WmsParam.TaskUID + "=" + taskuid + ",");
             url.Append(WmsParam.DateTime + "=" + DateTime.Now.ToString("yyyyMMddHHmmss") + ",");
             url.Append(CommandEnd);
 
+            Console.WriteLine(url.ToString());
             string result = DoPost(url.ToString());
             return result;
         }
@@ -113,12 +119,14 @@ namespace WcsHttpManager
         {
             StringBuilder url = new StringBuilder();
             url.Append(wcsUrl + "/" + serverName + "/");
-            url.Append(WmsParam.Status + "=" + WmsStatus.TaskFinish + ",");
+            url.Append(WmsParam.GetAllStockOutTask + ",");
+            url.Append(WmsParam.Status + "=" + (int)WmsStatus.TaskFinish + ",");
             url.Append(WmsParam.From + "=" + from + ",");
             url.Append(WmsParam.TaskUID + "=" + taskuid + ",");
             url.Append(WmsParam.DateTime + "=" + DateTime.Now.ToString("yyyyMMddHHmmss") + ",");
             url.Append(CommandEnd);
 
+            Console.WriteLine(url.ToString());
             string result = DoPost(url.ToString());
             return result;
         }
@@ -133,12 +141,14 @@ namespace WcsHttpManager
         {
             StringBuilder url = new StringBuilder();
             url.Append(wcsUrl + "/" + serverName + "/");
-            url.Append(WmsParam.Status + "=" + WmsStatus.TaskSuspend + ",");
+            url.Append(WmsParam.GetAllStockOutTask + ",");
+            url.Append(WmsParam.Status + "=" + (int)WmsStatus.TaskSuspend + ",");
             url.Append(WmsParam.From + "=" + from + ",");
             url.Append(WmsParam.TaskUID + "=" + taskuid + ",");
             url.Append(WmsParam.DateTime + "=" + DateTime.Now.ToString("yyyyMMddHHmmss") + ",");
             url.Append(CommandEnd);
 
+            Console.WriteLine(url.ToString());
             string result = DoPost(url.ToString());
             return JsonConvert.DeserializeObject<WmsModel>(result);
         }
@@ -157,12 +167,14 @@ namespace WcsHttpManager
         {
             StringBuilder url = new StringBuilder();
             url.Append(wcsUrl + "/" + serverName + "/");
-            url.Append(WmsParam.Status + "=" + WmsStatus.TaskFinish + ",");
+            url.Append(WmsParam.GetAllStockMoveTask + ",");
+            url.Append(WmsParam.Status + "=" + (int)WmsStatus.TaskFinish + ",");
             url.Append(WmsParam.From + "=" + from + ",");
             url.Append(WmsParam.TaskUID + "=" + taskuid + ",");
             url.Append(WmsParam.DateTime + "=" + DateTime.Now.ToString("yyyyMMddHHmmss") + ",");
             url.Append(CommandEnd);
 
+            Console.WriteLine(url.ToString());
             string result = DoPost(url.ToString());
             return result;
         }
@@ -181,11 +193,13 @@ namespace WcsHttpManager
         {
             StringBuilder url = new StringBuilder();
             url.Append(wcsUrl + "/" + serverName + "/");
-            url.Append(WmsParam.Status + "=" + WmsStatus.StockCheckTask + ",");
+            url.Append(WmsParam.GetAllStockCheckTask + ",");
+            url.Append(WmsParam.Status + "=" + (int)WmsStatus.StockCheckTask + ",");
             url.Append(WmsParam.From + "=" + from + ",");
             url.Append(WmsParam.DateTime + "=" + DateTime.Now.ToString("yyyyMMddHHmmss") + ",");
             url.Append(CommandEnd);
 
+            Console.WriteLine(url.ToString());
             string result = DoPost(url.ToString());
             return result;
         }
@@ -199,12 +213,14 @@ namespace WcsHttpManager
         {
             StringBuilder url = new StringBuilder();
             url.Append(wcsUrl + "/" + serverName + "/");
-            url.Append(WmsParam.Status + "=" + WmsStatus.TaskFinish + ",");
+            url.Append(WmsParam.GetAllStockCheckTask + ",");
+            url.Append(WmsParam.Status + "=" + (int)WmsStatus.TaskFinish + ",");
             url.Append(WmsParam.From + "=" + from + ",");
             url.Append(WmsParam.TaskUID + "=" + taskuid + ",");
             url.Append(WmsParam.DateTime + "=" + DateTime.Now.ToString("yyyyMMddHHmmss") + ",");
             url.Append(CommandEnd);
 
+            Console.WriteLine(url.ToString());
             string result = DoPost(url.ToString());
             return result;
         }
@@ -219,11 +235,13 @@ namespace WcsHttpManager
         {
             StringBuilder url = new StringBuilder();
             url.Append(wcsUrl + "/" + serverName + "/");
-            url.Append(WmsParam.Status + "=" + WmsStatus.TaskFinish + ",");
+            url.Append(WmsParam.GetAllStockCheckTask + ",");
+            url.Append(WmsParam.Status + "=" + (int)WmsStatus.TaskFinish + ",");
             url.Append(WmsParam.From + "=" + from + ",");
             url.Append(WmsParam.DateTime + "=" + DateTime.Now.ToString("yyyyMMddHHmmss") + ",");
             url.Append(CommandEnd);
 
+            Console.WriteLine(url.ToString());
             string result = DoPost(url.ToString());
             return result;
         }

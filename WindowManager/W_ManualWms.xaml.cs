@@ -96,18 +96,7 @@ namespace WindowManager
                 // 清空数据
                 DGinfo.ItemsSource = null;
 
-                string sql = @"select a.ID AGV任务ID, a.AGV AGV设备号, a.PICKSTATION AGV装货点, a.DROPSTATION AGV卸货点, 
-             (case when a.MAGIC = '1' then '任务生成'
-			       when a.MAGIC = '2' then '分配装货卸货点'
-				   when a.MAGIC = '3' then '前往装货点'
-				   when a.MAGIC = '4' then '到达装货点'
-				   when a.MAGIC = '6' then '装货完成'
-				   when a.MAGIC = '8' then '到达卸货点'
-				   when a.MAGIC = '10' then '卸货完成'
-				   when a.MAGIC = '11' then '任务完成'
-				   when a.MAGIC = '254' then '重新定位卸货' else NULL end) AGV当前步骤,
-                 a.CREATION_TIME AGV任务生成时间, B.CREATION_TIME WCS任务生成时间,
-                 b.TASK_UID WCS任务ID, b.BARCODE 货物码, b.W_S_LOC 起点, b.W_D_LOC 终点,
+                string sql = @"select b.TASK_UID WCS任务ID, b.BARCODE 货物码, b.W_S_LOC 起点, b.W_D_LOC 终点,
 			 (case when b.TASK_TYPE = '1' then '入库任务'
 			       when b.TASK_TYPE = '2' then '出库任务'
 				   when b.TASK_TYPE = '3' then '移仓任务'
@@ -116,8 +105,19 @@ namespace WindowManager
 			 (case when b.SITE = 'N' then '未执行'
 			       when b.SITE = 'W' then '任务中'
 				   when b.SITE = 'Y' then '完成'
-				   when b.SITE = 'X' then '失效' else NULL end) WCS任务状态
-	          from wcs_agv_info a left join wcs_task_info b on a.TASK_UID = b.TASK_UID";
+				   when b.SITE = 'X' then '失效' else NULL end) WCS任务状态,
+             b.CREATION_TIME WCS任务生成时间,a.CREATION_TIME AGV任务生成时间, 
+			 a.ID AGV任务ID, a.AGV AGV设备号, a.PICKSTATION AGV装货点, a.DROPSTATION AGV卸货点, 
+             (case when a.MAGIC = '1' then '任务生成'
+			       when a.MAGIC = '2' then '分配装货卸货点'
+				   when a.MAGIC = '3' then '前往装货点'
+				   when a.MAGIC = '4' then '到达装货点'
+				   when a.MAGIC = '6' then '装货完成'
+				   when a.MAGIC = '8' then '到达卸货点'
+				   when a.MAGIC = '10' then '卸货完成'
+				   when a.MAGIC = '11' then '任务完成'
+				   when a.MAGIC = '254' then '重新定位卸货' else CONCAT(a.MAGIC,' _未知') end) AGV当前步骤
+	          from wcs_task_info b left join wcs_agv_info a on a.TASK_UID = b.TASK_UID order by b.CREATION_TIME desc";
                 // 获取数据
                 DGinfo.ItemsSource = DataControl._mMySql.SelectAll(sql).DefaultView;
             }
@@ -141,9 +141,9 @@ namespace WindowManager
                 TBcode.Text = (DGinfo.SelectedItem as DataRowView)["货物码"].ToString();
 
                 string loc = (DGinfo.SelectedItem as DataRowView)["终点"].ToString();
-                if (!string.IsNullOrEmpty(loc))
+                if (!string.IsNullOrEmpty(loc) && loc.Contains("-"))
                 {
-                    string[] LOC = loc.Split('-');
+                    string[] LOC = DataControl._mTaskTools.GetABCStockLoc(loc).Split('-');
                     TBlocX.Text = LOC[0].ToString();
                     TBlocY.Text = LOC[1].ToString();
                     TBlocZ.Text = LOC[2].ToString();
@@ -299,6 +299,46 @@ namespace WindowManager
         }
 
         /// <summary>
+        /// 任务完成
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BtnFinish_Click(object sender, RoutedEventArgs e)
+        {
+            if (DGinfo.SelectedItem == null)
+            {
+                Notice.Show("请选中任务！", "提示", 3, MessageBoxIcon.Info);
+                return;
+            }
+            string uid = (DGinfo.SelectedItem as DataRowView)["WCS任务ID"].ToString();
+
+            // 获取Task资讯
+            String sql = String.Format(@"select TASK_TYPE,W_D_LOC from wcs_task_info where TASK_UID = '{0}'", uid);
+            DataTable dt = DataControl._mMySql.SelectAll(sql);
+            if (DataControl._mStools.IsNoData(dt))
+            {
+                Notice.Show("不存在任务Task资讯！", "错误", 3, MessageBoxIcon.Error);
+                return;
+            }
+
+            string type = dt.Rows[0]["TASK_UID"].ToString();
+            string loc = dt.Rows[0]["W_D_LOC"].ToString();
+            // 通知WMS完成
+            switch(type)
+            {
+                case TaskType.入库:
+                    DataControl._mHttp.DoStockInFinishTask(loc, uid);
+                    break;
+                case TaskType.出库:
+                    DataControl._mHttp.DoStockOutFinishTask(loc, uid);
+                    break;
+                default:
+                    Notice.Show("任务未完成！", "错误", 3, MessageBoxIcon.Error);
+                    break;
+            }
+        }
+
+        /// <summary>
         /// 货位出库
         /// </summary>
         /// <param name="sender"></param>
@@ -321,7 +361,7 @@ namespace WindowManager
                 return;
             }
             // 货位
-            string LOC = "C" + TBlocX.Text.Trim().PadLeft(3, '0') + "-" + TBlocY.Text.Trim().PadLeft(2, '0') + "-" + TBlocZ.Text.Trim().PadLeft(2, '0');
+            string LOC = "C-" + TBlocX.Text.Trim().PadLeft(3, '0') + "-" + TBlocY.Text.Trim().PadLeft(2, '0') + "-" + TBlocZ.Text.Trim().PadLeft(2, '0');
 
             if ((bool)CheckWMS.IsChecked)
             {

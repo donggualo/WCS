@@ -47,7 +47,7 @@ namespace WcsHttpManager
     /// <summary>
     /// WMS 状态定义 
     /// </summary>
-    public enum WmsStatus
+    public enum WmsStatus:int
     {
         /// <summary>
         /// 空

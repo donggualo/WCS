@@ -52,9 +52,12 @@ namespace MHttpServer
                 HttpRequest request = GetRequest(inputStream, outputStream);
 
                 // route and handle the request...
-                HttpResponse response = RouteRequest(inputStream, outputStream, request);      
-          
-                Console.WriteLine("{0} {1}",response.StatusCode,request.Url);
+                HttpResponse response = RouteRequest(inputStream, outputStream, request);
+
+                string msg = string.Format("{0} {1}", response.StatusCode, request.Url);
+                string data = request.Content;
+                Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + msg + (data!=null ? data.Replace(" ","").Replace("\n",""):""));
+                log.Info(msg);
                 // build a default response for errors
                 if (response.Content == null) {
                     if (response.StatusCode != "200") {

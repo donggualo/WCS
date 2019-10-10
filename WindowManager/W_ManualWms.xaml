@@ -9,24 +9,22 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="5*"/>
+            <RowDefinition Height="10*"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="2*"/>
-            <RowDefinition Height="2*"/>
-            <RowDefinition Height="2*"/>
-            <RowDefinition Height="2*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="110*"/>
+            <ColumnDefinition Width="100*"/>
+            <ColumnDefinition Width="85*"/>
+            <ColumnDefinition Width="100*"/>
+            <ColumnDefinition Width="100*"/>
+            <ColumnDefinition Width="100*"/>
+            <ColumnDefinition Width="145*"/>
+            <ColumnDefinition Width="145*"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.ColumnSpan="3" Margin="10,0,0,0" FontSize="20" FontFamily="MV Boli">
+        <TextBlock Grid.ColumnSpan="2" Margin="3,0,0,0" FontSize="19" FontFamily="MV Boli" Grid.Column="1">
                         AGV 装卸货任务列表
         </TextBlock>
         <!--<CheckBox Grid.Column="4" Name="CBrefresh"
@@ -35,33 +33,40 @@
                   pu:CheckBoxHelper.BoxHeight="25"
                   pu:CheckBoxHelper.BoxWidth="60"
                   pu:CheckBoxHelper.CheckedBackground="#2100FF" FontFamily="MV Boli"/>-->
-        <Button Name="BtnRefresh" Content="刷新列表" Click="BtnRefresh_Click" Grid.Column="3"/>
-        <DataGrid Name="DGinfo"  Grid.Row="1" Grid.ColumnSpan="6" IsReadOnly="True" AutoGeneratingColumn="DataGrid_TimeFormat" MouseDoubleClick="DGinfo_DoubleClick"/>
-        <Label Content="包装线辊台设备号：" Grid.Row="2" Grid.Column="1"/>
-        <ComboBox Name="CBfrt_P" Margin="5,5,5,5" Grid.Column="2" Grid.Row="2"/>
+        <Button Name="BtnRefresh" Content="刷新列表" Click="BtnRefresh_Click" Grid.Column="3" Margin="5,0,0,0"/>
+        <DataGrid Name="DGinfo"  Grid.Row="1" Grid.ColumnSpan="9" IsReadOnly="True" AutoGeneratingColumn="DataGrid_TimeFormat" MouseDoubleClick="DGinfo_DoubleClick">
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="【WMS】任务完成" Click="BtnFinish_Click"/>
+                    <MenuItem Header="【NDC】派车装货"/>
+                    <MenuItem Header="【NDC】辊台装货"/>
+                    <MenuItem Header="【NDC】辊台卸货"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+        </DataGrid>
 
-        <Label Content="货物条码：" Grid.Column="3" Grid.Row="2"/>
-        <TextBox Name="TBcode" Margin="5,5,5,5" TextWrapping="Wrap" Grid.Column="4" Grid.Row="2"/>
+        <Label Content="包装线辊台号：" Grid.Row="2" Grid.Column="1" Margin="5"/>
+        <ComboBox Name="CBfrt_P" Margin="2" Grid.Column="2" Grid.Row="2"/>
 
-        <CheckBox Name="CheckWMS" Content="NO WMS" Margin="50,0,0,0" Grid.Row="4" Grid.Column="1"/>
+        <Label Content="货物条码：" Grid.Column="3" Grid.Row="2" Margin="5"/>
+        <TextBox Name="TBcode" Margin="2" TextWrapping="Wrap" Grid.Column="4" Grid.Row="2" Grid.ColumnSpan="3"/>
 
-        <Label Content="库存区辊台设备号：" Grid.Row="3" Grid.Column="1"/>
-        <ComboBox Name="CBfrt_D" Margin="5,5,5,5" Grid.Column="2" Grid.Row="3"/>
+        <Label Content="库存区辊台号：" Grid.Row="3" Grid.Column="1" Margin="5"/>
+        <ComboBox Name="CBfrt_D" Margin="2" Grid.Column="2" Grid.Row="3"/>
 
-        <Label Content="库存货位：" Grid.Column="3" Grid.Row="3"/>
-        <TextBox Name="TBlocX" Margin="5,5,125,5" TextWrapping="Wrap" Width="50" pu:TextBoxHelper.Watermark="X"
+        <Label Content="库存货位：" Grid.Column="3" Grid.Row="3" Margin="5"/>
+        <TextBox Name="TBlocX" Margin="2" TextWrapping="Wrap" pu:TextBoxHelper.Watermark="X"
                          InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum" MaxLength="3" Grid.Column="4" Grid.Row="3"/>
-        <TextBox Name="TBlocY" Margin="65,5,65,5" TextWrapping="Wrap" Width="50" pu:TextBoxHelper.Watermark="Y"
-                         InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum" MaxLength="2" Grid.Column="4" Grid.Row="3"/>
-        <TextBox Name="TBlocZ" Margin="125,5,5,5" TextWrapping="Wrap" Width="50" pu:TextBoxHelper.Watermark="Z"
-                         InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum" MaxLength="2" Grid.Column="4" Grid.Row="3"/>
+        <TextBox Name="TBlocY" Margin="2" TextWrapping="Wrap" pu:TextBoxHelper.Watermark="Y"
+                         InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum" MaxLength="2" Grid.Column="5" Grid.Row="3"/>
+        <TextBox Name="TBlocZ" Margin="2" TextWrapping="Wrap" pu:TextBoxHelper.Watermark="Z"
+                         InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum" MaxLength="2" Grid.Column="6" Grid.Row="3"/>
 
-        <Button Name="BtnFRT" Content="分配卸货" Margin="50,0,5,10" Click="BtnFRT_Click" Grid.Row="5" Grid.Column="1"/>
-        <Button Name="BtnLOC" Content="分配货位" Margin="50,0,5,10" Click="BtnLOC_Click" Grid.Row="6" Grid.Column="1"/>
-        <Button Name="BtnOUT" Content="货位出库" Margin="50,0,5,10" Click="BtnOUT_Click" Grid.Row="7" Grid.Column="1"/>
-        <TextBlock TextWrapping="Wrap"  Text="【WMS】：根据包装线辊台与条码请求WMS获取AGV卸货点；【NoWMS】：仅供AGV运输。" Grid.Column="2" Grid.Row="5" Height="53" VerticalAlignment="Top" HorizontalAlignment="Left" Width="199"/>
-        <TextBlock TextWrapping="Wrap"  Text="【WMS】：根据包装线辊台与条码请求WMS获取入库货位；【NoWMS】：入实物不添帐。" Grid.Column="2" Grid.Row="6" HorizontalAlignment="Left" Width="199" Height="53" VerticalAlignment="Top"/>
-        <TextBlock TextWrapping="Wrap"  Text="【NoWMS】：出实物不除帐。" Grid.Column="2" Grid.Row="7" Height="53" VerticalAlignment="Top" HorizontalAlignment="Left" Width="199"/>
+        <CheckBox Name="CheckWMS" Content="NO WMS" Grid.Row="2" Grid.Column="7" Margin="10" Grid.RowSpan="2"/>
+
+        <Button Content="获取入库区域" Grid.Column="8" Margin="5" Grid.Row="2" ToolTip="生成WMS入库任务" Click="BtnFRT_Click"/>
+        <Button Content="获取入库坐标" Grid.Column="8" Margin="5" Grid.Row="3" Click="BtnLOC_Click"/>
+
     </Grid>
 
 </UserControl>
