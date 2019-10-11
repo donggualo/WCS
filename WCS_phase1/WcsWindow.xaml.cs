@@ -59,45 +59,50 @@ namespace WCS_phase1
                 wcsTabControl.SelectedIndex = 0;
                 return;
             }
-            else if ("ABC".Equals(itemTag))//
+            else if ("ABC".Equals(itemTag))
             {
                 tabItem.Tag = "ABC";
                 tabItem.Content = new W_ABC();
             }
-            else if ("RGV".Equals(itemTag))//
+            else if ("RGV".Equals(itemTag))
             {
                 tabItem.Tag = "RGV";
                 tabItem.Content = new W_RGV();
             }
-            else if ("FRT".Equals(itemTag))//
+            else if ("FRT".Equals(itemTag))
             {
                 tabItem.Tag = "FRT";
                 tabItem.Content = new W_FRT();
             }
-            else if ("ARF".Equals(itemTag))//
+            else if ("ARF".Equals(itemTag))
             {
                 tabItem.Tag = "ARF";
                 tabItem.Content = new W_ARF();
             }
-            else if ("DevIgnore".Equals(itemTag))//
+            else if ("DevIgnore".Equals(itemTag))
             {
                 tabItem.Tag = "DevIgnore";
                 tabItem.Content = new W_SettingDevIgnore();
             }
-            else if ("DevData".Equals(itemTag))//
+            else if ("DevData".Equals(itemTag))
             {
                 tabItem.Tag = "DevData";
                 tabItem.Content = new W_SettingDevData();
             }
-            else if ("ManualWms".Equals(itemTag))//
+            else if ("ManualWms".Equals(itemTag))
             {
                 tabItem.Tag = "ManualWms";
                 tabItem.Content = new W_ManualWms();
             }
-            else if ("TaskData".Equals(itemTag))//
+            else if ("TaskData".Equals(itemTag))
             {
                 tabItem.Tag = "TaskData";
                 tabItem.Content = new W_TaskData();
+            }
+            else if ("ErrLogs".Equals(itemTag))
+            {
+                tabItem.Tag = "ErrLogs";
+                tabItem.Content = new W_ErrLogs();
             }
             else if ("WcsNdcSite".Equals(itemTag))
             {

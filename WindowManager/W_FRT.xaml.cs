@@ -102,6 +102,8 @@ namespace WindowManager
         /// <param name="e"></param>
         private void BTNrun_Click(object sender, EventArgs e)
         {
+            string dev = "";
+            byte[] order = null;
             try
             {
                 if (CBdev.SelectedIndex == -1)
@@ -109,7 +111,7 @@ namespace WindowManager
                     Notice.Show("请选择设备！", "提示", 3, MessageBoxIcon.Info);
                     return;
                 }
-                string dev = CBdev.Text;
+                dev = CBdev.Text;
                 FRT frt = new FRT(dev);
                 if (frt.ActionStatus() == FRT.Run)
                 {
@@ -151,10 +153,12 @@ namespace WindowManager
                     site4 = FRT.GoodsQty2;
                 }
 
-                byte[] order = FRT._RollerControl(frt.FRTNum(), site1, site2, site3, site4);
+                order = FRT._RollerControl(frt.FRTNum(), site1, site2, site3, site4);
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
                     Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
+                    // LOG
+                    DataControl._mTaskTools.RecordTaskErrLog("BTNrun_Click()", "固定辊台-启动辊台任务[FRT,指令]", dev, DataControl._mStools.BytetToString(order), result.ToString());
                     return;
                 }
                 Notice.Show("启动辊台 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
@@ -163,6 +167,8 @@ namespace WindowManager
             catch (Exception ex)
             {
                 Notice.Show("指令发送失败：" + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                // LOG
+                DataControl._mTaskTools.RecordTaskErrLog("BTNrun_Click()", "固定辊台-启动辊台任务[FRT,指令]", dev, DataControl._mStools.BytetToString(order), ex.ToString());
             }
         }
 
@@ -173,6 +179,8 @@ namespace WindowManager
         /// <param name="e"></param>
         private void BTNstop_Click(object sender, EventArgs e)
         {
+            string dev = "";
+            byte[] order = null;
             try
             {
                 if (CBdev.SelectedIndex == -1)
@@ -180,7 +188,7 @@ namespace WindowManager
                     Notice.Show("请选择设备！", "提示", 3, MessageBoxIcon.Info);
                     return;
                 }
-                string dev = CBdev.Text;
+                dev = CBdev.Text;
                 FRT frt = new FRT(dev);
                 if (frt.DeviceStatus() == FRT.DeviceError)
                 {
@@ -188,10 +196,12 @@ namespace WindowManager
                     return;
                 }
 
-                byte[] order = FRT._StopRoller(frt.FRTNum());
+                order = FRT._StopRoller(frt.FRTNum());
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
                     Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
+                    // LOG
+                    DataControl._mTaskTools.RecordTaskErrLog("BTNstop_Click()", "固定辊台-停止辊台任务[FRT,指令]", dev, DataControl._mStools.BytetToString(order), result.ToString());
                     return;
                 }
                 Notice.Show("停止辊台 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
@@ -200,6 +210,8 @@ namespace WindowManager
             catch (Exception ex)
             {
                 Notice.Show("指令发送失败：" + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                // LOG
+                DataControl._mTaskTools.RecordTaskErrLog("BTNstop_Click()", "固定辊台-停止辊台任务[FRT,指令]", dev, DataControl._mStools.BytetToString(order), ex.ToString());
             }
         }
 
@@ -210,6 +222,8 @@ namespace WindowManager
         /// <param name="e"></param>
         private void TerminateBtn_Click(object sender, RoutedEventArgs e)
         {
+            string dev = "";
+            byte[] order = null;
             try
             {
                 if (CBdev.SelectedIndex == -1)
@@ -217,7 +231,7 @@ namespace WindowManager
                     Notice.Show("请选择设备！", "提示", 3, MessageBoxIcon.Info);
                     return;
                 }
-                string dev = CBdev.Text;
+                dev = CBdev.Text;
                 FRT frt = new FRT(dev);
                 if (frt.DeviceStatus() == FRT.DeviceError)
                 {
@@ -225,10 +239,12 @@ namespace WindowManager
                     return;
                 }
 
-                byte[] order = FRT._StopTask(frt.FRTNum());
+                order = FRT._StopTask(frt.FRTNum());
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
                     Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
+                    // LOG
+                    DataControl._mTaskTools.RecordTaskErrLog("TerminateBtn_Click()", "固定辊台-终止任务[FRT,指令]", dev, DataControl._mStools.BytetToString(order), result.ToString());
                     return;
                 }
                 Notice.Show("终止任务 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
@@ -237,6 +253,8 @@ namespace WindowManager
             catch (Exception ex)
             {
                 Notice.Show("指令发送失败：" + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                // LOG
+                DataControl._mTaskTools.RecordTaskErrLog("TerminateBtn_Click()", "固定辊台-终止任务[FRT,指令]", dev, DataControl._mStools.BytetToString(order), ex.ToString());
             }
         }
     }

@@ -65,6 +65,9 @@
     <Compile Include="W_ARF.xaml.cs">
       <DependentUpon>W_ARF.xaml</DependentUpon>
     </Compile>
+    <Compile Include="W_ErrLogs.xaml.cs">
+      <DependentUpon>W_ErrLogs.xaml</DependentUpon>
+    </Compile>
     <Compile Include="W_FRT.xaml.cs">
       <DependentUpon>W_FRT.xaml</DependentUpon>
     </Compile>
@@ -99,6 +102,10 @@
       <DependentUpon>W_WcsNdcSite.xaml</DependentUpon>
     </Compile>
     <Page Include="W_ARF.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="W_ErrLogs.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

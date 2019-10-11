@@ -98,6 +98,10 @@ namespace TaskManager.Functions
         /// <returns></returns>
         public string BytetToString(byte[] byteArray)
         {
+            if (byteArray == null || byteArray.Length == 0)
+            {
+                return "";
+            }
             var str = new System.Text.StringBuilder();
             for (int i = 0; i < byteArray.Length; i++)
             {

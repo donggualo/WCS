@@ -227,7 +227,7 @@
                         Tag="ManualWms"
                         MouseDoubleClick="TreeView_MouseDoubleClick"
                         FontSize="20"
-                        Header="手动WMS"
+                        Header="手动出入库"
                         Padding="10,0,0,0"
                         pu:TreeViewHelper.ItemIcon="&#xf022;" />
                     <TreeViewItem
@@ -235,6 +235,13 @@
                         MouseDoubleClick="TreeView_MouseDoubleClick"
                         FontSize="20"
                         Header="任务清单"
+                        Padding="10,0,0,0"
+                        pu:TreeViewHelper.ItemIcon="&#xf022;" />
+                    <TreeViewItem
+                        Tag="ErrLogs"
+                        MouseDoubleClick="TreeView_MouseDoubleClick"
+                        FontSize="20"
+                        Header="异常LOG"
                         Padding="10,0,0,0"
                         pu:TreeViewHelper.ItemIcon="&#xf022;" />
                     <TreeViewItem

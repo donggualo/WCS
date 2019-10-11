@@ -133,6 +133,8 @@ namespace WindowManager
         /// <param name="e"></param>
         private void LocateBtn_Click(object sender, RoutedEventArgs e)
         {
+            string dev = "";
+            byte[] order = null;
             try
             {
                 if (CBdev.SelectedIndex == -1)
@@ -145,7 +147,7 @@ namespace WindowManager
                     Notice.Show("请填写目的坐标！", "提示", 3, MessageBoxIcon.Info);
                     return;
                 }
-                string dev = CBdev.Text;
+                dev = CBdev.Text;
 
                 ABC abc = new ABC(dev);
                 if (abc.ActionStatus() == ABC.Run)
@@ -162,10 +164,12 @@ namespace WindowManager
                 int x = Convert.ToInt32(xlocation.Text.Trim());
                 int y = Convert.ToInt32(ylocation.Text.Trim());
                 int z = Convert.ToInt32(zlocation.Text.Trim());
-                byte[] order = ABC._TaskControl(ABC.TaskLocate, abc.ABCNum(), DataControl._mStools.IntToBytes(x), DataControl._mStools.IntToBytes(y), DataControl._mStools.IntToBytes(z));
+                order = ABC._TaskControl(ABC.TaskLocate, abc.ABCNum(), DataControl._mStools.IntToBytes(x), DataControl._mStools.IntToBytes(y), DataControl._mStools.IntToBytes(z));
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
                     Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
+                    // LOG
+                    DataControl._mTaskTools.RecordTaskErrLog("LocateBtn_Click()", "行车-定位任务[ABC,指令]", dev, DataControl._mStools.BytetToString(order), result.ToString());
                     return;
                 }
                 Notice.Show("定位任务 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
@@ -174,6 +178,8 @@ namespace WindowManager
             catch (Exception ex)
             {
                 Notice.Show("指令发送失败：" + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                // LOG
+                DataControl._mTaskTools.RecordTaskErrLog("LocateBtn_Click()", "行车-定位任务[ABC,指令]", dev, DataControl._mStools.BytetToString(order), ex.ToString());
             }
         }
 
@@ -184,6 +190,8 @@ namespace WindowManager
         /// <param name="e"></param>
         private void LoadBtn_Click(object sender, RoutedEventArgs e)
         {
+            string dev = "";
+            byte[] order = null;
             try
             {
                 if (CBdev.SelectedIndex == -1)
@@ -196,7 +204,7 @@ namespace WindowManager
                     Notice.Show("请填写目的坐标！", "提示", 3, MessageBoxIcon.Info);
                     return;
                 }
-                string dev = CBdev.Text;
+                dev = CBdev.Text;
 
                 ABC abc = new ABC(dev);
                 if (abc.ActionStatus() == ABC.Run)
@@ -213,10 +221,12 @@ namespace WindowManager
                 int x = Convert.ToInt32(xlocation.Text.Trim());
                 int y = Convert.ToInt32(ylocation.Text.Trim());
                 int z = Convert.ToInt32(zlocation.Text.Trim());
-                byte[] order = ABC._TaskControl(ABC.TaskTake, abc.ABCNum(), DataControl._mStools.IntToBytes(x), DataControl._mStools.IntToBytes(y), DataControl._mStools.IntToBytes(z));
+                order = ABC._TaskControl(ABC.TaskTake, abc.ABCNum(), DataControl._mStools.IntToBytes(x), DataControl._mStools.IntToBytes(y), DataControl._mStools.IntToBytes(z));
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
                     Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
+                    // LOG
+                    DataControl._mTaskTools.RecordTaskErrLog("LoadBtn_Click()", "行车-取货任务[ABC,指令]", dev, DataControl._mStools.BytetToString(order), result.ToString());
                     return;
                 }
                 Notice.Show("取货任务 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
@@ -225,6 +235,8 @@ namespace WindowManager
             catch (Exception ex)
             {
                 Notice.Show("指令发送失败：" + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                // LOG
+                DataControl._mTaskTools.RecordTaskErrLog("LoadBtn_Click()", "行车-取货任务[ABC,指令]", dev, DataControl._mStools.BytetToString(order), ex.ToString());
             }
         }
 
@@ -235,6 +247,8 @@ namespace WindowManager
         /// <param name="e"></param>
         private void UnloadBtn_Click(object sender, RoutedEventArgs e)
         {
+            string dev = "";
+            byte[] order = null;
             try
             {
                 if (CBdev.SelectedIndex == -1)
@@ -247,7 +261,7 @@ namespace WindowManager
                     Notice.Show("请填写目的坐标！", "提示", 3, MessageBoxIcon.Info);
                     return;
                 }
-                string dev = CBdev.Text;
+                dev = CBdev.Text;
 
                 ABC abc = new ABC(dev);
                 if (abc.ActionStatus() == ABC.Run)
@@ -264,10 +278,12 @@ namespace WindowManager
                 int x = Convert.ToInt32(xlocation.Text.Trim());
                 int y = Convert.ToInt32(ylocation.Text.Trim());
                 int z = Convert.ToInt32(zlocation.Text.Trim());
-                byte[] order = ABC._TaskControl(ABC.TaskRelease, abc.ABCNum(), DataControl._mStools.IntToBytes(x), DataControl._mStools.IntToBytes(y), DataControl._mStools.IntToBytes(z));
+                order = ABC._TaskControl(ABC.TaskRelease, abc.ABCNum(), DataControl._mStools.IntToBytes(x), DataControl._mStools.IntToBytes(y), DataControl._mStools.IntToBytes(z));
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
                     Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
+                    // LOG
+                    DataControl._mTaskTools.RecordTaskErrLog("UnloadBtn_Click()", "行车-放货任务[ABC,指令]", dev, DataControl._mStools.BytetToString(order), result.ToString());
                     return;
                 }
                 Notice.Show("放货任务 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
@@ -276,6 +292,8 @@ namespace WindowManager
             catch (Exception ex)
             {
                 Notice.Show("指令发送失败：" + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                // LOG
+                DataControl._mTaskTools.RecordTaskErrLog("UnloadBtn_Click()", "行车-放货任务[ABC,指令]", dev, DataControl._mStools.BytetToString(order), ex.ToString());
             }
         }
 
@@ -296,6 +314,8 @@ namespace WindowManager
         /// <param name="e"></param>
         private void TerminateBtn_Click(object sender, RoutedEventArgs e)
         {
+            string dev = "";
+            byte[] order = null;
             try
             {
                 if (CBdev.SelectedIndex == -1)
@@ -303,7 +323,7 @@ namespace WindowManager
                     Notice.Show("请选择设备！", "提示", 3, MessageBoxIcon.Info);
                     return;
                 }
-                string dev = CBdev.Text;
+                dev = CBdev.Text;
                 ABC abc = new ABC(dev);
                 if (abc.DeviceStatus() == ABC.DeviceError)
                 {
@@ -311,10 +331,12 @@ namespace WindowManager
                     return;
                 }
 
-                byte[] order = ABC._StopTask(abc.ABCNum());
+                order = ABC._StopTask(abc.ABCNum());
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
                     Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
+                    // LOG
+                    DataControl._mTaskTools.RecordTaskErrLog("TerminateBtn_Click()", "行车-终止任务[ABC,指令]", dev, DataControl._mStools.BytetToString(order), result.ToString());
                     return;
                 }
                 Notice.Show("终止任务 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
@@ -323,6 +345,8 @@ namespace WindowManager
             catch (Exception ex)
             {
                 Notice.Show("指令发送失败：" + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                // LOG
+                DataControl._mTaskTools.RecordTaskErrLog("TerminateBtn_Click()", "行车-终止任务[ABC,指令]", dev, DataControl._mStools.BytetToString(order), ex.ToString());
             }
         }
 
