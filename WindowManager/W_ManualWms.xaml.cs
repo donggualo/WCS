@@ -333,7 +333,7 @@ namespace WindowManager
                     DataControl._mHttp.DoStockOutFinishTask(loc, uid);
                     break;
                 default:
-                    Notice.Show("任务未完成！", "错误", 3, MessageBoxIcon.Error);
+                    Notice.Show("仅支持出入库任务！", "错误", 3, MessageBoxIcon.Error);
                     break;
             }
         }

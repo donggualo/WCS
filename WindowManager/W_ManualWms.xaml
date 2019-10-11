@@ -62,10 +62,11 @@
         <TextBox Name="TBlocZ" Margin="2" TextWrapping="Wrap" pu:TextBoxHelper.Watermark="Z"
                          InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum" MaxLength="2" Grid.Column="6" Grid.Row="3"/>
 
-        <CheckBox Name="CheckWMS" Content="NO WMS" Grid.Row="2" Grid.Column="7" Margin="10" Grid.RowSpan="2"/>
+        <CheckBox Name="CheckWMS" Content="NO WMS" Grid.Row="2" Grid.Column="7" Margin="10"/>
 
-        <Button Content="获取入库区域" Grid.Column="8" Margin="5" Grid.Row="2" ToolTip="生成WMS入库任务" Click="BtnFRT_Click"/>
+        <Button Content="获取入库区域" Grid.Column="7" Margin="5" Grid.Row="3" ToolTip="生成WMS入库任务" Click="BtnFRT_Click"/>
         <Button Content="获取入库坐标" Grid.Column="8" Margin="5" Grid.Row="3" Click="BtnLOC_Click"/>
+        <Button Content="手动出库任务" Grid.Column="8" Margin="5" Grid.Row="2" ToolTip="生成出库任务" Click="BtnOUT_Click"/>
 
     </Grid>
 

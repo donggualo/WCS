@@ -974,6 +974,9 @@ namespace TaskManager.Functions
                     // 有则更新
                     wcs_no = dt.Rows[0]["WCS_NO"].ToString();
                     sql = String.Format(@"update wcs_command_master set UPDATE_TIME = NOW(), TASK_UID_2 = '{0}' where WCS_NO = '{1}'", task_uid, wcs_no);
+
+                    //更新WCS COMMAND状态——请求执行
+                    //DataControl._mTaskTools.UpdateCommand(wcs_no, CommandStep.请求执行);
                     // 锁定设备
                     DataControl._mTaskTools.DeviceLock(wcs_no, frt);
                 }

@@ -35,6 +35,15 @@ namespace TaskManager
                 // 遍历执行单托任务请求WMS分配库位
                 foreach (WCS_COMMAND_V com1 in comList1)
                 {
+                    //if (DataControl._mForWmsControl.DoInTask_One(com1))
+                    //{
+
+                    //更新WCS COMMAND状态——请求执行
+                    DataControl._mTaskTools.UpdateCommand(com1.WCS_NO, CommandStep.请求执行);
+                    // 锁定设备
+                    DataControl._mTaskTools.DeviceLock(com1.WCS_NO, com1.FRT);
+
+                    //}
                 }
 
                 // 获取双托任务清单
@@ -49,6 +58,13 @@ namespace TaskManager
                 // 遍历执行双托任务请求WMS分配库位
                 foreach (WCS_COMMAND_V com2 in comList2)
                 {
+                    //if (DataControl._mForWmsControl.DoInTask_Two(com2))
+                    //{
+
+                    //更新WCS COMMAND状态——请求执行
+                    DataControl._mTaskTools.UpdateCommand(com2.WCS_NO, CommandStep.请求执行);
+
+                    //}
                 }
             }
             catch (Exception ex)
@@ -521,7 +537,7 @@ namespace TaskManager
                 }
 
                 // 当ITEM任务为出入库最后流程时
-                if ((item.WCS_NO.Substring(0, 1) == "I" && item.ITEM_ID == ItemId.行车放货) || 
+                if ((item.WCS_NO.Substring(0, 1) == "I" && item.ITEM_ID == ItemId.行车放货) ||
                     (item.WCS_NO.Substring(0, 1) == "O" && item.ITEM_ID == ItemId.摆渡车反向))
                 {
                     // 目的位置比对检测是否抵达——>完成任务
