@@ -89,6 +89,11 @@ namespace WCS_phase1
                 tabItem.Tag = "DevData";
                 tabItem.Content = new W_SettingDevData();
             }
+            else if ("Location".Equals(itemTag))
+            {
+                tabItem.Tag = "Location";
+                tabItem.Content = new W_SettingLocation();
+            }
             else if ("ManualWms".Equals(itemTag))
             {
                 tabItem.Tag = "ManualWms";

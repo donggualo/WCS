@@ -24,8 +24,8 @@ namespace TaskManager
             catch (Exception ex)
             {
                 // LOG
-                DataControl._mTaskTools.RecordTaskErrLog("WriteTaskToWCS()", "WMS请求作业[任务ID，作业类型]", wms.Task_UID, wms.Task_type.ToString(), ex.ToString());
-                result = ex.ToString();
+                DataControl._mTaskTools.RecordTaskErrLog("WriteTaskToWCS()", "WMS请求作业[任务ID，作业类型]", wms.Task_UID, wms.Task_type.ToString(), ex.Message);
+                result = ex.Message;
                 return false;
             }
         }
@@ -57,7 +57,7 @@ namespace TaskManager
             catch (Exception ex)
             {
                 // LOG
-                DataControl._mTaskTools.RecordTaskErrLog("ScanCodeTask_P()", "扫码任务(包装线)[扫码位置,码数]", frt, code, ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("ScanCodeTask_P()", "扫码任务(包装线)[扫码位置,码数]", frt, code, ex.Message);
                 return false;
             }
         }
@@ -99,7 +99,7 @@ namespace TaskManager
             catch (Exception ex)
             {
                 // LOG
-                DataControl._mTaskTools.RecordTaskErrLog("ScanCodeTask()", "扫码任务-分配库位[扫码位置,码数]", frt, code, ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("ScanCodeTask()", "扫码任务-分配库位[扫码位置,码数]", frt, code, ex.Message);
                 return false;
             }
         }
@@ -163,7 +163,7 @@ namespace TaskManager
             catch (Exception ex)
             {
                 // LOG
-                DataControl._mTaskTools.RecordTaskErrLog("ScanCodeTask_D()", "扫码任务(卸货区)[扫码位置,码数]", frt, code, ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("ScanCodeTask_D()", "扫码任务(卸货区)[扫码位置,码数]", frt, code, ex.Message);
                 return false;
             }
         }
@@ -188,7 +188,7 @@ namespace TaskManager
             catch (Exception ex)
             {
                 // LOG
-                DataControl._mTaskTools.RecordTaskErrLog("DoInTask_One()", "请求WMS分配库位[WCS入库清单号]", cmd.WCS_NO, "", ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("DoInTask_One()", "请求WMS分配库位[WCS入库清单号]", cmd.WCS_NO, "", ex.Message);
                 return false;
             }
         }
@@ -211,7 +211,7 @@ namespace TaskManager
             catch (Exception ex)
             {
                 // LOG
-                DataControl._mTaskTools.RecordTaskErrLog("DoInTask_Two()", "请求WMS分配库位[WCS入库清单号]", cmd.WCS_NO, "", ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("DoInTask_Two()", "请求WMS分配库位[WCS入库清单号]", cmd.WCS_NO, "", ex.Message);
                 return false;
             }
         }

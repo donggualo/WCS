@@ -235,7 +235,7 @@ namespace TaskManager
             {
                 // LOG
                 log.LOG(String.Format(@"【Error】{0}：WMS任务ID[ {1} ]，AGV任务ID[ {2} ]，设备号[ {3} ], 异常信息[ {4} ].",
-                ITEM.ITEM_ID, ITEM.WCS_NO, ITEM.ID, ITEM.DEVICE, ex.ToString()));
+                ITEM.ITEM_ID, ITEM.WCS_NO, ITEM.ID, ITEM.DEVICE, ex.Message));
             }
         }
     }
@@ -360,7 +360,7 @@ namespace TaskManager
             catch (Exception ex)
             {
                 // LOG
-                log.LOG(DataControl._mTaskTools.GetLogMessE(ITEM, Order, ex.ToString()));
+                log.LOG(DataControl._mTaskTools.GetLogMessE(ITEM, Order, ex.Message));
             }
         }
     }
@@ -564,7 +564,7 @@ namespace TaskManager
             catch (Exception ex)
             {
                 // LOG
-                log.LOG(DataControl._mTaskTools.GetLogMessE(ITEM, Order, ex.ToString()));
+                log.LOG(DataControl._mTaskTools.GetLogMessE(ITEM, Order, ex.Message));
             }
         }
     }
@@ -768,7 +768,7 @@ namespace TaskManager
             catch (Exception ex)
             {
                 // LOG
-                log.LOG(DataControl._mTaskTools.GetLogMessE(ITEM, Order, ex.ToString()));
+                log.LOG(DataControl._mTaskTools.GetLogMessE(ITEM, Order, ex.Message));
             }
         }
     }
@@ -883,7 +883,7 @@ namespace TaskManager
             catch (Exception ex)
             {
                 // LOG
-                log.LOG(DataControl._mTaskTools.GetLogMessE(ITEM, Order, ex.ToString()));
+                log.LOG(DataControl._mTaskTools.GetLogMessE(ITEM, Order, ex.Message));
             }
         }
     }

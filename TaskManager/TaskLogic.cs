@@ -24,7 +24,7 @@ namespace TaskManager
             try
             {
                 // 获取单托任务清单
-                String sql1 = String.Format(@"select * from wcs_command_v where TASK_UID_1 is not null and TASK_UID_2 is null and TASK_TYPE = '{0}' and STEP = '{1}' 
+                String sql1 = String.Format(@"select * from wcs_command_v where TASK_UID_1 is not null and TASK_UID_1 <> '' and (TASK_UID_2 is null or TASK_UID_2 = '') and TASK_TYPE = '{0}' and STEP = '{1}' 
                     and TRUNCATE((UNIX_TIMESTAMP(NOW())-UNIX_TIMESTAMP(CREATION_TIME))/60,0) >= {2}", TaskType.入库, CommandStep.生成单号, DataControl._mStools.GetValueByKey("InTimeMax")); // 等待时间
                 DataTable dtcommand1 = DataControl._mMySql.SelectAll(sql1);
                 if (DataControl._mStools.IsNoData(dtcommand1))
@@ -47,7 +47,8 @@ namespace TaskManager
                 }
 
                 // 获取双托任务清单
-                String sql2 = String.Format(@"select * from wcs_command_v where TASK_UID_1 is not null and TASK_UID_2 is not null and  TASK_TYPE = '{0}' and STEP = '{1}' order by CREATION_TIME",
+                String sql2 = String.Format(@"select * from wcs_command_v where TASK_UID_1 is not null and TASK_UID_1 <> '' and TASK_UID_2 is not null and TASK_UID_2 <> '' 
+                                                 and  TASK_TYPE = '{0}' and STEP = '{1}' order by CREATION_TIME",
                     TaskType.入库, CommandStep.生成单号);
                 DataTable dtcommand2 = DataControl._mMySql.SelectAll(sql2);
                 if (DataControl._mStools.IsNoData(dtcommand2))
@@ -84,6 +85,7 @@ namespace TaskManager
         {
             try
             {
+                Run_InCallWMS();
                 // 获取可执行的入库清单
                 String sql = String.Format(@"select * from wcs_command_v where TASK_TYPE = '{0}' and STEP = '{1}' order by CREATION_TIME", TaskType.入库, CommandStep.请求执行);
                 DataTable dtcommand = DataControl._mMySql.SelectAll(sql);
@@ -145,7 +147,7 @@ namespace TaskManager
                 DataControl._mTaskTools.UpdateTaskByWCSNo(command.WCS_NO, TaskSite.未执行);
                 DataControl._mTaskTools.DeleteItem(command.WCS_NO, "");
                 // 记录LOG
-                DataControl._mTaskTools.RecordTaskErrLog("Task_InInitial()", "生成初始入库任务", command.WCS_NO, null, ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("Task_InInitial()", "生成初始入库任务", command.WCS_NO, null, ex.Message);
             }
         }
         #endregion
@@ -283,7 +285,7 @@ namespace TaskManager
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.摆渡车正向);
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.摆渡车反向);
                 // 记录LOG
-                DataControl._mTaskTools.RecordTaskErrLog("CreateTask_ARF_FRT()", "生成摆渡车&固定辊台对接任务", item.WCS_NO, null, ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("CreateTask_ARF_FRT()", "生成摆渡车&固定辊台对接任务", item.WCS_NO, null, ex.Message);
             }
         }
 
@@ -342,7 +344,7 @@ namespace TaskManager
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.摆渡车反向);
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.运输车反向);
                 // 记录LOG
-                DataControl._mTaskTools.RecordTaskErrLog("CreateTask_ARF_RGV()", "生成摆渡车&运输车对接任务", item.WCS_NO, null, ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("CreateTask_ARF_RGV()", "生成摆渡车&运输车对接任务", item.WCS_NO, null, ex.Message);
             }
         }
 
@@ -399,7 +401,7 @@ namespace TaskManager
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.运输车正向);
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.运输车反向);
                 // 记录LOG
-                DataControl._mTaskTools.RecordTaskErrLog("CreateTask_RGV_RGV()", "生成运输车&运输车对接任务", item.WCS_NO, null, ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("CreateTask_RGV_RGV()", "生成运输车&运输车对接任务", item.WCS_NO, null, ex.Message);
             }
         }
 
@@ -452,7 +454,7 @@ namespace TaskManager
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.行车取货);
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.行车放货);
                 // 记录LOG
-                DataControl._mTaskTools.RecordTaskErrLog("CreateTask_RGV_ABC()", "生成运输车&行车对接任务", item.WCS_NO, null, ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("CreateTask_RGV_ABC()", "生成运输车&行车对接任务", item.WCS_NO, null, ex.Message);
             }
         }
 
@@ -488,7 +490,7 @@ namespace TaskManager
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.行车取货);
                 DataControl._mTaskTools.DeleteItem(item.WCS_NO, ItemId.行车放货);
                 // 记录LOG
-                DataControl._mTaskTools.RecordTaskErrLog("CreateTask_ABC()", "生成行车取放货任务", item.WCS_NO, null, ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("CreateTask_ABC()", "生成行车取放货任务", item.WCS_NO, null, ex.Message);
             }
         }
         #endregion
@@ -570,7 +572,7 @@ namespace TaskManager
             catch (Exception ex)
             {
                 // 记录LOG
-                DataControl._mTaskTools.RecordTaskErrLog("Task_Continued()", "后续任务判断实施", item.WCS_NO, null, ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("Task_Continued()", "后续任务判断实施", item.WCS_NO, null, ex.Message);
             }
         }
 
@@ -1199,7 +1201,7 @@ namespace TaskManager
                 // 解锁设备数据状态
                 DataControl._mTaskTools.DeviceUnLock(wcs_no);
                 // 记录LOG
-                DataControl._mTaskTools.RecordTaskErrLog("CreateOutJob()", "生成WCS出库清单", null, null, ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("CreateOutJob()", "生成WCS出库清单", null, null, ex.Message);
             }
         }
 
@@ -1216,7 +1218,7 @@ namespace TaskManager
             try
             {
                 // 获取待分配设备任务
-                String sql = String.Format(@"select * from WCS_TASK_ITEM where STATUS = '{0}' and DEVICE is null order by ID", ItemStatus.不可执行);
+                String sql = String.Format(@"select * from WCS_TASK_ITEM where STATUS = '{0}' and (DEVICE is null or DEVICE = '') order by ID", ItemStatus.不可执行);
                 DataTable dtitem = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dtitem))
                 {
@@ -1347,7 +1349,7 @@ namespace TaskManager
                 //初始化
                 DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.不可执行);
                 // 记录LOG
-                DataControl._mTaskTools.RecordTaskErrLog("ReadDevice()", "分配任务指定设备", item.WCS_NO, item.ITEM_ID, ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("ReadDevice()", "分配任务指定设备", item.WCS_NO, item.ITEM_ID, ex.Message);
             }
         }
 
@@ -1831,7 +1833,7 @@ namespace TaskManager
             catch (Exception ex)
             {
                 // 记录LOG
-                DataControl._mTaskTools.RecordTaskErrLog("CreateAndAddTaskList()", "生成并加入设备指令任务链表", item.WCS_NO, item.ITEM_ID, ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("CreateAndAddTaskList()", "生成并加入设备指令任务链表", item.WCS_NO, item.ITEM_ID, ex.Message);
             }
         }
 

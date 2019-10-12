@@ -4,10 +4,8 @@ using System.Configuration;
 using System.Reflection;
 using System.Xml;
 using System.Windows;
-using System.Windows.Controls;
-//using Excel = Microsoft.Office.Interop.Excel;
 using System.Data.OleDb;
-using Microsoft.Win32;
+//using Excel = Microsoft.Office.Interop.Excel;
 
 namespace TaskManager.Functions
 {
@@ -263,6 +261,11 @@ namespace TaskManager.Functions
             //    GC.Collect();
         }
 
+        /// <summary>
+        /// 导入Excel文件转为 DataTable
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public DataTable GetExcelData(string path)
         {
             try

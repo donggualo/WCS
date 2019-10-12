@@ -80,7 +80,7 @@ namespace WindowManager
             }
             catch (Exception e)
             {
-                Notice.Show(e.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show(e.Message, "错误", 3, MessageBoxIcon.Error);
             }
         }
 
@@ -95,7 +95,7 @@ namespace WindowManager
             }
             catch (Exception e)
             {
-                Notice.Show(e.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show(e.Message, "错误", 3, MessageBoxIcon.Error);
             }
         }
 
@@ -109,7 +109,7 @@ namespace WindowManager
             }
             catch (Exception e)
             {
-                Notice.Show(e.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show(e.Message, "错误", 3, MessageBoxIcon.Error);
             }
         }
 
@@ -130,7 +130,7 @@ namespace WindowManager
             }
             catch (Exception e)
             {
-                Notice.Show(e.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show(e.Message, "错误", 3, MessageBoxIcon.Error);
             }
         }
 
@@ -326,7 +326,7 @@ namespace WindowManager
             }
             catch (Exception ex)
             {
-                Notice.Show(ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show(ex.Message, "错误", 3, MessageBoxIcon.Error);
             }
         }
     }

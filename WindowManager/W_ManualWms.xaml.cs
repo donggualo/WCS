@@ -67,7 +67,7 @@ namespace WindowManager
             try
             {
                 string sql = string.Format(@"select distinct DEVICE from wcs_config_device where TYPE = 'FRT' and AREA = '{0}' and (FLAG in ('{1}','{2}')
-                                                 or LOCK_WCS_NO not in (select WCS_NO From wcs_command_master where TASK_UID_2 is not null))", area, DeviceFlag.占用, DeviceFlag.空闲);
+                                                 or LOCK_WCS_NO not in (select WCS_NO From wcs_command_master where TASK_UID_2 is not null and TASK_UID_2 <> ''))", area, DeviceFlag.占用, DeviceFlag.空闲);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {
@@ -82,7 +82,7 @@ namespace WindowManager
             }
             catch (Exception e)
             {
-                Notice.Show(e.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show(e.Message, "错误", 3, MessageBoxIcon.Error);
             }
         }
 
@@ -123,7 +123,7 @@ namespace WindowManager
             }
             catch (Exception e)
             {
-                Notice.Show(e.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show(e.Message, "错误", 3, MessageBoxIcon.Error);
             }
         }
 
@@ -151,7 +151,7 @@ namespace WindowManager
             }
             catch (Exception ex)
             {
-                Notice.Show(ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show(ex.Message, "错误", 3, MessageBoxIcon.Error);
             }
         }
 
@@ -223,7 +223,7 @@ namespace WindowManager
             }
             catch (Exception ex)
             {
-                Notice.Show(ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show(ex.Message, "错误", 3, MessageBoxIcon.Error);
             }
         }
 
@@ -294,7 +294,7 @@ namespace WindowManager
             }
             catch (Exception ex)
             {
-                Notice.Show(ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show(ex.Message, "错误", 3, MessageBoxIcon.Error);
             }
         }
 

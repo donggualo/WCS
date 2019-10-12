@@ -177,9 +177,9 @@ namespace WindowManager
             }
             catch (Exception ex)
             {
-                Notice.Show("指令发送失败：" + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show("指令发送失败：" + ex.Message, "错误", 3, MessageBoxIcon.Error);
                 // LOG
-                DataControl._mTaskTools.RecordTaskErrLog("LocateBtn_Click()", "行车-定位任务[ABC,指令]", dev, DataControl._mStools.BytetToString(order), ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("LocateBtn_Click()", "行车-定位任务[ABC,指令]", dev, DataControl._mStools.BytetToString(order), ex.Message);
             }
         }
 
@@ -234,9 +234,9 @@ namespace WindowManager
             }
             catch (Exception ex)
             {
-                Notice.Show("指令发送失败：" + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show("指令发送失败：" + ex.Message, "错误", 3, MessageBoxIcon.Error);
                 // LOG
-                DataControl._mTaskTools.RecordTaskErrLog("LoadBtn_Click()", "行车-取货任务[ABC,指令]", dev, DataControl._mStools.BytetToString(order), ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("LoadBtn_Click()", "行车-取货任务[ABC,指令]", dev, DataControl._mStools.BytetToString(order), ex.Message);
             }
         }
 
@@ -291,9 +291,9 @@ namespace WindowManager
             }
             catch (Exception ex)
             {
-                Notice.Show("指令发送失败：" + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show("指令发送失败：" + ex.Message, "错误", 3, MessageBoxIcon.Error);
                 // LOG
-                DataControl._mTaskTools.RecordTaskErrLog("UnloadBtn_Click()", "行车-放货任务[ABC,指令]", dev, DataControl._mStools.BytetToString(order), ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("UnloadBtn_Click()", "行车-放货任务[ABC,指令]", dev, DataControl._mStools.BytetToString(order), ex.Message);
             }
         }
 
@@ -344,9 +344,9 @@ namespace WindowManager
             }
             catch (Exception ex)
             {
-                Notice.Show("指令发送失败：" + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show("指令发送失败：" + ex.Message, "错误", 3, MessageBoxIcon.Error);
                 // LOG
-                DataControl._mTaskTools.RecordTaskErrLog("TerminateBtn_Click()", "行车-终止任务[ABC,指令]", dev, DataControl._mStools.BytetToString(order), ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("TerminateBtn_Click()", "行车-终止任务[ABC,指令]", dev, DataControl._mStools.BytetToString(order), ex.Message);
             }
         }
 

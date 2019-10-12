@@ -128,7 +128,7 @@ namespace TaskManager
             catch (Exception ex)
             {
                 // LOG
-                DataControl._mTaskTools.RecordTaskErrLog("SendAGV()", "调度AGV装货卸货[固定辊台设备号]", frt.DEVICE, "", ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("SendAGV()", "调度AGV装货卸货[固定辊台设备号]", frt.DEVICE, "", ex.Message);
             }
         }
 
@@ -144,7 +144,7 @@ namespace TaskManager
             try
             {
                 //获取满足启动辊台条件的AGV任务---位于装货卸货点状态
-                String sql = String.Format("select * from wcs_agv_info where MAGIC in('{0}','{1}') and AGV is not null order by CREATION_TIME", AGVMagic.到达装货点, AGVMagic.到达卸货点);
+                String sql = String.Format("select * from wcs_agv_info where MAGIC in('{0}','{1}') and AGV is not null and AGV <> '' order by CREATION_TIME", AGVMagic.到达装货点, AGVMagic.到达卸货点);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {
@@ -191,7 +191,7 @@ namespace TaskManager
                             {
                                 // 获取WMS TASK ID
                                 String sql = String.Format(@"select TASK_UID from wcs_task_info where TASK_TYPE = '{0}' and W_S_LOC = '{1}' and TASK_UID not in 
-(select DISTINCT TASK_UID from wcs_agv_info where TASK_UID is not null)", TaskType.AGV搬运, DataControl._mTaskTools.GetArea(agv.PICKSTATION));
+(select DISTINCT TASK_UID from wcs_agv_info where TASK_UID is not null and TASK_UID <> '')", TaskType.AGV搬运, DataControl._mTaskTools.GetArea(agv.PICKSTATION));
                                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                                 if (DataControl._mStools.IsNoData(dt))
                                 {
@@ -295,7 +295,7 @@ namespace TaskManager
             catch (Exception ex)
             {
                 // LOG
-                DataControl._mTaskTools.RecordTaskErrLog("CreatOrderTask()", "AGV辊台任务[AGV任务ID]", agv.ID.ToString(), "", ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("CreatOrderTask()", "AGV辊台任务[AGV任务ID]", agv.ID.ToString(), "", ex.Message);
             }
         }
 
@@ -323,7 +323,7 @@ namespace TaskManager
             catch (Exception ex)
             {
                 // LOG
-                DataControl._mTaskTools.RecordTaskErrLog("UpdateAGVStation()", "更新AGV卸货点[AGV任务ID]", id.ToString(), "", ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("UpdateAGVStation()", "更新AGV卸货点[AGV任务ID]", id.ToString(), "", ex.Message);
             }
         }
 
@@ -404,7 +404,7 @@ namespace TaskManager
             catch (Exception ex)
             {
                 // LOG
-                DataControl._mTaskTools.RecordTaskErrLog("SubmitNDCPlcLoading()", "AGV装货中[AGV任务ID，AGV设备号]", id.ToString(), agv, ex.ToString());
+                DataControl._mTaskTools.RecordTaskErrLog("SubmitNDCPlcLoading()", "AGV装货中[AGV任务ID，AGV设备号]", id.ToString(), agv, ex.Message);
             }
         }
 

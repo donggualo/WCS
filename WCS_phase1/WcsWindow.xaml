@@ -262,6 +262,12 @@
                             MouseDoubleClick="TreeView_MouseDoubleClick"
                             FontSize="20"
                             Padding="20,0,0,0"/>
+                        <TreeViewItem
+                            Tag="Location"
+                            Header="位置资料"
+                            MouseDoubleClick="TreeView_MouseDoubleClick"
+                            FontSize="20"
+                            Padding="20,0,0,0"/>
                     </TreeViewItem>
                 </TreeView>
             </Grid>

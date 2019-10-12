@@ -192,7 +192,7 @@ namespace WindowManager
             }
             catch (Exception ex)
             {
-                Notice.Show("生成失败： " + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show("生成失败： " + ex.Message, "错误", 3, MessageBoxIcon.Error);
             }
         }
 
@@ -219,7 +219,7 @@ namespace WindowManager
             }
             catch (Exception ex)
             {
-                Notice.Show("更新失败： " + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show("更新失败： " + ex.Message, "错误", 3, MessageBoxIcon.Error);
             }
         }
 
@@ -259,7 +259,7 @@ namespace WindowManager
             }
             catch (Exception ex)
             {
-                Notice.Show("结束失败： " + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show("结束失败： " + ex.Message, "错误", 3, MessageBoxIcon.Error);
             }
         }
 
@@ -284,7 +284,7 @@ namespace WindowManager
             }
             catch (Exception ex)
             {
-                Notice.Show("执行失败： " + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show("执行失败： " + ex.Message, "错误", 3, MessageBoxIcon.Error);
             }
         }
 
@@ -306,7 +306,7 @@ namespace WindowManager
                 string wcs = (DGcommand.SelectedItem as DataRowView).Row[0].ToString();
 
                 // 获取待分配设备任务
-                String sql = String.Format(@"select * from WCS_TASK_ITEM where DEVICE is null and STATUS = '{1}' and WCS_NO = '{0}' order by CREATION_TIME", wcs, ItemStatus.不可执行);
+                String sql = String.Format(@"select * from WCS_TASK_ITEM where (DEVICE is null or DEVICE = '') and STATUS = '{1}' and WCS_NO = '{0}' order by CREATION_TIME", wcs, ItemStatus.不可执行);
                 DataTable dtitem = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dtitem))
                 {
@@ -327,7 +327,7 @@ namespace WindowManager
             }
             catch (Exception ex)
             {
-                Notice.Show("分配失败： " + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show("分配失败： " + ex.Message, "错误", 3, MessageBoxIcon.Error);
             }
         }
 
@@ -370,7 +370,7 @@ namespace WindowManager
             }
             catch (Exception ex)
             {
-                Notice.Show("生成失败： " + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show("生成失败： " + ex.Message, "错误", 3, MessageBoxIcon.Error);
             }
         }
 
@@ -398,7 +398,7 @@ namespace WindowManager
             }
             catch (Exception ex)
             {
-                Notice.Show("生成失败： " + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show("生成失败： " + ex.Message, "错误", 3, MessageBoxIcon.Error);
             }
         }
 
@@ -423,7 +423,7 @@ namespace WindowManager
             }
             catch (Exception ex)
             {
-                Notice.Show("更新失败： " + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show("更新失败： " + ex.Message, "错误", 3, MessageBoxIcon.Error);
             }
         }
 
@@ -462,7 +462,7 @@ namespace WindowManager
             }
             catch (Exception ex)
             {
-                Notice.Show("删除失败： " + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show("删除失败： " + ex.Message, "错误", 3, MessageBoxIcon.Error);
             }
         }
 

@@ -33,7 +33,7 @@ namespace TaskManager.Functions
             catch (Exception ex)
             {
                 // 记录LOG
-                RecordTaskErrLog("InitializeClient()", "初始化", null, null, ex.ToString());
+                RecordTaskErrLog("InitializeClient()", "初始化", null, null, ex.Message);
             }
         }
 
@@ -84,8 +84,8 @@ namespace TaskManager.Functions
             catch (Exception ex)
             {
                 // 记录LOG
-                RecordTaskErrLog("LinkDevicesClient()", "连接网络设备", null, null, ex.ToString());
-                MessageBox.Show("连接网络设备发生异常：" + ex.ToString(), "Error");
+                RecordTaskErrLog("LinkDevicesClient()", "连接网络设备", null, null, ex.Message);
+                MessageBox.Show("连接网络设备发生异常：" + ex.Message, "Error");
                 System.Environment.Exit(0);
             }
         }
@@ -855,8 +855,8 @@ namespace TaskManager.Functions
         {
             try
             {
-                String sql = String.Format(@"select CASE WHEN (TASK_UID_1 is not null and SITE_1 <>'{1}') 
-             AND (TASK_UID_2 is not null and SITE_1 <>'{1}') THEN 2 ELSE 1 END AS QTY from wcs_command_v where WCS_NO = '{0}'", wcs_no, TaskSite.完成);
+                String sql = String.Format(@"select CASE WHEN (TASK_UID_1 is not null and TASK_UID_1 <> '' and SITE_1 <>'{1}') 
+             AND (TASK_UID_2 is not null and TASK_UID_2 <> '' and SITE_1 <>'{1}') THEN 2 ELSE 1 END AS QTY from wcs_command_v where WCS_NO = '{0}'", wcs_no, TaskSite.完成);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {

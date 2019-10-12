@@ -73,7 +73,7 @@ namespace WindowManager
             }
             catch (Exception e)
             {
-                Notice.Show(e.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show(e.Message, "错误", 3, MessageBoxIcon.Error);
             }
         }
 
@@ -130,7 +130,7 @@ namespace WindowManager
             }
             catch (Exception ex)
             {
-                Notice.Show("重连失败：" + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show("重连失败：" + ex.Message, "错误", 3, MessageBoxIcon.Error);
             }
         }
 
@@ -231,21 +231,21 @@ namespace WindowManager
             }
             catch (Exception ex)
             {
-                if (ex.ToString().Contains("PRIMARY"))
+                if (ex.Message.Contains("PRIMARY"))
                 {
                     Notice.Show("修改失败： 重复设备号！", "错误", 3, MessageBoxIcon.Error);
                 }
-                else if (ex.ToString().Contains("IP_UNIQUE"))
+                else if (ex.Message.Contains("IP_UNIQUE"))
                 {
                     Notice.Show("修改失败： 重复IP！", "错误", 3, MessageBoxIcon.Error);
                 }
-                else if (ex.ToString().Contains("PORT_UNIQUE"))
+                else if (ex.Message.Contains("PORT_UNIQUE"))
                 {
                     Notice.Show("修改失败： 重复PORT！", "错误", 3, MessageBoxIcon.Error);
                 }
                 else
                 {
-                    Notice.Show("修改失败： " + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                    Notice.Show("修改失败： " + ex.Message, "错误", 3, MessageBoxIcon.Error);
                 }
             }
         }
@@ -303,21 +303,21 @@ namespace WindowManager
             }
             catch (Exception ex)
             {
-                if (ex.ToString().Contains("PRIMARY"))
+                if (ex.Message.Contains("PRIMARY"))
                 {
                     Notice.Show("添加失败： 重复设备号！", "错误", 3, MessageBoxIcon.Error);
                 }
-                else if (ex.ToString().Contains("IP_UNIQUE"))
+                else if (ex.Message.Contains("IP_UNIQUE"))
                 {
                     Notice.Show("添加失败： 重复IP！", "错误", 3, MessageBoxIcon.Error);
                 }
-                else if (ex.ToString().Contains("PORT_UNIQUE"))
+                else if (ex.Message.Contains("PORT_UNIQUE"))
                 {
                     Notice.Show("添加失败： 重复PORT！", "错误", 3, MessageBoxIcon.Error);
                 }
                 else
                 {
-                    Notice.Show("添加失败： " + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                    Notice.Show("添加失败： " + ex.Message, "错误", 3, MessageBoxIcon.Error);
                 }
             }
         }
@@ -351,7 +351,7 @@ namespace WindowManager
             }
             catch (Exception ex)
             {
-                Notice.Show("删除失败： " + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show("删除失败： " + ex.Message, "错误", 3, MessageBoxIcon.Error);
             }
         }
 
@@ -390,7 +390,7 @@ namespace WindowManager
             }
             catch (Exception ex)
             {
-                Notice.Show("失效失败： " + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show("失效失败： " + ex.Message, "错误", 3, MessageBoxIcon.Error);
             }
         }
 
@@ -428,7 +428,7 @@ namespace WindowManager
             }
             catch (Exception ex)
             {
-                Notice.Show("生效失败： " + ex.ToString(), "错误", 3, MessageBoxIcon.Error);
+                Notice.Show("生效失败： " + ex.Message, "错误", 3, MessageBoxIcon.Error);
             }
         }
 

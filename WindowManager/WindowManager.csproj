@@ -89,6 +89,9 @@
     <Compile Include="W_SettingDevIgnore.xaml.cs">
       <DependentUpon>W_SettingDevIgnore.xaml</DependentUpon>
     </Compile>
+    <Compile Include="W_SettingLocation.xaml.cs">
+      <DependentUpon>W_SettingLocation.xaml</DependentUpon>
+    </Compile>
     <Compile Include="W_TaskData.xaml.cs">
       <DependentUpon>W_TaskData.xaml</DependentUpon>
     </Compile>
@@ -134,6 +137,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="W_SettingDevIgnore.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="W_SettingLocation.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
