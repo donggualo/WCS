@@ -148,9 +148,10 @@ namespace MHttpServer
 
         private void HandleDatagramWritten(IAsyncResult ar)
         {
-            ((TcpClient)ar.AsyncState).GetStream().EndWrite(ar);
 
+            ((TcpClient)ar.AsyncState).GetStream().EndWrite(ar);
             ((TcpClient)ar.AsyncState).GetStream().Flush();
+            Thread.Sleep(1000);
             ((TcpClient)ar.AsyncState).GetStream().Close();
         }
 
