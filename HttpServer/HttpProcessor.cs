@@ -65,16 +65,50 @@ namespace MHttpServer
                     }
                 }
 
-                WriteResponse(outputStream, response);
+                //WriteResponse(outputStream, response);
+                WriteResponse(tcpClient, response);
 
-                outputStream.Flush();
-                outputStream.Close();
-                outputStream = null;
+                //outputStream.Flush();
+                //outputStream.Close();
+                //outputStream = null;
 
-                inputStream.Close();
+                //inputStream.Close();
                 inputStream = null;
                 //Console.WriteLine("请求结束：" + DateTime.Now.ToString("yyyyMMddHHmmss"));
                 //log.Info("请求结束：" + DateTime.Now.ToString("yyyyMMddHHmmss"));
+        }
+
+
+
+        private void WriteResponse(TcpClient client, HttpResponse response)
+        {
+            if (response.Content == null)
+            {
+                response.Content = new byte[] { };
+            }
+
+            // default to text/html content type
+            if (!response.Headers.ContainsKey("Content-Type"))
+            {
+                response.Headers["Content-Type"] = "text/html";
+            }
+
+            response.Headers["Content-Length"] = response.Content.Length.ToString();
+
+            StringBuilder builder = new StringBuilder();
+            builder.Append(string.Format("HTTP/1.0 {0} {1}\r\n", response.StatusCode, response.ReasonPhrase));
+            builder.Append(string.Join("\r\n", response.Headers.Select(x => string.Format("{0}: {1}", x.Key, x.Value))));
+            builder.Append("\r\n\r\n");
+
+
+            byte[] bytes = Encoding.UTF8.GetBytes(builder.ToString());
+            byte[] content = new byte[bytes.Length + response.Content.Length];
+
+            bytes.CopyTo(content, 0);
+            response.Content.CopyTo(content, bytes.Length);
+
+            client.GetStream().BeginWrite(
+              content, 0, content.Length, HandleDatagramWritten, client);
         }
 
         /// <summary>
@@ -109,6 +143,15 @@ namespace MHttpServer
         public void AddRoute(Route route)
         {
             this.Routes.Add(route);
+        }
+
+
+        private void HandleDatagramWritten(IAsyncResult ar)
+        {
+            ((TcpClient)ar.AsyncState).GetStream().EndWrite(ar);
+
+            ((TcpClient)ar.AsyncState).GetStream().Flush();
+            ((TcpClient)ar.AsyncState).GetStream().Close();
         }
 
         #endregion
