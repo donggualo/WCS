@@ -321,7 +321,7 @@ namespace WindowManager
                 return;
             }
 
-            string type = dt.Rows[0]["TASK_UID"].ToString();
+            string type = dt.Rows[0]["TASK_TYPE"].ToString();
             string loc = dt.Rows[0]["W_D_LOC"].ToString();
             // 通知WMS完成
             switch(type)
@@ -334,8 +334,9 @@ namespace WindowManager
                     break;
                 default:
                     Notice.Show("仅支持出入库任务！", "错误", 3, MessageBoxIcon.Error);
-                    break;
+                    return;
             }
+            Notice.Show("完成！", "成功", 3, MessageBoxIcon.Success);
         }
 
         /// <summary>
