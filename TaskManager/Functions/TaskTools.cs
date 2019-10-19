@@ -605,6 +605,218 @@ namespace TaskManager.Functions
             }
         }
 
+        /// <summary>
+        /// 获取设备偏差计算出的坐标（加法）
+        /// [xyz]（null 为全返；X/Y/Z 为单轴坐标值返回）
+        /// </summary>
+        /// <param name="dev"></param>
+        /// <param name="loc"></param>
+        /// <param name="result"></param>
+        /// <param name="xyz"></param>
+        /// <returns></returns>
+        public bool GetLocByAddGap(string dev, string loc, out string result, string xyz = null)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(loc))
+                {
+                    result = "loc不可用！";
+                    return false;
+                }
+
+                // 获取偏差参数
+                String sql = String.Format(@"select * from wcs_config_dev_gap where DEVICE = '{0}'", dev);
+                DataTable dt = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dt))
+                {
+                    result = "找不到该设备号！";
+                    return false;
+                }
+                WCS_CONFIG_DEV_GAP info = dt.ToDataEntity<WCS_CONFIG_DEV_GAP>();
+
+                string locNew = "";
+                switch (info.TYPE)
+                {
+                    case DeviceType.运输车:
+                        // 仅仅只有X轴
+                        locNew = (Convert.ToInt32(loc) + info.GAP_X).ToString();
+
+                        break;
+                    case DeviceType.行车:
+                        String[] LOC = null;
+                        // 返回xyz坐标
+                        if (loc.Contains("-") && string.IsNullOrEmpty(xyz))
+                        {
+                            LOC = loc.Split('-');
+                            locNew = (Convert.ToInt32(LOC[0]) + info.GAP_X) + "-"
+                                   + (Convert.ToInt32(LOC[1]) + info.GAP_Y) + "-"
+                                   + (Convert.ToInt32(LOC[2]) + info.GAP_Z);
+                        }
+                        // 返回单轴值（loc传入xyz坐标）
+                        else if (loc.Contains("-") && !string.IsNullOrEmpty(xyz))
+                        {
+                            LOC = loc.Split('-');
+                            switch (xyz)
+                            {
+                                case "X":
+                                    locNew = (Convert.ToInt32(LOC[0]) + info.GAP_X).ToString();
+                                    break;
+                                case "Y":
+                                    locNew = (Convert.ToInt32(LOC[1]) + info.GAP_Y).ToString();
+                                    break;
+                                case "Z":
+                                    locNew = (Convert.ToInt32(LOC[2]) + info.GAP_Z).ToString();
+                                    break;
+                                default:
+                                    result = "无此轴值（X/Y/Z）类型！";
+                                    return false;
+                            }
+                        }
+                        // 返回单轴值（loc传入单轴值）
+                        else if (!loc.Contains("-") && !string.IsNullOrEmpty(xyz))
+                        {
+                            switch (xyz)
+                            {
+                                case "X":
+                                    locNew = (Convert.ToInt32(loc) + info.GAP_X).ToString();
+                                    break;
+                                case "Y":
+                                    locNew = (Convert.ToInt32(loc) + info.GAP_Y).ToString();
+                                    break;
+                                case "Z":
+                                    locNew = (Convert.ToInt32(loc) + info.GAP_Z).ToString();
+                                    break;
+                                default:
+                                    result = "无此轴值（X/Y/Z）类型！";
+                                    return false;
+                            }
+                        }
+                        else
+                        {
+                            result = "传入参数异常！";
+                            return false;
+                        }
+                        break;
+                    default:
+                        result = "此类型无偏差参数！";
+                        return false;
+                }
+
+                result = locNew;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        
+        /// <summary>
+        /// 获取设备偏差计算出的坐标（减法）
+        /// [xyz]（null 为全返；X/Y/Z 为单轴坐标值返回）
+        /// </summary>
+        /// <param name="dev"></param>
+        /// <param name="loc"></param>
+        /// <param name="result"></param>
+        /// <param name="xyz"></param>
+        /// <returns></returns>
+        public bool GetLocByLessGap(string dev, string loc, out string result, string xyz = null)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(loc))
+                {
+                    result = "loc不可用！";
+                    return false;
+                }
+
+                // 获取偏差参数
+                String sql = String.Format(@"select * from wcs_config_dev_gap where DEVICE = '{0}'", dev);
+                DataTable dt = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dt))
+                {
+                    result = "找不到该设备号！";
+                    return false;
+                }
+                WCS_CONFIG_DEV_GAP info = dt.ToDataEntity<WCS_CONFIG_DEV_GAP>();
+
+                string locNew = "";
+                switch (info.TYPE)
+                {
+                    case DeviceType.运输车:
+                        // 仅仅只有X轴
+                        locNew = (Convert.ToInt32(loc) - info.GAP_X).ToString();
+
+                        break;
+                    case DeviceType.行车:
+                        String[] LOC = null;
+                        // 返回xyz坐标
+                        if (loc.Contains("-") && string.IsNullOrEmpty(xyz))
+                        {
+                            LOC = loc.Split('-');
+                            locNew = (Convert.ToInt32(LOC[0]) - info.GAP_X) + "-"
+                                   + (Convert.ToInt32(LOC[1]) - info.GAP_Y) + "-"
+                                   + (Convert.ToInt32(LOC[2]) - info.GAP_Z);
+                        }
+                        // 返回单轴值（loc传入xyz坐标）
+                        else if (loc.Contains("-") && !string.IsNullOrEmpty(xyz))
+                        {
+                            LOC = loc.Split('-');
+                            switch (xyz)
+                            {
+                                case "X":
+                                    locNew = (Convert.ToInt32(LOC[0]) - info.GAP_X).ToString();
+                                    break;
+                                case "Y":
+                                    locNew = (Convert.ToInt32(LOC[1]) - info.GAP_Y).ToString();
+                                    break;
+                                case "Z":
+                                    locNew = (Convert.ToInt32(LOC[2]) - info.GAP_Z).ToString();
+                                    break;
+                                default:
+                                    result = "无此轴值（X/Y/Z）类型！";
+                                    return false;
+                            }
+                        }
+                        // 返回单轴值（loc传入单轴值）
+                        else if (!loc.Contains("-") && !string.IsNullOrEmpty(xyz))
+                        {
+                            switch (xyz)
+                            {
+                                case "X":
+                                    locNew = (Convert.ToInt32(loc) - info.GAP_X).ToString();
+                                    break;
+                                case "Y":
+                                    locNew = (Convert.ToInt32(loc) - info.GAP_Y).ToString();
+                                    break;
+                                case "Z":
+                                    locNew = (Convert.ToInt32(loc) - info.GAP_Z).ToString();
+                                    break;
+                                default:
+                                    result = "无此轴值（X/Y/Z）类型！";
+                                    return false;
+                            }
+                        }
+                        else
+                        {
+                            result = "传入参数异常！";
+                            return false;
+                        }
+                        break;
+                    default:
+                        result = "此类型无偏差参数！";
+                        return false;
+                }
+
+                result = locNew;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         #endregion
 
         #region 设备编号

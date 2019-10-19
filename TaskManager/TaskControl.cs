@@ -754,8 +754,17 @@ namespace TaskManager
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                     }
+
+                    /* 设备坐标偏差 */
+                    string resultRGV;
+                    if (!DataControl._mTaskTools.GetLocByAddGap(ITEM.DEVICE, ITEM.LOC_TO, out resultRGV))
+                    {
+                        // 记录LOG
+                        DataControl._mTaskTools.RecordTaskErrLog("RGVTack.DoWork()", "RGV指令任务[设备号,坐标]", ITEM.DEVICE, ITEM.LOC_TO, resultRGV);
+                        return;
+                    }
                     // 当前位置与目的位置一致 视为任务完成
-                    if (_device.GetCurrentSite() == Convert.ToInt32(ITEM.LOC_TO) && _device.ActionStatus() == RGV.Stop)
+                    if (_device.GetCurrentSite() == Convert.ToInt32(resultRGV) && _device.ActionStatus() == RGV.Stop)
                     {
                         // 等待对接
                         ISetTaskWait();
@@ -858,8 +867,16 @@ namespace TaskManager
                 // 定位任务
                 else
                 {
+                    /* 设备坐标偏差 */
+                    string resultABC;
+                    if (!DataControl._mTaskTools.GetLocByAddGap(ITEM.DEVICE, ITEM.LOC_TO, out resultABC))
+                    {
+                        // 记录LOG
+                        DataControl._mTaskTools.RecordTaskErrLog("ABCTack.DoWork()", "ABC指令任务[设备号,坐标]", ITEM.DEVICE, ITEM.LOC_TO, resultABC);
+                        return;
+                    }
                     // 当前位置与目的位置一致 视为任务完成
-                    if (_device.GetCurrentSite().Equals(ITEM.LOC_TO))
+                    if (_device.GetCurrentSite().Equals(resultABC))
                     {
                         // 等待对接
                         ISetTaskWait();

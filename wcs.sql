@@ -3,15 +3,15 @@
 
  Source Server         : TEST
  Source Server Type    : MySQL
- Source Server Version : 80013
+ Source Server Version : 80016
  Source Host           : localhost:3306
  Source Schema         : wcs
 
  Target Server Type    : MySQL
- Target Server Version : 80013
+ Target Server Version : 80016
  File Encoding         : 65001
 
- Date: 12/10/2019 13:55:56
+ Date: 19/10/2019 09:15:03
 */
 
 SET NAMES utf8mb4;
@@ -68,6 +68,7 @@ INSERT INTO `wcs_command_master` VALUES ('I190929135628', 'FRT02', 'T11909291356
 INSERT INTO `wcs_command_master` VALUES ('I190929145819', 'FRT03', 'T1190929145819', 'T2190929145819', '4', '2019-09-29 14:58:19', '2019-09-29 14:59:51');
 INSERT INTO `wcs_command_master` VALUES ('I190929161634', 'FRT02', 'T1190929161634', 'T2190929161634', '4', '2019-09-29 16:16:35', '2019-09-30 10:14:03');
 INSERT INTO `wcs_command_master` VALUES ('I190929172638', 'FRT02', 'T1190929172638', 'T2190929172638', '4', '2019-09-29 17:26:38', '2019-09-29 17:26:52');
+INSERT INTO `wcs_command_master` VALUES ('I191012155611', 'FRT03', '61EA921B-CB48-46C3-B06A-A974D5901312', NULL, '1', '2019-10-12 15:56:11', NULL);
 INSERT INTO `wcs_command_master` VALUES ('O190928154215', 'FRT01', 'T1190928154215', '', '4', '2019-09-30 09:42:16', '2019-09-30 09:49:32');
 INSERT INTO `wcs_command_master` VALUES ('O190930101849', 'FRT01', 'T1190930101849', '', '4', '2019-09-30 10:18:49', '2019-09-30 10:26:30');
 INSERT INTO `wcs_command_master` VALUES ('O190930104904', 'FRT01', 'T1190930104904', 'T2190930104904', '4', '2019-09-30 10:49:04', '2019-09-30 10:53:21');
@@ -76,6 +77,30 @@ INSERT INTO `wcs_command_master` VALUES ('O190930115336', 'FRT01', 'T11909301153
 INSERT INTO `wcs_command_master` VALUES ('O190930115357', 'FRT02', 'T1190930115357', '', '4', '2019-09-30 11:53:57', '2019-09-30 13:59:07');
 INSERT INTO `wcs_command_master` VALUES ('O190930145846', 'FRT01', 'T1190930145846', 'T2190930145846', '4', '2019-09-30 14:58:46', '2019-09-30 15:00:17');
 INSERT INTO `wcs_command_master` VALUES ('O190930145936', 'FRT03', 'T1190930145936', '', '4', '2019-09-30 14:59:36', '2019-09-30 15:00:23');
+
+-- ----------------------------
+-- Table structure for wcs_config_dev_gap
+-- ----------------------------
+DROP TABLE IF EXISTS `wcs_config_dev_gap`;
+CREATE TABLE `wcs_config_dev_gap`  (
+  `DEVICE` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '设备号',
+  `TYPE` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '类别',
+  `GAP_X` int(11) NULL DEFAULT 0 COMMENT 'X轴差',
+  `GAP_Y` int(11) NULL DEFAULT 0 COMMENT 'Y轴差',
+  `GAP_Z` int(11) NULL DEFAULT 0 COMMENT 'Z轴差',
+  `CREATION_TIME` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY (`DEVICE`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = 'WCS设备偏差值' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of wcs_config_dev_gap
+-- ----------------------------
+INSERT INTO `wcs_config_dev_gap` VALUES ('ABC01', 'ABC', 0, 0, 0, '2019-10-16 16:21:31');
+INSERT INTO `wcs_config_dev_gap` VALUES ('ABC02', 'ABC', 1, 1, 1, '2019-10-16 16:21:49');
+INSERT INTO `wcs_config_dev_gap` VALUES ('ABC03', 'ABC', -1, -1, -1, '2019-10-16 16:22:04');
+INSERT INTO `wcs_config_dev_gap` VALUES ('RGV01', 'RGV', 0, 0, 0, '2019-10-16 16:18:30');
+INSERT INTO `wcs_config_dev_gap` VALUES ('RGV02', 'RGV', 1, 0, 0, '2019-10-16 16:20:22');
+INSERT INTO `wcs_config_dev_gap` VALUES ('RGV03', 'RGV', -1, 0, 0, '2019-10-16 16:20:33');
 
 -- ----------------------------
 -- Table structure for wcs_config_device
@@ -100,7 +125,7 @@ CREATE TABLE `wcs_config_device`  (
 -- Records of wcs_config_device
 -- ----------------------------
 INSERT INTO `wcs_config_device` VALUES ('ARF01', '192.168.8.80', 2000, 'Y', NULL, 'ARF', 'B01', '摆渡车Test', '2019-07-04 09:54:44', '2019-09-23 14:49:14');
-INSERT INTO `wcs_config_device` VALUES ('FRT01', '192.168.8.90', 2000, 'N', NULL, 'FRT', 'B01', 'Test1', '2019-09-23 16:52:50', NULL);
+INSERT INTO `wcs_config_device` VALUES ('FRT01', '192.168.8.90', 2000, 'Y', NULL, 'FRT', 'B01', 'Test1', '2019-09-23 16:52:50', NULL);
 INSERT INTO `wcs_config_device` VALUES ('FRT02', '192.168.8.90', 2001, 'N', NULL, 'FRT', 'B01', 'Test2', '2019-09-23 17:06:49', NULL);
 INSERT INTO `wcs_config_device` VALUES ('FRT03', '192.168.8.90', 2002, 'N', '', 'FRT', 'A01', 'Test3', '2019-09-23 17:06:55', NULL);
 INSERT INTO `wcs_config_device` VALUES ('RGV01', '192.168.8.71', 2002, 'N', NULL, 'RGV', 'B01', '运输车Test', '2019-09-24 17:06:52', '2019-09-24 17:07:38');
@@ -120,7 +145,7 @@ CREATE TABLE `wcs_config_loc`  (
   `ABC_LOC_STOCK` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '行车库存定位',
   `CREATION_TIME` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '依据WMS回馈位置定义各设备目的点位  ' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '依据WMS回馈位置定义各设备目的点位  ' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of wcs_config_loc
@@ -148,17 +173,13 @@ CREATE TABLE `wcs_function_log`  (
   `MESSAGE` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '讯息',
   `CREATION_TIME` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 384 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 389 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of wcs_function_log
 -- ----------------------------
-INSERT INTO `wcs_function_log` VALUES (378, 'DELETE_DATA()', '按时清除过期资讯', NULL, NULL, NULL, 'JOB[保留备份数据30天，程序异常记录7天]', '2019-10-09 00:00:00');
-INSERT INTO `wcs_function_log` VALUES (379, 'DELETE_DATA()', '按时清除过期资讯', NULL, NULL, NULL, 'JOB[保留备份数据30天，程序异常记录7天]', '2019-10-10 00:00:01');
-INSERT INTO `wcs_function_log` VALUES (380, 'DELETE_DATA()', '按时清除过期资讯', NULL, NULL, NULL, 'JOB[保留备份数据30天，程序异常记录7天]', '2019-10-11 00:00:00');
-INSERT INTO `wcs_function_log` VALUES (381, 'LinkDevicesClient()', '连接网络设备', '', '', 'NG', 'System.NullReferenceException: 未将对象引用设置到对象的实例。\r\n   在 TaskManager.Functions.TaskTools.LinkDevicesClient() 位置 D:CodeWCSTaskManagerFunctionsTaskTools.cs:行号 48', '2019-10-11 09:44:31');
-INSERT INTO `wcs_function_log` VALUES (382, 'LinkDevicesClient()', '连接网络设备', '', '', 'NG', 'System.NullReferenceException: 未将对象引用设置到对象的实例。\r\n   在 System.Collections.Generic.List`1.Enumerator.MoveNext()\r\n   在 TaskManager.Functions.TaskTools.LinkDevicesClient() 位置 D:CodeWCSTaskManagerFunctionsTaskTools.cs:行号 58', '2019-10-11 09:45:30');
-INSERT INTO `wcs_function_log` VALUES (383, 'DELETE_DATA()', '按时清除过期资讯', NULL, NULL, NULL, 'JOB[保留备份数据30天，程序异常记录7天]', '2019-10-12 00:00:00');
+INSERT INTO `wcs_function_log` VALUES (387, 'DELETE_DATA()', '按时清除过期资讯', NULL, NULL, NULL, 'JOB[保留备份数据30天，程序异常记录7天]', '2019-10-18 00:00:00');
+INSERT INTO `wcs_function_log` VALUES (388, 'DELETE_DATA()', '按时清除过期资讯', NULL, NULL, NULL, 'JOB[保留备份数据30天，程序异常记录7天]', '2019-10-19 00:00:00');
 
 -- ----------------------------
 -- Table structure for wcs_ndc_site
@@ -197,7 +218,7 @@ CREATE TABLE `wcs_ndc_task`  (
   `HADUNLOAD` int(1) NULL DEFAULT NULL,
   `CREATETIME` datetime(6) NULL DEFAULT NULL,
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for wcs_param
@@ -214,7 +235,7 @@ CREATE TABLE `wcs_param`  (
   `VALUE5` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `VALUE6` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of wcs_param
@@ -278,6 +299,7 @@ CREATE TABLE `wcs_task_info`  (
 -- ----------------------------
 -- Records of wcs_task_info
 -- ----------------------------
+INSERT INTO `wcs_task_info` VALUES ('61EA921B-CB48-46C3-B06A-A974D5901312', '1', '20190101120101001', '', 'A-01-03-1', 'N', '2019-10-12 15:56:04', '2019-10-12 15:56:11');
 INSERT INTO `wcs_task_info` VALUES ('T1190928092054', '1', 'IN-TEST-1-W-X', 'B01', 'C001-001-001', 'Y', '2019-09-28 09:20:54', '2019-09-28 15:06:10');
 INSERT INTO `wcs_task_info` VALUES ('T1190928154215', '2', 'OUT-TEST-1-1-0', 'C001-001-002', 'B01', 'Y', '2019-09-30 09:42:15', '2019-09-30 10:17:15');
 INSERT INTO `wcs_task_info` VALUES ('T1190929085547', '1', 'IN-TEST-1-N-X', 'B01', 'C200-001-001', 'Y', '2019-09-29 08:55:47', '2019-09-29 10:25:11');

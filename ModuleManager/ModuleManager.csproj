@@ -59,6 +59,7 @@
     <Compile Include="WCS\WCS_COMMAND_MASTER.cs" />
     <Compile Include="WCS\WCS_COMMAND_V.cs" />
     <Compile Include="WCS\WCS_CONFIG_DEVICE.cs" />
+    <Compile Include="WCS\WCS_CONFIG_DEV_GAP.cs" />
     <Compile Include="WCS\WCS_CONFIG_LOC.cs" />
     <Compile Include="WCS\WCS_FUNCTION_LOG.cs" />
     <Compile Include="WCS\WCS_TASK_INFO.cs" />

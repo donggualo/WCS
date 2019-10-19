@@ -895,8 +895,16 @@ namespace TaskManager
                         if (String.IsNullOrEmpty(command.TASK_UID_2.Trim()) || RGV.GoodsStatus() == RGV.GoodsYesAll)
                         {
                             // 将运输车复位待命点
+                            /* 设备坐标偏差 */
+                            string result;
+                            if (!DataControl._mTaskTools.GetLocByAddGap(rgv, R2, out result))
+                            {
+                                // 记录LOG
+                                DataControl._mTaskTools.RecordTaskErrLog("ProcessOutTask()", "出库任务处理[设备号,坐标]", rgv, R2, result);
+                                return;
+                            }
                             // 当前设备位置 >= 运输车[内]待命复位点 ?  运输车[内]复位 ：运输车[外]复位
-                            if (RGV.GetCurrentSite() >= Convert.ToInt32(R2))
+                            if (RGV.GetCurrentSite() >= Convert.ToInt32(result))
                             {
                                 // 生成运输车[内]复位任务
                                 DataControl._mTaskTools.CreateCustomItem(item.WCS_NO, ItemId.运输车复位2, rgv, "", R2, ItemStatus.请求执行);
@@ -1032,6 +1040,15 @@ namespace TaskManager
                     ABC ABC = new ABC(abc.DEVICE);
                     // 获取当前坐标X轴值
                     int X = DataControl._mStools.BytesToInt(ABC.CurrentXsite(), 0);
+                    /* 设备坐标偏差 */
+                    string result;
+                    if (!DataControl._mTaskTools.GetLocByLessGap(abc.DEVICE, X.ToString(), out result, "X"))
+                    {
+                        // 记录LOG
+                        DataControl._mTaskTools.RecordTaskErrLog("Task_OutFollow()", "执行出库任务[设备号,坐标]", abc.DEVICE, X.ToString(), result);
+                        return;
+                    }
+                    X = Convert.ToInt32(result);
                     // 任务
                     String[] task;
                     // 对比当前坐标X轴值与行车中间值
@@ -1298,7 +1315,19 @@ namespace TaskManager
                         // 确认任务设备&位置
                         RGV RGV = new RGV(rgv);
                         device = rgv;
-                        loc = RGV.GetCurrentSite().ToString();
+                        if (String.IsNullOrEmpty(device.Trim()) || RGV.GetCurrentSite() == 0)
+                        {
+                            return;
+                        }
+                        /* 设备坐标偏差 */
+                        string resultRGV;
+                        if (!DataControl._mTaskTools.GetLocByLessGap(rgv, RGV.GetCurrentSite().ToString(), out resultRGV))
+                        {
+                            // 记录LOG
+                            DataControl._mTaskTools.RecordTaskErrLog("ReadDevice()", "分配任务设备[设备号,坐标]", rgv, RGV.GetCurrentSite().ToString(), resultRGV);
+                            return;
+                        }
+                        loc = resultRGV;
 
                         #endregion
 
@@ -1317,7 +1346,19 @@ namespace TaskManager
                         // 确认任务设备&位置
                         ABC ABC = new ABC(abc);
                         device = abc;
-                        loc = ABC.GetCurrentSite();
+                        if (String.IsNullOrEmpty(device.Trim()) || String.IsNullOrEmpty(ABC.GetCurrentSite()))
+                        {
+                            return;
+                        }
+                        /* 设备坐标偏差 */
+                        string result;
+                        if (!DataControl._mTaskTools.GetLocByLessGap(abc, ABC.GetCurrentSite(), out result))
+                        {
+                            // 记录LOG
+                            DataControl._mTaskTools.RecordTaskErrLog("ReadDevice()", "分配任务设备[设备号,坐标]", abc, ABC.GetCurrentSite(), result);
+                            return;
+                        }
+                        loc = result;
 
                         #endregion
 
@@ -1453,12 +1494,19 @@ namespace TaskManager
                 {
                     // 获取摆渡车设备资讯
                     dev = new RGV(d.DEVICE);
-
+                    /* 设备坐标偏差 */
+                    string result;
+                    if (!DataControl._mTaskTools.GetLocByLessGap(rgv, dev.GetCurrentSite().ToString(), out result))
+                    {
+                        // 记录LOG
+                        DataControl._mTaskTools.RecordTaskErrLog("GetSuitableRGV()", "获取当前目标对应的合适运输车[设备号,坐标]", rgv, dev.GetCurrentSite().ToString(), result);
+                        return null;
+                    }
                     // 比较目标位置与对接点
                     if (LOC <= RR)
                     {
                         // 仅获取位置于运输车[外]运输范围内的 RGV
-                        if (dev.GetCurrentSite() <= RR)
+                        if (Convert.ToInt32(result) <= RR)
                         {
                             // 锁定设备
                             rgv = d.DEVICE;
@@ -1468,7 +1516,7 @@ namespace TaskManager
                     else
                     {
                         // 仅获取位置于运输车[内]运输范围内的 RGV
-                        if (dev.GetCurrentSite() > RR)
+                        if (Convert.ToInt32(result) > RR)
                         {
                             // 锁定设备
                             rgv = d.DEVICE;
@@ -1486,7 +1534,7 @@ namespace TaskManager
                     // 设备故障, 正在运行, 货物状态不为无货, 辊台状态不为停止 ==> 不可用
                     if (dev.DeviceStatus() == RGV.DeviceError || dev.ActionStatus() == RGV.Run || dev.GoodsStatus() != RGV.GoodsNoAll || dev.CurrentStatus() != RGV.RollerStop)
                     {
-                        rgv = String.Empty;
+                        rgv = null;
                     }
                 }
 
@@ -1523,12 +1571,21 @@ namespace TaskManager
                 {
                     // 获取行车设备资讯
                     dev = new ABC(d.DEVICE);
+                    int abcX = DataControl._mStools.BytesToInt(dev.CurrentXsite());
+                    /* 设备坐标偏差 */
+                    string result;
+                    if (!DataControl._mTaskTools.GetLocByLessGap(d.DEVICE, abcX.ToString(), out result, "X"))
+                    {
+                        // 记录LOG
+                        DataControl._mTaskTools.RecordTaskErrLog("GetSuitableABC()", "获取当前目标对应的合适行车[设备号,坐标]", d.DEVICE, abcX.ToString(), result);
+                        return null;
+                    }
 
                     // 比较目标X轴值与对接点
                     if (X <= AA)
                     {
                         // 仅获取位置于行车[外]运输范围内的 ABC
-                        if (DataControl._mStools.BytesToInt(dev.CurrentXsite(), 0) <= AA)
+                        if (Convert.ToInt32(result) <= AA)
                         {
                             // 锁定设备
                             abc = d.DEVICE;
@@ -1538,7 +1595,7 @@ namespace TaskManager
                     else
                     {
                         // 仅获取位置于行车[内]运输范围内的 ABC
-                        if (DataControl._mStools.BytesToInt(dev.CurrentXsite(), 0) > AA)
+                        if (Convert.ToInt32(result) > AA)
                         {
                             // 锁定设备
                             abc = d.DEVICE;
@@ -1556,7 +1613,7 @@ namespace TaskManager
                     // 设备故障, 正在运行, 货物状态不为无货 ==> 不可用
                     if (dev.DeviceStatus() == ABC.DeviceError || dev.ActionStatus() == ABC.Run || dev.GoodsStatus() != ABC.GoodsNo)
                     {
-                        abc = String.Empty;
+                        abc = null;
                     }
                 }
 
@@ -1783,8 +1840,16 @@ namespace TaskManager
                     case ItemId.运输车对接定位:
                         #region RGV 定位指令
                         RGV rgvMove = new RGV(item.DEVICE);
+                        /* 设备坐标偏差 */
+                        string resultRGV;
+                        if (!DataControl._mTaskTools.GetLocByAddGap(item.DEVICE, item.LOC_TO, out resultRGV))
+                        {
+                            // 记录LOG
+                            DataControl._mTaskTools.RecordTaskErrLog("CreateAndAddTaskList()", "生成设备指令&加入作业链表[设备号,坐标]", item.DEVICE, item.LOC_TO, resultRGV);
+                            return;
+                        }
                         // 提取目的位置
-                        byte[] rgvloc = DataControl._mStools.IntToBytes(Convert.ToInt32(item.LOC_TO));
+                        byte[] rgvloc = DataControl._mStools.IntToBytes(Convert.ToInt32(resultRGV));
                         // 获取指令
                         order = RGV._Position(rgvMove.RGVNum(), rgvloc);
                         // 加入任务作业链表
@@ -1798,8 +1863,16 @@ namespace TaskManager
                     case ItemId.行车库存定位:
                         #region ABC 指令
                         ABC abc = new ABC(item.DEVICE);
+                        /* 设备坐标偏差 */
+                        string resultABC;
+                        if (!DataControl._mTaskTools.GetLocByAddGap(item.DEVICE, item.LOC_TO, out resultABC))
+                        {
+                            // 记录LOG
+                            DataControl._mTaskTools.RecordTaskErrLog("CreateAndAddTaskList()", "生成设备指令&加入作业链表[设备号,坐标]", item.DEVICE, item.LOC_TO, resultABC);
+                            return;
+                        }
                         // 提取目的位置
-                        String[] LOC = item.LOC_TO.Split('-');
+                        String[] LOC = resultABC.Split('-');
                         byte[] locX = DataControl._mStools.IntToBytes(Convert.ToInt32(String.IsNullOrEmpty(LOC[0].Trim()) ? "0" : LOC[0]));
                         byte[] locY = DataControl._mStools.IntToBytes(Convert.ToInt32(String.IsNullOrEmpty(LOC[1].Trim()) ? "0" : LOC[1]));
                         byte[] locZ = DataControl._mStools.IntToBytes(Convert.ToInt32(String.IsNullOrEmpty(LOC[2].Trim()) ? "0" : LOC[2]));
