@@ -441,5 +441,36 @@ namespace WindowManager
         {
             DataControl._mStools.SaveToExcel(DGdevice);
         }
+
+        /// <summary>
+        /// 设置偏差值
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SetGap_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (DGdevice.SelectedItem == null)
+                {
+                    return;
+                }
+                string device = (DGdevice.SelectedItem as DataRowView)["设备号"].ToString();
+                string type = (DGdevice.SelectedItem as DataRowView)["设备类型"].ToString();
+
+                if (type != "运输车" && type != "行车")
+                {
+                    Notice.Show("仅运输车&行车需要设定！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
+
+                W_SettingDevData_Gap _cmd = new W_SettingDevData_Gap(device, type);
+                _cmd.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                Notice.Show("设置失败： " + ex.Message, "错误", 3, MessageBoxIcon.Error);
+            }
+        }
     }
 }

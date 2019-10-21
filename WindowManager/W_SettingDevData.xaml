@@ -41,9 +41,10 @@
         <DataGrid Name="DGdevice" AutoGeneratingColumn="DataGrid_TimeFormat" CanUserAddRows="False" IsReadOnly="True" MouseDoubleClick="DGdevice_DoubleClick" Grid.Row="1">
             <DataGrid.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="失效此数据" Click="FailDev_Click"/>
-                    <MenuItem Header="生效此数据" Click="WorkDev_Click"/>
-                    <MenuItem Header="删除此数据" Click="DeleteDev_Click"/>
+                    <MenuItem Header="设置偏差值" Click="SetGap_Click"/>
+                    <MenuItem Header="失效" Click="FailDev_Click"/>
+                    <MenuItem Header="生效" Click="WorkDev_Click"/>
+                    <MenuItem Header="删除" Click="DeleteDev_Click"/>
                     <MenuItem Header="导出 Excel" Click="SaveToExcel_Click"/>
                 </ContextMenu>
             </DataGrid.ContextMenu>

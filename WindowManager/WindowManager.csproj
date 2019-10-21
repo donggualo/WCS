@@ -86,6 +86,9 @@
     <Compile Include="W_SettingDevData.xaml.cs">
       <DependentUpon>W_SettingDevData.xaml</DependentUpon>
     </Compile>
+    <Compile Include="W_SettingDevData_Gap.xaml.cs">
+      <DependentUpon>W_SettingDevData_Gap.xaml</DependentUpon>
+    </Compile>
     <Compile Include="W_SettingDevIgnore.xaml.cs">
       <DependentUpon>W_SettingDevIgnore.xaml</DependentUpon>
     </Compile>
@@ -133,6 +136,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="W_SettingDevData.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="W_SettingDevData_Gap.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
