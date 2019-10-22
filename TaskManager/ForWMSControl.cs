@@ -15,8 +15,16 @@ namespace TaskManager
         {
             try
             {
+                string loc_to = wms.W_D_Loc;
+
+                // WMS 出库目的固定辊台区域 [C01]，改为当前库存区域 [B01]
+                if (wms.Task_type.GetHashCode().ToString() == TaskType.出库)
+                {
+                    loc_to = wms.W_S_Loc.Split('-')[0];
+                }
+
                 String sql = String.Format(@"insert into wcs_task_info(TASK_UID, TASK_TYPE, BARCODE, W_S_LOC, W_D_LOC) values('{0}','{1}','{2}','{3}','{4}')",
-                    wms.Task_UID, wms.Task_type.GetHashCode(), wms.Barcode, wms.W_S_Loc, wms.W_D_Loc);
+                    wms.Task_UID, wms.Task_type.GetHashCode(), wms.Barcode, wms.W_S_Loc, loc_to);
                 DataControl._mMySql.ExcuteSql(sql);
                 result = "";
                 return true;
