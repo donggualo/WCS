@@ -49,7 +49,7 @@ namespace PubResourceManager
         public static List<WCS_CONFIG_DEVICE> GetDeviceNameList(MySQL mysql,string type)
         {
             List<WCS_CONFIG_DEVICE> list = new List<WCS_CONFIG_DEVICE>();
-            string sql = string.Format(@"select DEVICE,AREA from wcs_config_device where TYPE = '{0}'", type);
+            string sql = string.Format(@"select DEVICE,AREA from wcs_config_device where FLAG <> 'N' and TYPE = '{0}'", type);
             DataTable dt = mysql.SelectAll(sql);
             if (IsNoData(dt))
             {
