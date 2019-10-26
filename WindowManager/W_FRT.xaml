@@ -97,6 +97,16 @@
                     Foreground="#FF3F3F3F"
                     pu:ButtonHelper.HoverBrush="#3F3F3F"
                     pu:ButtonHelper.CornerRadius="6" />
+            <Button  Grid.Column="9" Height="30" Margin="5,0,0,0"
+                    Width="80" Name="refreshBtn" Click="refreshBtn_Click"
+                    Content="&#xf00d; 刷新"
+                    pu:ButtonHelper.ClickStyle="Sink"
+                    FontFamily="{DynamicResource FontAwesome}"
+                    pu:ButtonHelper.ButtonStyle="Hollow"
+                    BorderBrush="#FF3F3F3F"
+                    Foreground="#FF3F3F3F"
+                    pu:ButtonHelper.HoverBrush="#3F3F3F"
+                    pu:ButtonHelper.CornerRadius="6" />
         </Grid>
 
         <!--设备列表-->

@@ -1419,8 +1419,14 @@ namespace TaskManager
                     // 获取摆渡车设备资讯
                     dev = new ARF(d.DEVICE);
 
+                    // 仅有一个设备可用，直接选取该设备
+                    if (dList.Count == 1)
+                    {
+                        arf = d.DEVICE;
+                        break;
+                    }
                     // 当前坐标值比较目标位置
-                    if (dev.CurrentSite() == LOC)    // 当前坐标值 = 目标位置
+                    else if (dev.CurrentSite() == LOC)    // 当前坐标值 = 目标位置
                     {
                         // 直接选取该设备
                         arf = d.DEVICE;
@@ -1502,8 +1508,16 @@ namespace TaskManager
                         DataControl._mTaskTools.RecordTaskErrLog("GetSuitableRGV()", "获取当前目标对应的合适运输车[设备号,坐标]", rgv, dev.GetCurrentSite().ToString(), result);
                         return null;
                     }
+
+
+                    // 仅有一个设备可用，直接选取该设备
+                    if (dList.Count == 1)
+                    {
+                        rgv = d.DEVICE;
+                        break;
+                    }
                     // 比较目标位置与对接点
-                    if (LOC <= RR)
+                    else if (LOC <= RR)
                     {
                         // 仅获取位置于运输车[外]运输范围内的 RGV
                         if (Convert.ToInt32(result) <= RR)
@@ -1581,8 +1595,15 @@ namespace TaskManager
                         return null;
                     }
 
+
+                    // 仅有一个设备可用，直接选取该设备
+                    if (dList.Count == 1)
+                    {
+                        abc = d.DEVICE;
+                        break;
+                    }
                     // 比较目标X轴值与对接点
-                    if (X <= AA)
+                    else if (X <= AA)
                     {
                         // 仅获取位置于行车[外]运输范围内的 ABC
                         if (Convert.ToInt32(result) <= AA)

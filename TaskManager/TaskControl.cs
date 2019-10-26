@@ -195,7 +195,8 @@ namespace TaskManager
                 if (!string.IsNullOrEmpty(ITEM.LOC_TO.Trim())) // 目标不为空即最终无货
                 {
                     // 固定辊台无货物
-                    if (_device.GoodsStatus() == FRT.GoodsNoAll && _device.ActionStatus() == FRT.Stop)
+                    if (_device.GoodsStatus() == FRT.GoodsNoAll && _device.ActionStatus() == FRT.Stop && 
+                        _device.FinishTask() == FRT.TaskRelease)
                     {
                         // 完成任务
                         ISetTaskSuc();
@@ -208,7 +209,8 @@ namespace TaskManager
                 else
                 {
                     // 固定辊台上有2#有货 或者 都有货
-                    if ((_device.GoodsStatus() == FRT.GoodsYes2 || _device.GoodsStatus() == FRT.GoodsYesAll) && _device.ActionStatus() == FRT.Stop)
+                    if ((_device.GoodsStatus() == FRT.GoodsYes2 || _device.GoodsStatus() == FRT.GoodsYesAll) && 
+                        _device.ActionStatus() == FRT.Stop && _device.FinishTask() == FRT.TaskRelease)
                     {
                         // 完成任务
                         ISetTaskSuc();
@@ -218,8 +220,20 @@ namespace TaskManager
                         return;
                     }
                 }
+                // 当完成状态-辊台任务，立即发送 停止辊台任务 指令
+                if (_device.FinishTask() == FRT.TaskTake)
+                {
+                    byte[] order = FRT._StopRoller(_device.FRTNum());
+                    if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, order, out string res))
+                    {
+                        throw new Exception(res);
+                    }
+                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
+                    // LOG
+                    log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, order));
+                }
                 // 发送指令
-                if (_device.ActionStatus() == FRT.Stop)
+                else if (_device.CurrentTask() != _device.FinishTask() || _device.ActionStatus() == FRT.Stop)
                 {
                     if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
                     {
@@ -310,7 +324,8 @@ namespace TaskManager
                         }
                     }
                     // 固定辊台无货物
-                    if (_device.GoodsStatus() == FRT.GoodsNoAll && _device.ActionStatus() == FRT.Stop)
+                    if (_device.GoodsStatus() == FRT.GoodsNoAll && _device.ActionStatus() == FRT.Stop && 
+                        _device.FinishTask() == FRT.TaskRelease)
                     {
                         // 完成任务
                         ISetTaskSuc();
@@ -329,7 +344,8 @@ namespace TaskManager
                 else
                 {
                     // 摆渡车辊台上无货物,固定辊台上有货物
-                    if (_arf.GoodsStatus() == ARF.GoodsNoAll && _device.GoodsStatus() != FRT.GoodsNoAll && _device.ActionStatus() == FRT.Stop)
+                    if (_arf.GoodsStatus() == ARF.GoodsNoAll && _device.GoodsStatus() != FRT.GoodsNoAll && 
+                        _device.ActionStatus() == FRT.Stop && _device.FinishTask() == FRT.TaskRelease)
                     {
                         // 完成任务
                         ISetTaskSuc();
@@ -345,8 +361,20 @@ namespace TaskManager
                         return; // 固定辊台与摆渡车都有货，不启动辊台
                     }
                 }
+                // 当完成状态-辊台任务，立即发送 停止辊台任务 指令
+                if (_device.FinishTask() == FRT.TaskTake)
+                {
+                    byte[] order = FRT._StopRoller(_device.FRTNum());
+                    if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, order, out string res))
+                    {
+                        throw new Exception(res);
+                    }
+                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
+                    // LOG
+                    log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, order));
+                }
                 // 发送指令
-                if (_device.ActionStatus() == FRT.Stop)
+                else if (_device.CurrentTask() != _device.FinishTask() || _device.ActionStatus() == FRT.Stop)
                 {
                     if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
                     {
@@ -468,7 +496,8 @@ namespace TaskManager
                                 break;
                         }
                         // 摆渡车无货物
-                        if (_device.GoodsStatus() == ARF.GoodsNoAll && _device.ActionStatus() == ARF.Stop)
+                        if (_device.GoodsStatus() == ARF.GoodsNoAll && _device.ActionStatus() == ARF.Stop &&
+                            _device.FinishTask() == ARF.TaskRelease)
                         {
                             // 完成任务
                             ISetTaskSuc();
@@ -489,7 +518,8 @@ namespace TaskManager
                             case DeviceType.固定辊台:
                                 FRT _frt = new FRT(ITEM.LOC_FROM);
                                 // 固定辊台上无货物,摆渡车辊台上有货物
-                                if (_frt.GoodsStatus() == FRT.GoodsNoAll && _device.GoodsStatus() != ARF.GoodsNoAll && _device.ActionStatus() == ARF.Stop)
+                                if (_frt.GoodsStatus() == FRT.GoodsNoAll && _device.GoodsStatus() != ARF.GoodsNoAll
+                                    && _device.ActionStatus() == ARF.Stop && _device.FinishTask() == ARF.TaskRelease)
                                 {
                                     // 完成任务
                                     ISetTaskSuc();
@@ -500,7 +530,7 @@ namespace TaskManager
                                 else if (_device.GoodsStatus() == ARF.GoodsYesAll && _device.ActionStatus() == ARF.Stop &&
                                          _frt.GoodsStatus() == FRT.GoodsYesAll && _frt.ActionStatus() == FRT.Stop)
                                 {
-                                    return; // 摆渡车与摆渡车都有货，不启动辊台
+                                    return; // 固定辊台与摆渡车都有货，不启动辊台
                                 }
                                 break;
                             case DeviceType.运输车:
@@ -524,8 +554,21 @@ namespace TaskManager
                                 break;
                         }
                     }
+
+                    // 当完成状态-辊台任务，立即发送 停止辊台任务 指令
+                    if (_device.FinishTask() == ARF.TaskTake)
+                    {
+                        byte[] order = ARF._StopRoller(_device.ARFNum());
+                        if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, order, out string res))
+                        {
+                            throw new Exception(res);
+                        }
+                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
+                        // LOG
+                        log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, order));
+                    }
                     // 发送指令
-                    if (_device.ActionStatus() == ARF.Stop)
+                    else if (_device.CurrentTask() != _device.FinishTask() || _device.ActionStatus() == ARF.Stop)
                     {
                         if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
                         {
@@ -693,7 +736,8 @@ namespace TaskManager
                             case DeviceType.摆渡车:
                                 ARF _arf = new ARF(ITEM.LOC_FROM);
                                 // 摆渡车辊台上无货物,运输车辊台上有货物
-                                if (_arf.GoodsStatus() == ARF.GoodsNoAll && _device.GoodsStatus() != RGV.GoodsNoAll && _device.ActionStatus() == RGV.Stop)
+                                if (_arf.GoodsStatus() == ARF.GoodsNoAll && _device.GoodsStatus() != RGV.GoodsNoAll &&
+                                    _device.ActionStatus() == RGV.Stop && _device.FinishTask() == RGV.TaskRelease)
                                 {
                                     // 完成任务
                                     ISetTaskSuc();
@@ -710,7 +754,8 @@ namespace TaskManager
                             case DeviceType.运输车:
                                 RGV _rgv = new RGV(ITEM.LOC_FROM);
                                 // 来源运输车辊台上无货物,运输车辊台上有货物
-                                if (_rgv.GoodsStatus() == FRT.GoodsNoAll && _device.GoodsStatus() != ARF.GoodsNoAll && _device.ActionStatus() == RGV.Stop)
+                                if (_rgv.GoodsStatus() == FRT.GoodsNoAll && _device.GoodsStatus() != ARF.GoodsNoAll &&
+                                    _device.ActionStatus() == RGV.Stop && _device.FinishTask() == RGV.TaskRelease)
                                 {
                                     // 完成任务
                                     ISetTaskSuc();
@@ -728,8 +773,20 @@ namespace TaskManager
                                 break;
                         }
                     }
+                    // 当完成状态-辊台任务，立即发送 停止辊台任务 指令
+                    if (_device.FinishTask() == RGV.TaskTake)
+                    {
+                        byte[] order = RGV._StopRoller(_device.RGVNum());
+                        if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, order, out string res))
+                        {
+                            throw new Exception(res);
+                        }
+                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
+                        // LOG
+                        log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, order));
+                    }
                     // 发送指令
-                    if (_device.ActionStatus() == RGV.Stop)
+                    else if (_device.CurrentTask() != _device.FinishTask() || _device.ActionStatus() == RGV.Stop)
                     {
                         if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
                         {
@@ -915,7 +972,7 @@ namespace TaskManager
         // 线程
         Thread _thread;
         // 线程开关
-        public bool PowerSwitch = true; 
+        public bool PowerSwitch = true;
         private readonly object _ans = new object();
         // 执行对象
         List<Task> _taskList = new List<Task>();

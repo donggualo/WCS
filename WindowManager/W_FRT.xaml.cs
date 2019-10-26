@@ -257,5 +257,21 @@ namespace WindowManager
                 DataControl._mTaskTools.RecordTaskErrLog("TerminateBtn_Click()", "固定辊台-终止任务[FRT,指令]", dev, DataControl._mStools.BytetToString(order), ex.Message);
             }
         }
+
+        /// <summary>
+        /// 刷新
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void refreshBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (CBdev.SelectedIndex == -1)
+            {
+                Notice.Show("请选择设备！", "提示", 3, MessageBoxIcon.Info);
+                return;
+            }
+            string dev = CBdev.Text;
+            DataControl._mSocket.SwithRefresh(dev, true);
+        }
     }
 }
