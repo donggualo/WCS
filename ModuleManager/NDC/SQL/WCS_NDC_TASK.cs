@@ -17,6 +17,11 @@ namespace ModuleManager.NDC.SQL
         public int ID { set; get; }
 
         /// <summary>
+        /// 小车ID
+        /// </summary>
+        public int CARRIERID { set; get; }
+
+        /// <summary>
         /// WCS 任务标识
         /// </summary>
         public int TASKID { set; get; }

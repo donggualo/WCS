@@ -50,7 +50,7 @@ namespace NdcManager.DataGrid.Models
             }
         }
 
-        [DataGridColumn("Order")]
+        [DataGridColumn("Index")]
         public int Order {
             get {
                 return order;

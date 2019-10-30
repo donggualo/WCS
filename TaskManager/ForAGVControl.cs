@@ -184,7 +184,7 @@ namespace TaskManager
                         }
                         // 是否存在货物
                         //if (frt.GoodsStatus() == FRT.GoodsYesAll)
-                        if (frt.GoodsStatus() == FRT.GoodsYesAll || PublicParam.IsIgnoreFRT)  //add调试判断
+                        if (frt.GoodsStatus() != FRT.GoodsNoAll || PublicParam.IsIgnoreFRT)  //add调试判断
                         {
                             // 分配 WMS TASK
                             if (String.IsNullOrEmpty(agv.TASK_UID.Trim()))
@@ -211,7 +211,7 @@ namespace TaskManager
                                 // 获取 WMS 任务目标点
                                 String sqlloc = String.Format(@"select distinct DEVICE from wcs_config_device where FLAG in('{1}','{2}') and TYPE = '{3}' 
                                                                    and AREA in (select W_D_LOC from wcs_task_info where TASK_UID = '{0}')
-	                                                               and DEVICE in (select distinct DROPSTATION From wcs_agv_info where MAGIC <> {4} group by DROPSTATION HAVING count(DROPSTATION) < {5})
+	                                                               and DEVICE not in (select distinct DROPSTATION From wcs_agv_info where MAGIC <> {4} group by DROPSTATION HAVING count(DROPSTATION) = {5})
                                                                  order by FLAG,CREATION_TIME", agv.TASK_UID, DeviceFlag.占用, DeviceFlag.空闲, DeviceType.固定辊台, AGVMagic.任务完成, 3);//最多三辆车
                                 DataTable dtloc = DataControl._mMySql.SelectAll(sqlloc);
                                 if (DataControl._mStools.IsNoData(dtloc))
@@ -241,7 +241,7 @@ namespace TaskManager
 
                         break;
                     case AGVMagic.到达卸货点:
-                        // 获取对应包装线固定辊台资讯
+                        // 获取对应固定辊台资讯
                         FRT frtdrop = new FRT(agv.DROPSTATION);
                         // 是否作业中
                         if (frtdrop.CurrentStatus() != FRT.RollerStop)
@@ -269,8 +269,8 @@ namespace TaskManager
                                 // 获取指令-- 启动所有辊台 正向接货
                                 order = FRT._RollerControl(frtdrop.FRTNum(), FRT.RollerRunAll, FRT.RunFront, FRT.GoodsReceive, FRT.GoodsQty1);
                             }
-                            // 当仅2#辊台有货
-                            else if (frtdrop.GoodsStatus() == FRT.GoodsYes2)
+                            // 当仅1#辊台有货
+                            else if (frtdrop.GoodsStatus() == FRT.GoodsYes1)
                             {
                                 // 获取指令-- 只启动1#辊台 正向接货
                                 order = FRT._RollerControl(frtdrop.FRTNum(), FRT.RollerRun1, FRT.RunFront, FRT.GoodsReceive, FRT.GoodsQty1);

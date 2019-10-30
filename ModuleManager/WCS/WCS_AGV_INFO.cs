@@ -60,7 +60,7 @@ namespace ModuleManager.WCS
         public const int 任务生成 = 1;
         public const int 分配装货卸货点 = 2;
         public const int 前往装货点 = 3;
-        public const int 到达装货点 = 4;
+        public const int 到达装货点 = 5;
         public const int 装货完成 = 6;
         public const int 到达卸货点 = 8;
         public const int 卸货完成 = 10;

@@ -74,7 +74,7 @@ namespace ToolManager
         /// <param name="text"></param>
         public void LOG(string text)
         {
-            Console.WriteLine(text);
+          //  Console.WriteLine(text);
             CheckLogFile();
             WriteToLogFile(text);
 

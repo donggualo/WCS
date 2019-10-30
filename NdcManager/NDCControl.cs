@@ -200,6 +200,7 @@ namespace NdcManager
                             if (item != null)
                             {
                                 item._mTask = i;
+                                item.CarrierId = i.CARRIERID!=0 ? i.CARRIERID:item.CarrierId;
                             }
                             else
                             {
@@ -207,6 +208,7 @@ namespace NdcManager
                                 {
                                     _mTask = i
                                 };
+                                it.CarrierId = i.CARRIERID;
                                 Items.Add(it);
                                 CheckCanUpdateTaskList(it);
                             }
@@ -244,7 +246,11 @@ namespace NdcManager
                     Items.Add(ndcItem);
                 }
                 ndcItem.SetSMessage(message);
-                if (ndcItem.StatusInfo != "") log.LOG(ndcItem.StatusInfo);
+                if (ndcItem.StatusInfo != "")
+                {
+                    Console.WriteLine(ndcItem.StatusInfo);
+                    log.LOG(ndcItem.StatusInfo);
+                }
                 CheckMagic(ndcItem, message);
 
                 CheckCanUpdateTaskList(ndcItem);
@@ -276,7 +282,11 @@ namespace NdcManager
                     Items.Add(ndcItem);
                 }
                 ndcItem.SetBMessage(message);
-                if (ndcItem.TaskInfo != "") log.LOG(ndcItem.TaskInfo);
+                if (ndcItem.TaskInfo != "")
+                {
+                    Console.WriteLine(ndcItem.TaskInfo);
+                    log.LOG(ndcItem.TaskInfo);
+                }
                 CheckStatus(ndcItem, message);
 
                 CheckCanUpdateTaskList(ndcItem);
@@ -352,7 +362,7 @@ namespace NdcManager
                     item._mTask.NDCUNLOADSITE = item.s.Magic3 + "";
                     break;
 
-                case 4: //小车到达接货点
+                case 5: //小车到达接货点
                     if (item.DirectStatus != NDCItemStatus.HasDirectInfo)
                     {
                         item.DirectStatus = NDCItemStatus.CanRedirect;
@@ -773,6 +783,16 @@ namespace NdcManager
                 return false;
             }
 
+
+            if(item.PLCStatus == NDCPlcStatus.Loading)
+            {
+                LoadItemList.Remove(item._mTask.ORDERINDEX);
+                //通知WCS
+                AGVDataUpdate?.Invoke(item._mTask.TASKID, item.CarrierId + "");
+                result = "小车已经启动辊台了";
+                return true;
+            }
+
             if (item.PLCStatus != NDCPlcStatus.LoadReady)
             {
                 result = "小车为准备好接货";
@@ -831,6 +851,36 @@ namespace NdcManager
 
             result = taskid + "的卸货请求已经请求过了";
             return false;
+        }
+
+        /// <summary>
+        /// 取消任务
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public bool DoCancelIndex(int index,out string result)
+        {
+            if (index == 0 || index == 0)
+            {
+                result = "任务ID,车ID不能为零";
+                return false;
+            }
+
+            NDCItem item = Items.Find(c =>
+            {
+                return c._mTask.ORDERINDEX == index;
+            });
+
+            if (item == null)
+            {
+                result = "找不到任务Index:"+index+"任务.";
+                return false;
+            }
+
+            DoDeleteOrder(index + "");
+            result = "取消成功";
+            return true;
         }
 
         #endregion

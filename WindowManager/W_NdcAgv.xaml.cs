@@ -189,6 +189,23 @@ namespace WindowManager
 
             }
         }
+
+        private void deleteorder_Click(object sender, RoutedEventArgs e)
+        {
+
+            int i = -1;
+            if (index.Text != "" && !int.TryParse(index.Text, out i))
+            {
+                Notice.Show("Index必须是数字", "错误", 3, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (!DataControl._mNDCControl.DoCancelIndex(i, out string result))
+            {
+
+                Notice.Show(result, "错误", 3, MessageBoxIcon.Error);
+            }
+        }
     }
 
 }

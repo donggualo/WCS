@@ -78,7 +78,7 @@ namespace NdcManager
         public bool ReadUnFinishTask(out List<WCS_NDC_TASK> list)
         {
             list = new List<WCS_NDC_TASK>();
-            DataTable dt = mysql.SelectAll("SELECT ID,TASKID,IKEY,ORDERINDEX,LOADSITE,UNLOADSITE,REDIRECTSITE,NDCLOADSITE,NDCUNLOADSITE,NDCREDIRECTSITE,CREATETIME FROM WCS_NDC_TASK");
+            DataTable dt = mysql.SelectAll("SELECT ID,TASKID,CARRIERID,IKEY,ORDERINDEX,LOADSITE,UNLOADSITE,REDIRECTSITE,NDCLOADSITE,NDCUNLOADSITE,NDCREDIRECTSITE,CREATETIME FROM WCS_NDC_TASK");
             if (CommonSQL.IsNoData(dt))
             {
                 return false;
@@ -96,12 +96,12 @@ namespace NdcManager
         public void SaveUnFinishTask(List<NDCItem> list,List<TempItem> tlist)
         {
             string sql1 = "INSERT INTO WCS_NDC_TASK(TASKID,IKEY,ORDERINDEX,LOADSITE,UNLOADSITE," +
-                "REDIRECTSITE,NDCLOADSITE,NDCUNLOADSITE,NDCREDIRECTSITE,HADLOAD,HADUNLOAD,CREATETIME) " +
-                "VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}')";
+                "REDIRECTSITE,NDCLOADSITE,NDCUNLOADSITE,NDCREDIRECTSITE,HADLOAD,HADUNLOAD,CARRIERID) " +
+                "VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}','{11}')";
 
             string sql2 = "INSERT INTO WCS_NDC_TASK(TASKID,IKEY,LOADSITE,UNLOADSITE,REDIRECTSITE," +
-                "NDCLOADSITE,NDCUNLOADSITE,NDCREDIRECTSITE,CREATETIME) " +
-                "VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}')";
+                "NDCLOADSITE,NDCUNLOADSITE,NDCREDIRECTSITE) " +
+                "VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}')";
 
             foreach (var i in list)
             {
@@ -109,14 +109,14 @@ namespace NdcManager
                 string sql = string.Format(@sql1, i._mTask.TASKID,i._mTask.IKEY,i._mTask.ORDERINDEX,
                     i._mTask.LOADSITE,i._mTask.UNLOADSITE,i._mTask.REDIRECTSITE,
                     i._mTask.NDCLOADSITE,i._mTask.NDCUNLOADSITE,i._mTask.NDCREDIRECTSITE,
-                    i._mTask.HADLOAD?1:0,i._mTask.HADUNLOAD?1:0,DateTime.Now);
+                    i._mTask.HADLOAD?1:0,i._mTask.HADUNLOAD?1:0,i.CarrierId);
                 mysql.ExcuteSql(sql);
             }
 
             foreach(var i in tlist)
             {
                 string sql = string.Format(@sql2, i.TaskID, i.IKey, i.LoadSite,i.UnloadSite,i.RedirectSite,
-                    i.NdcLoadSite, i.NdcUnloadSite,i.NdcRedirectSite, DateTime.Now);
+                    i.NdcLoadSite, i.NdcUnloadSite,i.NdcRedirectSite);
                 mysql.ExcuteSql(sql);
             }
         }

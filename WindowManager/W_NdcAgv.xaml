@@ -44,14 +44,32 @@
                     pu:TextBoxHelper.FocusedShadowColor="#000000"
                     pu:TextBoxHelper.CornerRadius="8"  FontFamily="MV Boli"/>
 
-            <TextBox Grid.Row="1" Grid.Column="1"  Height="30" Text="B02"
+            <TextBox Grid.Row="0" Grid.Column="1"  Height="30" Text=""
+                    Width="160" Name="index"
+                    pu:TextBoxHelper.Watermark="Index"
+                    pu:TextBoxHelper.FocusedBorderBrush="#000000"
+                    pu:TextBoxHelper.FocusedShadowColor="#000000"
+                    pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
+
+            <Button  Grid.Row="0" Grid.Column="2"  Height="30"
+                    Width="120" Name="deleteorder" Click="deleteorder_Click"
+                    Content="&#xf04b; 取消任务"
+                    pu:ButtonHelper.ClickStyle="Sink"
+                    FontFamily="{DynamicResource FontAwesome}"
+                    pu:ButtonHelper.ButtonStyle="Hollow"
+                    BorderBrush="#FF3F3F3F"
+                    Foreground="#FF3F3F3F"
+                    pu:ButtonHelper.HoverBrush="#3F3F3F"
+                    pu:ButtonHelper.CornerRadius="6" />
+
+            <TextBox Grid.Row="1" Grid.Column="1"  Height="30" Text="FRT01"
                     Width="160" Name="loadSite"
                     pu:TextBoxHelper.Watermark="接货点"
                     pu:TextBoxHelper.FocusedBorderBrush="#000000"
                     pu:TextBoxHelper.FocusedShadowColor="#000000"
                     pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
 
-            <TextBox Grid.Row="1" Grid.Column="2"  Height="30" Text="C03"
+            <TextBox Grid.Row="1" Grid.Column="2"  Height="30" Text="FRT03"
                     Width="160" Name="unloadSite"
                     pu:TextBoxHelper.Watermark="卸货点"
                     pu:TextBoxHelper.FocusedBorderBrush="#000000"
@@ -70,7 +88,7 @@
                     pu:ButtonHelper.CornerRadius="6" />
 
             <TextBox Grid.Row="2" Grid.Column="1"  Height="30"
-                    Width="160" IsReadOnly="True" Name="agvName"
+                    Width="160" IsReadOnly="False" Name="agvName"
                     pu:TextBoxHelper.Watermark="AGV"
                     pu:TextBoxHelper.FocusedBorderBrush="#000000"
                     pu:TextBoxHelper.FocusedShadowColor="#000000"
@@ -95,7 +113,7 @@
                     Foreground="#FF3F3F3F"
                     pu:ButtonHelper.HoverBrush="#3F3F3F"
                     pu:ButtonHelper.CornerRadius="6" />
-            <TextBox Grid.Row="3" Grid.Column="1"  Height="30" Text="C03-C02-001"
+            <TextBox Grid.Row="3" Grid.Column="1"  Height="30" Text="FRT02"
                     Width="160" Name="redirectArea"
                     pu:TextBoxHelper.Watermark="重定向区域"
                     pu:TextBoxHelper.FocusedBorderBrush="#000000"
