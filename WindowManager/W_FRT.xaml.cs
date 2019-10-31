@@ -159,15 +159,16 @@ namespace WindowManager
                 }
 
                 order = FRT._RollerControl(frt.FRTNum(), site1, site2, site3, site4);
+                DataControl._mSocket.SwithRefresh(dev, false);
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
+                    DataControl._mSocket.SwithRefresh(dev, true);
                     Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
                     // LOG
                     DataControl._mTaskTools.RecordTaskErrLog("BTNrun_Click()", "固定辊台-启动辊台任务[FRT,指令]", dev, DataControl._mStools.BytetToString(order), result.ToString());
                     return;
                 }
                 Notice.Show("启动辊台 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
-                DataControl._mSocket.SwithRefresh(dev, false);
             }
             catch (Exception ex)
             {

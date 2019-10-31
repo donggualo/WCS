@@ -181,7 +181,6 @@ namespace WindowManager
                     return;
                 }
                 Notice.Show("定位任务 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
-                DataControl._mSocket.SwithRefresh(dev, false);
             }
             catch (Exception ex)
             {

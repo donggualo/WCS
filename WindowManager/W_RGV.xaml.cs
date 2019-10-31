@@ -164,15 +164,16 @@ namespace WindowManager
 
                 int loc = Convert.ToInt32(location.Text.Trim());
                 order = RGV._Position(rgv.RGVNum(), DataControl._mStools.IntToBytes(loc));
+                DataControl._mSocket.SwithRefresh(dev, false);
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
+                    DataControl._mSocket.SwithRefresh(dev, true);
                     Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
                     // LOG
                     DataControl._mTaskTools.RecordTaskErrLog("LocateBtn_Click()", "运输车-定位任务[RGV,指令]", dev, DataControl._mStools.BytetToString(order), result.ToString());
                     return;
                 }
                 Notice.Show("定位任务 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
-                DataControl._mSocket.SwithRefresh(dev, false);
             }
             catch (Exception ex)
             {
@@ -247,15 +248,16 @@ namespace WindowManager
                 }
 
                 order = RGV._RollerControl(rgv.RGVNum(), site1, site2, site3, site4);
+                DataControl._mSocket.SwithRefresh(dev, false);
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
+                    DataControl._mSocket.SwithRefresh(dev, true);
                     Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
                     // LOG
                     DataControl._mTaskTools.RecordTaskErrLog("BTNrun_Click()", "运输车-启动辊台任务[RGV,指令]", dev, DataControl._mStools.BytetToString(order), result.ToString());
                     return;
                 }
                 Notice.Show("启动辊台 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
-                DataControl._mSocket.SwithRefresh(dev, false);
             }
             catch (Exception ex)
             {

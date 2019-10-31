@@ -169,11 +169,12 @@ namespace TaskManager
                     if (_device.ActionStatus() == FRT.Stop)
                     {
                         // 发送指令
+                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
                         if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
                         {
+                            DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                             throw new Exception(result);
                         }
-                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
                         // LOG
                         log.LOG(String.Format(@"【SendOrder】{0}：WMS任务ID[ {1} ]，AGV任务ID[ {2} ]，设备号[ {3} ], 指令[ {4} ].",
                         ITEM.ITEM_ID, ITEM.WCS_NO, ITEM.ID, ITEM.DEVICE, DataControl._mStools.BytetToString(Order)));
@@ -209,7 +210,7 @@ namespace TaskManager
                 else // 接货
                 {
                     bool isOK = false;
-                    switch(ITEM.LOC_FROM.Substring(ITEM.LOC_FROM.Length-2))
+                    switch (ITEM.LOC_FROM.Substring(ITEM.LOC_FROM.Length - 2))
                     {
                         case "-1":
                             // 固定辊台上有1#有货
@@ -244,22 +245,23 @@ namespace TaskManager
                 if (_device.FinishTask() == FRT.TaskTake)
                 {
                     byte[] order = FRT._StopRoller(_device.FRTNum());
+                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                     if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, order, out string res))
                     {
                         throw new Exception(res);
                     }
-                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                     // LOG
                     log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, order));
                 }
                 // 发送指令
                 else if (_device.CurrentTask() != _device.FinishTask() || _device.ActionStatus() == FRT.Stop)
                 {
+                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
                     if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
                     {
+                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                         throw new Exception(result);
                     }
-                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
                     // LOG
                     log.LOG(String.Format(@"【SendOrder】{0}：WMS任务ID[ {1} ]，AGV任务ID[ {2} ]，设备号[ {3} ], 指令[ {4} ].",
                     ITEM.ITEM_ID, ITEM.WCS_NO, ITEM.ID, ITEM.DEVICE, DataControl._mStools.BytetToString(Order)));
@@ -308,11 +310,12 @@ namespace TaskManager
                     if (_device.ActionStatus() == FRT.Stop)
                     {
                         // 发送指令
+                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
                         if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
                         {
+                            DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                             throw new Exception(result);
                         }
-                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                     }
@@ -332,7 +335,7 @@ namespace TaskManager
 
                 ARF _arf = new ARF(ITEM.LOC_TO);
                 // 对接设备状态
-                if (!string.IsNullOrEmpty(ITEM.LOC_TO.Trim())) // 目标不为空即最终无货
+                if (!string.IsNullOrEmpty(ITEM.LOC_TO.Trim())) // 目标不为空即最终无货 --送货
                 {
                     // 摆渡车辊台停止状态
                     if (_arf.CurrentStatus() == ARF.RollerStop)
@@ -361,7 +364,7 @@ namespace TaskManager
                         return; // 固定辊台与摆渡车都有货，不启动辊台
                     }
                 }
-                else
+                else // 接货
                 {
                     // 摆渡车辊台上无货物,固定辊台上有货物
                     if (_arf.GoodsStatus() == ARF.GoodsNoAll && _device.GoodsStatus() != FRT.GoodsNoAll &&
@@ -385,22 +388,23 @@ namespace TaskManager
                 if (_device.FinishTask() == FRT.TaskTake)
                 {
                     byte[] order = FRT._StopRoller(_device.FRTNum());
+                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                     if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, order, out string res))
                     {
                         throw new Exception(res);
                     }
-                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                     // LOG
                     log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, order));
                 }
                 // 发送指令
                 else if (_device.CurrentTask() != _device.FinishTask() || _device.ActionStatus() == FRT.Stop)
                 {
+                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
                     if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
                     {
+                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                         throw new Exception(result);
                     }
-                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
                     // LOG
                     log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                 }
@@ -449,11 +453,12 @@ namespace TaskManager
                         if (_device.ActionStatus() == ARF.Stop)
                         {
                             // 发送指令
+                            DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
                             if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
                             {
+                                DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                                 throw new Exception(result);
                             }
-                            DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
                             // LOG
                             log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                         }
@@ -471,7 +476,7 @@ namespace TaskManager
                     }
                     #endregion
 
-                    if (!string.IsNullOrEmpty(ITEM.LOC_TO.Trim())) // 目标不为空即最终无货
+                    if (!string.IsNullOrEmpty(ITEM.LOC_TO.Trim())) // 目标不为空即最终无货 --送货
                     {
                         // 获取目标设备类型
                         String typeTo = DataControl._mTaskTools.GetDeviceType(ITEM.LOC_TO);
@@ -528,7 +533,7 @@ namespace TaskManager
                             return;
                         }
                     }
-                    else
+                    else // 接货
                     {
                         // 获取目标设备类型
                         String typeFrom = DataControl._mTaskTools.GetDeviceType(ITEM.LOC_FROM);
@@ -556,7 +561,8 @@ namespace TaskManager
                             case DeviceType.运输车:
                                 RGV _rgv = new RGV(ITEM.LOC_FROM);
                                 // 运输车辊台上无货物,摆渡车辊台上有货物
-                                if (_rgv.GoodsStatus() == FRT.GoodsNoAll && _device.GoodsStatus() != ARF.GoodsNoAll)
+                                if (_rgv.GoodsStatus() == FRT.GoodsNoAll && _device.GoodsStatus() != ARF.GoodsNoAll
+                                    && _device.ActionStatus() == ARF.Stop && _device.FinishTask() == ARF.TaskRelease)
                                 {
                                     // 完成任务
                                     ISetTaskSuc();
@@ -574,27 +580,27 @@ namespace TaskManager
                                 break;
                         }
                     }
-
                     // 当完成状态-辊台任务，立即发送 停止辊台任务 指令
                     if (_device.FinishTask() == ARF.TaskTake)
                     {
                         byte[] order = ARF._StopRoller(_device.ARFNum());
+                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                         if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, order, out string res))
                         {
                             throw new Exception(res);
                         }
-                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, order));
                     }
                     // 发送指令
                     else if (_device.CurrentTask() != _device.FinishTask() || _device.ActionStatus() == ARF.Stop)
                     {
+                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
                         if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
                         {
+                            DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                             throw new Exception(result);
                         }
-                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                     }
@@ -602,17 +608,6 @@ namespace TaskManager
                 // 定位任务
                 else
                 {
-                    // 发送指令
-                    if (_device.ActionStatus() == ARF.Stop)
-                    {
-                        if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
-                        {
-                            throw new Exception(result);
-                        }
-                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
-                        // LOG
-                        log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
-                    }
                     // 当前位置与目的位置一致 视为任务完成
                     if (_device.CurrentSite() == Convert.ToInt32(ITEM.LOC_TO) && _device.ActionStatus() == ARF.Stop)
                     {
@@ -621,6 +616,18 @@ namespace TaskManager
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMessW(ITEM, Order));
                         return;
+                    }
+                    // 发送指令
+                    if (_device.ActionStatus() == ARF.Stop)
+                    {
+                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
+                        if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
+                        {
+                            DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
+                            throw new Exception(result);
+                        }
+                        // LOG
+                        log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                     }
                 }
             }
@@ -668,11 +675,12 @@ namespace TaskManager
                         if (_device.ActionStatus() == RGV.Stop)
                         {
                             // 发送指令
+                            DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
                             if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
                             {
+                                DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                                 throw new Exception(result);
                             }
-                            DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
                             // LOG
                             log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                         }
@@ -690,7 +698,7 @@ namespace TaskManager
                     }
                     #endregion
 
-                    if (!string.IsNullOrEmpty(ITEM.LOC_TO.Trim())) // 目标不为空即最终无货
+                    if (!string.IsNullOrEmpty(ITEM.LOC_TO.Trim())) // 目标不为空即最终无货 --送货
                     {
                         // 获取目标设备类型
                         String typeTo = DataControl._mTaskTools.GetDeviceType(ITEM.LOC_TO);
@@ -735,7 +743,8 @@ namespace TaskManager
                                 break;
                         }
                         // 运输车无货物
-                        if (_device.GoodsStatus() == RGV.GoodsNoAll)
+                        if (_device.GoodsStatus() == RGV.GoodsNoAll && _device.ActionStatus() == RGV.Stop &&
+                            _device.FinishTask() == RGV.TaskRelease)
                         {
                             // 完成任务
                             ISetTaskSuc();
@@ -746,7 +755,7 @@ namespace TaskManager
                             return;
                         }
                     }
-                    else
+                    else //接货
                     {
                         // 获取目标设备类型
                         String typeFrom = DataControl._mTaskTools.GetDeviceType(ITEM.LOC_FROM);
@@ -773,8 +782,8 @@ namespace TaskManager
                                 break;
                             case DeviceType.运输车:
                                 RGV _rgv = new RGV(ITEM.LOC_FROM);
-                                // 来源运输车辊台上无货物,运输车辊台上有货物
-                                if (_rgv.GoodsStatus() == FRT.GoodsNoAll && _device.GoodsStatus() != ARF.GoodsNoAll &&
+                                // 来源运输车辊台上无货物,目的运输车辊台上有货物
+                                if (_rgv.GoodsStatus() == RGV.GoodsNoAll && _device.GoodsStatus() != RGV.GoodsNoAll &&
                                     _device.ActionStatus() == RGV.Stop && _device.FinishTask() == RGV.TaskRelease)
                                 {
                                     // 完成任务
@@ -797,22 +806,23 @@ namespace TaskManager
                     if (_device.FinishTask() == RGV.TaskTake)
                     {
                         byte[] order = RGV._StopRoller(_device.RGVNum());
+                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                         if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, order, out string res))
                         {
                             throw new Exception(res);
                         }
-                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, order));
                     }
                     // 发送指令
                     else if (_device.CurrentTask() != _device.FinishTask() || _device.ActionStatus() == RGV.Stop)
                     {
+                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
                         if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
                         {
+                            DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                             throw new Exception(result);
                         }
-                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                     }
@@ -820,18 +830,6 @@ namespace TaskManager
                 // 定位任务
                 else
                 {
-                    // 发送指令
-                    if (_device.ActionStatus() == RGV.Stop)
-                    {
-                        if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
-                        {
-                            throw new Exception(result);
-                        }
-                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
-                        // LOG
-                        log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
-                    }
-
                     /* 设备坐标偏差 */
                     string resultRGV;
                     if (!DataControl._mTaskTools.GetLocByAddGap(ITEM.DEVICE, ITEM.LOC_TO, out resultRGV))
@@ -848,6 +846,18 @@ namespace TaskManager
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMessW(ITEM, Order));
                         return;
+                    }
+                    // 发送指令
+                    if (_device.ActionStatus() == RGV.Stop)
+                    {
+                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
+                        if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
+                        {
+                            DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
+                            throw new Exception(result);
+                        }
+                        // LOG
+                        log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                     }
                 }
             }
@@ -895,11 +905,12 @@ namespace TaskManager
                         // 发送指令
                         if (_device.ActionStatus() == ABC.Stop)
                         {
+                            DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
                             if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
                             {
+                                DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                                 throw new Exception(result);
                             }
-                            DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
                             // LOG
                             log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                         }
@@ -953,7 +964,7 @@ namespace TaskManager
                         return;
                     }
                     // 当前位置与目的位置一致 视为任务完成
-                    if (_device.GetCurrentSite().Equals(resultABC))
+                    if (_device.GetCurrentSite().Equals(resultABC) && _device.ActionStatus() == ABC.Stop)
                     {
                         // 等待对接
                         ISetTaskWait();
@@ -965,11 +976,12 @@ namespace TaskManager
                 // 发送指令
                 if (_device.ActionStatus() == ABC.Stop)
                 {
+                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
                     if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
                     {
+                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                         throw new Exception(result);
                     }
-                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
                     // LOG
                     log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                 }
