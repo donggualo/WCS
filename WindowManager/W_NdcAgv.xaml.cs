@@ -162,25 +162,6 @@ namespace WindowManager
             }
         }
 
-        private void NdcConnectCB_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (ndcConnectCB.IsChecked != null && (bool)ndcConnectCB.IsChecked)
-                {
-                    DataControl._mNDCControl.DoConnectNDC();
-                }
-                else
-                {
-                DataControl._mNDCControl.DoDisConnectNDC();
-                }
-            }catch(Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-
-        }
-
         private void DgCustom_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             DataGridRow row = sender as DataGridRow;

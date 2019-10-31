@@ -8,9 +8,8 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="90*"/>
-            <ColumnDefinition Width="10*"/>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -44,9 +43,16 @@
                 </ContextMenu>
             </DataGrid.ContextMenu>
         </DataGrid>
-
-        <Button Name="Refresh" Content="刷新" Margin="10,5,10,5" Click="Refresh_Click" Grid.Row="2" Grid.Column="1"/>
-
+        <Button Margin="10,5,10,5" Grid.Row="2" Grid.Column="1"
+                    Name="Refresh" Click="Refresh_Click" Content="刷新"
+                    Height="30" Width="80" 
+                    pu:ButtonHelper.ClickStyle="Sink"
+                    FontFamily="{DynamicResource FontAwesome}"
+                    pu:ButtonHelper.ButtonStyle="Hollow"
+                    BorderBrush="#FF3F3F3F"
+                    Foreground="#FF3F3F3F"
+                    pu:ButtonHelper.HoverBrush="#3F3F3F"
+                    pu:ButtonHelper.CornerRadius="6" />
     </Grid>
 
 </UserControl>

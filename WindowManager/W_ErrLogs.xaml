@@ -3,27 +3,37 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
              xmlns:local="clr-namespace:WindowManager"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="135*"/>
-            <ColumnDefinition Width="70*"/>
-            <ColumnDefinition Width="550*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="15*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock FontSize="19" FontFamily="MV Boli" Grid.Row="1">
+        <TextBlock FontSize="22" Grid.Row="0" Grid.Column="0" Margin="10">
                         Log 异常记录
         </TextBlock>
 
-        <Button Name="BtnRefresh" Content="刷新列表" Click="BtnRefresh_Click" Grid.Column="1" Grid.Row="1"/>
+        <Button Grid.Row="0" Grid.Column="1" Name="BtnRefresh" 
+                Content="刷新列表" Click="BtnRefresh_Click" 
+                 Height="30" Width="80"
+                pu:ButtonHelper.ClickStyle="Sink"
+                FontFamily="{DynamicResource FontAwesome}"
+                pu:ButtonHelper.ButtonStyle="Hollow"
+                BorderBrush="#FF3F3F3F"
+                Foreground="#FF3F3F3F"
+                pu:ButtonHelper.HoverBrush="#3F3F3F"
+                pu:ButtonHelper.CornerRadius="6"/>
 
-        <DataGrid Name="DGlog"  IsReadOnly="True" AutoGeneratingColumn="DataGrid_TimeFormat" Grid.ColumnSpan="3" Grid.Row="2"/>
+        <DataGrid Grid.Row="1" Grid.ColumnSpan="3" Name="DGlog"  IsReadOnly="True" 
+                  AutoGeneratingColumn="DataGrid_TimeFormat"/>
     </Grid>
 </UserControl>

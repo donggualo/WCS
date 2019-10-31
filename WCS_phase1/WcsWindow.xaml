@@ -16,112 +16,7 @@
             BorderThickness="0"
             pu:WindowXCaption.Header=" "
             Closing="WindowX_Closing">
-    <pu:WindowXCaption.ExtendControl>
-        <pu:DropDown HorizontalAlignment="Left"
-                     VerticalAlignment="Top">
-            <Grid Height="35"
-                  Width="40">
-                <Ellipse Height="25"
-                         Width="25"
-                         HorizontalAlignment="Center"
-                         VerticalAlignment="Center"
-                         Stroke="LightGray"
-                         StrokeThickness="1"
-                         pu:LayoutHelper.ColumnDefinition="0.5*">
-                    <Ellipse.Fill>
-                        <ImageBrush RenderOptions.BitmapScalingMode="HighQuality"
-                                    ImageSource="/WCS_phase1;component/Resources/head.jpg" />
-                    </Ellipse.Fill>
-                </Ellipse>
-            </Grid>
-            <pu:DropDown.Child>
-                <Grid Height="170"
-                      Width="200">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="55" />
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-                    <Grid Margin="15,0" Grid.Row="0">
-                        <Ellipse Height="35"
-                                 Width="35"
-                                 Stroke="LightGray"
-                                 VerticalAlignment="Center"
-                                 StrokeThickness="1"
-                                 HorizontalAlignment="Left"
-                                 pu:LayoutHelper.ColumnDefinition="0.5*">
-                            <Ellipse.Fill>
-                                <ImageBrush RenderOptions.BitmapScalingMode="HighQuality"
-                                            ImageSource="/WCS_phase1;component/Resources/head.jpg" />
-                            </Ellipse.Fill>
-                        </Ellipse>
-                        <TextBlock Margin="0,0,0,0"
-                                   Text="Zeoun"
-                                   Foreground="Gray"
-                                   FontSize="15"
-                                   VerticalAlignment="Center"
-                                   HorizontalAlignment="Right" />
-                    </Grid>
-                    <Border VerticalAlignment="Bottom"
-                            BorderBrush="#EEEEEE"
-                            BorderThickness="0,0,0,1" />
-                    <Grid Grid.Row="1"
-                          Margin="15,0">
-                        <TextBlock VerticalAlignment="Center"
-                                   Foreground="Gray"
-                                   Text="Enabled" />
-                        <CheckBox pu:CheckBoxHelper.CheckBoxStyle="Switch"
-                                  pu:CheckBoxHelper.CheckedBackground="#74C178"
-                                  pu:CheckBoxHelper.CornerRadius="2"
-                                  pu:CheckBoxHelper.BoxHeight="25"
-                                  pu:CheckBoxHelper.BoxWidth="35"
-                                  Foreground="Gray"
-                                  VerticalAlignment="Center"
-                                  IsChecked="True"
-                                  FontFamily="/Panuon.UI.Silver;component/Resources/#fontawesome"
-                                  HorizontalAlignment="Right" />
-                    </Grid>
-                    <Border Grid.Row="1"
-                            VerticalAlignment="Bottom"
-                            BorderBrush="#EEEEEE"
-                            BorderThickness="0,0,0,1" />
-                    <Grid Grid.Row="2"
-                          Margin="15,0">
-                        <TextBlock VerticalAlignment="Center"
-                                   Foreground="Gray"
-                                   Text="Notifycation" />
-                        <CheckBox pu:CheckBoxHelper.CheckBoxStyle="Switch"
-                                  pu:CheckBoxHelper.CheckedBackground="#74C178"
-                                  pu:CheckBoxHelper.CornerRadius="2"
-                                  pu:CheckBoxHelper.BoxHeight="25"
-                                  pu:CheckBoxHelper.BoxWidth="35"
-                                  Foreground="Gray"
-                                  VerticalAlignment="Center"
-                                  FontFamily="/Panuon.UI.Silver;component/Resources/#fontawesome"
-                                  HorizontalAlignment="Right" />
-                    </Grid>
-                    <Border Grid.Row="2"
-                            VerticalAlignment="Bottom"
-                            BorderBrush="#EEEEEE"
-                            BorderThickness="0,0,0,1" />
-                    <Grid Grid.Row="3">
-                        <Button pu:ButtonHelper.ButtonStyle="Link"
-                                Height="30"
-                                VerticalAlignment="Center"
-                                FontFamily="/Panuon.UI.Silver;component/Resources/#fontawesome"
-                                Content="&#xf08b; Sign out" />
-                    </Grid>
-                </Grid>
-            </pu:DropDown.Child>
-        </pu:DropDown>
-    </pu:WindowXCaption.ExtendControl>
     <Grid>
-        <TextBlock Text="Examples/NavbarWindow.xaml"
-                   VerticalAlignment="Center"
-                   HorizontalAlignment="Center"
-                   Foreground="Gray"
-                   Opacity="0.5" />
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="200" />
@@ -276,35 +171,28 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition />
                 </Grid.RowDefinitions>
-                <Grid Width="300"
-                      HorizontalAlignment="Left">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="17*" />
-                        <ColumnDefinition Width="43*" />
-                    </Grid.ColumnDefinitions>
-                    <TextBox pu:TextBoxHelper.CornerRadius="20"
-                             pu:TextBoxHelper.Watermark="Search ..."
-                             Height="40"
-                             Margin="10,10"
-                             Padding="15,0,30,0"
-                             Grid.ColumnSpan="2" />
-                    <Button HorizontalAlignment="Right"
-                            pu:ButtonHelper.ButtonStyle="Link"
-                            Content="&#xf002;"
-                            FontFamily="{DynamicResource FontAwesome}"
-                            Margin="0,0,15,0"
-                            Width="30"
-                            Grid.Column="1" />
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10">
                     <CheckBox Name="CheckAGV" Content="派送AGV" Click="CheckAGV_Click"
+                              pu:CheckBoxHelper.BoxHeight="30"
+                              pu:CheckBoxHelper.BoxWidth="70"
                               pu:CheckBoxHelper.CheckBoxStyle="Switch2" 
-                              pu:CheckBoxHelper.CheckedBackground="#FF67DA82" Margin="380,10,-280,10" Grid.Column="1"/>
+                              pu:CheckBoxHelper.CheckedBackground="#FF67DA82"  Margin="0,0,20,0"/>
                     <CheckBox Name="CheckTask" Content="生成任务" Click="CheckTask_Click"
+                              pu:CheckBoxHelper.BoxHeight="30"
+                              pu:CheckBoxHelper.BoxWidth="70"
                               pu:CheckBoxHelper.CheckBoxStyle="Switch2" 
-                              pu:CheckBoxHelper.CheckedBackground="#FF67DA82" Margin="500,10,-400,10" Grid.Column="1"/>
+                              pu:CheckBoxHelper.CheckedBackground="#FF67DA82" Margin="0,0,20,0"/>
                     <CheckBox Name="CheckOrder" Content="发送指令" Click="CheckOrder_Click"
+                              pu:CheckBoxHelper.BoxHeight="30"
+                              pu:CheckBoxHelper.BoxWidth="70"
                               pu:CheckBoxHelper.CheckBoxStyle="Switch2" 
-                              pu:CheckBoxHelper.CheckedBackground="#FF67DA82" Margin="620,10,-520,10" Grid.Column="1"/>
-                </Grid>
+                              pu:CheckBoxHelper.CheckedBackground="#FF67DA82"  Margin="0,0,20,0"/>
+                    <CheckBox Name="ndcConnectCB" Content="连接NDC" Click="NdcConnectCB_Click"
+                              pu:CheckBoxHelper.BoxHeight="30"
+                              pu:CheckBoxHelper.BoxWidth="70"
+                              pu:CheckBoxHelper.CheckBoxStyle="Switch2" 
+                              pu:CheckBoxHelper.CheckedBackground="#FF67DA82"  Margin="0,0,20,0"/>   
+                </StackPanel>
                 <Grid Grid.Row="1">
                     <Border Background="LightGray" Height="2" VerticalAlignment="Top"/>
                     <TabControl Name="wcsTabControl"
@@ -319,22 +207,10 @@
                         <TabItem Header="概况"
                                  Name="Home" Tag="Home"
                                 pu:TabControlHelper.CanRemove="False">
-                            
+
                         </TabItem>
                     </TabControl>
                 </Grid>
-                <Button Name="getWmsInfo"
-                    HorizontalAlignment="Left" Margin="316,10,0,0" VerticalAlignment="Top"
-                        Height="30"
-                    Width="130" Click="GetWmsInfo_Click"
-                    Content="&#xf090; 获取信息"
-                    pu:ButtonHelper.ClickStyle="Sink"
-                    FontFamily="{DynamicResource FontAwesome}"
-                    pu:ButtonHelper.ButtonStyle="Hollow"
-                    BorderBrush="#FF3F3F3F"
-                    Foreground="#FF3F3F3F"
-                    pu:ButtonHelper.HoverBrush="#3F3F3F"
-                    pu:ButtonHelper.CornerRadius="6"/>
             </Grid>
         </Grid>
     </Grid>

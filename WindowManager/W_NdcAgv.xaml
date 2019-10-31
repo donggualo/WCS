@@ -15,7 +15,7 @@
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="40"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="40"/>
@@ -28,28 +28,20 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <CheckBox Grid.Row="0" Grid.Column="4" Name="ndcConnectCB"
-                    Content="连接NDC" Click="NdcConnectCB_Click"
-                    pu:CheckBoxHelper.CheckBoxStyle="Switch2"
-                    pu:CheckBoxHelper.BoxHeight="25"
-                    pu:CheckBoxHelper.BoxWidth="60"
-                    pu:CheckBoxHelper.CheckedBackground="#2100FF"
-                      VerticalAlignment="Center"
-                      HorizontalAlignment="Left" FontFamily="MV Boli"/>
-            <Label Grid.Row="0"  Content="任务管理" FontSize="20" VerticalAlignment="Center"  FontFamily="MV Boli"/>
+            <Label Grid.Row="0"  Content="AGV任务" FontSize="22" Margin="10" VerticalAlignment="Center" />
             <TextBox Grid.Row="1" Grid.RowSpan="3"  Grid.Column="0" Height="50" Text=""
                     Width="160" Name="taskId"
                     pu:TextBoxHelper.Watermark="任务ID"
                     pu:TextBoxHelper.FocusedBorderBrush="#000000"
                     pu:TextBoxHelper.FocusedShadowColor="#000000"
-                    pu:TextBoxHelper.CornerRadius="8"  FontFamily="MV Boli"/>
+                    pu:TextBoxHelper.CornerRadius="8" />
 
             <TextBox Grid.Row="0" Grid.Column="1"  Height="30" Text=""
                     Width="160" Name="index"
                     pu:TextBoxHelper.Watermark="Index"
                     pu:TextBoxHelper.FocusedBorderBrush="#000000"
                     pu:TextBoxHelper.FocusedShadowColor="#000000"
-                    pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
+                    pu:TextBoxHelper.CornerRadius="8"/>
 
             <Button  Grid.Row="0" Grid.Column="2"  Height="30"
                     Width="120" Name="deleteorder" Click="deleteorder_Click"
@@ -67,14 +59,14 @@
                     pu:TextBoxHelper.Watermark="接货点"
                     pu:TextBoxHelper.FocusedBorderBrush="#000000"
                     pu:TextBoxHelper.FocusedShadowColor="#000000"
-                    pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
+                    pu:TextBoxHelper.CornerRadius="8"/>
 
             <TextBox Grid.Row="1" Grid.Column="2"  Height="30" Text="FRT03"
                     Width="160" Name="unloadSite"
                     pu:TextBoxHelper.Watermark="卸货点"
                     pu:TextBoxHelper.FocusedBorderBrush="#000000"
                     pu:TextBoxHelper.FocusedShadowColor="#000000"
-                    pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
+                    pu:TextBoxHelper.CornerRadius="8"/>
 
             <Button  Grid.Row="1" Grid.Column="3"  Height="30"
                     Width="120" Name="addTaskBtn" Click="AddTaskBtn_Click"
@@ -92,7 +84,7 @@
                     pu:TextBoxHelper.Watermark="AGV"
                     pu:TextBoxHelper.FocusedBorderBrush="#000000"
                     pu:TextBoxHelper.FocusedShadowColor="#000000"
-                    pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
+                    pu:TextBoxHelper.CornerRadius="8"/>
             <Button Grid.Row="2" Grid.Column="3"  Height="30"
                     Width="130" Name="loadAgvBtn" Click="LoadAgvBtn_Click"
                     Content="&#xf067; 装货"
@@ -118,13 +110,13 @@
                     pu:TextBoxHelper.Watermark="重定向区域"
                     pu:TextBoxHelper.FocusedBorderBrush="#000000"
                     pu:TextBoxHelper.FocusedShadowColor="#000000"
-                    pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
+                    pu:TextBoxHelper.CornerRadius="8"/>
             <TextBox Grid.Row="3"  Grid.Column="2" Height="30" Text=""
                     Width="160" Name="order"
                     pu:TextBoxHelper.Watermark="Order"
                     pu:TextBoxHelper.FocusedBorderBrush="#000000"
                     pu:TextBoxHelper.FocusedShadowColor="#000000"
-                    pu:TextBoxHelper.CornerRadius="8"  FontFamily="MV Boli"/>
+                    pu:TextBoxHelper.CornerRadius="8" />
             <Button Grid.Row="3" Grid.Column="3"  Height="30"
                     Width="130" Name="redirectBtn" Click="RedirectBtn_Click"
                     Content="&#xf090; 重定向"
@@ -137,7 +129,7 @@
                     pu:ButtonHelper.CornerRadius="6" />
         </Grid>
         <Grid Grid.Row="1">
-            <TextBlock Grid.Row="0" Margin="10,0,0,0" FontSize="20" VerticalAlignment="Center"  FontFamily="MV Boli">
+            <TextBlock Grid.Row="0" Margin="10,0,0,0" FontSize="20" VerticalAlignment="Center" >
                         任务列表
             </TextBlock>
             <Border Background="LightGray" Height="2" Grid.Row="1" VerticalAlignment="Top"></Border>

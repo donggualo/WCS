@@ -8,32 +8,36 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="10*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="110*"/>
-            <ColumnDefinition Width="100*"/>
-            <ColumnDefinition Width="85*"/>
-            <ColumnDefinition Width="100*"/>
-            <ColumnDefinition Width="100*"/>
-            <ColumnDefinition Width="100*"/>
-            <ColumnDefinition Width="145*"/>
-            <ColumnDefinition Width="145*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.ColumnSpan="2" Margin="3,0,0,0" FontSize="19" FontFamily="MV Boli" Grid.Column="1">
-                        AGV 装卸货任务列表
+        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" FontSize="22" >
+                        AGV 装卸货任务
         </TextBlock>
-        <!--<CheckBox Grid.Column="4" Name="CBrefresh"
-                  Content="自动刷新列表" IsChecked="True"
-                  pu:CheckBoxHelper.CheckBoxStyle="Switch2"
-                  pu:CheckBoxHelper.BoxHeight="25"
-                  pu:CheckBoxHelper.BoxWidth="60"
-                  pu:CheckBoxHelper.CheckedBackground="#2100FF" FontFamily="MV Boli"/>-->
-        <Button Name="BtnRefresh" Content="刷新列表" Click="BtnRefresh_Click" Grid.Column="3" Margin="5,0,0,0"/>
+        <Button Name="BtnRefresh" Content="刷新列表" 
+                Click="BtnRefresh_Click" 
+                Grid.Column="3" Grid.ColumnSpan="2"
+                Height="30" Width="100"
+                pu:ButtonHelper.ClickStyle="Sink"
+                FontFamily="{DynamicResource FontAwesome}"
+                pu:ButtonHelper.ButtonStyle="Hollow"
+                BorderBrush="#FF3F3F3F"
+                Foreground="#FF3F3F3F"
+                pu:ButtonHelper.HoverBrush="#3F3F3F"
+                pu:ButtonHelper.CornerRadius="6"/>
         <DataGrid Name="DGinfo"  Grid.Row="1" Grid.ColumnSpan="9" IsReadOnly="True" AutoGeneratingColumn="DataGrid_TimeFormat" MouseDoubleClick="DGinfo_DoubleClick">
             <DataGrid.ContextMenu>
                 <ContextMenu>
@@ -45,16 +49,16 @@
             </DataGrid.ContextMenu>
         </DataGrid>
 
-        <Label Content="包装线辊台号：" Grid.Row="2" Grid.Column="1" Margin="5"/>
-        <ComboBox Name="CBfrt_P" Margin="2" Grid.Column="2" Grid.Row="2"/>
+        <Label Grid.Row="2" Grid.Column="0" Content="包装线辊台号：" Margin="5" FontSize="16"/>
+        <ComboBox Grid.Row="2" Grid.Column="1" Name="CBfrt_P" Margin="2"  />
 
-        <Label Content="货物条码：" Grid.Column="3" Grid.Row="2" Margin="5"/>
+        <Label Grid.Row="2" Grid.Column="3" Content="货物条码：" Margin="5" FontSize="16"/>
         <TextBox Name="TBcode" Margin="2" TextWrapping="Wrap" Grid.Column="4" Grid.Row="2" Grid.ColumnSpan="3"/>
 
-        <Label Content="库存区辊台号：" Grid.Row="3" Grid.Column="1" Margin="5"/>
-        <ComboBox Name="CBfrt_D" Margin="2" Grid.Column="2" Grid.Row="3"/>
+        <Label Grid.Row="3" Grid.Column="0" Content="库存区辊台号：" Margin="5" FontSize="16"/>
+        <ComboBox Grid.Row="3" Grid.Column="1" Name="CBfrt_D" Margin="2"  />
 
-        <Label Content="库存货位：" Grid.Column="3" Grid.Row="3" Margin="5"/>
+        <Label Content="库存货位：" Grid.Column="3" Grid.Row="3" Margin="5" FontSize="16"/>
         <TextBox Name="TBlocX" Margin="2" TextWrapping="Wrap" pu:TextBoxHelper.Watermark="X"
                          InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum" MaxLength="3" Grid.Column="4" Grid.Row="3"/>
         <TextBox Name="TBlocY" Margin="2" TextWrapping="Wrap" pu:TextBoxHelper.Watermark="Y"
@@ -64,10 +68,37 @@
 
         <CheckBox Name="CheckWMS" Content="NO WMS" Grid.Row="2" Grid.Column="7" Margin="10"/>
 
-        <Button Content="获取入库区域" Grid.Column="7" Margin="5" Grid.Row="3" ToolTip="生成WMS入库任务" Click="BtnFRT_Click"/>
-        <Button Content="获取入库坐标" Grid.Column="8" Margin="5" Grid.Row="3" Click="BtnLOC_Click"/>
-        <Button Content="手动出库任务" Grid.Column="8" Margin="5" Grid.Row="2" ToolTip="生成出库任务" Click="BtnOUT_Click"/>
 
+        <Button Grid.Row="2" Grid.Column="8" Content="手动出库任务" Margin="5"  
+                ToolTip="生成出库任务" Click="BtnOUT_Click"
+                Height="30" Width="100"
+                pu:ButtonHelper.ClickStyle="Sink"
+                FontFamily="{DynamicResource FontAwesome}"
+                pu:ButtonHelper.ButtonStyle="Hollow"
+                BorderBrush="#FF3F3F3F"
+                Foreground="#FF3F3F3F"
+                pu:ButtonHelper.HoverBrush="#3F3F3F"
+                pu:ButtonHelper.CornerRadius="6"/>
+        <Button Grid.Row="3" Grid.Column="7" Content="获取入库区域"  Margin="5"
+                ToolTip="生成WMS入库任务" Click="BtnFRT_Click"
+                Height="30" Width="100"
+                pu:ButtonHelper.ClickStyle="Sink"
+                FontFamily="{DynamicResource FontAwesome}"
+                pu:ButtonHelper.ButtonStyle="Hollow"
+                BorderBrush="#FF3F3F3F"
+                Foreground="#FF3F3F3F"
+                pu:ButtonHelper.HoverBrush="#3F3F3F"
+                pu:ButtonHelper.CornerRadius="6"/>
+        <Button Grid.Row="3" Grid.Column="8" Content="获取入库坐标"  Margin="5" 
+                Click="BtnLOC_Click"
+                Height="30" Width="100"
+                pu:ButtonHelper.ClickStyle="Sink"
+                FontFamily="{DynamicResource FontAwesome}"
+                pu:ButtonHelper.ButtonStyle="Hollow"
+                BorderBrush="#FF3F3F3F"
+                Foreground="#FF3F3F3F"
+                pu:ButtonHelper.HoverBrush="#3F3F3F"
+                pu:ButtonHelper.CornerRadius="6"/>
     </Grid>
 
 </UserControl>

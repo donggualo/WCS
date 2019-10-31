@@ -6,50 +6,36 @@
              xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+    <StackPanel Orientation="Vertical">
+        <Label Content="调试时，设置设备是否无视货物状态。" Margin="10" FontSize="22"/>
+
         <CheckBox Name="CheckerAGV" Content="AGV 辊台" Click="CheckerAGV_Click"
                   pu:CheckBoxHelper.CheckBoxStyle="Switch2"
-                  pu:CheckBoxHelper.BoxHeight="40"
-                  pu:CheckBoxHelper.BoxWidth="90"
-                  pu:CheckBoxHelper.CheckedBackground="#FF67DA82" Margin="10,5,0,5" Grid.Column="1" Grid.Row="2"/>
+                  pu:CheckBoxHelper.BoxHeight="30"
+                  pu:CheckBoxHelper.BoxWidth="70" FontSize="18"
+                  pu:CheckBoxHelper.CheckedBackground="#FF67DA82" Margin="10"/>
         <CheckBox Name="CheckerFRT" Content="固定辊台" Click="CheckerFRT_Click" 
                   pu:CheckBoxHelper.CheckBoxStyle="Switch2"
-                  pu:CheckBoxHelper.BoxHeight="40"
-                  pu:CheckBoxHelper.BoxWidth="90"
-                  pu:CheckBoxHelper.CheckedBackground="#FF67DA82" Margin="10,5,0,5" Grid.Column="1" Grid.Row="3"/>
+                  pu:CheckBoxHelper.BoxHeight="30"
+                  pu:CheckBoxHelper.BoxWidth="70" FontSize="18"
+                  pu:CheckBoxHelper.CheckedBackground="#FF67DA82" Margin="10"/>
         <CheckBox Name="CheckerARF" Content="摆渡车辊台" Click="CheckerARF_Click"  
                   pu:CheckBoxHelper.CheckBoxStyle="Switch2"
-                  pu:CheckBoxHelper.BoxHeight="40"
-                  pu:CheckBoxHelper.BoxWidth="90"
-                  pu:CheckBoxHelper.CheckedBackground="#FF67DA82" Margin="10,5,0,5" Grid.Column="1" Grid.Row="4"/>
+                  pu:CheckBoxHelper.BoxHeight="30"
+                  pu:CheckBoxHelper.BoxWidth="70" FontSize="18"
+                  pu:CheckBoxHelper.CheckedBackground="#FF67DA82" Margin="10"/>
         <CheckBox Name="CheckerRGV" Content="运输车辊台" Click="CheckerRGV_Click"  
                   pu:CheckBoxHelper.CheckBoxStyle="Switch2"
-                  pu:CheckBoxHelper.BoxHeight="40"
-                  pu:CheckBoxHelper.BoxWidth="90"
-                  pu:CheckBoxHelper.CheckedBackground="#FF67DA82" Margin="10,5,0,5" Grid.Column="1" Grid.Row="5"/>
+                  pu:CheckBoxHelper.BoxHeight="30"
+                  pu:CheckBoxHelper.BoxWidth="70" FontSize="18"
+                  pu:CheckBoxHelper.CheckedBackground="#FF67DA82" Margin="10"/>
         <CheckBox Name="CheckerABC" Content="行车夹具" Click="CheckerABC_Click"  
                   pu:CheckBoxHelper.CheckBoxStyle="Switch2"
-                  pu:CheckBoxHelper.BoxHeight="40"
-                  pu:CheckBoxHelper.BoxWidth="90"
-                  pu:CheckBoxHelper.CheckedBackground="#FF67DA82" Margin="10,5,0,5" Grid.Column="1" Grid.Row="6"/>
+                  pu:CheckBoxHelper.BoxHeight="30"
+                  pu:CheckBoxHelper.BoxWidth="70" FontSize="18"
+                  pu:CheckBoxHelper.CheckedBackground="#FF67DA82" Margin="10"/>
 
-        <Label Content="调试时，设置设备是否无视货物状态。" Margin="10,5,0,5" FontSize="12" Grid.ColumnSpan="2" Grid.Row="1"/>
 
-    </Grid>
+    </StackPanel>
 
 </UserControl>

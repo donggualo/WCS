@@ -1,4 +1,5 @@
 ﻿using Panuon.UI.Silver;
+using Panuon.UI.Silver.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -33,7 +34,7 @@ namespace WindowManager.Datagrid.Models
 
 
 
-        [DataGridColumn("设备号")]
+        [DisplayName("设备号")]
         public string DeviceID {
             get { return deviceid; }
             set {
@@ -42,11 +43,11 @@ namespace WindowManager.Datagrid.Models
             }
         }
 
-        [DataGridColumn("区域")]
+        [DisplayName("区域")]
         public string Area{ set; get; }
 
 
-        [DataGridColumn("运动状态")]
+        [DisplayName("运动状态")]
         public string ActionStatus
         {
             get { return actionsta == RGV.Stop ? "停止" : "运行中"; }
@@ -56,7 +57,7 @@ namespace WindowManager.Datagrid.Models
             }
         }
 
-        [DataGridColumn("设备状态")]
+        [DisplayName("设备状态")]
         public string DeviceStatus
         {
             get { return devicesta == RGV.DeviceError ? "故障" : "正常"; }
@@ -66,7 +67,7 @@ namespace WindowManager.Datagrid.Models
             }
         }
 
-        [DataGridColumn("命令状态")]
+        [DisplayName("命令状态")]
         public string CommandStatus
         {
             get { return commandsta == RGV.CommandError ? "命令异常" : "命令正常"; }
@@ -77,7 +78,7 @@ namespace WindowManager.Datagrid.Models
         }
 
 
-        [DataGridColumn("目标坐标")]
+        [DisplayName("目标坐标")]
         public long Des_X_Y_Z
         {
             get { return des_x_y_z; }
@@ -89,7 +90,7 @@ namespace WindowManager.Datagrid.Models
         }
 
 
-        [DataGridColumn("当前任务")]
+        [DisplayName("当前任务")]
         public string Now_Task
         {
             get { return RGV.GetTaskMes(now_task); }
@@ -100,7 +101,7 @@ namespace WindowManager.Datagrid.Models
         }
 
 
-        [DataGridColumn("当前坐标")]
+        [DisplayName("当前坐标")]
         public long Now_X_Y_Z
         {
             get { return now_x_y_z; }
@@ -111,7 +112,7 @@ namespace WindowManager.Datagrid.Models
             }
         }
 
-        [DataGridColumn("棍台状态")]
+        [DisplayName("棍台状态")]
         public string RollerStatus
         {
             get { return RGV.GetRollerStatusMes(rollerstatus); }
@@ -121,7 +122,7 @@ namespace WindowManager.Datagrid.Models
             }
         }
 
-        [DataGridColumn("棍台方向")]
+        [DisplayName("棍台方向")]
         public string RollerDirection
         {
             get { return rollerdirection == RGV.RunFront ? "正向启动" : "反向启动"; }
@@ -132,7 +133,7 @@ namespace WindowManager.Datagrid.Models
         }
 
 
-        [DataGridColumn("完成任务")]
+        [DisplayName("完成任务")]
         public string Finish_Task
         {
             get { return RGV.GetTaskMes(finish_task); }
@@ -142,7 +143,7 @@ namespace WindowManager.Datagrid.Models
             }
         }
 
-        [DataGridColumn("货物状态")]
+        [DisplayName("货物状态")]
         public string LoadStatus
         {
             get { return RGV.GetGoodsStatusMes(loadstatus); }
@@ -152,7 +153,7 @@ namespace WindowManager.Datagrid.Models
             }
         }
 
-        [DataGridColumn("故障信息")]
+        [DisplayName("故障信息")]
         public string ErrorMsg
         {
             get { return errormsg.ToString("X2"); }
@@ -162,7 +163,7 @@ namespace WindowManager.Datagrid.Models
             }
         }
 
-        [DataGridColumn("连接")]
+        [DisplayName("连接")]
         public bool ISConnect
         {
             get { return isconnect; }
@@ -173,7 +174,7 @@ namespace WindowManager.Datagrid.Models
             }
         }
 
-        [DataGridColumn("刷新时间")]
+        [DisplayName("刷新时间")]
         public string DataTime
         {
             get { return datatime; }

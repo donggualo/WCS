@@ -1,5 +1,7 @@
 ﻿using Panuon.UI.Silver;
+using Panuon.UI.Silver.Core;
 using System;
+using System.ComponentModel;
 using TaskManager.Devices;
 
 namespace WindowManager.Datagrid.Models
@@ -26,7 +28,7 @@ namespace WindowManager.Datagrid.Models
 
 
 
-        [DataGridColumn("设备号")]
+        [DisplayName("设备号")]
         public string DeviceID {
             get { return deviceid; }
             set {
@@ -35,11 +37,11 @@ namespace WindowManager.Datagrid.Models
             }
         }
 
-        [DataGridColumn("区域")]
+        [DisplayName("区域")]
         public string Area{ set; get; }
 
 
-        [DataGridColumn("运动状态")]
+        [DisplayName("运动状态")]
         public string ActionStatus
         {
             get { return actionsta == ABC.Stop ? "停止" : "运行中"; }
@@ -49,7 +51,7 @@ namespace WindowManager.Datagrid.Models
             }
         }
 
-        [DataGridColumn("设备状态")]
+        [DisplayName("设备状态")]
         public string DeviceStatus
         {
             get { return devicesta == ABC.DeviceError ? "故障" : "正常"; }
@@ -59,7 +61,7 @@ namespace WindowManager.Datagrid.Models
             }
         }
 
-        [DataGridColumn("命令状态")]
+        [DisplayName("命令状态")]
         public string CommandStatus
         {
             get { return commandsta == ABC.CommandError ? "命令异常" : "命令正常"; }
@@ -70,7 +72,7 @@ namespace WindowManager.Datagrid.Models
         }
 
 
-        [DataGridColumn("目标坐标")]
+        [DisplayName("目标坐标")]
         public string Des_X_Y_Z
         {
             get { return des_x_y_z; }
@@ -82,7 +84,7 @@ namespace WindowManager.Datagrid.Models
         }
 
 
-        [DataGridColumn("当前任务")]
+        [DisplayName("当前任务")]
         public string Now_Task
         {
             get { return ABC.GetTaskMes(now_task); }
@@ -93,7 +95,7 @@ namespace WindowManager.Datagrid.Models
         }
 
 
-        [DataGridColumn("当前坐标")]
+        [DisplayName("当前坐标")]
         public string Now_X_Y_Z
         {
             get { return now_x_y_z; }
@@ -105,7 +107,7 @@ namespace WindowManager.Datagrid.Models
         }
 
 
-        [DataGridColumn("完成任务")]
+        [DisplayName("完成任务")]
         public string Finish_Task
         {
             get { return ABC.GetTaskMes(finish_task); }
@@ -116,7 +118,7 @@ namespace WindowManager.Datagrid.Models
         }
 
 
-        [DataGridColumn("货物状态")]
+        [DisplayName("货物状态")]
         public string LoadStatus
         {
             get { return loadstatus == ABC.GoodsNo ? "无货" : "有货"; }
@@ -127,7 +129,7 @@ namespace WindowManager.Datagrid.Models
         }
 
 
-        [DataGridColumn("故障信息")]
+        [DisplayName("故障信息")]
         public string ErrorMsg
         {
             get { return errormsg.ToString("X2"); }
@@ -137,7 +139,7 @@ namespace WindowManager.Datagrid.Models
             }
         }
 
-        [DataGridColumn("连接")]
+        [DisplayName("连接")]
         public bool ISConnect
         {
             get { return isconnect; }
@@ -148,7 +150,7 @@ namespace WindowManager.Datagrid.Models
             }
         }
 
-        [DataGridColumn("刷新时间")]
+        [DisplayName("刷新时间")]
         public string DataTime
         {
             get { return datatime; }

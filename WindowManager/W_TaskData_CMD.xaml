@@ -4,69 +4,79 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WindowManager"
+        xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
         mc:Ignorable="d"
-        Title="作业清单" Height="450" Width="800">
+        Title="作业清单" Height="Auto" Width="Auto">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="10*"/>
-            <RowDefinition Height="10*"/>
-            <RowDefinition Height="10*"/>
-            <RowDefinition Height="10*"/>
-            <RowDefinition Height="10*"/>
-            <RowDefinition Height="10*"/>
-            <RowDefinition Height="10*"/>
-            <RowDefinition Height="10*"/>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="100*"/>
-            <ColumnDefinition Width="300*"/>
-            <ColumnDefinition Width="100*"/>
-            <ColumnDefinition Width="300*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Label Content="清单号：" Margin="10"/>
-        <TextBox Name="TBwcsno" Margin="10" TextWrapping="Wrap" Grid.Column="1"/>
+        <Label Content="清单号：" Margin="10"  FontSize="22" VerticalAlignment="Center"/>
+        <TextBox Name="TBwcsno" Margin="10" TextWrapping="Wrap" Grid.Column="1" FontSize="22"/>
 
-        <Label Content="清单状态：" Margin="10" Grid.Row="1"/>
-        <ComboBox Name="CBstep" Margin="10" Grid.Column="1" Grid.Row="1" />
+        <Label Content="清单状态：" Margin="10" Grid.Row="1" FontSize="22" VerticalAlignment="Center"/>
+        <ComboBox Name="CBstep" Margin="10" Grid.Column="1" Grid.Row="1"  FontSize="22"/>
 
-        <Label Content="1#任务号：" Margin="10" Grid.Row="2"/>
-        <TextBox Name="TBtaskid1" Margin="10" TextWrapping="Wrap" Grid.Column="1" Grid.Row="2" />
+        <Label Content="1#任务号：" Margin="10" Grid.Row="2" FontSize="22" VerticalAlignment="Center"/>
+        <TextBox Name="TBtaskid1" Margin="10" TextWrapping="Wrap" Grid.Column="1" Grid.Row="2"  FontSize="22"/>
 
-        <Label Content="1#来源：" Margin="10" Grid.Row="3"/>
-        <TextBox Name="TBlocfrom1" Margin="10" TextWrapping="Wrap" Grid.Column="1" Grid.Row="3" />
+        <Label Content="1#来源：" Margin="10" Grid.Row="3" FontSize="22" VerticalAlignment="Center"/>
+        <TextBox Name="TBlocfrom1" Margin="10" TextWrapping="Wrap" Grid.Column="1" Grid.Row="3"  FontSize="22"/>
 
-        <Label Content="1#目的：" Margin="10" Grid.Row="4"/>
-        <TextBox Name="TBlocto1" Margin="10" TextWrapping="Wrap" Grid.Column="1" Grid.Row="4" />
+        <Label Content="1#目的：" Margin="10" Grid.Row="4" FontSize="22" VerticalAlignment="Center"/>
+        <TextBox Name="TBlocto1" Margin="10" TextWrapping="Wrap" Grid.Column="1" Grid.Row="4"  FontSize="22"/>
 
-        <Label Content="1#任务状态：" Margin="10" Grid.Row="5"/>
-        <ComboBox Name="CBsite1" Margin="10" Grid.Column="1" Grid.Row="5" />
-        
-        <Label Content="1#货物码：" Margin="10" Grid.Row="6"/>
-        <TextBox Name="TBcode1" Margin="10" TextWrapping="Wrap" Grid.Column="1" Grid.Row="6" />
+        <Label Content="1#任务状态：" Margin="10" Grid.Row="5" FontSize="22" VerticalAlignment="Center"/>
+        <ComboBox Name="CBsite1" Margin="10" Grid.Column="1" Grid.Row="5"  FontSize="22"/>
 
-        <Label Content="固定辊台：" Margin="10" Grid.Column="2"/>
-        <ComboBox Name="CBfrt" Margin="10" Grid.Column="3"/>
+        <Label Content="1#货物码：" Margin="10" Grid.Row="6" FontSize="22" VerticalAlignment="Center"/>
+        <TextBox Name="TBcode1" Margin="10" TextWrapping="Wrap" Grid.Column="1" Grid.Row="6"  FontSize="22"/>
 
-        <Label Content="作业类型：" Margin="10" Grid.Column="2" Grid.Row="1"/>
-        <ComboBox Name="CBtype" Margin="10" Grid.Column="3" Grid.Row="1" />
+        <Label Content="固定辊台：" Margin="10" Grid.Column="2" FontSize="22" VerticalAlignment="Center"/>
+        <ComboBox Name="CBfrt" Margin="10" Grid.Column="3" FontSize="22"/>
 
-        <Label Content="2#任务号：" Margin="10" Grid.Column="2" Grid.Row="2"/>
-        <TextBox Name="TBtaskid2" Margin="10" TextWrapping="Wrap" Grid.Column="3" Grid.Row="2" />
+        <Label Content="作业类型：" Margin="10" Grid.Column="2" Grid.Row="1" FontSize="22" VerticalAlignment="Center"/>
+        <ComboBox Name="CBtype" Margin="10" Grid.Column="3" Grid.Row="1"  FontSize="22"/>
 
-        <Label Content="2#来源：" Margin="10" Grid.Column="2" Grid.Row="3"/>
-        <TextBox Name="TBlocfrom2" Margin="10" TextWrapping="Wrap" Grid.Column="3" Grid.Row="3" />
+        <Label Content="2#任务号：" Margin="10" Grid.Column="2" Grid.Row="2" FontSize="22" VerticalAlignment="Center"/>
+        <TextBox Name="TBtaskid2" Margin="10" TextWrapping="Wrap" Grid.Column="3" Grid.Row="2" FontSize="22"/>
 
-        <Label Content="2#目的：" Margin="10" Grid.Column="2" Grid.Row="4"/>
-        <TextBox Name="TBlocto2" Margin="10" TextWrapping="Wrap" Grid.Column="3" Grid.Row="4" />
+        <Label Content="2#来源：" Margin="10" Grid.Column="2" Grid.Row="3" FontSize="22" VerticalAlignment="Center"/>
+        <TextBox Name="TBlocfrom2" Margin="10" TextWrapping="Wrap" Grid.Column="3" Grid.Row="3" FontSize="22"/>
 
-        <Label Content="2#任务状态：" Margin="10" Grid.Column="2" Grid.Row="5"/>
-        <ComboBox Name="CBsite2" Margin="10" Grid.Column="3" Grid.Row="5" />
-        
-        <Label Content="2#货物码：" Margin="10" Grid.Row="6" Grid.Column="2"/>
-        <TextBox Name="TBcode2" Margin="10" TextWrapping="Wrap" Grid.Column="3" Grid.Row="6" />
+        <Label Content="2#目的：" Margin="10" Grid.Column="2" Grid.Row="4" FontSize="22" VerticalAlignment="Center"/>
+        <TextBox Name="TBlocto2" Margin="10" TextWrapping="Wrap" Grid.Column="3" Grid.Row="4" FontSize="22"/>
 
-        <Button Name="BTNuse" Content="确认" Grid.Column="3" Margin="200,10,10,10" Grid.Row="7" Click="Finish_Click"/>
+        <Label Content="2#任务状态：" Margin="10" Grid.Column="2" Grid.Row="5" FontSize="22" VerticalAlignment="Center"/>
+        <ComboBox Name="CBsite2" Margin="10" Grid.Column="3" Grid.Row="5" FontSize="22"/>
+
+        <Label Content="2#货物码：" Margin="10" Grid.Row="6" Grid.Column="2" FontSize="22" VerticalAlignment="Center"/>
+        <TextBox Name="TBcode2" Margin="10" TextWrapping="Wrap" Grid.Column="3" Grid.Row="6"  FontSize="22"/>
+
+        <Button Name="BTNuse" Content="确认" Grid.Column="3" Margin="10" Grid.Row="7" VerticalAlignment="Bottom"
+                    Click="Finish_Click" HorizontalAlignment="Right"
+                    Height="30" Width="80"
+                    pu:ButtonHelper.ClickStyle="Sink"
+                    FontFamily="{DynamicResource FontAwesome}"
+                    pu:ButtonHelper.ButtonStyle="Hollow"
+                    BorderBrush="#FF3F3F3F"
+                    Foreground="#FF3F3F3F"
+                    pu:ButtonHelper.HoverBrush="#3F3F3F"
+                    pu:ButtonHelper.CornerRadius="6" />
 
     </Grid>
 </Window>

@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ModuleManager;
 using Panuon.UI.Silver;
+using Panuon.UI.Silver.Core;
 using PubResourceManager;
 using TaskManager;
 using WcsHttpManager;
@@ -143,11 +144,12 @@ namespace WCS_phase1
 
         private void WindowX_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            var result = MessageBoxX.Show("是否退出程序", "Error", Application.Current.MainWindow, MessageBoxButton.YesNo, new MessageBoxXConfigurations()
+            var result = MessageBoxX.Show("是否退出程序", "警告", Application.Current.MainWindow, MessageBoxButton.YesNo, new MessageBoxXConfigurations()
             {
-                MessageBoxStyle = MessageBoxStyle.Modern,
+                MessageBoxStyle = MessageBoxStyle.Standard,
+                MessageBoxIcon = MessageBoxIcon.Warning
             });
-            if(result == MessageBoxResult.Yes || result == MessageBoxResult.OK)
+            if (result == MessageBoxResult.Yes || result == MessageBoxResult.OK)
             {
                 DataControl.BeforeClose();
                 System.Environment.Exit(0);
@@ -205,6 +207,31 @@ namespace WCS_phase1
         private void CheckAGV_Click(object sender, RoutedEventArgs e)
         {
             PublicParam.IsRunSendAGV = (bool)CheckAGV.IsChecked;
+        }
+
+        /// <summary>
+        /// Ndc连接服务
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void NdcConnectCB_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (ndcConnectCB.IsChecked != null && (bool)ndcConnectCB.IsChecked)
+                {
+                    DataControl._mNDCControl.DoConnectNDC();
+                }
+                else
+                {
+                    DataControl._mNDCControl.DoDisConnectNDC();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
         }
     }
 }

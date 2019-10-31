@@ -13,36 +13,23 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Margin="10,0,0,0" FontSize="20" VerticalAlignment="Center"  FontFamily="MV Boli">
-                        行车列表
+        <TextBlock Grid.Row="0" Margin="10,0,0,0" FontSize="20" VerticalAlignment="Center" >
+        行车设备
         </TextBlock>
 
         <!--操作面板-->
-        <Grid Margin="10,5,0,10" Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Label Grid.Column="0" Content="设备："/>
-            <ComboBox Grid.Column="1" Name="CBdev"
+        <WrapPanel Margin="10,5,0,10" Grid.Row="1">
+            <Label Grid.Column="0" Content="设备：" FontSize="18"/>
+            <ComboBox Name="CBdev"
                       Height="30"
                       MinWidth="100"
                       Margin="5,0,5,0"
                       pu:ComboBoxHelper.Icon="&#xf109;"
-                      pu:ComboBoxHelper.HoverBrush="#E3DDDD"
-                      pu:ComboBoxHelper.SelectedBrush="#B6B6C3"
+                      pu:ComboBoxHelper.HoverBackground="#E3DDDD"
+                      pu:ComboBoxHelper.SelectedBackground="#B6B6C3"
                       ItemsSource="{Binding Path=DeviceNameList}">
             </ComboBox>
-            <Button  Grid.Column="2" Height="30" Margin="5,0,5,0"
+            <Button  Height="30" Margin="5,0,5,0"
                     Width="80" Name="terminateBtn" Click="TerminateBtn_Click"
                     Content="&#xf00d; 终止"
                     pu:ButtonHelper.ClickStyle="Sink"
@@ -52,29 +39,29 @@
                     Foreground="#FF3F3F3F"
                     pu:ButtonHelper.HoverBrush="#3F3F3F"
                     pu:ButtonHelper.CornerRadius="6" />
-            <TextBox Grid.Column="3"  Height="30"
+            <TextBox  Height="30"
                      Width="120" Name="xlocation"
                      InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum"
                      pu:TextBoxHelper.Watermark="X轴坐标"
                      pu:TextBoxHelper.FocusedBorderBrush="#000000"
                      pu:TextBoxHelper.FocusedShadowColor="#000000"
-                     pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
-            <TextBox Grid.Column="4"  Height="30"
+                     pu:TextBoxHelper.CornerRadius="8"/>
+            <TextBox  Height="30"
                      Margin="5,0,5,0"
                      Width="120" Name="ylocation"
                      InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum"
                      pu:TextBoxHelper.Watermark="Y轴坐标"
                      pu:TextBoxHelper.FocusedBorderBrush="#000000"
                      pu:TextBoxHelper.FocusedShadowColor="#000000"
-                     pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
-            <TextBox Grid.Column="5"  Height="30"
+                     pu:TextBoxHelper.CornerRadius="8"/>
+            <TextBox  Height="30"
                      Width="120" Name="zlocation"
                      InputMethod.IsInputMethodEnabled="False" PreviewTextInput="InputNum"
                      pu:TextBoxHelper.Watermark="Z轴坐标"
                      pu:TextBoxHelper.FocusedBorderBrush="#000000"
                      pu:TextBoxHelper.FocusedShadowColor="#000000"
-                     pu:TextBoxHelper.CornerRadius="8" FontFamily="MV Boli"/>
-            <Button  Grid.Column="6" Height="30" Margin="5,0,5,0"
+                     pu:TextBoxHelper.CornerRadius="8"/>
+            <Button  Height="30" Margin="5,0,5,0"
                     Width="80" Name="locateBtn" Click="LocateBtn_Click"
                     Content="&#xf124; 定位"
                     pu:ButtonHelper.ClickStyle="Sink"
@@ -84,7 +71,7 @@
                     Foreground="#FF3F3F3F"
                     pu:ButtonHelper.HoverBrush="#3F3F3F"
                     pu:ButtonHelper.CornerRadius="6" />
-            <Button  Grid.Column="7" Height="30"
+            <Button  Height="30"
                     Width="80" Name="loadBtn" Click="LoadBtn_Click"
                     Content="&#xf067; 取货"
                     pu:ButtonHelper.ClickStyle="Sink"
@@ -94,7 +81,7 @@
                     Foreground="#FF3F3F3F"
                     pu:ButtonHelper.HoverBrush="#3F3F3F"
                     pu:ButtonHelper.CornerRadius="6" />
-            <Button  Grid.Column="8" Height="30" Margin="5,0,5,0"
+            <Button Height="30" Margin="5,0,5,0"
                     Width="80" Name="unloadBtn" Click="UnloadBtn_Click"
                     Content="&#xf068; 放货"
                     pu:ButtonHelper.ClickStyle="Sink"
@@ -104,7 +91,7 @@
                     Foreground="#FF3F3F3F"
                     pu:ButtonHelper.HoverBrush="#3F3F3F"
                     pu:ButtonHelper.CornerRadius="6" />
-            <Button  Grid.Column="9" Height="30"
+            <Button Height="30"
                     Width="80" Name="relocate" Click="Relocate_Click"
                     Content="&#xf124; 复位"
                     pu:ButtonHelper.ClickStyle="Sink"
@@ -114,7 +101,7 @@
                     Foreground="#FF3F3F3F"
                     pu:ButtonHelper.HoverBrush="#3F3F3F"
                     pu:ButtonHelper.CornerRadius="6" />
-            <Button  Grid.Column="10" Height="30" Margin="5,0,0,0"
+            <Button Height="30" Margin="5,0,0,0"
                     Width="80" Name="refreshBtn" Click="refreshBtn_Click"
                     Content="&#xf00d; 刷新"
                     pu:ButtonHelper.ClickStyle="Sink"
@@ -124,7 +111,7 @@
                     Foreground="#FF3F3F3F"
                     pu:ButtonHelper.HoverBrush="#3F3F3F"
                     pu:ButtonHelper.CornerRadius="6" />
-        </Grid>
+        </WrapPanel>
 
         <!--设备列表-->
         <Grid Grid.Row="2" >

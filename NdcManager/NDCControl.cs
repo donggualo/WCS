@@ -795,7 +795,7 @@ namespace NdcManager
 
             if (item.PLCStatus != NDCPlcStatus.LoadReady)
             {
-                result = "小车为准备好接货";
+                result = "小车未准备好接货";
                 return false;
             }
 

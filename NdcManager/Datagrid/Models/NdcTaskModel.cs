@@ -1,8 +1,10 @@
 ﻿using ModuleManager.NDC;
 using NdcManager;
 using Panuon.UI.Silver;
+using Panuon.UI.Silver.Core;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,7 +24,7 @@ namespace NdcManager.DataGrid.Models
         private bool hasload;
         private bool hasunload;
 
-        [DataGridColumn("ID")]
+        [DisplayName("ID")]
         public int TaskID
         {
             get
@@ -36,7 +38,7 @@ namespace NdcManager.DataGrid.Models
             }
         }
 
-        [DataGridColumn("IKey")]
+        [DisplayName("IKey")]
         public int IKey
         {
             get
@@ -50,7 +52,8 @@ namespace NdcManager.DataGrid.Models
             }
         }
 
-        [DataGridColumn("Index")]
+        [DisplayName("Index")]
+       
         public int Order {
             get {
                 return order;
@@ -63,7 +66,7 @@ namespace NdcManager.DataGrid.Models
         }
 
 
-        [DataGridColumn("AGV")]
+        [DisplayName("AGV")]
         public int AgvName
         {
             get
@@ -77,7 +80,7 @@ namespace NdcManager.DataGrid.Models
             }
         }
 
-        [DataGridColumn("接货点")]
+        [DisplayName("接货点")]
         public string LoadSite
         {
             get
@@ -91,7 +94,7 @@ namespace NdcManager.DataGrid.Models
             }
         }
 
-        [DataGridColumn("卸货点")]
+        [DisplayName("卸货点")]
         public string UnLoadSite
         {
             get
@@ -105,7 +108,7 @@ namespace NdcManager.DataGrid.Models
             }
         }
 
-        [DataGridColumn("重定向")]
+        [DisplayName("重定向")]
         public string RedirectSite
         {
             get
@@ -119,7 +122,7 @@ namespace NdcManager.DataGrid.Models
             }
         }
 
-        [DataGridColumn("接货")]
+        [DisplayName("接货")]
         public bool HasLoad
         {
             get
@@ -133,7 +136,7 @@ namespace NdcManager.DataGrid.Models
             }
         }
 
-        [DataGridColumn("接货")]
+        [DisplayName("接货")]
         public bool HasUnLoad
         {
             get
