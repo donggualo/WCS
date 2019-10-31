@@ -1,4 +1,5 @@
-﻿using Panuon.UI.Silver;
+﻿using ModuleManager;
+using Panuon.UI.Silver;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -21,7 +22,7 @@ namespace WindowManager
     /// <summary>
     /// W_SettingLocation.xaml 的交互逻辑
     /// </summary>
-    public partial class W_SettingLocation : UserControl
+    public partial class W_SettingLocation : UserControl, ITabWin
     {
         public W_SettingLocation()
         {
@@ -126,6 +127,11 @@ namespace WindowManager
             {
                 Notice.Show(ex.Message, "错误", 3, Panuon.UI.Silver.MessageBoxIcon.Error);
             }
+        }
+
+        public void Close()
+        {
+
         }
     }
 }

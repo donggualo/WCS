@@ -157,17 +157,23 @@ namespace WindowManager
                     return;
                 }
 
+                if (!WindowCommon.ConfirmAction("是否发送定位指令！！"))
+                {
+                    return;
+                }
+
                 int loc = Convert.ToInt32(location.Text.Trim());
                 order = ARF._Position(arf.ARFNum(), (byte)loc);
+                DataControl._mSocket.SwithRefresh(dev, false);
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
+                    DataControl._mSocket.SwithRefresh(dev, true);
                     Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
                     // LOG
                     DataControl._mTaskTools.RecordTaskErrLog("LocateBtn_Click()", "摆渡车-定位任务[ARF,指令]", dev, DataControl._mStools.BytetToString(order), result.ToString());
                     return;
                 }
                 Notice.Show("定位任务 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
-                DataControl._mSocket.SwithRefresh(dev, false);
             }
             catch (Exception ex)
             {
@@ -235,16 +241,23 @@ namespace WindowManager
                     site4 = ARF.GoodsQty2;
                 }
 
+                if (!WindowCommon.ConfirmAction("是否发送滚筒启动指令！！"))
+                {
+                    return;
+                }
+
+
                 order = ARF._RollerControl(arf.ARFNum(), site1, site2, site3, site4);
+                DataControl._mSocket.SwithRefresh(dev, false);
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
+                    DataControl._mSocket.SwithRefresh(dev, true);
                     Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
                     // LOG
                     DataControl._mTaskTools.RecordTaskErrLog("BTNrun_Click()", "摆渡车-启动辊台任务[ARF,指令]", dev, DataControl._mStools.BytetToString(order), result.ToString());
                     return;
                 }
                 Notice.Show("启动辊台 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
-                DataControl._mSocket.SwithRefresh(dev, false);
             }
             catch (Exception ex)
             {

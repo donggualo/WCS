@@ -161,12 +161,20 @@ namespace WindowManager
                     return;
                 }
 
+                if (!WindowCommon.ConfirmAction("是否发送定位指令！！"))
+                {
+                    return;
+                }
+
                 int x = Convert.ToInt32(xlocation.Text.Trim());
                 int y = Convert.ToInt32(ylocation.Text.Trim());
                 int z = Convert.ToInt32(zlocation.Text.Trim());
                 order = ABC._TaskControl(ABC.TaskLocate, abc.ABCNum(), DataControl._mStools.IntToBytes(x), DataControl._mStools.IntToBytes(y), DataControl._mStools.IntToBytes(z));
+                
+                DataControl._mSocket.SwithRefresh(dev, false);
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
+                    DataControl._mSocket.SwithRefresh(dev, true);
                     Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
                     // LOG
                     DataControl._mTaskTools.RecordTaskErrLog("LocateBtn_Click()", "行车-定位任务[ABC,指令]", dev, DataControl._mStools.BytetToString(order), result.ToString());
@@ -218,19 +226,26 @@ namespace WindowManager
                     return;
                 }
 
+                if (!WindowCommon.ConfirmAction("是否发送取货任务！！"))
+                {
+                    return;
+                }
+
                 int x = Convert.ToInt32(xlocation.Text.Trim());
                 int y = Convert.ToInt32(ylocation.Text.Trim());
                 int z = Convert.ToInt32(zlocation.Text.Trim());
                 order = ABC._TaskControl(ABC.TaskTake, abc.ABCNum(), DataControl._mStools.IntToBytes(x), DataControl._mStools.IntToBytes(y), DataControl._mStools.IntToBytes(z));
+                
+                DataControl._mSocket.SwithRefresh(dev, false);
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
+                    DataControl._mSocket.SwithRefresh(dev, true);
                     Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
                     // LOG
                     DataControl._mTaskTools.RecordTaskErrLog("LoadBtn_Click()", "行车-取货任务[ABC,指令]", dev, DataControl._mStools.BytetToString(order), result.ToString());
                     return;
                 }
                 Notice.Show("取货任务 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
-                DataControl._mSocket.SwithRefresh(dev, false);
             }
             catch (Exception ex)
             {
@@ -275,19 +290,27 @@ namespace WindowManager
                     return;
                 }
 
+
+                if (!WindowCommon.ConfirmAction("是否发送放货任务！！"))
+                {
+                    return;
+                }
+
                 int x = Convert.ToInt32(xlocation.Text.Trim());
                 int y = Convert.ToInt32(ylocation.Text.Trim());
                 int z = Convert.ToInt32(zlocation.Text.Trim());
                 order = ABC._TaskControl(ABC.TaskRelease, abc.ABCNum(), DataControl._mStools.IntToBytes(x), DataControl._mStools.IntToBytes(y), DataControl._mStools.IntToBytes(z));
+                
+                DataControl._mSocket.SwithRefresh(dev, false);
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
+                    DataControl._mSocket.SwithRefresh(dev, true);
                     Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
                     // LOG
                     DataControl._mTaskTools.RecordTaskErrLog("UnloadBtn_Click()", "行车-放货任务[ABC,指令]", dev, DataControl._mStools.BytetToString(order), result.ToString());
                     return;
                 }
                 Notice.Show("放货任务 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
-                DataControl._mSocket.SwithRefresh(dev, false);
             }
             catch (Exception ex)
             {
@@ -332,6 +355,7 @@ namespace WindowManager
                 }
 
                 order = ABC._StopTask(abc.ABCNum());
+
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
                     Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
@@ -341,6 +365,7 @@ namespace WindowManager
                 }
                 Notice.Show("终止任务 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
                 DataControl._mSocket.SwithRefresh(dev, true);
+
             }
             catch (Exception ex)
             {

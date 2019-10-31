@@ -1,4 +1,5 @@
-﻿using Panuon.UI.Silver;
+﻿using ModuleManager;
+using Panuon.UI.Silver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace WindowManager
     /// <summary>
     /// W_ErrLogs.xaml 的交互逻辑
     /// </summary>
-    public partial class W_ErrLogs : UserControl
+    public partial class W_ErrLogs : UserControl, ITabWin
     {
         public W_ErrLogs()
         {
@@ -60,6 +61,11 @@ namespace WindowManager
         private void BtnRefresh_Click(object sender, EventArgs e)
         {
             GetInfo();
+        }
+
+        public void Close()
+        {
+            
         }
     }
 }

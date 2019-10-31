@@ -124,6 +124,11 @@ namespace WindowManager
                     return;
                 }
 
+                if (!WindowCommon.ConfirmAction("是否发送滚筒启动指令！！"))
+                {
+                    return;
+                }
+
                 // 方式
                 byte site1 = FRT.RollerRun1;
                 if (CBsite1.SelectedValue.ToString() == "启动2#辊台")
