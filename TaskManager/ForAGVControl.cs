@@ -187,7 +187,7 @@ namespace TaskManager
                         if (frt.GoodsStatus() != FRT.GoodsNoAll || PublicParam.IsIgnoreFRT)  //add调试判断
                         {
                             // 分配 WMS TASK
-                            if (String.IsNullOrEmpty(agv.TASK_UID.Trim()))
+                            if (String.IsNullOrEmpty(agv.TASK_UID))
                             {
                                 // 获取WMS TASK ID
                                 String sql = String.Format(@"select TASK_UID from wcs_task_info where TASK_TYPE = '{0}' and W_S_LOC = '{1}' and TASK_UID not in 
@@ -247,7 +247,7 @@ namespace TaskManager
                         if (frtdrop.CurrentStatus() != FRT.RollerStop)
                         {
                             // 当已启动辊台
-                            if (frtdrop.CurrentTask() == FRT.TaskTake && (frtdrop.CurrentStatus() == FRT.RollerRun1 || frtdrop.CurrentStatus() == FRT.RollerRunAll))
+                            if (frtdrop.CurrentTask() == FRT.TaskTake && (frtdrop.CurrentStatus() == FRT.RollerRun2 || frtdrop.CurrentStatus() == FRT.RollerRunAll))
                             {
                                 // 发指令请求AGV启动辊台装货
                                 if (!DataControl._mNDCControl.DoUnLoad(agv.ID, Convert.ToInt32(agv.AGV), out string result))
@@ -262,18 +262,29 @@ namespace TaskManager
                         else // 未启动辊台
                         {
                             byte[] order = null;
+                            // 默认送往固定辊台 1#辊台
+                            string rollerNum = "-1";
                             // 当辊台都无货
                             //if (frtdrop.GoodsStatus() == FRT.GoodsNoAll)
                             if (frtdrop.GoodsStatus() == FRT.GoodsNoAll || PublicParam.IsIgnoreFRT) //add调试判断
                             {
-                                // 获取指令-- 启动所有辊台 正向接货
+                                // 获取指令-- 启动所有辊台 正向接1货 
                                 order = FRT._RollerControl(frtdrop.FRTNum(), FRT.RollerRunAll, FRT.RunFront, FRT.GoodsReceive, FRT.GoodsQty1);
                             }
                             // 当仅1#辊台有货
                             else if (frtdrop.GoodsStatus() == FRT.GoodsYes1)
                             {
-                                // 获取指令-- 只启动1#辊台 正向接货
-                                order = FRT._RollerControl(frtdrop.FRTNum(), FRT.RollerRun1, FRT.RunFront, FRT.GoodsReceive, FRT.GoodsQty1);
+                                // 送往固定辊台 2#辊台
+                                rollerNum = "-2";
+                                // 获取指令-- 只启动2#辊台 正向接1货
+                                //order = FRT._RollerControl(frtdrop.FRTNum(), FRT.RollerRun2, FRT.RunFront, FRT.GoodsReceive, FRT.GoodsQty1);
+
+                                // 获取指令-- 启动所有辊台 正向接2货
+                                order = FRT._RollerControl(frtdrop.FRTNum(), FRT.RollerRunAll, FRT.RunFront, FRT.GoodsReceive, FRT.GoodsQty2);
+                            }
+                            else
+                            {
+                                return;
                             }
                             // 加入任务作业链表
                             WCS_TASK_ITEM item = new WCS_TASK_ITEM()
@@ -282,7 +293,7 @@ namespace TaskManager
                                 WCS_NO = agv.TASK_UID,
                                 ID = agv.ID,
                                 DEVICE = agv.DROPSTATION,
-                                LOC_FROM = agv.AGV
+                                LOC_FROM = agv.AGV + rollerNum
                             };
                             DataControl._mTaskControler.StartTask(new AGVFRTTack(item, DeviceType.固定辊台, order));
                         }

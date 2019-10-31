@@ -192,10 +192,10 @@ namespace TaskManager
                 #endregion
 
                 // 对接设备状态
-                if (!string.IsNullOrEmpty(ITEM.LOC_TO.Trim())) // 目标不为空即最终无货
+                if (!string.IsNullOrEmpty(ITEM.LOC_TO)) // 目标不为空即最终无货 --送货
                 {
                     // 固定辊台无货物
-                    if (_device.GoodsStatus() == FRT.GoodsNoAll && _device.ActionStatus() == FRT.Stop && 
+                    if (_device.GoodsStatus() == FRT.GoodsNoAll && _device.ActionStatus() == FRT.Stop &&
                         _device.FinishTask() == FRT.TaskRelease)
                     {
                         // 完成任务
@@ -206,11 +206,31 @@ namespace TaskManager
                         return;
                     }
                 }
-                else
+                else // 接货
                 {
-                    // 固定辊台上有2#有货 或者 都有货
-                    if ((_device.GoodsStatus() == FRT.GoodsYes2 || _device.GoodsStatus() == FRT.GoodsYesAll) && 
-                        _device.ActionStatus() == FRT.Stop && _device.FinishTask() == FRT.TaskRelease)
+                    bool isOK = false;
+                    switch(ITEM.LOC_FROM.Substring(ITEM.LOC_FROM.Length-2))
+                    {
+                        case "-1":
+                            // 固定辊台上有1#有货
+                            if (_device.GoodsStatus() == FRT.GoodsYes1 && _device.ActionStatus() == FRT.Stop && _device.FinishTask() == FRT.TaskRelease)
+                            {
+                                isOK = true;
+                            }
+                            break;
+                        case "-2":
+                            // 固定辊台上有都有货
+                            if (_device.GoodsStatus() == FRT.GoodsYesAll && _device.ActionStatus() == FRT.Stop && _device.FinishTask() == FRT.TaskRelease)
+                            {
+                                isOK = true;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+
+                    // 固定辊台上有1#有货 或者 都有货
+                    if (isOK)
                     {
                         // 完成任务
                         ISetTaskSuc();
@@ -228,7 +248,7 @@ namespace TaskManager
                     {
                         throw new Exception(res);
                     }
-                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
+                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                     // LOG
                     log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, order));
                 }
@@ -324,7 +344,7 @@ namespace TaskManager
                         }
                     }
                     // 固定辊台无货物
-                    if (_device.GoodsStatus() == FRT.GoodsNoAll && _device.ActionStatus() == FRT.Stop && 
+                    if (_device.GoodsStatus() == FRT.GoodsNoAll && _device.ActionStatus() == FRT.Stop &&
                         _device.FinishTask() == FRT.TaskRelease)
                     {
                         // 完成任务
@@ -344,7 +364,7 @@ namespace TaskManager
                 else
                 {
                     // 摆渡车辊台上无货物,固定辊台上有货物
-                    if (_arf.GoodsStatus() == ARF.GoodsNoAll && _device.GoodsStatus() != FRT.GoodsNoAll && 
+                    if (_arf.GoodsStatus() == ARF.GoodsNoAll && _device.GoodsStatus() != FRT.GoodsNoAll &&
                         _device.ActionStatus() == FRT.Stop && _device.FinishTask() == FRT.TaskRelease)
                     {
                         // 完成任务
@@ -369,7 +389,7 @@ namespace TaskManager
                     {
                         throw new Exception(res);
                     }
-                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
+                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                     // LOG
                     log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, order));
                 }
@@ -563,7 +583,7 @@ namespace TaskManager
                         {
                             throw new Exception(res);
                         }
-                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
+                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, order));
                     }
@@ -781,7 +801,7 @@ namespace TaskManager
                         {
                             throw new Exception(res);
                         }
-                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
+                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, order));
                     }
@@ -1007,7 +1027,7 @@ namespace TaskManager
             List<Task> taskList = new List<Task>();
             while (PowerSwitch)
             {
-                Thread.Sleep(500);
+                Thread.Sleep(1000);
                 if (!PublicParam.IsRunTaskOrder)
                 {
                     continue;
