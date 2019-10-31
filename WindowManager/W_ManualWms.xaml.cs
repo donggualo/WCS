@@ -174,6 +174,11 @@ namespace WindowManager
                     return;
                 }
 
+                if (!WindowCommon.ConfirmAction("是否进行[获取入库区域任务]！！"))
+                {
+                    return;
+                }
+
                 if ((bool)CheckWMS.IsChecked)
                 {
                     if (string.IsNullOrEmpty(frtD))
@@ -243,6 +248,11 @@ namespace WindowManager
                 if (string.IsNullOrEmpty(frtP) || string.IsNullOrEmpty(code))
                 {
                     Notice.Show("包装线辊台设备号 / 货物条码 不能为空！", "错误", 3, MessageBoxIcon.Error);
+                    return;
+                }
+
+                if (!WindowCommon.ConfirmAction("是否进行[获取入库坐标任务]！！"))
+                {
                     return;
                 }
 
@@ -361,6 +371,12 @@ namespace WindowManager
                 Notice.Show("货位不能为空！", "错误", 3, MessageBoxIcon.Error);
                 return;
             }
+
+            if (!WindowCommon.ConfirmAction("是否进行[手动出入库]任务！！"))
+            {
+                return;
+            }
+
             // 货位
             string LOC = "C-" + TBlocX.Text.Trim().PadLeft(3, '0') + "-" + TBlocY.Text.Trim().PadLeft(2, '0') + "-" + TBlocZ.Text.Trim().PadLeft(2, '0');
 

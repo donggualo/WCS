@@ -124,7 +124,7 @@ namespace WindowManager
                     return;
                 }
 
-                if (!WindowCommon.ConfirmAction("是否发送滚筒启动指令！！"))
+                if (!WindowCommon.ConfirmAction("是否进行[滚筒启动任务]！！"))
                 {
                     return;
                 }

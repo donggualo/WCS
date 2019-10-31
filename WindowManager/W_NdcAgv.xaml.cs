@@ -97,12 +97,22 @@ namespace WindowManager
                 return;
             }
 
+            if (!WindowCommon.ConfirmAction("是否请求[AGV任务]！！"))
+            {
+                return;
+            }
+
             if (!DataControl._mNDCControl.AddNDCTask(taskid, loadSite.Text, unloadSite.Text, out string result))
             {
                 Notice.Show(result, "错误", 3, MessageBoxIcon.Error);
             }
         }
 
+        /// <summary>
+        /// 缺货
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void LoadAgvBtn_Click(object sender, RoutedEventArgs e)
         {
             if (!int.TryParse(taskId.Text, out int taskid))
@@ -116,12 +126,23 @@ namespace WindowManager
                 Notice.Show("AGVID必须是整型数字", "错误", 3, MessageBoxIcon.Error);
                 return;
             }
+
+            if (!WindowCommon.ConfirmAction("是否进行[取货任务]！！"))
+            {
+                return;
+            }
+
             if (!DataControl._mNDCControl.DoLoad(taskid, agvid, out string result))
             {
                 Notice.Show(result, "错误", 3, MessageBoxIcon.Error);
             }
         }
 
+        /// <summary>
+        /// 卸货
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void UnloadAgvBtn_Click(object sender, RoutedEventArgs e)
         {
             if (!int.TryParse(taskId.Text, out int taskid))
@@ -129,17 +150,29 @@ namespace WindowManager
                 Notice.Show("任务ID必须是数字", "错误", 3, MessageBoxIcon.Error);
                 return;
             }
+
             if (!int.TryParse(agvName.Text, out int agvid))
             {
                 Notice.Show("AGVID必须是整型数字", "错误", 3, MessageBoxIcon.Error);
                 return;
             }
+
+            if (!WindowCommon.ConfirmAction("是否进行[卸货任务]！！"))
+            {
+                return;
+            }
+
             if (!DataControl._mNDCControl.DoUnLoad(taskid, agvid, out string result))
             {
                 Notice.Show(result, "错误", 3, MessageBoxIcon.Error);
             }
         }
 
+        /// <summary>
+        /// 进行重定向
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void RedirectBtn_Click(object sender, RoutedEventArgs e)
         {
             if (!int.TryParse(taskId.Text, out int taskid))
@@ -152,6 +185,11 @@ namespace WindowManager
             if (order.Text != "" && !int.TryParse(order.Text,out orderint))
             {
                 Notice.Show("Order必须是数字", "错误", 3, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (!WindowCommon.ConfirmAction("是否进行[重定向任务]！！"))
+            {
                 return;
             }
 
@@ -178,6 +216,11 @@ namespace WindowManager
             if (index.Text != "" && !int.TryParse(index.Text, out i))
             {
                 Notice.Show("Index必须是数字", "错误", 3, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (!WindowCommon.ConfirmAction("确定需要[取消任务]！！"))
+            {
                 return;
             }
 

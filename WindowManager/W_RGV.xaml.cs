@@ -157,6 +157,11 @@ namespace WindowManager
                     return;
                 }
 
+                if (!WindowCommon.ConfirmAction("是否进行[定位任务]！！"))
+                {
+                    return;
+                }
+
                 int loc = Convert.ToInt32(location.Text.Trim());
                 order = RGV._Position(rgv.RGVNum(), DataControl._mStools.IntToBytes(loc));
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
@@ -205,6 +210,12 @@ namespace WindowManager
                     Notice.Show("指令发送失败：设备故障！", "错误", 3, MessageBoxIcon.Error);
                     return;
                 }
+
+                if (!WindowCommon.ConfirmAction("是否确定[启动滚筒任务]！！"))
+                {
+                    return;
+                }
+
 
                 // 方式
                 byte site1 = RGV.RollerRun1;

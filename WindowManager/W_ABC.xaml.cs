@@ -161,7 +161,7 @@ namespace WindowManager
                     return;
                 }
 
-                if (!WindowCommon.ConfirmAction("是否发送定位指令！！"))
+                if (!WindowCommon.ConfirmAction("是否进行[定位任务]！！"))
                 {
                     return;
                 }
@@ -226,7 +226,7 @@ namespace WindowManager
                     return;
                 }
 
-                if (!WindowCommon.ConfirmAction("是否发送取货任务！！"))
+                if (!WindowCommon.ConfirmAction("是否进行[取货任务]！！"))
                 {
                     return;
                 }
@@ -291,7 +291,7 @@ namespace WindowManager
                 }
 
 
-                if (!WindowCommon.ConfirmAction("是否发送放货任务！！"))
+                if (!WindowCommon.ConfirmAction("是否进行[放货任务]！！"))
                 {
                     return;
                 }
