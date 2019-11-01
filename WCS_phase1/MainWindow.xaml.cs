@@ -32,7 +32,7 @@ namespace WCS_phase1
             InitializeComponent();
             DataControl.Init();
 
-            CheckTask.IsChecked = PublicParam.IsRunTaskLogic;
+            CheckTask.IsChecked = PublicParam.IsRunTaskLogic_I;
             CheckOrder.IsChecked = PublicParam.IsRunTaskOrder;
             CheckAGV.IsChecked = PublicParam.IsRunSendAGV;
 
@@ -51,7 +51,7 @@ namespace WCS_phase1
         /// <param name="e"></param>
         private void CheckTask_Click(object sender, RoutedEventArgs e)
         {
-            PublicParam.IsRunTaskLogic = (bool)CheckTask.IsChecked;
+            PublicParam.IsRunTaskLogic_I = (bool)CheckTask.IsChecked;
         }
 
         /// <summary>
