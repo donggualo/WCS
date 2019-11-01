@@ -710,7 +710,7 @@ namespace TaskManager.Functions
                 throw ex;
             }
         }
-        
+
         /// <summary>
         /// 获取设备偏差计算出的坐标（减法）
         /// [xyz]（null 为全返；X/Y/Z 为单轴坐标值返回）
@@ -956,7 +956,7 @@ namespace TaskManager.Functions
                 {
                     return true;
                 }
-                if (dt.Rows[0]["FLAG"].ToString() == DeviceFlag.空闲)
+                if (dt.Rows[0]["FLAG"].ToString() == DeviceFlag.空闲 && dt.Rows[0]["FLAG"].ToString() == DeviceFlag.占用)
                 {
                     return false;
                 }

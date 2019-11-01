@@ -996,11 +996,14 @@ namespace TaskManager
                     }
 
                     // 判断当前区域是否存在满足入库条件的任务
-                    int incount = DataControl._mMySql.GetCount("wcs_command_v", String.Format(@"TASK_TYPE = '{2}' and STEP = '{1}' and FRT in
-                                                  (select distinct DEVICE from wcs_config_device where TYPE = '{3}' and AREA = '{0}')", area, CommandStep.请求执行, TaskType.入库, DeviceType.固定辊台));
-                    if (incount > 0) //有则退出
+                    if (PublicParam.IsRunTaskLogic_I) // 是否执行入库任务
                     {
-                        continue;
+                        int incount = DataControl._mMySql.GetCount("wcs_command_v", String.Format(@"TASK_TYPE = '{2}' and STEP = '{1}' and FRT in
+                                                  (select distinct DEVICE from wcs_config_device where TYPE = '{3}' and AREA = '{0}')", area, CommandStep.请求执行, TaskType.入库, DeviceType.固定辊台));
+                        if (incount > 0) //有则退出
+                        {
+                            continue;
+                        }
                     }
 
                     // 处理该区域出库任务
@@ -1977,17 +1980,17 @@ namespace TaskManager
             while (PowerSwitch)
             {
                 Thread.Sleep(5000);
-                if (!PublicParam.IsRunTaskLogic)
+                if (!PublicParam.IsRunTaskLogic_I && !PublicParam.IsRunTaskLogic_O)
                 {
                     continue;
                 }
                 try
                 {
                     _task.Run_TaskContinued();
-                    _task.Run_InInitial();
+                    if(PublicParam.IsRunTaskLogic_I) _task.Run_InInitial();
                     _task.Run_ItemDevice();
                     _task.Run_LinkDevice();
-                    _task.Run_OutFollow();
+                    if (PublicParam.IsRunTaskLogic_O) _task.Run_OutFollow();
                     _task.Run_Order();
                 }
                 catch (Exception)

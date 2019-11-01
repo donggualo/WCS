@@ -177,7 +177,12 @@
                               pu:CheckBoxHelper.BoxWidth="70"
                               pu:CheckBoxHelper.CheckBoxStyle="Switch2" 
                               pu:CheckBoxHelper.CheckedBackground="#FF67DA82"  Margin="0,0,20,0"/>
-                    <CheckBox Name="CheckTask" Content="生成任务" Click="CheckTask_Click"
+                    <CheckBox Name="CheckTask_I" Content="入库任务" Click="CheckTask_I_Click"
+                              pu:CheckBoxHelper.BoxHeight="30"
+                              pu:CheckBoxHelper.BoxWidth="70"
+                              pu:CheckBoxHelper.CheckBoxStyle="Switch2" 
+                              pu:CheckBoxHelper.CheckedBackground="#FF67DA82" Margin="0,0,20,0"/>
+                    <CheckBox Name="CheckTask_O" Content="出库任务" Click="CheckTask_O_Click"
                               pu:CheckBoxHelper.BoxHeight="30"
                               pu:CheckBoxHelper.BoxWidth="70"
                               pu:CheckBoxHelper.CheckBoxStyle="Switch2" 

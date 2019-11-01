@@ -31,7 +31,8 @@ namespace WCS_phase1
             InitializeComponent();
             DataControl.Init();
 
-            CheckTask.IsChecked = PublicParam.IsRunTaskLogic;
+            CheckTask_I.IsChecked = PublicParam.IsRunTaskLogic_I;
+            CheckTask_O.IsChecked = PublicParam.IsRunTaskLogic_O;
             CheckOrder.IsChecked = PublicParam.IsRunTaskOrder;
             CheckAGV.IsChecked = PublicParam.IsRunSendAGV;
         }
@@ -180,13 +181,17 @@ namespace WCS_phase1
         }
 
         /// <summary>
-        /// 是否执行任务生成
+        /// 是否执行出入库任务生成
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void CheckTask_Click(object sender, RoutedEventArgs e)
+        private void CheckTask_I_Click(object sender, RoutedEventArgs e)
         {
-            PublicParam.IsRunTaskLogic = (bool)CheckTask.IsChecked;
+            PublicParam.IsRunTaskLogic_I = (bool)CheckTask_I.IsChecked;
+        }
+        private void CheckTask_O_Click(object sender, RoutedEventArgs e)
+        {
+            PublicParam.IsRunTaskLogic_O = (bool)CheckTask_O.IsChecked;
         }
 
         /// <summary>

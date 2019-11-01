@@ -409,7 +409,7 @@ namespace NdcManager
                     ReDirectList.Remove(item._mTask.ORDERINDEX);
                     break;
 
-                case 8://到达卸货点
+                case 9://到达卸货点
 
                     //准备好卸货了
                     item.PLCStatus = NDCPlcStatus.UnloadReady;

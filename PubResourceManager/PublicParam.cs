@@ -14,9 +14,10 @@ namespace PubResourceManager
         #region 设定
 
         /// <summary>
-        /// 是否运行生成任务逻辑
+        /// 是否运行生成出入库任务逻辑
         /// </summary>
-        public static bool IsRunTaskLogic = false;
+        public static bool IsRunTaskLogic_I = false;
+        public static bool IsRunTaskLogic_O = false;
 
         /// <summary>
         /// 是否运行任务指令发送

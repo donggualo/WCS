@@ -395,7 +395,7 @@ namespace NdcManager
                     {
                         SendNewM(index, phase);
                     }
-                    else if (s_response.Magic == 4)//到达接货
+                    else if (s_response.Magic == 5)//到达接货
                     {
                         SendNewM(index, phase);
                     }
@@ -403,7 +403,7 @@ namespace NdcManager
                     {
                         ///SendNewM(index, phase);
                     }
-                    else if (s_response.Magic == 8)
+                    else if (s_response.Magic == 9)//到达卸货
                     {
                         SendNewM(index, phase);
                     }

@@ -241,6 +241,13 @@ namespace TaskManager
 
                         break;
                     case AGVMagic.到达卸货点:
+                        // 是否已被锁定
+                        if (DataControl._mTaskTools.IsDeviceLock(agv.DROPSTATION))
+                        {
+                            // 跳过本次操作等待解锁
+                            return;
+                        }
+
                         // 获取对应固定辊台资讯
                         FRT frtdrop = new FRT(agv.DROPSTATION);
                         // 是否作业中
