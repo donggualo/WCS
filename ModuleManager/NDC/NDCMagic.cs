@@ -15,9 +15,9 @@ namespace NdcManager.NDC
         OrderStart =1,
         OrderInfo = 2,
         AboutRedirect = 3,
-        LoadHost = 4,
+        LoadHost = 5,
         LoadedHostSync = 6,
-        UnloadHostSync = 8,
+        UnloadHostSync = 9,
         UnloadedHostSyncStation = 10,
         OrderFinished = 11,
         RedirectStationNeeded = 32,
@@ -39,9 +39,9 @@ namespace NdcManager.NDC
             magic[1] = "[Index {0}]  Fetch: {1} Deliver: {2}, Phase: ${3}";
             magic[2] = "[Index {0}]  Move to load, Phase: ${1}";
             magic[3] = "[Index {0}]  Redirect, Phase: ${1}";
-            magic[4] = "[Index {0}]  Load host sync, Phase: ${1}";
+            magic[5] = "[Index {0}]  Load host sync, Phase: ${1}";
             magic[6] = "[Index {0}]  Loaded host sync, station: {2} Phase: ${1}";
-            magic[8] = "[Index {0}]  Unload host sync, Phase: ${1}";
+            magic[9] = "[Index {0}]  Unload host sync, Phase: ${1}";
             magic[10] = "[Index {0}]  Unloaded host sync, station: {2} Phase: ${1:X}";
             magic[11] = "[Index {0}]  Order Finished, IKEY: {1}";
             magic[32] = "[Index {0}]  Redirect station needed, Vehicle: {1}";

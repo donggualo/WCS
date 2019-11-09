@@ -86,7 +86,7 @@ namespace ModuleManager.NDC.Message
             {
                 return string.Format("[Index {0}]  Redirect, Phase: ${1}  ", orderIndex, magic2);
             }
-            else if (magic1 == 4)//到达接货点
+            else if (magic1 == 5)//到达接货点
             {
                 return string.Format("[Index {0}]  Load host sync, Phase: ${1}", orderIndex, magic1);
             }
@@ -94,7 +94,7 @@ namespace ModuleManager.NDC.Message
             {
                 return string.Format("[Index {0}]  Loaded host sync, station: {2} Phase: ${1}", orderIndex, magic1, station);
             }
-            else if (magic1 == 8)//到达卸货点 
+            else if (magic1 == 9)//到达卸货点 
             {
                 return string.Format("[Index {0}]  Unload host sync, Phase: ${1}", orderIndex, magic1);
             }

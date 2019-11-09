@@ -62,7 +62,7 @@ namespace ModuleManager.WCS
         public const int 前往装货点 = 3;
         public const int 到达装货点 = 5;
         public const int 装货完成 = 6;
-        public const int 到达卸货点 = 8;
+        public const int 到达卸货点 = 9;
         public const int 卸货完成 = 10;
         public const int 任务完成 = 11;
         public const int 重新定位卸货 = 254;
