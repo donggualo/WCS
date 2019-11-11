@@ -341,7 +341,7 @@ namespace TaskManager
 
                 ARF _arf = new ARF(ITEM.LOC_TO);
                 // 对接设备状态
-                if (!string.IsNullOrEmpty(ITEM.LOC_TO.Trim())) // 目标不为空即最终无货 --送货
+                if (!string.IsNullOrEmpty(ITEM.LOC_TO)) // 目标不为空即最终无货 --送货
                 {
                     // 摆渡车辊台停止状态
                     if (_arf.CurrentStatus() == ARF.RollerStop)
@@ -377,13 +377,9 @@ namespace TaskManager
                         rollOutOrder = FRT._RollerControl(_device.FRTNum(), FRT.RollerRun1, FRT.RunFront, FRT.GoodsDeliver, FRT.GoodsQty1);
                         rollOutStep++;
                     }
-                    else if (_device.GoodsStatus() == FRT.GoodsYes2 && rollOutStep == 2)
+                    else if ((_device.GoodsStatus() == FRT.GoodsYes2 && rollOutStep == 2) || _device.GoodsStatus() == FRT.GoodsBetween)
                     {
                         rollOutOrder = null;
-                    }
-                    else
-                    {
-                        rollOutStep = 0;
                     }
                 }
                 else // 接货
@@ -504,7 +500,7 @@ namespace TaskManager
                     }
                     #endregion
 
-                    if (!string.IsNullOrEmpty(ITEM.LOC_TO.Trim())) // 目标不为空即最终无货 --送货
+                    if (!string.IsNullOrEmpty(ITEM.LOC_TO)) // 目标不为空即最终无货 --送货
                     {
                         // 获取目标设备类型
                         String typeTo = DataControl._mTaskTools.GetDeviceType(ITEM.LOC_TO);
@@ -535,13 +531,9 @@ namespace TaskManager
                                     rollOutOrder = ARF._RollerControl(_device.ARFNum(), ARF.RollerRun2, ARF.RunObverse, ARF.GoodsDeliver, ARF.GoodsQty1);
                                     rollOutStep++;
                                 }
-                                else if (_device.GoodsStatus() == ARF.GoodsYes1 && rollOutStep == 2)
+                                else if ((_device.GoodsStatus() == ARF.GoodsYes1 && rollOutStep == 2) || _device.GoodsStatus() == ARF.GoodsBetween)
                                 {
                                     rollOutOrder = null;
-                                }
-                                else
-                                {
-                                    rollOutStep = 0;
                                 }
                                 break;
                             case DeviceType.运输车:
@@ -568,13 +560,9 @@ namespace TaskManager
                                     rollOutOrder = ARF._RollerControl(_device.ARFNum(), ARF.RollerRun1, ARF.RunFront, ARF.GoodsDeliver, ARF.GoodsQty1);
                                     rollOutStep++;
                                 }
-                                else if (_device.GoodsStatus() == ARF.GoodsYes2 && rollOutStep == 2)
+                                else if ((_device.GoodsStatus() == ARF.GoodsYes2 && rollOutStep == 2) || _device.GoodsStatus() == ARF.GoodsBetween)
                                 {
                                     rollOutOrder = null;
-                                }
-                                else
-                                {
-                                    rollOutStep = 0;
                                 }
                                 break;
                             default:
@@ -686,6 +674,8 @@ namespace TaskManager
                             DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                             throw new Exception(result);
                         }
+                        // 发完定位后立即获取
+                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                     }
@@ -764,7 +754,7 @@ namespace TaskManager
                     }
                     #endregion
 
-                    if (!string.IsNullOrEmpty(ITEM.LOC_TO.Trim())) // 目标不为空即最终无货 --送货
+                    if (!string.IsNullOrEmpty(ITEM.LOC_TO)) // 目标不为空即最终无货 --送货
                     {
                         // 获取目标设备类型
                         String typeTo = DataControl._mTaskTools.GetDeviceType(ITEM.LOC_TO);
@@ -795,13 +785,9 @@ namespace TaskManager
                                     rollOutOrder = RGV._RollerControl(_device.RGVNum(), RGV.RollerRun2, RGV.RunObverse, RGV.GoodsDeliver, RGV.GoodsQty1);
                                     rollOutStep++;
                                 }
-                                else if (_device.GoodsStatus() == RGV.GoodsYes1 && rollOutStep == 2)
+                                else if ((_device.GoodsStatus() == RGV.GoodsYes1 && rollOutStep == 2) || _device.GoodsStatus() == RGV.GoodsBetween)
                                 {
                                     rollOutOrder = null;
-                                }
-                                else
-                                {
-                                    rollOutStep = 0;
                                 }
                                 break;
                             case DeviceType.运输车:
@@ -837,13 +823,9 @@ namespace TaskManager
 
                                     rollOutStep++;
                                 }
-                                else if ((_device.GoodsStatus() == FRT.GoodsYes1 || _device.GoodsStatus() == FRT.GoodsYes2) && rollOutStep == 2)
+                                else if (((_device.GoodsStatus() == FRT.GoodsYes1 || _device.GoodsStatus() == FRT.GoodsYes2) && rollOutStep == 2) || _device.GoodsStatus() == RGV.GoodsBetween)
                                 {
                                     rollOutOrder = null;
-                                }
-                                else
-                                {
-                                    rollOutStep = 0;
                                 }
                                 break;
                             default:
@@ -925,7 +907,7 @@ namespace TaskManager
                     else if (_device.CurrentTask() != _device.FinishTask() || _device.ActionStatus() == RGV.Stop)
                     {
                         DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
-                        if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, Order, out string result))
+                        if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, rollOutOrder == null ? Order : rollOutOrder, out string result))
                         {
                             DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                             throw new Exception(result);
@@ -963,6 +945,8 @@ namespace TaskManager
                             DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                             throw new Exception(result);
                         }
+                        // 发完定位后立即获取
+                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                     }

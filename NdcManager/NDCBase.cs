@@ -395,15 +395,15 @@ namespace NdcManager
                     {
                         SendNewM(index, phase);
                     }
-                    else if (s_response.Magic == 5)//到达接货
+                    else if (s_response.Magic == 4)//到达接货
                     {
                         SendNewM(index, phase);
                     }
                     else if (s_response.Magic == 6)//接货完成，由重新定位返回数据
                     {
-                        ///SendNewM(index, phase);
+                        SendNewM(index, phase);
                     }
-                    else if (s_response.Magic == 9)//到达卸货
+                    else if (s_response.Magic == 8)//到达卸货
                     {
                         SendNewM(index, phase);
                     }

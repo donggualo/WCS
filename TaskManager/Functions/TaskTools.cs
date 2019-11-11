@@ -956,7 +956,7 @@ namespace TaskManager.Functions
                 {
                     return true;
                 }
-                if (dt.Rows[0]["FLAG"].ToString() == DeviceFlag.空闲 && dt.Rows[0]["FLAG"].ToString() == DeviceFlag.占用)
+                if (dt.Rows[0]["FLAG"].ToString() == DeviceFlag.空闲 || dt.Rows[0]["FLAG"].ToString() == DeviceFlag.占用)
                 {
                     return false;
                 }

@@ -155,6 +155,11 @@ namespace TaskManager.Devices
         /// </summary>
         public static byte GoodsYesAll = 0x03;
 
+        /// <summary>
+        /// 2个辊台中间有1货
+        /// </summary>
+        public static byte GoodsBetween = 0x04;
+
         public static string GetGoodsStatusMes(byte gs)
         {
             if (gs == GoodsNoAll)
@@ -169,9 +174,17 @@ namespace TaskManager.Devices
             {
                 return "2#辊台有货";
             }
-            else
+            else if(gs == GoodsYesAll)
             {
                 return "2个辊台都有货";
+            }
+            else if (gs == GoodsBetween)
+            {
+                return "2个辊台中间有1货";
+            }
+            else
+            {
+                return "未知状态";
             }
         }
 
