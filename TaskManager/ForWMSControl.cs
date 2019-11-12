@@ -113,6 +113,7 @@ namespace TaskManager
         }
 
 
+        #region Nonononononono
 
         /// <summary>
         /// 扫码任务(卸货区)
@@ -223,5 +224,7 @@ namespace TaskManager
                 return false;
             }
         }
+
+        #endregion
     }
 }

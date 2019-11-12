@@ -927,8 +927,11 @@ namespace TaskManager
                         DataControl._mTaskTools.RecordTaskErrLog("RGVTack.DoWork()", "RGV指令任务[设备号,坐标]", ITEM.DEVICE, ITEM.LOC_TO, resultRGV);
                         return;
                     }
+                    // 精度范围值
+                    int limit = Convert.ToInt32(DataControl._mStools.GetValueByKey("RGVLimit"));
                     // 当前位置与目的位置一致 视为任务完成
-                    if (_device.GetCurrentSite() == Convert.ToInt32(resultRGV) && _device.ActionStatus() == RGV.Stop)
+                    if (Convert.ToInt32(resultRGV) >= (_device.GetCurrentSite() - limit) &&
+                        Convert.ToInt32(resultRGV) <= (_device.GetCurrentSite() + limit) && _device.ActionStatus() == RGV.Stop)
                     {
                         // 等待对接
                         ISetTaskWait();
@@ -982,6 +985,17 @@ namespace TaskManager
                 // 异常
                 if (_device.DeviceStatus() == ABC.DeviceError || _device.CommandStatus() == ABC.CommandError)
                 {
+                    // 异常立即复位
+                    byte[] order = ABC._ResetTask(_device.ABCNum());
+                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
+                    if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, order, out string res))
+                    {
+                        throw new Exception(res);
+                    }
+                    // LOG
+                    log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, order));
+
+                    // 异常处理任务
                     ISetTaskErr();
                     // LOG
                     log.LOG(DataControl._mTaskTools.GetLogMessE(ITEM, Order, "设备故障或命令错误."));
@@ -1046,22 +1060,37 @@ namespace TaskManager
                 // 定位任务
                 else
                 {
-                    /* 设备坐标偏差 */
-                    string resultABC;
-                    if (!DataControl._mTaskTools.GetLocByAddGap(ITEM.DEVICE, ITEM.LOC_TO, out resultABC))
-                    {
-                        // 记录LOG
-                        DataControl._mTaskTools.RecordTaskErrLog("ABCTack.DoWork()", "ABC指令任务[设备号,坐标]", ITEM.DEVICE, ITEM.LOC_TO, resultABC);
-                        return;
-                    }
                     // 当前位置与目的位置一致 视为任务完成
-                    if (_device.GetCurrentSite().Equals(resultABC) && _device.ActionStatus() == ABC.Stop)
+                    if (_device.ActionStatus() == ABC.Stop)
                     {
-                        // 等待对接
-                        ISetTaskWait();
-                        // LOG
-                        log.LOG(DataControl._mTaskTools.GetLogMessW(ITEM, Order));
-                        return;
+                        // 获取当前坐标X轴值
+                        int X = DataControl._mStools.BytesToInt(_device.CurrentXsite(), 0);
+                        int Y = DataControl._mStools.BytesToInt(_device.CurrentYsite(), 0);
+
+                        /* 设备坐标偏差 */
+                        string resultABC;
+                        if (!DataControl._mTaskTools.GetLocByAddGap(ITEM.DEVICE, ITEM.LOC_TO, out resultABC))
+                        {
+                            // 记录LOG
+                            DataControl._mTaskTools.RecordTaskErrLog("ABCTack.DoWork()", "ABC指令任务[设备号,坐标]", ITEM.DEVICE, ITEM.LOC_TO, resultABC);
+                            return;
+                        }
+                        // 目标位置 X/Y 轴值
+                        int locToX = Convert.ToInt32(resultABC.Split('-')[0]);
+                        int locToY = Convert.ToInt32(resultABC.Split('-')[1]);
+
+                        // 精度范围值
+                        int limit = Convert.ToInt32(DataControl._mStools.GetValueByKey("ABCLimit"));
+                        
+                        if ((locToX >= (X - limit) && locToX <= (X + limit)) &&
+                            (locToY >= (Y - limit) && locToY <= (Y + limit)))
+                        {
+                            // 等待对接
+                            ISetTaskWait();
+                            // LOG
+                            log.LOG(DataControl._mTaskTools.GetLogMessW(ITEM, Order));
+                            return;
+                        }
                     }
                 }
                 // 发送指令
@@ -1073,6 +1102,8 @@ namespace TaskManager
                         DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                         throw new Exception(result);
                     }
+                    // 发后立即获取
+                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                     // LOG
                     log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, Order));
                 }

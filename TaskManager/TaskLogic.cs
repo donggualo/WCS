@@ -892,7 +892,7 @@ namespace TaskManager
 
                         // 流程上设定是先分配运输车辊台①放置货物，即现确认运输车辊台②是否有任务/有货物
                         // 车辊台②不存在任务直接复位 ｜｜　所有辊台都有货
-                        if (String.IsNullOrEmpty(command.TASK_UID_2.Trim()) || RGV.GoodsStatus() == RGV.GoodsYesAll)
+                        if (String.IsNullOrEmpty(command.TASK_UID_2) || RGV.GoodsStatus() == RGV.GoodsYesAll)
                         {
                             // 将运输车复位待命点
                             /* 设备坐标偏差 */
@@ -1155,7 +1155,7 @@ namespace TaskManager
                 String frt;
                 // 自动生成 / 手动
                 string sqlwcs = string.Format(@"select * from wcs_command_v where TASK_UID_1 = '{0}' ", taskuid_1);
-                if (!String.IsNullOrEmpty(taskuid_2.Trim()))
+                if (!String.IsNullOrEmpty(taskuid_2))
                 {
                     sqlwcs += string.Format(@" and TASK_UID_2 = '{0}'", taskuid_2);
                 }
@@ -1173,7 +1173,7 @@ namespace TaskManager
 
                     // 自动生成 COMMAND
                     String sql = String.Format(@"insert into wcs_command_master(WCS_NO, FRT, TASK_UID_1, TASK_UID_2) values('{0}','{1}','{2}','{3}')",
-                            wcs_no, frt, taskuid_1, String.IsNullOrEmpty(taskuid_2.Trim()) ? null : taskuid_2);
+                            wcs_no, frt, taskuid_1, String.IsNullOrEmpty(taskuid_2) ? null : taskuid_2);
                     DataControl._mMySql.ExcuteSql(sql);
                 }
                 else
@@ -1267,14 +1267,14 @@ namespace TaskManager
             {
                 // 获取任务所在固定辊台
                 String frt = DataControl._mTaskTools.GetFRTByWCSNo(item.WCS_NO);
-                if (String.IsNullOrEmpty(frt.Trim()))
+                if (String.IsNullOrEmpty(frt))
                 {
                     return;
                 }
 
                 // 获取任务所在作业区域
                 String area = DataControl._mTaskTools.GetArea(frt);
-                if (String.IsNullOrEmpty(frt.Trim()))
+                if (String.IsNullOrEmpty(frt))
                 {
                     return;
                 }
@@ -1292,7 +1292,7 @@ namespace TaskManager
                         List<WCS_CONFIG_DEVICE> dList_ARF = DataControl._mTaskTools.GetDeviceList(area, DeviceType.摆渡车);
                         // 确认其中最适合的摆渡车
                         String arf = GetSuitableARF(item.LOC_TO, dList_ARF);
-                        if (String.IsNullOrEmpty(arf.Trim()))
+                        if (String.IsNullOrEmpty(arf))
                         {
                             return;
                         }
@@ -1311,14 +1311,14 @@ namespace TaskManager
                         List<WCS_CONFIG_DEVICE> dList_RGV = DataControl._mTaskTools.GetDeviceList(area, DeviceType.运输车);
                         // 确认其中最适合的运输车
                         String rgv = GetSuitableRGV(item.LOC_TO, dList_RGV);
-                        if (String.IsNullOrEmpty(rgv.Trim()))
+                        if (String.IsNullOrEmpty(rgv))
                         {
                             return;
                         }
                         // 确认任务设备&位置
                         RGV RGV = new RGV(rgv);
                         device = rgv;
-                        if (String.IsNullOrEmpty(device.Trim()) || RGV.GetCurrentSite() == 0)
+                        if (String.IsNullOrEmpty(device) || RGV.GetCurrentSite() == 0)
                         {
                             return;
                         }
@@ -1342,14 +1342,14 @@ namespace TaskManager
                         List<WCS_CONFIG_DEVICE> dList_ABC = DataControl._mTaskTools.GetDeviceList(area, DeviceType.行车);
                         // 确认其中最适合的行车
                         String abc = GetSuitableABC(item.LOC_TO, dList_ABC);
-                        if (String.IsNullOrEmpty(abc.Trim()))
+                        if (String.IsNullOrEmpty(abc))
                         {
                             return;
                         }
                         // 确认任务设备&位置
                         ABC ABC = new ABC(abc);
                         device = abc;
-                        if (String.IsNullOrEmpty(device.Trim()) || String.IsNullOrEmpty(ABC.GetCurrentSite()))
+                        if (String.IsNullOrEmpty(device) || String.IsNullOrEmpty(ABC.GetCurrentSite()))
                         {
                             return;
                         }
@@ -1370,7 +1370,7 @@ namespace TaskManager
                         break;
                 }
 
-                if (String.IsNullOrEmpty(device.Trim()) || String.IsNullOrEmpty(loc.Trim()) || loc.Equals("0"))
+                if (String.IsNullOrEmpty(device) || String.IsNullOrEmpty(loc) || loc.Equals("0"))
                 {
                     return;
                 }
@@ -1438,7 +1438,7 @@ namespace TaskManager
                     else if (dev.CurrentSite() < LOC) // 当前坐标值 < 目标位置
                     {
                         // 距离比较值 >=（目标位置 - 当前坐标值）
-                        if (X >= (LOC - dev.CurrentSite()))
+                        if (X == 0 || X > (LOC - dev.CurrentSite()))
                         {
                             // 暂选取该设备
                             arf = d.DEVICE;
@@ -1449,7 +1449,7 @@ namespace TaskManager
                     else // 当前坐标值 > 目标位置
                     {
                         // 距离比较值 >=（当前坐标值 - 目标位置）
-                        if (X >= (dev.CurrentSite() - LOC))
+                        if (X == 0 || X > (dev.CurrentSite() - LOC))
                         {
                             // 暂选取该设备
                             arf = d.DEVICE;
@@ -1461,7 +1461,7 @@ namespace TaskManager
                 }
 
                 // 检测设备是否可用
-                if (!String.IsNullOrEmpty(arf.Trim()))
+                if (!String.IsNullOrEmpty(arf))
                 {
                     dev = new ARF(arf);
                     // 设备故障, 正在运行, 货物状态不为无货, 辊台状态不为停止 ==> 不可用
@@ -1505,7 +1505,7 @@ namespace TaskManager
                     dev = new RGV(d.DEVICE);
                     /* 设备坐标偏差 */
                     string result;
-                    if (!DataControl._mTaskTools.GetLocByLessGap(rgv, dev.GetCurrentSite().ToString(), out result))
+                    if (!DataControl._mTaskTools.GetLocByLessGap(d.DEVICE, dev.GetCurrentSite().ToString(), out result))
                     {
                         // 记录LOG
                         DataControl._mTaskTools.RecordTaskErrLog("GetSuitableRGV()", "获取当前目标对应的合适运输车[设备号,坐标]", rgv, dev.GetCurrentSite().ToString(), result);
@@ -1545,7 +1545,7 @@ namespace TaskManager
                 }
 
                 // 检测设备是否可用
-                if (!String.IsNullOrEmpty(rgv.Trim()))
+                if (!String.IsNullOrEmpty(rgv))
                 {
                     dev = new RGV(rgv);
                     // 设备故障, 正在运行, 货物状态不为无货, 辊台状态不为停止 ==> 不可用
@@ -1631,7 +1631,7 @@ namespace TaskManager
                 }
 
                 // 检测设备是否可用
-                if (!String.IsNullOrEmpty(abc.Trim()))
+                if (!String.IsNullOrEmpty(abc))
                 {
                     dev = new ABC(abc);
                     // 设备故障, 正在运行, 货物状态不为无货 ==> 不可用
@@ -1710,7 +1710,7 @@ namespace TaskManager
                         // 根据任务类型确认
                         site2 = item.ITEM_ID == ItemId.固定辊台正向 ? FRT.RunFront : FRT.RunObverse;
                         // 根据货物对接任务的目的设备确认
-                        site3 = String.IsNullOrEmpty(item.LOC_TO.Trim()) ? FRT.GoodsReceive : FRT.GoodsDeliver;
+                        site3 = String.IsNullOrEmpty(item.LOC_TO) ? FRT.GoodsReceive : FRT.GoodsDeliver;
 
                         // 确认辊台启动方式
                         site1 = FRT.RollerRunAll;   // 初始默认辊台全启
@@ -1757,7 +1757,7 @@ namespace TaskManager
                         // 根据任务类型确认
                         site2 = item.ITEM_ID == ItemId.摆渡车正向 ? ARF.RunFront : ARF.RunObverse;
                         // 根据货物对接任务的目的设备确认
-                        site3 = String.IsNullOrEmpty(item.LOC_TO.Trim()) ? ARF.GoodsReceive : ARF.GoodsDeliver;
+                        site3 = String.IsNullOrEmpty(item.LOC_TO) ? ARF.GoodsReceive : ARF.GoodsDeliver;
 
                         // 确认辊台启动方式
                         site1 = ARF.RollerRunAll;   // 初始默认辊台全启
@@ -1804,7 +1804,7 @@ namespace TaskManager
                         // 根据任务类型确认
                         site2 = item.ITEM_ID == ItemId.运输车正向 ? RGV.RunFront : RGV.RunObverse;
                         // 根据货物对接任务的目的设备确认
-                        site3 = String.IsNullOrEmpty(item.LOC_TO.Trim()) ? RGV.GoodsReceive : RGV.GoodsDeliver;
+                        site3 = String.IsNullOrEmpty(item.LOC_TO) ? RGV.GoodsReceive : RGV.GoodsDeliver;
 
                         // 确认辊台启动方式
                         site1 = RGV.RollerRunAll;   // 初始默认辊台全启
@@ -1897,9 +1897,9 @@ namespace TaskManager
                         }
                         // 提取目的位置
                         String[] LOC = resultABC.Split('-');
-                        byte[] locX = DataControl._mStools.IntToBytes(Convert.ToInt32(String.IsNullOrEmpty(LOC[0].Trim()) ? "0" : LOC[0]));
-                        byte[] locY = DataControl._mStools.IntToBytes(Convert.ToInt32(String.IsNullOrEmpty(LOC[1].Trim()) ? "0" : LOC[1]));
-                        byte[] locZ = DataControl._mStools.IntToBytes(Convert.ToInt32(String.IsNullOrEmpty(LOC[2].Trim()) ? "0" : LOC[2]));
+                        byte[] locX = DataControl._mStools.IntToBytes(Convert.ToInt32(String.IsNullOrEmpty(LOC[0]) ? "0" : LOC[0]));
+                        byte[] locY = DataControl._mStools.IntToBytes(Convert.ToInt32(String.IsNullOrEmpty(LOC[1]) ? "0" : LOC[1]));
+                        byte[] locZ = DataControl._mStools.IntToBytes(Convert.ToInt32(String.IsNullOrEmpty(LOC[2]) ? "0" : LOC[2]));
                         // 指令类型
                         byte type;
                         if (item.ITEM_ID == ItemId.行车取货)
@@ -1987,7 +1987,7 @@ namespace TaskManager
                 try
                 {
                     _task.Run_TaskContinued();
-                    if(PublicParam.IsRunTaskLogic_I) _task.Run_InInitial();
+                    if (PublicParam.IsRunTaskLogic_I) _task.Run_InInitial();
                     _task.Run_ItemDevice();
                     _task.Run_LinkDevice();
                     if (PublicParam.IsRunTaskLogic_O) _task.Run_OutFollow();

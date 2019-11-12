@@ -304,6 +304,16 @@ namespace TaskManager.Devices
             return new byte[] { 0x90, 0x02, ABCNum, 0x7F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFE };
         }
 
+        /// <summary>
+        /// 行车—复位任务
+        /// </summary>
+        /// <param name="ABCNum">行车号</param>
+        /// <returns></returns>
+        public static byte[] _ResetTask(byte ABCNum)
+        {
+            //                     字头     设备号 控制码      X轴坐标        Y轴坐标     Z轴坐标     结束符
+            return new byte[] { 0x90, 0x02, ABCNum, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFE };
+        }
         #endregion
     }
 }

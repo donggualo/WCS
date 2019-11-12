@@ -903,7 +903,7 @@ namespace TaskManager.Functions
             String sql;
             try
             {
-                sql = String.Format(@"select * from wcs_config_device where FLAG <> 'N' and AREA = '{0}' and TYPE = '{1}' order by FLAG", area, type);
+                sql = String.Format(@"select * from wcs_config_device where FLAG <> 'N' and AREA = '{0}' and TYPE = '{1}' order by CREATION_TIME", area, type);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {
