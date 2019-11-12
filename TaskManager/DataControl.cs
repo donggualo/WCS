@@ -92,8 +92,8 @@ namespace TaskManager
 
                 _mForAGVControl = new ForAGVControl();
 
-                _mNDCControl.AGVMagicUpdate += _mForAGVControl.SubmitAgvMagic;
-                _mNDCControl.AGVDataUpdate += _mForAGVControl.SubmitAgvLoading;
+                _mNDCControl.NoticeWcsMagic += _mForAGVControl.SubmitAgvMagic;
+                _mNDCControl.NoticeWcsOnLoad += _mForAGVControl.SubmitAgvLoading;
 
                 _mForWmsControl = new ForWMSControl();
 
@@ -114,8 +114,8 @@ namespace TaskManager
 
                 if (_mNDCControl != null && _mForAGVControl != null)
                 {
-                    _mNDCControl.AGVMagicUpdate -= _mForAGVControl.SubmitAgvMagic;
-                    _mNDCControl.AGVDataUpdate -= _mForAGVControl.SubmitAgvLoading;
+                    _mNDCControl.NoticeWcsMagic -= _mForAGVControl.SubmitAgvMagic;
+                    _mNDCControl.NoticeWcsOnLoad -= _mForAGVControl.SubmitAgvLoading;
                 }
 
 

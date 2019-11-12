@@ -160,9 +160,9 @@ namespace NdcManager.DataGrid.Models
             {
                 IKey = item._mTask.IKEY;
             }
-            if (order != item._mTask.ORDERINDEX)
+            if (order != item._mTask.INDEX)
             {
-                Order = item._mTask.ORDERINDEX;
+                Order = item._mTask.INDEX;
             }
             if (agvname != item.CarrierId )
             {
@@ -203,7 +203,7 @@ namespace NdcManager.DataGrid.Models
         {
             IKey = item._mTask.IKEY;
             TaskID = item._mTask.TASKID;
-            Order = item._mTask.ORDERINDEX;
+            Order = item._mTask.INDEX;
             agvname = item.CarrierId;
             LoadSite = item._mTask.LOADSITE;
             UnLoadSite = item._mTask.UNLOADSITE;

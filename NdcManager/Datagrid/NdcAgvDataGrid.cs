@@ -33,13 +33,13 @@ namespace NdcManager.DataGrid
 
         public void UpdateTaskInList(NDCItem item)
         {
-            NdcTaskModel m = _mTaskList.FirstOrDefault(c => { return c.IKey == item._mTask.IKEY && c.Order == item._mTask.ORDERINDEX; });
+            NdcTaskModel m = _mTaskList.FirstOrDefault(c => { return c.IKey == item._mTask.IKEY && c.Order == item._mTask.INDEX; });
 
             if (m != null && m.IKey != 0)
             {
                 m.Update(item);
             }
-            else if (item._mTask.IKEY != 0 || item._mTask.ORDERINDEX != 0)
+            else if (item._mTask.IKEY != 0 || item._mTask.INDEX != 0)
             {
                 _mTaskList.Add(new NdcTaskModel(item));
             }
@@ -47,7 +47,7 @@ namespace NdcManager.DataGrid
 
         public void DeleteTask(NDCItem model)
         {
-            NdcTaskModel m = _mTaskList.FirstOrDefault(c => { return c.IKey == model._mTask.IKEY && c.Order == model._mTask.ORDERINDEX; });
+            NdcTaskModel m = _mTaskList.FirstOrDefault(c => { return c.IKey == model._mTask.IKEY && c.Order == model._mTask.INDEX; });
             if (m != null && m.IKey != 0)
             {
                 _mTaskList.Remove(m);

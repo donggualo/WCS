@@ -58,6 +58,7 @@
     <Compile Include="NDCControl.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NDCDataHelper.cs" />
     <Compile Include="NDCSQLControl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

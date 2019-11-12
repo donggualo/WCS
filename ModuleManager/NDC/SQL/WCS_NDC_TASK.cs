@@ -34,7 +34,7 @@ namespace ModuleManager.NDC.SQL
         /// <summary>
         /// NDC 任务序列号
         /// </summary>
-        public int ORDERINDEX { set; get; }
+        public int INDEX { set; get; }
 
         /// <summary>
         /// WCS 装货位置信息

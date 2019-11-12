@@ -529,10 +529,12 @@ namespace NdcManager
         #endregion
 
         #region 抽象方法
-        public abstract void UpdateItem(Message_vpil m);
-        public abstract void UpdateItem(Message_s m);
-        public abstract void UpdateItem(Message_b m);
+        internal abstract void UpdateItem(Message_vpil m);
+        internal abstract void UpdateItem(Message_s m);
+        internal abstract void UpdateItem(Message_b m);
 
         #endregion
+
+       
     }
 }

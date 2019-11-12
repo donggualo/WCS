@@ -106,7 +106,7 @@ namespace NdcManager
             foreach (var i in list)
             {
                 if (i.IsFinish) continue;
-                string sql = string.Format(@sql1, i._mTask.TASKID,i._mTask.IKEY,i._mTask.ORDERINDEX,
+                string sql = string.Format(@sql1, i._mTask.TASKID,i._mTask.IKEY,i._mTask.INDEX,
                     i._mTask.LOADSITE,i._mTask.UNLOADSITE,i._mTask.REDIRECTSITE,
                     i._mTask.NDCLOADSITE,i._mTask.NDCUNLOADSITE,i._mTask.NDCREDIRECTSITE,
                     i._mTask.HADLOAD?1:0,i._mTask.HADUNLOAD?1:0,i.CarrierId);
