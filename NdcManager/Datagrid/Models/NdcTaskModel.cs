@@ -1,13 +1,6 @@
 ﻿using ModuleManager.NDC;
-using NdcManager;
-using Panuon.UI.Silver;
-using Panuon.UI.Silver.Core;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NdcManager.DataGrid.Models
 {
@@ -23,6 +16,7 @@ namespace NdcManager.DataGrid.Models
         private string redirectsite;
         private bool hasload;
         private bool hasunload;
+        private bool pause;
 
         [DisplayName("ID")]
         public int TaskID
@@ -150,6 +144,19 @@ namespace NdcManager.DataGrid.Models
             }
         }
 
+        [DisplayName("状态")]
+        public string Pause
+        {
+            get
+            {
+                return pause ? "挂起":"执行";
+            }
+            set
+            {
+                OnPropertyChanged("Enable");
+            }
+        }
+
         public void Update(NDCItem item)
         {
             if (taskid != item._mTask.TASKID)
@@ -160,9 +167,9 @@ namespace NdcManager.DataGrid.Models
             {
                 IKey = item._mTask.IKEY;
             }
-            if (order != item._mTask.INDEX)
+            if (order != item._mTask.NDCINDEX)
             {
-                Order = item._mTask.INDEX;
+                Order = item._mTask.NDCINDEX;
             }
             if (agvname != item.CarrierId )
             {
@@ -180,30 +187,22 @@ namespace NdcManager.DataGrid.Models
             {
                 RedirectSite = item._mTask.REDIRECTSITE;
             }
-            if (hasload = item._mTask.HADLOAD)
+            if (hasload != item._mTask.HADLOAD)
             {
                 HasLoad = item._mTask.HADLOAD;
             }
-            if (hasunload = item._mTask.HADUNLOAD)
+            if (pause != item._mTask.PAUSE)
             {
-                HasUnLoad = item._mTask.HADUNLOAD;
+                pause = item._mTask.PAUSE;
+                Pause = "";
             }
-        }
-
-        public NdcTaskModel(TempItem item)
-        {
-            IKey = item.IKey;
-            TaskID = item.TaskID;
-            LoadSite = item.LoadSite;
-            UnLoadSite = item.UnloadSite;
-            RedirectSite = item.RedirectSite;
         }
 
         public NdcTaskModel(NDCItem item)
         {
             IKey = item._mTask.IKEY;
             TaskID = item._mTask.TASKID;
-            Order = item._mTask.INDEX;
+            Order = item._mTask.NDCINDEX;
             agvname = item.CarrierId;
             LoadSite = item._mTask.LOADSITE;
             UnLoadSite = item._mTask.UNLOADSITE;

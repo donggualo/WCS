@@ -31,27 +31,45 @@ namespace WindowManager
             taskDataGrid = new NdcAgvDataGrid();
 
             DataContext = taskDataGrid;
-            DataControl._mNDCControl.TaskGridUpdate += _mNDCControl_TaskListUpdate;
-            DataControl._mNDCControl.TaskGridDelete += _mNDCControl_TaskListDelete;
+            DataControl._mNDCControl.NoticeUpdate += _mNDCControl_TaskListUpdate;
+            DataControl._mNDCControl.NoticeDelete += _mNDCControl_TaskListDelete;
             DataControl._mNDCControl.NoticeRedirect += _mNDCControl_NoticeRedirect;
+            DataControl._mNDCControl.NoticeMsg += _mNDCControl_NoticeMsg;
         }
+
+        private void _mNDCControl_NoticeMsg(string msg)
+        {
+            try
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    Notice.Show(msg, "Notice", 10, MessageBoxIcon.Error);
+                });
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
         /// <summary>
         /// 关闭窗口的时候执行释放的动作
         /// </summary>
         public void Close()
         {
-            DataControl._mNDCControl.TaskGridUpdate -= _mNDCControl_TaskListUpdate;
-            DataControl._mNDCControl.TaskGridDelete -= _mNDCControl_TaskListDelete;
+            DataControl._mNDCControl.NoticeUpdate -= _mNDCControl_TaskListUpdate;
+            DataControl._mNDCControl.NoticeDelete -= _mNDCControl_TaskListDelete;
             DataControl._mNDCControl.NoticeRedirect -= _mNDCControl_NoticeRedirect;
+            DataControl._mNDCControl.NoticeMsg -= _mNDCControl_NoticeMsg;
         }
         private void _mNDCControl_NoticeRedirect(NDCItem model)
         {
             try
             {
-                Application.Current.Dispatcher.Invoke((System.Action)(() =>
+                Application.Current.Dispatcher.Invoke(() =>
                 {
-                    Notice.Show("任务ID:"+model._mTask.TASKID+"\nOrder:"+model._mTask.INDEX +"\nIkey:"+model._mTask.IKEY+"\n需要重定向!!", "Notice", 10, MessageBoxIcon.Info);
-                }));
+                    Notice.Show("任务ID:" + model._mTask.TASKID + "\nOrder:" + model._mTask.NDCINDEX + "\nIkey:" + model._mTask.IKEY + "\n需要重定向!!", "Notice", 10, MessageBoxIcon.Info);
+                });
             }
             catch (Exception e)
             {
@@ -63,10 +81,10 @@ namespace WindowManager
         {
             try
             {
-                Application.Current.Dispatcher.Invoke((System.Action)(() =>
+                Application.Current.Dispatcher.Invoke(() =>
                 {
                     taskDataGrid.DeleteTask(model);
-                }));
+                });
             }
             catch (Exception e)
             {
@@ -78,10 +96,10 @@ namespace WindowManager
         {
             try
             {
-                Application.Current.Dispatcher.Invoke((System.Action)(() =>
+                Application.Current.Dispatcher.Invoke(() =>
                 {
                     taskDataGrid.UpdateTaskInList(item);
-                }));
+                });
             }catch(Exception e)
             {
                 Console.WriteLine(e.Message);

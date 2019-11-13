@@ -80,6 +80,11 @@ namespace ToolManager
 
         }
 
+        public void LOG(Exception ex)
+        {
+            LOG(ex.Message + ex.StackTrace);
+        }
+
         /// <summary>
         /// Update trace file folder
         /// </summary>

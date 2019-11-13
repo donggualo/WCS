@@ -72,6 +72,10 @@
       <Project>{36A19B28-36C5-42A8-9360-A5FFF1891DC7}</Project>
       <Name>ModuleManager</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ToolManager\ToolManager.csproj">
+      <Project>{B65231A1-C544-4279-AC1A-C62194C4AD3F}</Project>
+      <Name>ToolManager</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

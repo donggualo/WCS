@@ -100,12 +100,12 @@ namespace NdcManager
         /// <param name="IKEYFromUser">ikey值</param>
         /// <param name="DropStationFromUser">卸货地点</param>
         /// <param name="PickStationFromUser">装货地点</param>
-        internal void DoStartOrder(TempItem tempItem)
+        internal void DoStartOrder(NDCItem item)
         {
-            string PrioFromUser = tempItem.Prio;
-            string IKEYFromUser = tempItem.IKey + "";
-            string PickStationFromUser = tempItem.NdcLoadSite;
-            string DropStationFromUser = tempItem.NdcUnloadSite;
+            string PrioFromUser = "1";
+            string IKEYFromUser = item._mTask.IKEY + "";
+            string PickStationFromUser = item._mTask.NDCLOADSITE;
+            string DropStationFromUser = item._mTask.NDCUNLOADSITE;
             List<string> StartOrderList = new List<string>();
 
             //int Prio, IKEY, DropStation, PickStation;

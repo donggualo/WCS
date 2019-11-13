@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using NDC8.ACINET.ACI;
-using ToolManager;
+﻿using NDC8.ACINET.ACI;
 using ModuleManager.NDC;
-using ModuleManager.NDC.SQL;
 
 namespace NdcManager
 {
+    /// <summary>
+    /// NDC任务类
+    /// </summary>
     public class NDCControl : NDCDataHelper
     {
 
@@ -69,25 +66,17 @@ namespace NdcManager
                 return false;
             }
 
-            if (TempList.Find(c => { return c.TaskID == taskid; }) != null)
-            {
-                result = "找到相同任务ID(" + taskid + ")任务，不能再次添加";
-                return false;
-            }
+            NDCItem item = new NDCItem();
+            item._mTask.IKEY = Ikey++;
+            item._mTask.TASKID = taskid;
+            item._mTask.LOADSITE = loadstation;
+            item._mTask.UNLOADSITE = unloadstation;
+            item._mTask.NDCLOADSITE = ndcLoadsta;
+            item._mTask.NDCUNLOADSITE = ndcUnloadsta;
+            Items.Add(item);
+            _sqlControl.InsertNdcItem(item);
 
-
-            TempItem item = new TempItem
-            {
-                Prio = "1",
-                IKey = Ikey++,
-                TaskID = taskid,
-                LoadSite = loadstation,
-                UnloadSite = unloadstation,
-                NdcLoadSite = ndcLoadsta,
-                NdcUnloadSite = ndcUnloadsta
-            };
-            TempList.Add(item);
-            if (Ikey >= 99) Ikey = 1;
+            if (Ikey >= 60000) Ikey = 500;
             DoStartOrder(item);
 
             result = "";
@@ -104,32 +93,10 @@ namespace NdcManager
         {
             NDCItem item = Items.Find(c =>
             {
-                return c._mTask.TASKID == taskid && (order == -1 || c._mTask.INDEX == order);
+                return c._mTask.TASKID == taskid && (order == -1 || c._mTask.NDCINDEX == order);
             });
 
-            if (item == null)
-            {
-                TempItem temp = TempList.Find(c => { return c.TaskID == taskid; });
-                if (temp != null)
-                {
-                    if(unLoadStaDic.TryGetValue(unloadstation, out string ndcUnloadSta))
-                    {
-                        temp.RedirectSite = unloadstation;
-                        temp.NdcRedirectSite = ndcUnloadSta;
-                    }
-                    else
-                    {
-                        result = "该区域的对应关系还没有";
-                        return false;
-                    }
-                }
-                else
-                {
-                    result = "并未找到任务ID为：" + taskid + "的任务";
-                    return false;
-                }
-            }
-            else
+            if (item != null)
             {
                 if (item.DirectStatus == NDCItemStatus.Redirected)
                 {
@@ -158,6 +125,11 @@ namespace NdcManager
                     }
                 }
                 _NoticeUpdate(item);
+            }
+            else
+            {
+                result = "并未找到任务ID为：" + taskid + "的任务";
+                return false;
             }
 
             result = "";
@@ -193,7 +165,7 @@ namespace NdcManager
 
             if(item.PLCStatus == NDCPlcStatus.Loading)
             {
-                LoadItemList.Remove(item._mTask.INDEX);
+                LoadItemList.Remove(item._mTask.NDCINDEX);
                 //通知WCS
                 NoticeWcsOnLoad?.Invoke(item._mTask.TASKID, item.CarrierId + "");
                 result = "小车已经启动辊台了";
@@ -206,9 +178,9 @@ namespace NdcManager
                 return false;
             }
 
-            if (!LoadItemList.Contains(item._mTask.INDEX))
+            if (!LoadItemList.Contains(item._mTask.NDCINDEX))
             {
-                LoadItemList.Add(item._mTask.INDEX);
+                LoadItemList.Add(item._mTask.NDCINDEX);
                 result = "";
                 return true;
             }
@@ -249,9 +221,9 @@ namespace NdcManager
                 return false;
             }
 
-            if (!UnLoadItemList.Contains(item._mTask.INDEX))
+            if (!UnLoadItemList.Contains(item._mTask.NDCINDEX))
             {
-                UnLoadItemList.Add(item._mTask.INDEX);
+                UnLoadItemList.Add(item._mTask.NDCINDEX);
                 result = "";
                 return true;
             }
@@ -274,16 +246,19 @@ namespace NdcManager
                 return false;
             }
 
-            NDCItem item = Items.Find(c =>
+            NDCItem item = Items.Find(c =>{ return c._mTask.NDCINDEX == index; });
+
+            if(item == null)
             {
-                return c._mTask.INDEX == index;
-            });
+                item = TempItems.Find(c => { return c._mTask.NDCINDEX == index; });
+            }
 
             if (item == null)
             {
                 result = "找不到任务Index:"+index+"任务.";
                 return false;
             }
+            item.CancleFromSystem = true;
 
             DoDeleteOrder(index + "");
             result = "取消成功";
@@ -295,6 +270,7 @@ namespace NdcManager
         #region[界面接口：数据刷新]
 
         public delegate void GridDataHandler(NDCItem model);
+        public delegate void MsgDataHandler(string msg);
 
         /// <summary>
         /// 通知界面提示需要重定向
@@ -304,12 +280,17 @@ namespace NdcManager
         /// <summary>
         /// 通知界面更新数据
         /// </summary>
-        public event GridDataHandler TaskGridUpdate;
+        public event GridDataHandler NoticeUpdate;
 
         /// <summary>
         /// 通知界面更新数
         /// </summary>
-        public event GridDataHandler TaskGridDelete;
+        public event GridDataHandler NoticeDelete;
+
+        /// <summary>
+        /// 通知界面消息
+        /// </summary>
+        public event MsgDataHandler NoticeMsg;
 
         #endregion
 
@@ -332,6 +313,12 @@ namespace NdcManager
 
         #region 实现抽象方法
 
+
+        internal override void _NoticeMsg(string msg)
+        {
+            NoticeMsg?.Invoke(msg);
+        }
+
         internal override void _NoticeRedirect(NDCItem i)
         {
             NoticeRedirect?.Invoke(i);
@@ -340,16 +327,16 @@ namespace NdcManager
 
         internal override void _NoticeDelete(NDCItem i)
         {
-            TaskGridDelete?.Invoke(i);
+            NoticeDelete?.Invoke(i);
         }
 
         internal override void _NoticeUpdate(NDCItem i)
         {
-            if (i._mTask.IKEY != 0 && i._mTask.INDEX != 0 && i._mTask.TASKID != 0)
+            if (i._mTask.IKEY != 0 && i._mTask.NDCINDEX != 0 && i._mTask.TASKID != 0)
             {
-                if (TaskGridUpdate != null)
+                if (NoticeUpdate != null)
                 {
-                    TaskGridUpdate(i);
+                    NoticeUpdate(i);
                 }
                 else
                 {

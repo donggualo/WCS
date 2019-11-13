@@ -16,6 +16,9 @@ namespace NdcManager
 
         #region [参数/构造函数]
 
+        internal NDCSQLControl _sqlControl;
+
+
         /// <summary>
         /// 运行开关
         /// </summary>
@@ -27,13 +30,12 @@ namespace NdcManager
         internal Dictionary<string, string> loadStaDic, unLoadStaDic;
 
         private readonly List<NDCItem> _items = new List<NDCItem>();
+        private readonly List<NDCItem> _tempItems = new List<NDCItem>();
         internal List<NDCItem> _initItems = new List<NDCItem>();
-        private List<TempItem> tempList = new List<TempItem>();
 
         private List<int> redirectItemList;
         private List<int> loadItemList;
         private List<int> unloadItemList;
-        private int CarWashIndex = 9999;
 
         /// <summary>
         /// 保存所有任务
@@ -52,13 +54,13 @@ namespace NdcManager
         /// <summary>
         /// 临时任务列表
         /// </summary>
-        internal List<TempItem> TempList
+        internal List<NDCItem> TempItems
         {
             get
             {
-                lock (tempList)
+                lock (_tempItems)
                 {
-                    return tempList;
+                    return _tempItems;
                 }
             }
         }
@@ -116,6 +118,7 @@ namespace NdcManager
             loadItemList = new List<int>();
             unloadItemList = new List<int>();
 
+            _sqlControl = new NDCSQLControl();
             DoReadSQL();
 
             new Thread(CheckItemTask)
@@ -131,10 +134,20 @@ namespace NdcManager
         {
             ControlRunning = false;
 
-            if (Ikey >= 99) Ikey = 1;
-            NDCSQLControl control = new NDCSQLControl();
-            control.UpdateIkeyValue(Ikey);
-            control.SaveUnFinishTask(Items, TempList);
+            if (Ikey >= 60000) Ikey = 500;
+            _sqlControl.UpdateIkeyValue(Ikey);
+
+            foreach(NDCItem item in Items)
+            {
+                _sqlControl.UpdateNdcItem(item);
+            }
+
+            _sqlControl.DeleteTempItem();
+
+            foreach(NDCItem temp in TempItems)
+            {
+                _sqlControl.InsertTempItem(temp);
+            }
         }
 
         /// <summary>
@@ -144,60 +157,52 @@ namespace NdcManager
         {
             try
             {
-                NDCSQLControl control = new NDCSQLControl();
-                control.ReadWcsNdcSite(out loadStaDic, out unLoadStaDic);
+                _sqlControl.ReadWcsNdcSite(out loadStaDic, out unLoadStaDic);
 
-                control.ReadNDCServerAndIKEY(out IPaddress, out Port, out Ikey);
+                _sqlControl.ReadNDCServerAndIKEY(out IPaddress, out Port, out Ikey);
 
-                if (control.ReadUnFinishTask(out List<WCS_NDC_TASK> list))
+                if (_sqlControl.ReadUnFinishTask(out List<WCS_NDC_TASK> list))
                 {
                     foreach (var i in list)
                     {
-                        if (i.INDEX == 0)
+                        NDCItem item = Items.Find(c => { return c._mTask.TASKID == i.TASKID && c._mTask.IKEY == i.IKEY; });
+                        if (item == null)
                         {
-                            TempItem item = TempList.Find(c => { return c.TaskID == i.TASKID || c.IKey == i.IKEY; });
-                            if (item == null)
+                            item = new NDCItem()
                             {
-                                TempList.Add(new TempItem()
-                                {
-                                    TaskID = i.TASKID,
-                                    IKey = i.IKEY,
-                                    LoadSite = i.LOADSITE,
-                                    UnloadSite = i.UNLOADSITE,
-                                    RedirectSite = i.REDIRECTSITE,
-                                    NdcLoadSite = i.NDCLOADSITE,
-                                    NdcUnloadSite = i.NDCUNLOADSITE,
-                                    NdcRedirectSite = i.NDCREDIRECTSITE
-                                });
-                            }
+                                _mTask = i,
+                                CarrierId = i.CARRIERID != 0 ? i.CARRIERID : item.CarrierId
+                            };
+                            Items.Add(item) ;
+
+                            _NoticeUpdate(item);
+                        }
+                    }
+                }
+
+                if(_sqlControl.ReadTempTask(out List<WCS_NDC_TASK_TEMP> tlist))
+                {
+                    foreach(WCS_NDC_TASK_TEMP t in tlist)
+                    {
+                        NDCItem item = TempItems.Find(c =>
+                        {
+                            return c._mTask.IKEY == t.IKEY && c._mTask.NDCINDEX == t.NDCINDEX;
+                        });
+                        if (item != null && item.CarrierId == 0)
+                        {
+                            item.CarrierId = t.CARRIERID;
                         }
                         else
                         {
-                            NDCItem item = Items.Find(c =>
+                            item = new NDCItem()
                             {
-                                return c._mTask.IKEY == i.IKEY || c._mTask.TASKID == i.TASKID
-                                        || c._mTask.INDEX == i.INDEX;
-                            });
-                            if (item != null)
-                            {
-                                item._mTask = i;
-                                item.CarrierId = i.CARRIERID != 0 ? i.CARRIERID : item.CarrierId;
-                            }
-                            else
-                            {
-                                NDCItem it = new NDCItem()
-                                {
-                                    _mTask = i
-                                };
-                                it.CarrierId = i.CARRIERID;
-                                Items.Add(it);
-                                _NoticeUpdate(it);
-                            }
+                                CarrierId = t.CARRIERID
+                            };
+                            item._mTask.NDCINDEX = t.NDCINDEX;
+                            item._mTask.IKEY = t.IKEY;
+                            TempItems.Add(item);
                         }
-
                     }
-
-                    control.DelectUnFinishTaskAfter();
                 }
             }
             catch (Exception e)
@@ -246,10 +251,10 @@ namespace NdcManager
         {
             foreach (int index in ReDirectList)
             {
-                NDCItem item = Items.Find(c => { return c._mTask.INDEX == index; });
+                NDCItem item = Items.Find(c => { return c._mTask.NDCINDEX == index; });
                 if (item != null && item.CanDirect())
                 {
-                    DoRedirect(item._mTask.INDEX, item._mTask.NDCREDIRECTSITE);
+                    DoRedirect(item._mTask.NDCINDEX, item._mTask.NDCREDIRECTSITE);
                 }else if(item != null && item.Magic == 32 && item._mTask.REDIRECTSITE == "")
                 {
                     _NoticeRedirect(item);
@@ -264,10 +269,10 @@ namespace NdcManager
         {
             foreach (int index in LoadItemList)
             {
-                NDCItem item = Items.Find(c => { return c._mTask.INDEX == index; });
+                NDCItem item = Items.Find(c => { return c._mTask.NDCINDEX == index; });
                 if (item != null && item.CanLoadPlc())
                 {
-                    DoLoad(item._mTask.INDEX, item.CarrierId);
+                    DoLoad(item._mTask.NDCINDEX, item.CarrierId);
                 }
             }
         }
@@ -279,10 +284,10 @@ namespace NdcManager
         {
             foreach (int index in UnLoadItemList)
             {
-                NDCItem item = Items.Find(c => { return c._mTask.INDEX == index; });
+                NDCItem item = Items.Find(c => { return c._mTask.NDCINDEX == index; });
                 if (item != null && item.CanUnLoadPlc())
                 {
-                    DoUnLoad(item._mTask.INDEX, item.CarrierId);
+                    DoUnLoad(item._mTask.NDCINDEX, item.CarrierId);
                 }
             }
         }
@@ -292,7 +297,7 @@ namespace NdcManager
         /// </summary>
         private void ClearFinishItem()
         {
-            List<NDCItem> items = Items.FindAll(c => { return c.IsFinish && c.CanDeleteFinish(); });
+            List<NDCItem> items = Items.FindAll(c => c.CanDeleteFinish());
             foreach (var i in items)
             {
                 Items.Remove(i);
@@ -305,7 +310,7 @@ namespace NdcManager
         /// </summary>
         private void ClearEmptyItem()
         {
-            List<NDCItem> items = Items.FindAll(c => { return c._mTask.IKEY == 0 && c._mTask.TASKID == 0 && c._mTask.INDEX == 0; });
+            List<NDCItem> items = Items.FindAll(c => { return c._mTask.IKEY == 0 && c._mTask.TASKID == 0 && c._mTask.NDCINDEX == 0; });
             foreach (var i in items)
             {
                 Items.Remove(i);
@@ -339,26 +344,25 @@ namespace NdcManager
         {
             try
             {
-                NDCItem ndcItem = Items.Find(c => { return c._mTask.INDEX == message.Index; });
-                if (ndcItem == null && message.Magic != 32)//32  Carwash sends this request
+                //找出被挂起的任务的重定向站点，重新重定向任务
+                if (message.Magic == 32) //32  Carwash sends this request
+                {//TODO Carwash 重定向
+                    DoCarWashReDirect(message);
+                    return;
+                }
+                NDCItem ndcItem = Items.Find(c => { return c._mTask.NDCINDEX == message.Index; });
+                if (ndcItem == null)
                 {
-                    ndcItem = new NDCItem
+                    ndcItem = TempItems.Find(c => { return c._mTask.NDCINDEX == message.Index; });
+                    if (ndcItem == null)
                     {
-                        CarrierId = message.CarrierNumber
-                    };
-                    ndcItem._mTask.INDEX = message.Index;
-                    Items.Add(ndcItem);
-                }else if(ndcItem == null && message.Magic == 32)//32  Carwash sends this request
-                {
-                    ndcItem = new NDCItem
-                    {
-                        CarrierId = message.Magic2
-                    };
-                    ndcItem._mTask.INDEX = message.Index;
-                    ndcItem._mTask.IKEY = CarWashIndex;
-                    ndcItem._mTask.TASKID = CarWashIndex;
-                    CarWashIndex--;
-                    Items.Add(ndcItem);
+                        ndcItem = new NDCItem
+                        {
+                            CarrierId = message.CarrierNumber
+                        };
+                        ndcItem._mTask.NDCINDEX = message.Index;
+                        TempItems.Add(ndcItem);
+                    }
                 }
                 ndcItem.SetSMessage(message);
                 if (ndcItem.StatusInfo != "")
@@ -369,9 +373,6 @@ namespace NdcManager
                 CheckMagic(ndcItem, message);
 
                 _NoticeUpdate(ndcItem);
-
-                ///通知并更新WCS
-                //if(ndcItem.TaskID !=0 ) DataControl._mForAGVControl.SubmitAgvMagic(ndcItem.TaskID, ndcItem.CarrierId+"", ndcItem.Magic);
             }
             catch (Exception e)
             {
@@ -389,13 +390,17 @@ namespace NdcManager
         {
             try
             {
-                NDCItem ndcItem = Items.Find(c => { return c._mTask.INDEX == message.Index; });
+                NDCItem ndcItem = Items.Find(c => { return c._mTask.NDCINDEX == message.Index; });
                 if (ndcItem == null)
                 {
-                    ndcItem = new NDCItem();
-                    ndcItem._mTask.IKEY = message.IKEY;
-                    ndcItem._mTask.INDEX = message.Index;
-                    Items.Add(ndcItem);
+                    ndcItem = TempItems.Find(c => { return c._mTask.NDCINDEX == message.Index; });
+                    if (ndcItem == null)
+                    {
+                        ndcItem = new NDCItem();
+                        ndcItem._mTask.IKEY = message.IKEY;
+                        ndcItem._mTask.NDCINDEX = message.Index;
+                        TempItems.Add(ndcItem);
+                    }
                 }
                 ndcItem.SetBMessage(message);
                 if (ndcItem.TaskInfo != "")
@@ -449,17 +454,28 @@ namespace NdcManager
                     break;
 
                 case 3://任务完成
-                    item.IsFinish = true;
-                    item.finishTime = DateTime.Now;
-                    break;
-                case 27://IKEY in use
-                    TempItem temp = TempList.Find(c => { return c.IKey.Equals("" + item._mTask.IKEY); });
-                    if (temp != null)
+                    //
+                    if(item.PLCStatus != NDCPlcStatus.Unloaded && item._mTask.PAUSE)
                     {
-                        temp.IKey = Ikey++;
-                        DoStartOrder(temp);
+                        item.IsFinish = false;
+                    }
+                    else
+                    {
+                        item.IsFinish = true;
+                        item.finishTime = DateTime.Now;
                     }
                     break;
+                case 27://IKEY in use
+                    item._mTask.IKEY = Ikey++;
+                    DoStartOrder(item);
+                    break;
+                case 25://Cancel acknowledge
+                    item.CancleFromSystem = true;
+                    break;
+            }
+            if (item._mTask.TASKID != 0)
+            {
+                _sqlControl.UpdateNdcItem(item);
             }
         }
 
@@ -470,7 +486,7 @@ namespace NdcManager
         /// <param name="magic"></param>
         private void CheckMagic(NDCItem item, Message_s s)
         {
-            int index = item._mTask.INDEX;
+            int index = item._mTask.NDCINDEX;
             switch (item.Magic)
             {
                 case 2://确定生成任务
@@ -478,21 +494,24 @@ namespace NdcManager
                     item._mTask.NDCUNLOADSITE = item.s.Magic3 + "";
                     break;
 
-                case 5: //小车到达接货点
+                case 5:
+                    #region 小车到达接货点
                     if (item.DirectStatus != NDCItemStatus.HasDirectInfo)
                     {
                         item.DirectStatus = NDCItemStatus.CanRedirect;
                     }
-                    if (!ReDirectList.Contains(item._mTask.INDEX))
+                    if (!ReDirectList.Contains(item._mTask.NDCINDEX))
                     {
-                        ReDirectList.Add(item._mTask.INDEX);
+                        ReDirectList.Add(item._mTask.NDCINDEX);
                     }
-                    //TODO 告诉WCS 车已经到达
 
                     //准备好装货了
                     item.PLCStatus = NDCPlcStatus.LoadReady;
+                    #endregion
                     break;
-                case 6: //小车接货完成
+
+                case 6:
+                    #region 小车接货完成
                     if (item.DirectStatus == NDCItemStatus.CanRedirect || item.DirectStatus == NDCItemStatus.Init)
                     {
                         if (item.HadDirectInfo)
@@ -505,9 +524,9 @@ namespace NdcManager
                         }
                     }
 
-                    if (!ReDirectList.Contains(item._mTask.INDEX))
+                    if (!ReDirectList.Contains(item._mTask.NDCINDEX))
                     {
-                        ReDirectList.Add(item._mTask.INDEX);
+                        ReDirectList.Add(item._mTask.NDCINDEX);
                     }
 
                     //装货完成
@@ -518,11 +537,12 @@ namespace NdcManager
                     {
                         _NoticeRedirect(item);
                     }
+                    #endregion
                     break;
-
+                
                 case 254://重新定位成功
                     item.DirectStatus = NDCItemStatus.Redirected;
-                    ReDirectList.Remove(item._mTask.INDEX);
+                    ReDirectList.Remove(item._mTask.NDCINDEX);
                     break;
 
                 case 9://到达卸货点
@@ -533,30 +553,29 @@ namespace NdcManager
 
                 case 10://卸货完成
 
-                    //卸货完成
                     item.PLCStatus = NDCPlcStatus.Unloaded;
                     item._mTask.HADUNLOAD = true;
                     break;
-                case 11://任务完成
-                    item.IsFinish = true;
-                    item.finishTime = DateTime.Now;
-                    break;
-                case 32://小车重启任务
-                    //如果车有站点信息 则直接重定向
-                    if(item._mTask.NDCREDIRECTSITE != null && item._mTask.NDCREDIRECTSITE != "")
+                case 255://取消任务
+                case 48://取消任务
+                    if (!item.CancleFromSystem)//Carwash
                     {
-                        item.HadDirectInfo = true;
-                        item.DirectStatus = NDCItemStatus.HasDirectInfo;
-                        if (!ReDirectList.Contains(item._mTask.INDEX))
-                        {
-                            ReDirectList.Add(item._mTask.INDEX);
-                        }
+                        item._mTask.PAUSE = true;
+                    }
+                    break;
+
+                case 11://任务完成
+                    if(item.PLCStatus != NDCPlcStatus.Unloaded && item._mTask.PAUSE)
+                    {
+                        item.IsFinish = false;
                     }
                     else
                     {
-                        _NoticeRedirect(item);
+                        item.IsFinish = true;
+                        item.finishTime = DateTime.Now;
                     }
                     break;
+
                 default:
                     break;
             }
@@ -575,7 +594,7 @@ namespace NdcManager
             {
                 //装货中
                 item.PLCStatus = NDCPlcStatus.Loading;
-                LoadItemList.Remove(item._mTask.INDEX);
+                LoadItemList.Remove(item._mTask.NDCINDEX);
                 //通知WCS
                 _NoticeWcsLoading(item._mTask.TASKID, item.CarrierId + "");
             }
@@ -583,7 +602,7 @@ namespace NdcManager
             {
                 //卸货中
                 item.PLCStatus = NDCPlcStatus.Unloading;
-                UnLoadItemList.Remove(item._mTask.INDEX);
+                UnLoadItemList.Remove(item._mTask.NDCINDEX);
             }
         }
 
@@ -595,11 +614,20 @@ namespace NdcManager
         {
             try
             {
-                if (item._mTask.TASKID != 0)
+                if (item._mTask.TASKID != 0 && item._mTask.NDCINDEX != 0)
                 {
                     try
                     {
-                        _NoticeWcsMagic(item._mTask.TASKID, item.CarrierId + "", item.Magic);
+                        if(item.PLCStatus !=  NDCPlcStatus.Unloaded && item._mTask.PAUSE
+                            && item.Magic == 11)
+                        {
+                            //不做操作，挂起的任务异常结束就不通知WCS了
+                        }
+                        else
+                        {
+                            _NoticeWcsMagic(item._mTask.TASKID, item.CarrierId + "", item.Magic);
+                        }
+                        _sqlControl.UpdateNdcItem(item);
                         return;
                     }
                     catch (Exception e)
@@ -608,16 +636,20 @@ namespace NdcManager
                     }
                 }
                 if (item._mTask.NDCLOADSITE == null) return;
-                TempItem tempItem = TempList.Find(c => { return c.NdcLoadSite == item._mTask.NDCLOADSITE; });
+                NDCItem tempItem = TempItems.Find(c => {
+                            return c._mTask.IKEY == item._mTask.IKEY 
+                                    && c._mTask.NDCLOADSITE == item._mTask.NDCLOADSITE
+                                    && c._mTask.NDCUNLOADSITE == item._mTask.NDCUNLOADSITE;});
                 if (tempItem != null)
                 {
-                    item._mTask.TASKID = tempItem.TaskID;
-                    item._mTask.LOADSITE = tempItem.LoadSite;
-                    item._mTask.UNLOADSITE = tempItem.UnloadSite;
-                    item._mTask.REDIRECTSITE = tempItem.RedirectSite;
-                    item._mTask.NDCREDIRECTSITE = tempItem.NdcRedirectSite;
-                    TempList.Remove(tempItem);
+                    item._mTask.NDCINDEX = tempItem._mTask.NDCINDEX;
+                    item.CarrierId = tempItem.CarrierId;
+                    item.DirectStatus = tempItem.DirectStatus;
+                    item.Magic = tempItem.Magic;
+                    item.Status = tempItem.Status;
+                    TempItems.Remove(tempItem);
                 }
+                _sqlControl.UpdateNdcItem(item);
             }
             catch (Exception e)
             {
@@ -625,11 +657,43 @@ namespace NdcManager
             }
         }
 
+        /// <summary>
+        /// 小车Carwash需要重定向
+        /// </summary>
+        /// <param name="message"></param>
+        private void DoCarWashReDirect(Message_s message)
+        {
+            int index = message.Index;
+            int car = message.Magic2;
+            int ikey = message.Magic3;
+            NDCItem item = Items.Find(c => c._mTask.IKEY == ikey && c.CarrierId == car &&  c._mTask.PAUSE);
+            if (item == null)
+            {
+                string msg = "找不到挂起的小车（" + car + "）任务";
+                _NoticeMsg(msg);
+                log.LOG(msg);
+            }
+            else
+            {
+                item.ReUseAfterCarWash(index);
+                if (item._mTask.NDCREDIRECTSITE == "")
+                {
+                    string msg = "Carwash原任务" + item._mTask.TASKID + "没有重定向信息！";
+                    _NoticeMsg(msg);
+                    log.LOG(msg);
+                    return;
+                }
+                DoRedirect(index, item._mTask.NDCREDIRECTSITE);
+            }
+
+        }
 
         #endregion
 
 
         #region 抽象方法
+
+        internal abstract void _NoticeMsg(string msg);
 
         internal abstract void _NoticeDelete(NDCItem model);
 

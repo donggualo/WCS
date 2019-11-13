@@ -1,11 +1,5 @@
-﻿using Panuon.UI.Silver;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
+using ToolManager;
 
 namespace WCS_phase1
 {
@@ -26,12 +20,17 @@ namespace WCS_phase1
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
             #endif
         }
+
+        Log log;
+
         void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
+            if (log == null) log = new Log("app_error");
             MessageBox.Show("妈的！发现异常：\n" + e.Exception.Message+e.Exception.Source, "Error");
             //Notice.Show("妈的！发现异常：\n" + e.Exception.Message + "\n来源：" + e.Exception.Source, "错误", 3, MessageBoxIcon.Error);
             //处理完后，需要将 Handler = true 表示已处理过此异常
             e.Handled = true;
+            log.LOG(e.Exception.Message + e.Exception.StackTrace);
         }
 
     }

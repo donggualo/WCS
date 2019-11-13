@@ -2,15 +2,15 @@
 using ModuleManager.NDC.SQL;
 using NDC8.ACINET.ACI;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ModuleManager.NDC
 {
+    /// <summary>
+    /// NDC调度信息类
+    /// </summary>
     public class NDCItem
     {
+        #region[参数定义]
 
         public WCS_NDC_TASK _mTask;
 
@@ -29,6 +29,11 @@ namespace ModuleManager.NDC
         /// </summary>
         public NDCItemStatus DirectStatus;
         public bool HadDirectInfo;
+        /// <summary>
+        /// true:主动取消
+        /// false:被动取消
+        /// </summary>
+        public bool CancleFromSystem = false;
 
         /// <summary>
         /// 小车PLC状态
@@ -45,62 +50,13 @@ namespace ModuleManager.NDC
         public DateTime lastUnLoadTime;
         public DateTime finishTime;//不用急着删除，可以延时10秒钟
 
-        public bool CanDeleteFinish()
-        {
-            if (!IsFinish) return false;
-            if (DateTime.Now.Subtract(finishTime).TotalSeconds > 10)
-            {
-                return true;
-            }
-            return false;
-        }
+        #endregion
 
-
+        #region[构造方法]
+        
         /// <summary>
-        /// 判断是否符合重定位
+        /// 构造函数
         /// </summary>
-        /// <returns></returns>
-        public bool CanDirect()
-        {
-            if (DirectStatus != NDCItemStatus.HasDirectInfo) return false;
-            if (DateTime.Now.Subtract(lastDirectTime).TotalSeconds > 10)
-            {
-                lastDirectTime = DateTime.Now;
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// 判断是否符合装货条件
-        /// </summary>
-        /// <returns></returns>
-        public bool CanLoadPlc()
-        {
-            if (PLCStatus != NDCPlcStatus.LoadReady) return false;
-            if (DateTime.Now.Subtract(lastLoadTime).TotalSeconds > 10)
-            {
-                lastLoadTime = DateTime.Now;
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// 判断是否符合卸货条件
-        /// </summary>
-        /// <returns></returns>
-        public bool CanUnLoadPlc()
-        {
-            if (PLCStatus != NDCPlcStatus.UnloadReady) return false;
-            if (DateTime.Now.Subtract(lastUnLoadTime).TotalSeconds > 10)
-            {
-                lastUnLoadTime = DateTime.Now;
-                return true;
-            }
-            return false;
-        }
-
         public NDCItem()
         {
             _mTask = new WCS_NDC_TASK();
@@ -119,6 +75,10 @@ namespace ModuleManager.NDC
             lastLoadTime = DateTime.Now;
             lastUnLoadTime = DateTime.Now;
         }
+
+        #endregion
+
+        #region[更新数据]
 
         /// <summary>
         /// 更新S消息
@@ -167,28 +127,81 @@ namespace ModuleManager.NDC
             VpiInfo = v.ToString();
         }
 
+        #endregion
+
+        #region[其他方法]
+
         /// <summary>
-        /// 返回详细信息
+        /// 完成后在前台清空数据（非删除后台数据）
         /// </summary>
         /// <returns></returns>
-        //public override string ToString()
-        //{
-        //    StringBuilder str = new StringBuilder();
-        //    if (s.OrderIndex != 0)
-        //    {
-        //        str.Append("S:index=" + s.OrderIndex+",");
-        //        str.Append("S:CarrierId=" + s.CarrierId + ",");
-        //        str.Append("S:Magic1=" + s.Magic1 + ",");
-        //    }
+        public bool CanDeleteFinish()
+        {
+            if (_mTask.PAUSE) return false;
+            if (!IsFinish) return false;
+            if (DateTime.Now.Subtract(finishTime).TotalSeconds > 10)
+            {
+                return true;
+            }
+            return false;
+        }
 
-        //    if (b.OrderIndex != 0)
-        //    {
-        //        str.Append("B:index=" + b.OrderIndex + ",");
-        //        str.Append("B:IKEY=" + b.IKEY + ",");
-        //        str.Append("B:Status=" + b.Status + ",");
-        //    }
+        /// <summary>
+        /// 判断是否符合重定位
+        /// </summary>
+        /// <returns></returns>
+        public bool CanDirect()
+        {
+            if (DirectStatus != NDCItemStatus.HasDirectInfo) return false;
+            if (DateTime.Now.Subtract(lastDirectTime).TotalSeconds > 10)
+            {
+                lastDirectTime = DateTime.Now;
+                return true;
+            }
+            return false;
+        }
 
-        //    return str.ToString();
-        //}
+        /// <summary>
+        /// 判断是否符合装货条件
+        /// </summary>
+        /// <returns></returns>
+        public bool CanLoadPlc()
+        {
+            if (PLCStatus != NDCPlcStatus.LoadReady) return false;
+            if (DateTime.Now.Subtract(lastLoadTime).TotalSeconds > 10)
+            {
+                lastLoadTime = DateTime.Now;
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 判断是否符合卸货条件
+        /// </summary>
+        /// <returns></returns>
+        public bool CanUnLoadPlc()
+        {
+            if (PLCStatus != NDCPlcStatus.UnloadReady) return false;
+            if (DateTime.Now.Subtract(lastUnLoadTime).TotalSeconds > 10)
+            {
+                lastUnLoadTime = DateTime.Now;
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 车故障后恢复任务
+        /// </summary>
+        /// <param name="index"></param>
+        public void ReUseAfterCarWash(int index)
+        {
+            IsFinish = false;
+            _mTask.NDCINDEX = index;
+            _mTask.PAUSE = false;
+
+        }
+        #endregion
     }
 }

@@ -3,12 +3,18 @@ using System;
 using System.Configuration;
 using System.Data;
 using System.Text;
+using ToolManager;
 
 namespace PubResourceManager
 {
     public class MySQL
     {
         static readonly string conn = ConfigurationManager.AppSettings["MySqlConn"];
+        Log log;
+        public MySQL()
+        {
+            log = new Log("mysql_error");
+        }
 
         /// <summary>
         /// 获取所有字段数据
@@ -26,6 +32,7 @@ namespace PubResourceManager
             }
             catch (Exception ex)
             {
+                log.LOG(ex);
                 throw ex;
             }
         }
@@ -47,6 +54,7 @@ namespace PubResourceManager
             }
             catch (Exception ex)
             {
+                log.LOG(ex);
                 throw ex;
             }
         }
@@ -68,6 +76,7 @@ namespace PubResourceManager
             }
             catch (Exception ex)
             {
+                log.LOG(ex);
                 throw ex;
             }
         }
@@ -145,6 +154,7 @@ namespace PubResourceManager
             }
             catch (Exception ex)
             {
+                log.LOG(ex);
                 return "操作失败！" + ex.Message;
             }
         }

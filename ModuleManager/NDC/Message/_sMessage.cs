@@ -108,7 +108,7 @@ namespace ModuleManager.NDC.Message
             }
             else if (magic1 == 32) //Carwash sends this request
             {
-                return string.Format("[Index {0}]  Redirect station needed, Vehicle: {1}", orderIndex, magic2);
+                return string.Format("[Index {0}]  Redirect station needed, Vehicle: {1},Ikey: {2}", orderIndex, magic2, magic3);
             }
             else if (magic1 == 33)
             {
