@@ -25,7 +25,8 @@ namespace TaskManager
             {
                 // 获取单托任务清单
                 String sql1 = String.Format(@"select * from wcs_command_v where TASK_UID_1 is not null and TASK_UID_1 <> '' and (TASK_UID_2 is null or TASK_UID_2 = '') and TASK_TYPE = '{0}' and STEP = '{1}' 
-                    and TRUNCATE((UNIX_TIMESTAMP(NOW())-UNIX_TIMESTAMP(CREATION_TIME))/60,0) >= {2}", TaskType.入库, CommandStep.生成单号, DataControl._mStools.GetValueByKey("InTimeMax")); // 等待时间
+                    and TRUNCATE((UNIX_TIMESTAMP(NOW())-UNIX_TIMESTAMP(CREATION_TIME))/60,0) >= {2}", 
+                    TaskType.入库, CommandStep.生成单号, DataControl._mStools.GetValueByKey("InTimeMax")); // 等待时间
                 DataTable dtcommand1 = DataControl._mMySql.SelectAll(sql1);
                 if (DataControl._mStools.IsNoData(dtcommand1))
                 {
@@ -1163,7 +1164,8 @@ namespace TaskManager
                 if (DataControl._mStools.IsNoData(dtwcs))
                 {
                     // 获取该区域可用的固定辊台
-                    String sqlfrt = String.Format(@"select MAX(device) FRT from wcs_config_device where FLAG = '{1}' and TYPE = '{2}' and AREA = '{0}'", area, DeviceFlag.空闲, DeviceType.固定辊台);
+                    String sqlfrt = String.Format(@"select MAX(device) FRT from wcs_config_device where AREA = '{0}' and FLAG = '{1}' and 
+                        TYPE = '{2}' and DUTY = '{3}'", area, DeviceFlag.空闲, DeviceType.固定辊台, DeviceDuty.负责出库);
                     DataTable dtfrt = DataControl._mMySql.SelectAll(sqlfrt);
                     if (DataControl._mStools.IsNoData(dtfrt))
                     {

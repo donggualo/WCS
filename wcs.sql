@@ -11,7 +11,7 @@
  Target Server Version : 80016
  File Encoding         : 65001
 
- Date: 31/10/2019 17:08:38
+ Date: 13/11/2019 16:42:24
 */
 
 SET NAMES utf8mb4;
@@ -68,12 +68,11 @@ CREATE TABLE `wcs_config_dev_gap`  (
 -- ----------------------------
 -- Records of wcs_config_dev_gap
 -- ----------------------------
-INSERT INTO `wcs_config_dev_gap` VALUES ('ABC01', 'ABC', 0, 0, 0, '2019-10-19 10:24:37');
-INSERT INTO `wcs_config_dev_gap` VALUES ('ABC02', 'ABC', 1, 1, 1, '2019-10-16 16:21:49');
-INSERT INTO `wcs_config_dev_gap` VALUES ('ABC03', 'ABC', -1, -1, -1, '2019-10-16 16:22:04');
-INSERT INTO `wcs_config_dev_gap` VALUES ('RGV01', 'RGV', 0, 1, 1, '2019-10-21 15:14:46');
-INSERT INTO `wcs_config_dev_gap` VALUES ('RGV02', 'RGV', 1, 0, 0, '2019-10-16 16:20:22');
-INSERT INTO `wcs_config_dev_gap` VALUES ('RGV03', 'RGV', -1, 0, 0, '2019-10-16 16:20:33');
+INSERT INTO `wcs_config_dev_gap` VALUES ('AWC01', 'ABC', 0, 0, 0, '2019-10-19 10:24:37');
+INSERT INTO `wcs_config_dev_gap` VALUES ('AWC02', 'ABC', 0, 20, 0, '2019-10-16 16:21:49');
+INSERT INTO `wcs_config_dev_gap` VALUES ('RGV01', 'RGV', 0, 0, 0, '2019-10-21 15:14:46');
+INSERT INTO `wcs_config_dev_gap` VALUES ('RGV02', 'RGV', -20, 0, 0, '2019-10-16 16:20:22');
+INSERT INTO `wcs_config_dev_gap` VALUES ('RGV03', 'RGV', 0, 0, 0, '2019-10-16 16:20:33');
 
 -- ----------------------------
 -- Table structure for wcs_config_device
@@ -87,6 +86,7 @@ CREATE TABLE `wcs_config_device`  (
   `LOCK_WCS_NO` varchar(15) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '锁定的清单号',
   `TYPE` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '类别',
   `AREA` varchar(5) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '区域',
+  `DUTY` varchar(5) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '职责(I:仅入库；O:仅出库；A:所有)',
   `REMARK` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注说明',
   `CREATION_TIME` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `UPDATE_TIME` timestamp(0) NULL DEFAULT NULL COMMENT '更新时间',
@@ -97,16 +97,16 @@ CREATE TABLE `wcs_config_device`  (
 -- ----------------------------
 -- Records of wcs_config_device
 -- ----------------------------
-INSERT INTO `wcs_config_device` VALUES ('ABC01', '192.168.8.40', 2000, 'N', NULL, 'ABC', 'B01', '行车1', '2019-10-23 09:08:24', NULL);
-INSERT INTO `wcs_config_device` VALUES ('ABC02', '192.168.8.48', 2000, 'N', NULL, 'ABC', 'B01', '行车2', '2019-10-23 09:08:42', NULL);
-INSERT INTO `wcs_config_device` VALUES ('ARF01', '192.168.8.80', 2000, 'N', NULL, 'ARF', 'B01', '摆渡车1', '2019-07-04 09:54:44', '2019-10-23 09:06:55');
-INSERT INTO `wcs_config_device` VALUES ('ARF02', '192.168.8.83', 2000, 'N', NULL, 'ARF', 'B01', '摆渡车2', '2019-10-23 09:07:08', NULL);
-INSERT INTO `wcs_config_device` VALUES ('FRT01', '192.168.8.90', 2000, 'Y', NULL, 'FRT', 'A01', '固定辊台1', '2019-09-23 16:52:50', '2019-10-29 09:22:37');
-INSERT INTO `wcs_config_device` VALUES ('FRT02', '192.168.8.90', 2001, 'Y', NULL, 'FRT', 'B01', '固定辊台2', '2019-09-23 16:06:49', '2019-10-23 09:09:18');
-INSERT INTO `wcs_config_device` VALUES ('FRT03', '192.168.8.90', 2002, 'N', NULL, 'FRT', 'B01', '固定辊台3', '2019-09-23 17:06:55', '2019-10-27 08:51:38');
-INSERT INTO `wcs_config_device` VALUES ('RGV01', '192.168.8.60', 2002, 'N', NULL, 'RGV', 'B01', '运输车1', '2019-10-23 09:06:18', NULL);
-INSERT INTO `wcs_config_device` VALUES ('RGV02', '192.168.8.66', 2002, 'N', NULL, 'RGV', 'B01', '运输车2', '2019-10-23 09:06:32', NULL);
-INSERT INTO `wcs_config_device` VALUES ('RGV03', '192.168.8.71', 2002, 'N', NULL, 'RGV', 'B01', '运输车3', '2019-09-24 17:06:52', '2019-10-23 09:05:59');
+INSERT INTO `wcs_config_device` VALUES ('ARF01', '192.168.8.80', 2000, 'Y', NULL, 'ARF', 'B01', 'I', '摆渡车1', '2019-07-04 09:54:44', '2019-10-23 09:06:55');
+INSERT INTO `wcs_config_device` VALUES ('ARF02', '192.168.8.83', 2000, 'Y', NULL, 'ARF', 'B01', 'O', '摆渡车2', '2019-10-23 09:07:08', NULL);
+INSERT INTO `wcs_config_device` VALUES ('AWC01', '192.168.8.40', 2000, 'Y', NULL, 'ABC', 'B01', 'A', '行车1', '2019-10-23 09:08:24', NULL);
+INSERT INTO `wcs_config_device` VALUES ('AWC02', '192.168.8.48', 2000, 'Y', NULL, 'ABC', 'B01', 'A', '行车2', '2019-10-23 09:08:42', NULL);
+INSERT INTO `wcs_config_device` VALUES ('FRT01', '192.168.8.90', 2000, 'Y', NULL, 'FRT', 'A01', 'I', '固定辊台1', '2019-09-23 16:52:50', '2019-10-29 09:22:37');
+INSERT INTO `wcs_config_device` VALUES ('FRT02', '192.168.8.90', 2001, 'Y', '', 'FRT', 'A01', 'I', '固定辊台2', '2019-09-23 16:06:49', '2019-10-23 09:09:18');
+INSERT INTO `wcs_config_device` VALUES ('FRT03', '192.168.8.90', 2002, 'Y', '', 'FRT', 'B01', 'O', '固定辊台3', '2019-09-23 17:06:55', '2019-10-27 08:51:38');
+INSERT INTO `wcs_config_device` VALUES ('RGV01', '192.168.8.60', 2002, 'Y', NULL, 'RGV', 'B01', 'A', '运输车1', '2019-10-23 09:06:18', NULL);
+INSERT INTO `wcs_config_device` VALUES ('RGV02', '192.168.8.66', 2002, 'Y', NULL, 'RGV', 'B01', 'A', '运输车2', '2019-10-23 09:06:32', NULL);
+INSERT INTO `wcs_config_device` VALUES ('RGV03', '192.168.8.71', 2002, 'N', NULL, 'RGV', 'B01', 'A', '运输车3', '2019-09-24 17:06:52', '2019-10-23 09:05:59');
 
 -- ----------------------------
 -- Table structure for wcs_config_loc
@@ -117,25 +117,13 @@ CREATE TABLE `wcs_config_loc`  (
   `WMS_LOC` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'WMS回馈位置',
   `FRT_LOC` varchar(5) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '固定辊台位置',
   `ARF_LOC` varchar(5) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '摆渡车定位',
-  `RGV_LOC_1` varchar(5) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '运输车辊台1[内]定位',
-  `RGV_LOC_2` varchar(5) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '运输车辊台2[外]定位',
+  `RGV_LOC_1` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '运输车辊台1[内]定位',
+  `RGV_LOC_2` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '运输车辊台2[外]定位',
   `ABC_LOC_TRACK` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '行车轨道定位',
   `ABC_LOC_STOCK` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '行车库存定位',
   `CREATION_TIME` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '依据WMS回馈位置定义各设备目的点位  ' ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of wcs_config_loc
--- ----------------------------
-INSERT INTO `wcs_config_loc` VALUES (1, 'A01', 'FRT99', '', '', '', '', '', '2019-10-12 11:29:26');
-INSERT INTO `wcs_config_loc` VALUES (2, 'B01', 'FRT01', '2', '', '', '', '', '2019-10-12 11:29:26');
-INSERT INTO `wcs_config_loc` VALUES (3, 'B01', 'FRT02', '5', '', '', '', '', '2019-10-12 11:29:26');
-INSERT INTO `wcs_config_loc` VALUES (4, 'B01', 'FRT03', '8', '', '', '', '', '2019-10-12 11:29:26');
-INSERT INTO `wcs_config_loc` VALUES (5, 'C001-001-001', '', '', '001', '002', '001-004-001', '001-001-001', '2019-10-12 11:29:26');
-INSERT INTO `wcs_config_loc` VALUES (6, 'C001-001-002', '', '', '001', '002', '001-004-001', '001-001-002', '2019-10-12 11:29:26');
-INSERT INTO `wcs_config_loc` VALUES (7, 'C200-001-001', '', '', '251', '252', '200-004-001', '200-001-001', '2019-10-12 11:29:26');
-INSERT INTO `wcs_config_loc` VALUES (8, 'C200-001-002', '', '', '251', '252', '200-004-001', '200-001-002', '2019-10-12 11:29:26');
+) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '依据WMS回馈位置定义各设备目的点位  ' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for wcs_function_log
@@ -151,7 +139,7 @@ CREATE TABLE `wcs_function_log`  (
   `MESSAGE` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '讯息',
   `CREATION_TIME` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 489 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for wcs_ndc_site
@@ -168,8 +156,9 @@ CREATE TABLE `wcs_ndc_site`  (
 -- Records of wcs_ndc_site
 -- ----------------------------
 INSERT INTO `wcs_ndc_site` VALUES ('FRT01', '81', 'loadsite');
-INSERT INTO `wcs_ndc_site` VALUES ('FRT02', '92', 'unloadsite');
-INSERT INTO `wcs_ndc_site` VALUES ('FRT03', '102', 'unloadarea');
+INSERT INTO `wcs_ndc_site` VALUES ('FRT02', '91', 'loadsite');
+INSERT INTO `wcs_ndc_site` VALUES ('FRT03', '122', 'unloadsite');
+INSERT INTO `wcs_ndc_site` VALUES ('FRT99', '102', 'unloadarea');
 
 -- ----------------------------
 -- Table structure for wcs_ndc_task
@@ -178,20 +167,35 @@ DROP TABLE IF EXISTS `wcs_ndc_task`;
 CREATE TABLE `wcs_ndc_task`  (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `TASKID` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `CARRIERID` int(2) NULL DEFAULT NULL,
   `IKEY` int(10) NULL DEFAULT NULL,
-  `ORDERINDEX` int(10) NULL DEFAULT NULL,
+  `NDCINDEX` int(10) NULL DEFAULT NULL,
+  `CARRIERID` int(2) NULL DEFAULT NULL,
   `LOADSITE` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `UNLOADSITE` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `REDIRECTSITE` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `NDCLOADSITE` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `NDCUNLOADSITE` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `NDCREDIRECTSITE` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `HADLOAD` int(1) NULL DEFAULT NULL,
-  `HADUNLOAD` int(1) NULL DEFAULT NULL,
+  `HADLOAD` tinyint(4) NULL DEFAULT NULL,
+  `HADUNLOAD` tinyint(4) NULL DEFAULT NULL,
+  `PAUSE` tinyint(4) NULL DEFAULT NULL,
+  `FINISH` tinyint(4) NULL DEFAULT NULL,
   `CREATETIME` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `UPDATE_TIME` datetime(0) NULL DEFAULT NULL,
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 18 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 23 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for wcs_ndc_task_temp
+-- ----------------------------
+DROP TABLE IF EXISTS `wcs_ndc_task_temp`;
+CREATE TABLE `wcs_ndc_task_temp`  (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `NDCINDEX` int(11) NULL DEFAULT NULL,
+  `IKEY` int(11) NULL DEFAULT NULL,
+  `CARRIERID` int(11) NULL DEFAULT NULL,
+  PRIMARY KEY (`ID`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for wcs_param
@@ -208,16 +212,16 @@ CREATE TABLE `wcs_param`  (
   `VALUE5` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `VALUE6` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of wcs_param
 -- ----------------------------
 INSERT INTO `wcs_param` VALUES (1, 'NDC_SERVER_IP', 'NDC服务IP', '192.168.8.120', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `wcs_param` VALUES (2, 'NDC_SERVER_PORT', 'NDC服务端口', '30001', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `wcs_param` VALUES (3, 'NDC_TASK_IKEY', '用于计算生成任务的IKEY值', '86', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `wcs_param` VALUES (3, 'NDC_TASK_IKEY', '用于计算生成任务的IKEY值', '97', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `wcs_param` VALUES (4, 'WCS_HTTP_SERVER_PORT', 'WCS提供WMS的服务端口', '8080', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `wcs_param` VALUES (5, 'WMS_SERVER_URL', 'WMS服务地址', 'http://10.9.31.119:8081', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `wcs_param` VALUES (5, 'WMS_SERVER_URL', 'WMS服务地址', 'http://192.168.8.244:8081', NULL, NULL, NULL, NULL, NULL);
 
 -- ----------------------------
 -- Table structure for wcs_task_backup
@@ -234,7 +238,7 @@ CREATE TABLE `wcs_task_backup`  (
   `W_D_LOC` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '目标货位',
   `BACKUP_TIME` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP COMMENT '备份时间',
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 52 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 55 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for wcs_task_info
@@ -256,8 +260,8 @@ CREATE TABLE `wcs_task_info`  (
 -- ----------------------------
 -- Records of wcs_task_info
 -- ----------------------------
-INSERT INTO `wcs_task_info` VALUES ('1233211234567', '0', '123', 'A01', 'B01', 'N', '2019-10-30 09:27:09', NULL);
-INSERT INTO `wcs_task_info` VALUES ('222', '0', '222', 'A01', 'B01', 'N', '2019-10-30 09:27:09', NULL);
+INSERT INTO `wcs_task_info` VALUES ('123', '0', '123', 'A01', 'B01', 'N', '2019-11-12 08:59:21', '2019-11-12 14:33:26');
+INSERT INTO `wcs_task_info` VALUES ('456', '0', '456', 'A01', 'B01', 'N', '2019-11-12 08:59:33', NULL);
 
 -- ----------------------------
 -- Table structure for wcs_task_item
@@ -274,7 +278,7 @@ CREATE TABLE `wcs_task_item`  (
   `CREATION_TIME` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `UPDATE_TIME` timestamp(0) NULL DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 314 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = 'WCS指令资讯  ' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 334 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = 'WCS指令资讯  ' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- View structure for wcs_command_v

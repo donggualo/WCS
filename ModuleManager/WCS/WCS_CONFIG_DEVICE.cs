@@ -53,6 +53,11 @@ namespace ModuleManager.WCS
         public String LOCK_WCS_NO { get; set; }
 
         /// <summary>
+        /// 职责
+        /// </summary>
+        public String DUTY { get; set; }
+
+        /// <summary>
         /// 创建时间
         /// </summary>
         public DateTime? CREATION_TIME { get; set; }
@@ -74,11 +79,24 @@ namespace ModuleManager.WCS
         public const string 固定辊台 = "FRT";
     }
 
+    /// <summary>
+    /// 设备状态
+    /// </summary>
     public class DeviceFlag
     {
         public const string 失效 = "N";
         public const string 空闲 = "Y";
         public const string 占用 = "U";  // 已使用其中一个辊台
         public const string 锁定 = "L";
+    }
+
+    /// <summary>
+    /// 设备职责
+    /// </summary>
+    public class DeviceDuty
+    {
+        public const string 负责全部 = "A";
+        public const string 负责入库 = "I";
+        public const string 负责出库 = "O";
     }
 }

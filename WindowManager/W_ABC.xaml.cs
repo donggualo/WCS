@@ -13,12 +13,12 @@ using TaskManager;
 using TaskManager.Devices;
 using WindowManager.Datagrid;
 
-namespace WindowManager 
+namespace WindowManager
 {
     /// <summary>
     /// W_ABC.xaml 的交互逻辑
     /// </summary>
-    public partial class W_ABC : UserControl,ITabWin
+    public partial class W_ABC : UserControl, ITabWin
     {
         private AbcDataGrid grid;
         private bool runRefresh = true;
@@ -87,9 +87,9 @@ namespace WindowManager
             Regex re = new Regex("[^0-9]+");
             e.Handled = re.IsMatch(e.Text);
 
-            if (int.TryParse(e.Text,out int result))
+            if (int.TryParse(e.Text, out int result))
             {
-                if (xlocation.IsFocused)    
+                if (xlocation.IsFocused)
                 {
                     if (Convert.ToInt32((string.IsNullOrEmpty(xlocation.Text.Trim()) ? "0" : xlocation.Text.Trim()) + e.Text)
                         >
@@ -111,7 +111,7 @@ namespace WindowManager
                         return;
                     }
                 }
-                else 
+                else
                 {
                     if (Convert.ToInt32((string.IsNullOrEmpty(zlocation.Text.Trim()) ? "0" : zlocation.Text.Trim()) + e.Text)
                         >
@@ -123,7 +123,7 @@ namespace WindowManager
                     }
                 }
             }
-            
+
         }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace WindowManager
                 int y = Convert.ToInt32(ylocation.Text.Trim());
                 int z = Convert.ToInt32(zlocation.Text.Trim());
                 order = ABC._TaskControl(ABC.TaskLocate, abc.ABCNum(), DataControl._mStools.IntToBytes(x), DataControl._mStools.IntToBytes(y), DataControl._mStools.IntToBytes(z));
-                
+
                 DataControl._mSocket.SwithRefresh(dev, false);
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
@@ -234,7 +234,7 @@ namespace WindowManager
                 int y = Convert.ToInt32(ylocation.Text.Trim());
                 int z = Convert.ToInt32(zlocation.Text.Trim());
                 order = ABC._TaskControl(ABC.TaskTake, abc.ABCNum(), DataControl._mStools.IntToBytes(x), DataControl._mStools.IntToBytes(y), DataControl._mStools.IntToBytes(z));
-                
+
                 DataControl._mSocket.SwithRefresh(dev, false);
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
@@ -299,7 +299,7 @@ namespace WindowManager
                 int y = Convert.ToInt32(ylocation.Text.Trim());
                 int z = Convert.ToInt32(zlocation.Text.Trim());
                 order = ABC._TaskControl(ABC.TaskRelease, abc.ABCNum(), DataControl._mStools.IntToBytes(x), DataControl._mStools.IntToBytes(y), DataControl._mStools.IntToBytes(z));
-                
+
                 DataControl._mSocket.SwithRefresh(dev, false);
                 if (!DataControl._mSocket.SendToClient(dev, order, out string result))
                 {
@@ -326,7 +326,36 @@ namespace WindowManager
         /// <param name="e"></param>
         private void Relocate_Click(object sender, RoutedEventArgs e)
         {
+            string dev = "";
+            byte[] order = null;
+            try
+            {
+                if (CBdev.SelectedIndex == -1)
+                {
+                    Notice.Show("请选择设备！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
+                dev = CBdev.Text;
+                ABC abc = new ABC(dev);
+                order = ABC._ResetTask(abc.ABCNum());
 
+                if (!DataControl._mSocket.SendToClient(dev, order, out string result))
+                {
+                    Notice.Show("指令发送失败：" + result.ToString(), "错误", 3, MessageBoxIcon.Error);
+                    // LOG
+                    DataControl._mTaskTools.RecordTaskErrLog("TerminateBtn_Click()", "行车-复位任务[ABC,指令]", dev, DataControl._mStools.BytetToString(order), result.ToString());
+                    return;
+                }
+                Notice.Show("复位任务 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
+                DataControl._mSocket.SwithRefresh(dev, true);
+
+            }
+            catch (Exception ex)
+            {
+                Notice.Show("指令发送失败：" + ex.Message, "错误", 3, MessageBoxIcon.Error);
+                // LOG
+                DataControl._mTaskTools.RecordTaskErrLog("TerminateBtn_Click()", "行车-复位任务[ABC,指令]", dev, DataControl._mStools.BytetToString(order), ex.Message);
+            }
         }
 
         /// <summary>

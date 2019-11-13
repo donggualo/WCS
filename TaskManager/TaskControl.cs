@@ -1036,7 +1036,7 @@ namespace TaskManager
                 if (ITEM.ITEM_ID == ItemId.行车取货)
                 {
                     // 有货则任务完成
-                    if (_device.GoodsStatus() == ABC.GoodsYes && _device.ActionStatus() == ABC.Stop)
+                    if (_device.GoodsStatus() == ABC.GoodsYes && _device.ActionStatus() == ABC.Stop && _device.FinishTask() == ABC.TaskTake)
                     {
                         // 完成任务
                         ISetTaskSuc();
@@ -1048,7 +1048,7 @@ namespace TaskManager
                 else if (ITEM.ITEM_ID == ItemId.行车放货)
                 {
                     // 无货则任务完成
-                    if (_device.GoodsStatus() == ABC.GoodsNo && _device.ActionStatus() == ABC.Stop)
+                    if (_device.GoodsStatus() == ABC.GoodsNo && _device.ActionStatus() == ABC.Stop && _device.FinishTask() == ABC.TaskRelease)
                     {
                         // 完成任务
                         ISetTaskSuc();
