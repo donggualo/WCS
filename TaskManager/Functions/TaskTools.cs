@@ -893,17 +893,18 @@ namespace TaskManager.Functions
         }
 
         /// <summary>
-        /// 获取指定区域及类型的设备List
+        /// 获取指定区域、类型、职责的设备List
         /// </summary>
         /// <param name="area"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public List<WCS_CONFIG_DEVICE> GetDeviceList(String area, String type)
+        public List<WCS_CONFIG_DEVICE> GetDeviceList(String area, String type, String duty)
         {
             String sql;
             try
             {
-                sql = String.Format(@"select * from wcs_config_device where FLAG <> 'N' and AREA = '{0}' and TYPE = '{1}' order by CREATION_TIME", area, type);
+                sql = String.Format(@"select * from wcs_config_device where FLAG <> '{4}' and AREA = '{0}' and TYPE = '{1}' and DUTY in ('{2}','{3}')
+                        order by CREATION_TIME", area, type, duty, DeviceDuty.负责全部, DeviceFlag.失效);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {
@@ -934,6 +935,40 @@ namespace TaskManager.Functions
                     return "";
                 }
                 return dt.Rows[0]["TYPE"].ToString();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 获取任务所需设备职责
+        /// </summary>
+        /// <param name="wcs_no"></param>
+        /// <returns></returns>
+        public String GetDeviceDuty(String wcs_no)
+        {
+            try
+            {
+                String sql = String.Format(@"select distinct TASK_TYPE from WCS_COMMAND_V where WCS_NO = '{0}'", wcs_no);
+                DataTable dtstep = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dtstep))
+                {
+                    return "";
+                }
+                switch (dtstep.Rows[0]["TASK_TYPE"].ToString())
+                {
+                    case TaskType.AGV搬运:
+                    case TaskType.入库:
+                        return DeviceDuty.负责入库;
+
+                    case TaskType.出库:
+                        return DeviceDuty.负责出库;
+
+                    default:
+                        return "";
+                }
             }
             catch (Exception ex)
             {

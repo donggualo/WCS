@@ -112,6 +112,46 @@ namespace TaskManager
             }
         }
 
+        /// <summary>
+        /// AGV 卸货=>任务完成=>分配库位
+        /// </summary>
+        /// <param name="taskuid"></param>
+        /// <param name="frt"></param>
+        public void GetLocationByWMS(string taskuid, string frt)
+        {
+            try
+            {
+                // 辊台对应区域
+                String area = DataControl._mTaskTools.GetArea(frt);
+
+                // 获取Task资讯(第1次扫码)
+                String sql = String.Format(@"select * from wcs_task_info where TASK_UID = '{0}'", taskuid);
+                DataTable dt = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dt))
+                {
+                    // 无数据则异常 LOG
+                    DataControl._mTaskTools.RecordTaskErrLog("GetLocationByWMS()", "AGV卸货完成分配库位[扫码位置,任务号]", frt, taskuid, "不存在WMS入库任务ID！");
+                    return;
+                }
+
+                // 呼叫WMS 请求入库资讯---库位
+                WmsModel wms = DataControl._mHttp.DoReachStockinPosTask(DataControl._mTaskTools.GetArea(frt), taskuid);
+                // 更新任务资讯
+                sql = String.Format(@"update WCS_TASK_INFO set UPDATE_TIME = NOW(), TASK_TYPE = '{0}', W_S_LOC = '{1}', W_D_LOC = '{2}' where TASK_UID = '{3}'",
+                    TaskType.入库, wms.W_S_Loc, wms.W_D_Loc, taskuid);
+                DataControl._mMySql.ExcuteSql(sql);
+
+                // 对应 WCS 清单
+                DataControl._mTaskTools.CreateCommandIn(taskuid, frt);
+                return;
+            }
+            catch (Exception ex)
+            {
+                // LOG
+                DataControl._mTaskTools.RecordTaskErrLog("GetLocationByWMS()", "AGV卸货完成分配库位[扫码位置,任务号]", frt, taskuid, ex.Message);
+            }
+        }
+
 
         #region Nonononononono
 

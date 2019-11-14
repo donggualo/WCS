@@ -210,9 +210,9 @@ namespace TaskManager
                             {
                                 // 获取 WMS 任务目标点
                                 String sqlloc = String.Format(@"select distinct DEVICE from wcs_config_device where FLAG in('{1}','{2}') and TYPE = '{3}' 
-                                                                   and AREA in (select W_D_LOC from wcs_task_info where TASK_UID = '{0}')
-	                                                               and DEVICE not in (select distinct DROPSTATION From wcs_agv_info where MAGIC <> {4} group by DROPSTATION HAVING count(DROPSTATION) = {5})
-                                                                 order by FLAG,CREATION_TIME", agv.TASK_UID, DeviceFlag.占用, DeviceFlag.空闲, DeviceType.固定辊台, AGVMagic.任务完成, 3);//最多三辆车
+                                                                   and DUTY = '{4}' and AREA in (select W_D_LOC from wcs_task_info where TASK_UID = '{0}')
+	                                                               and DEVICE not in (select distinct DROPSTATION From wcs_agv_info where MAGIC <> {5} group by DROPSTATION HAVING count(DROPSTATION) = {6})
+                                                                 order by FLAG,CREATION_TIME", agv.TASK_UID, DeviceFlag.占用, DeviceFlag.空闲, DeviceType.固定辊台, DeviceDuty.负责入库, AGVMagic.任务完成, 3);//最多三辆车
                                 DataTable dtloc = DataControl._mMySql.SelectAll(sqlloc);
                                 if (DataControl._mStools.IsNoData(dtloc))
                                 {
@@ -247,9 +247,15 @@ namespace TaskManager
                             // 跳过本次操作等待解锁
                             return;
                         }
-
                         // 获取对应固定辊台资讯
                         FRT frtdrop = new FRT(agv.DROPSTATION);
+                        // 满货、中间有1货、仅2#有货 &作业中 跳过
+                        if ((frtdrop.GoodsStatus() == FRT.GoodsYesAll || frtdrop.GoodsStatus() == FRT.GoodsBetween || 
+                            frtdrop.GoodsStatus() == FRT.GoodsYes2) && frtdrop.CurrentStatus() != FRT.RollerStop)
+                        {
+                            // 跳过本次操作
+                            return;
+                        }
                         // 是否作业中
                         if (frtdrop.CurrentStatus() != FRT.RollerStop)
                         {
@@ -368,16 +374,31 @@ namespace TaskManager
                     // 更新数据库内对应AGV任务资讯---获得对应AGV设备号
                     sql.Append(String.Format(@";update wcs_agv_info set AGV = '{1}' where ID = '{0}'", id, agv));
                 }
-
                 if (magic == AGVMagic.装货完成)
                 {
                     // 更新对应包装线辊台状态，允许新任务派车前往
                     sql.Append(String.Format(@";update wcs_config_device set FLAG = '{1}' where DEVICE in (select distinct PICKSTATION from wcs_agv_info where ID = '{0}')", id, DeviceFlag.空闲));
                 }
-
                 // 更新AGV任务资讯
                 DataControl._mMySql.ExcuteSql(sql.ToString());
 
+                if (magic == AGVMagic.任务完成)
+                {
+                    // 获取Task资讯
+                    String sqltask = String.Format(@"select TASK_UID,DROPSTATION from wcs_agv_info where ID = '{0}'", id);
+                    DataTable dt = DataControl._mMySql.SelectAll(sqltask);
+                    if (DataControl._mStools.IsNoData(dt))
+                    {
+                        return;
+                    }
+                    // 获取对应任务ID
+                    string taskuid = dt.Rows[0]["TASK_UID"].ToString();
+                    // 获取对应固定辊台号
+                    string frt = dt.Rows[0]["DROPSTATION"].ToString();
+
+                    // 请求WMS分配库位
+                    new ForWMSControl().GetLocationByWMS(taskuid, frt);
+                }
             }
             catch (Exception ex)
             {

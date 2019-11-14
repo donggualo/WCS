@@ -897,8 +897,7 @@ namespace TaskManager
                         {
                             // 将运输车复位待命点
                             /* 设备坐标偏差 */
-                            string result;
-                            if (!DataControl._mTaskTools.GetLocByAddGap(rgv, R2, out result))
+                            if (!DataControl._mTaskTools.GetLocByAddGap(rgv, R2, out string result))
                             {
                                 // 记录LOG
                                 DataControl._mTaskTools.RecordTaskErrLog("ProcessOutTask()", "出库任务处理[设备号,坐标]", rgv, R2, result);
@@ -1045,8 +1044,7 @@ namespace TaskManager
                     // 获取当前坐标X轴值
                     int X = DataControl._mStools.BytesToInt(ABC.CurrentXsite(), 0);
                     /* 设备坐标偏差 */
-                    string result;
-                    if (!DataControl._mTaskTools.GetLocByLessGap(abc.DEVICE, X.ToString(), out result, "X"))
+                    if (!DataControl._mTaskTools.GetLocByLessGap(abc.DEVICE, X.ToString(), out string result, "X"))
                     {
                         // 记录LOG
                         DataControl._mTaskTools.RecordTaskErrLog("Task_OutFollow()", "执行出库任务[设备号,坐标]", abc.DEVICE, X.ToString(), result);
@@ -1281,6 +1279,13 @@ namespace TaskManager
                     return;
                 }
 
+                // 获取任务所需设备职责
+                String duty = DataControl._mTaskTools.GetDeviceDuty(item.WCS_NO);
+                if (String.IsNullOrEmpty(duty))
+                {
+                    return;
+                }
+
                 // 分配设备
                 String device = String.Empty;
                 // 当前位置
@@ -1291,7 +1296,7 @@ namespace TaskManager
                         #region 摆渡车
 
                         // 获取作业区域内的摆渡车
-                        List<WCS_CONFIG_DEVICE> dList_ARF = DataControl._mTaskTools.GetDeviceList(area, DeviceType.摆渡车);
+                        List<WCS_CONFIG_DEVICE> dList_ARF = DataControl._mTaskTools.GetDeviceList(area, DeviceType.摆渡车, duty);
                         // 确认其中最适合的摆渡车
                         String arf = GetSuitableARF(item.LOC_TO, dList_ARF);
                         if (String.IsNullOrEmpty(arf))
@@ -1310,7 +1315,7 @@ namespace TaskManager
                         #region 运输车
 
                         // 获取作业区域内的运输车
-                        List<WCS_CONFIG_DEVICE> dList_RGV = DataControl._mTaskTools.GetDeviceList(area, DeviceType.运输车);
+                        List<WCS_CONFIG_DEVICE> dList_RGV = DataControl._mTaskTools.GetDeviceList(area, DeviceType.运输车, duty);
                         // 确认其中最适合的运输车
                         String rgv = GetSuitableRGV(item.LOC_TO, dList_RGV);
                         if (String.IsNullOrEmpty(rgv))
@@ -1341,7 +1346,7 @@ namespace TaskManager
                         #region 行车
 
                         // 获取作业区域内的行车
-                        List<WCS_CONFIG_DEVICE> dList_ABC = DataControl._mTaskTools.GetDeviceList(area, DeviceType.行车);
+                        List<WCS_CONFIG_DEVICE> dList_ABC = DataControl._mTaskTools.GetDeviceList(area, DeviceType.行车, duty);
                         // 确认其中最适合的行车
                         String abc = GetSuitableABC(item.LOC_TO, dList_ABC);
                         if (String.IsNullOrEmpty(abc))
@@ -1506,8 +1511,7 @@ namespace TaskManager
                     // 获取摆渡车设备资讯
                     dev = new RGV(d.DEVICE);
                     /* 设备坐标偏差 */
-                    string result;
-                    if (!DataControl._mTaskTools.GetLocByLessGap(d.DEVICE, dev.GetCurrentSite().ToString(), out result))
+                    if (!DataControl._mTaskTools.GetLocByLessGap(d.DEVICE, dev.GetCurrentSite().ToString(), out string result))
                     {
                         // 记录LOG
                         DataControl._mTaskTools.RecordTaskErrLog("GetSuitableRGV()", "获取当前目标对应的合适运输车[设备号,坐标]", rgv, dev.GetCurrentSite().ToString(), result);
@@ -1592,8 +1596,7 @@ namespace TaskManager
                     dev = new ABC(d.DEVICE);
                     int abcX = DataControl._mStools.BytesToInt(dev.CurrentXsite());
                     /* 设备坐标偏差 */
-                    string result;
-                    if (!DataControl._mTaskTools.GetLocByLessGap(d.DEVICE, abcX.ToString(), out result, "X"))
+                    if (!DataControl._mTaskTools.GetLocByLessGap(d.DEVICE, abcX.ToString(), out string result, "X"))
                     {
                         // 记录LOG
                         DataControl._mTaskTools.RecordTaskErrLog("GetSuitableABC()", "获取当前目标对应的合适行车[设备号,坐标]", d.DEVICE, abcX.ToString(), result);
