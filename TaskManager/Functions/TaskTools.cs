@@ -6,6 +6,7 @@ using System.Windows;
 using TaskManager.Devices;
 using ModuleManager.WCS;
 using PubResourceManager;
+using ModuleManager.PUB;
 
 namespace TaskManager.Functions
 {
@@ -817,6 +818,89 @@ namespace TaskManager.Functions
             }
         }
 
+        /// <summary>
+        /// 获取行车目的分区
+        /// </summary>
+        /// <param name="loc"></param>
+        /// <returns></returns>
+        public int GetABCPartition(string area, int loc)
+        {
+            try
+            {
+                int value = 0;
+                // 获取 WCS库存划分范围（行车）
+                String sql = String.Format(@"select * from wcs_param where NAME = 'WCS_STOCK_PARTITION_RANGE' where VALUE6 = '{0}'", area);
+                DataTable dt = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dt))
+                {
+                    return value;
+                }
+                List<WCS_PARAM> pList = dt.ToDataList<WCS_PARAM>();
+                // 遍历获取所在分区数
+                foreach (WCS_PARAM p in pList)
+                {
+                    // 范围区间
+                    if (Convert.ToInt32(p.VALUE2) <= loc && loc >= Convert.ToInt32(p.VALUE2))
+                    {
+                        value = Convert.ToInt32(p.VALUE1);
+                        break;
+                    }
+                }
+                return value;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 获取行车目的分区奇偶性
+        /// </summary>
+        /// <param name="loc"></param>
+        /// <returns></returns>
+        public int GetABCPartitionParity(string area, int loc)
+        {
+            try
+            {
+                // 获取 WCS库存划分范围（行车）
+                String sql = String.Format(@"select * from wcs_param where NAME = 'WCS_STOCK_PARTITION_RANGE' where VALUE6 = '{0}'",area);
+                DataTable dt = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dt))
+                {
+                    return 0;
+                }
+                List<WCS_PARAM> pList = dt.ToDataList<WCS_PARAM>();
+                // 遍历获取所在分区数
+                int value = 0;
+                foreach (WCS_PARAM p in pList)
+                {
+                    // 范围区间
+                    if (Convert.ToInt32(p.VALUE2) <= loc && loc >= Convert.ToInt32(p.VALUE2))
+                    {
+                        value = Convert.ToInt32(p.VALUE1);
+                        break;
+                    }
+                }
+                // 判断奇偶数 => 区分行车管控
+                if (value == 0)
+                {
+                    return 0; // ERR
+                }
+                else if (Convert.ToBoolean(value % 2))
+                {
+                    return 1; // 奇数行车1，靠外的
+                }
+                else
+                {
+                    return 2; // 偶数行车2，靠内的
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         #endregion
 
         #region 设备编号

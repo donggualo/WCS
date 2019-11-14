@@ -25,7 +25,7 @@ namespace TaskManager
             {
                 // 获取单托任务清单
                 String sql1 = String.Format(@"select * from wcs_command_v where TASK_UID_1 is not null and TASK_UID_1 <> '' and (TASK_UID_2 is null or TASK_UID_2 = '') and TASK_TYPE = '{0}' and STEP = '{1}' 
-                    and TRUNCATE((UNIX_TIMESTAMP(NOW())-UNIX_TIMESTAMP(CREATION_TIME))/60,0) >= {2}", 
+                    and TRUNCATE((UNIX_TIMESTAMP(NOW())-UNIX_TIMESTAMP(CREATION_TIME))/60,0) >= {2}",
                     TaskType.入库, CommandStep.生成单号, DataControl._mStools.GetValueByKey("InTimeMax")); // 等待时间
                 DataTable dtcommand1 = DataControl._mMySql.SelectAll(sql1);
                 if (DataControl._mStools.IsNoData(dtcommand1))
@@ -418,7 +418,7 @@ namespace TaskManager
             String device_R = "";
             try
             {
-                // 查看运输车是否在运输车对接待命点
+                // 查看运输车是否在行车对接待命点
                 String sql_R = String.Format(@"select ID, WCS_NO, ITEM_ID, DEVICE from WCS_TASK_ITEM where STATUS = '{2}' and WCS_NO = '{0}' and ITEM_ID = '{1}'", item.WCS_NO, ItemId.运输车定位, ItemStatus.交接中);
                 DataTable dtitem_R = DataControl._mMySql.SelectAll(sql_R);
                 if (DataControl._mStools.IsNoData(dtitem_R))
@@ -481,7 +481,7 @@ namespace TaskManager
                     default:
                         break;
                 }
-                //行车&运输车初始任务更新状态——完成
+                //行车初始任务更新状态——完成
                 DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, item.ITEM_ID, ItemColumnName.作业状态, ItemStatus.完成任务);
             }
             catch (Exception ex)
@@ -661,8 +661,6 @@ namespace TaskManager
                 String R = DataControl._mStools.GetValueByKey("StandbyR2");
                 // 运输车于运输车对接点
                 String RR = DataControl._mStools.GetValueByKey("StandbyRR");
-                // 行车区域划分中间点X轴值
-                String AA = DataControl._mStools.GetValueByKey("CenterX");
 
                 // 获取对应清单
                 String sql = String.Format(@"select * from wcs_command_v where WCS_NO = '{0}'", item.WCS_NO);
@@ -672,7 +670,8 @@ namespace TaskManager
                     return;
                 }
                 WCS_COMMAND_V command = dt.ToDataEntity<WCS_COMMAND_V>();
-
+                // 库区
+                String area = DataControl._mTaskTools.GetArea(command.FRT);
                 // 默认入库时 taskid1对接运输车设备辊台①、taskid2对接运输车设备辊台②
                 String loc_1 = DataControl._mTaskTools.GetRGVLoc(1, command.LOC_TO_1); //辊台①任务1
                 String loc_2 = DataControl._mTaskTools.GetRGVLoc(2, command.LOC_TO_2); //辊台②任务2
@@ -737,25 +736,25 @@ namespace TaskManager
 
                         break;
                     case ItemId.行车取货:
-                        #region 将运输车移至行车对接位置 && 行车定位
+                        #region 将运输车移至行车对接位置 && 行车库存定位 && 行车轨道定位
                         // 默认入库时 taskid1对接运输车设备辊台①、taskid2对接运输车设备辊台②
                         // 获取当前运输车加以分配
                         string rgv = DataControl._mTaskTools.GetItemDeviceLast(item.WCS_NO, ItemId.运输车定位);
                         // 获取当前运输车资讯
-                        RGV RGV = new RGV(rgv);
+                        RGV _RGV = new RGV(rgv);
                         // 获取有货&无货辊台各对应的WMS任务目标
                         String loc_Y = "";  //有货辊台对应目标点
                         String loc_N = "";  //无货辊台对应目标点
 
-                        bool isNoGoodsRGV = true; // 运输车是否有货
+                        bool isGoodsRGV = true; // 运输车是否有货
 
                         // 根据当前运输车坐标及任务目标，生成对应运输车定位/对接运输车任务
-                        if (RGV.GoodsStatus() == RGV.GoodsYes1) // 辊台①有货
+                        if (_RGV.GoodsStatus() == RGV.GoodsYes1) // 辊台①有货
                         {
                             loc_Y = loc_1;
                             loc_N = loc_2;
                         }
-                        else if (RGV.GoodsStatus() == RGV.GoodsYes2) // 辊台②有货
+                        else if (_RGV.GoodsStatus() == RGV.GoodsYes2) // 辊台②有货
                         {
                             loc_Y = loc_2;
                             loc_N = loc_1;
@@ -764,13 +763,13 @@ namespace TaskManager
                         {
                             // 辊台已无货，即解锁设备数据状态
                             DataControl._mTaskTools.DeviceUnLock(rgv);
-                            isNoGoodsRGV = false;
+                            isGoodsRGV = false;
                         }
 
-                        if (isNoGoodsRGV)
+                        if (isGoodsRGV)
                         {
                             // 判断是否需要对接到运输车[内]范围内作业
-                            if (Convert.ToInt32(loc_Y) >= Convert.ToInt32(R) && RGV.GetCurrentSite() <= Convert.ToInt32(R))  // 需对接运输车[内]
+                            if (Convert.ToInt32(loc_Y) >= Convert.ToInt32(R) && _RGV.GetCurrentSite() <= Convert.ToInt32(R))  // 需对接运输车[内]
                             {
                                 // 生成运输车[内]复位任务
                                 DataControl._mTaskTools.CreateItem(item.WCS_NO, ItemId.运输车复位2, R);    // 待分配设备
@@ -799,6 +798,19 @@ namespace TaskManager
                         else
                         {
                             loc = loc_N == loc_1 ? command.LOC_TO_1 : command.LOC_TO_2;
+
+                            // 获取行车分区
+                            int locto1 = Convert.ToInt32(DataControl._mTaskTools.GetABCTrackLoc(command.LOC_TO_1).Split('-')[0]);
+                            int locto2 = Convert.ToInt32(DataControl._mTaskTools.GetABCTrackLoc(command.LOC_TO_2).Split('-')[0]);
+                            // 分区管控不同则新增行车轨道任务
+                            if (DataControl._mTaskTools.GetABCPartitionParity(area,locto1) != DataControl._mTaskTools.GetABCPartitionParity(area,locto2))
+                            {
+                                // 行车到运输车对接取货点
+                                string ABCloc = loc_Y == loc_1 ? command.LOC_TO_1 : command.LOC_TO_2;
+                                // 添加行车轨道定位任务
+                                DataControl._mTaskTools.CreateItem(command.WCS_NO, ItemId.行车轨道定位, DataControl._mTaskTools.GetABCTrackLoc(ABCloc));
+                            }
+
                         }
                         DataControl._mTaskTools.CreateCustomItem(item.WCS_NO, ItemId.行车库存定位, item.DEVICE, "", DataControl._mTaskTools.GetABCStockLoc(loc), ItemStatus.请求执行);
                         #endregion
@@ -806,17 +818,23 @@ namespace TaskManager
                         break;
                     case ItemId.行车放货:
                         #region 行车定位
-                        // 未完成的任务目标点
+                        // 是否有未完成的任务目标点
+                        if (command.SITE_1 == TaskSite.完成 && command.SITE_2 == TaskSite.完成)
+                        {
+                            return;
+                        }
                         loc = command.SITE_1 == TaskSite.完成 ? command.LOC_TO_2 : command.LOC_TO_1;
 
                         // 是否需要换行车作业
-                        string lotX1 = DataControl._mTaskTools.GetABCStockLoc(command.LOC_TO_1).Split('-')[0];
-                        string lotX2 = DataControl._mTaskTools.GetABCStockLoc(command.LOC_TO_2).Split('-')[0];
-                        if ((Convert.ToInt32(lotX1) >= Convert.ToInt32(AA) && Convert.ToInt32(lotX2) < Convert.ToInt32(AA)) ||
-                            (Convert.ToInt32(lotX2) >= Convert.ToInt32(AA) && Convert.ToInt32(lotX1) < Convert.ToInt32(AA)))
+                        int locto_1 = Convert.ToInt32(DataControl._mTaskTools.GetABCTrackLoc(command.LOC_TO_1).Split('-')[0]);
+                        int locto_2 = Convert.ToInt32(DataControl._mTaskTools.GetABCTrackLoc(command.LOC_TO_2).Split('-')[0]);
+                        // 分区管控不同则新增行车轨道任务
+                        if (DataControl._mTaskTools.GetABCPartitionParity(area,locto_1) != DataControl._mTaskTools.GetABCPartitionParity(area,locto_2))
                         {
                             // 生成行车轨道定位任务
-                            DataControl._mTaskTools.CreateItem(item.WCS_NO, ItemId.行车轨道定位, loc); // 待分配设备
+                            DataControl._mTaskTools.CreateItem(item.WCS_NO, ItemId.行车轨道定位, DataControl._mTaskTools.GetABCTrackLoc(loc)); // 待分配设备
+                            // 解锁本此放货任务的行车
+                            DataControl._mTaskTools.DeviceUnLock(item.DEVICE);
                         }
                         else
                         {
@@ -873,7 +891,7 @@ namespace TaskManager
                 {
                     case ItemId.行车取货:
                         #region 行车轨道定位与运输车对接点
-                        // 生成行车库存定位任务
+                        // 生成行车轨道定位任务
                         String sqlloc = String.Format(@"select distinct ABC_LOC_TRACK from WCS_CONFIG_LOC where ABC_LOC_STOCK = '{0}'", item.LOC_TO);
                         DataTable dtloc = DataControl._mMySql.SelectAll(sqlloc);
                         if (DataControl._mStools.IsNoData(dtloc))
@@ -892,7 +910,7 @@ namespace TaskManager
                         RGV = new RGV(rgv);
 
                         // 流程上设定是先分配运输车辊台①放置货物，即现确认运输车辊台②是否有任务/有货物
-                        // 车辊台②不存在任务直接复位 ｜｜　所有辊台都有货
+                        // 运输车辊台②不存在任务直接复位 ｜｜　所有辊台都有货
                         if (String.IsNullOrEmpty(command.TASK_UID_2) || RGV.GoodsStatus() == RGV.GoodsYesAll)
                         {
                             // 将运输车复位待命点
@@ -1025,7 +1043,8 @@ namespace TaskManager
             try
             {
                 // 获取空闲的行车资讯
-                String sql = String.Format(@"select * from wcs_config_device where TYPE = '{1}' and AREA = '{0}'", area, DeviceType.行车);
+                String sql = String.Format(@"select * from wcs_config_device where FLAG = '{2}' and TYPE = '{1}' and AREA = '{0}'", 
+                    area, DeviceType.行车, DeviceFlag.空闲);
                 DataTable dtabc = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dtabc))
                 {
@@ -1033,16 +1052,18 @@ namespace TaskManager
                 }
                 List<WCS_CONFIG_DEVICE> abcList = dtabc.ToDataList<WCS_CONFIG_DEVICE>();
 
-                // 行车中间值
-                int AA = Convert.ToInt32(DataControl._mStools.GetValueByKey("CenterX"));
-
                 // 遍历确认出库任务
                 foreach (WCS_CONFIG_DEVICE abc in abcList)
                 {
                     // 获取当前行车资讯
-                    ABC ABC = new ABC(abc.DEVICE);
+                    ABC _ABC = new ABC(abc.DEVICE);
+                    // 运行中则跳过:设备故障, 正在运行, 货物状态不为无货 ==> 不可用
+                    if (_ABC.DeviceStatus() == ABC.DeviceError || _ABC.ActionStatus() == ABC.Run || _ABC.GoodsStatus() != ABC.GoodsNo)
+                    {
+                        continue;
+                    }
                     // 获取当前坐标X轴值
-                    int X = DataControl._mStools.BytesToInt(ABC.CurrentXsite(), 0);
+                    int X = DataControl._mStools.BytesToInt(_ABC.CurrentXsite());
                     /* 设备坐标偏差 */
                     if (!DataControl._mTaskTools.GetLocByLessGap(abc.DEVICE, X.ToString(), out string result, "X"))
                     {
@@ -1051,25 +1072,22 @@ namespace TaskManager
                         return;
                     }
                     X = Convert.ToInt32(result);
-                    // 任务
-                    String[] task;
-                    // 对比当前坐标X轴值与行车中间值
-                    if (X <= AA)
-                    {
-                        // 仅处理货物来源位置于行车[外]运输范围内合适的出库任务
-                        task = GetSuitableTask(1, X);
-                    }
-                    else
-                    {
-                        // 仅处理货物来源位置于行车[内]运输范围内的出库任务
-                        task = GetSuitableTask(2, X);
-                    }
 
-                    // 生成 WCS 出库清单及 ITEM 初始任务
-                    if (task == null)
+                    // 获取当前分区
+                    int P = DataControl._mTaskTools.GetABCPartition(abc.AREA, X);
+                    if (P == 0)
                     {
                         continue;
                     }
+                    // 仅处理货物来源位置于行车运输范围内的出库任务
+                    String[] task =  GetSuitableTask(P, abc.AREA);
+                    if (task == null)
+                    {
+                        // 当前分区无出库任务则移动至别的分区
+                        RunOtherRange(abc.DEVICE,_ABC, P, abc.AREA, DataControl._mTaskTools.GetABCPartitionParity(abc.AREA, X));
+                        continue;
+                    }
+                    // 生成 WCS 出库清单及 ITEM 初始任务
                     CreateOutJob(area, task[0].ToString(), task[1].ToString());
                 }
             }
@@ -1080,41 +1098,18 @@ namespace TaskManager
         }
 
         /// <summary>
-        /// 获取合适的出库任务UID [range：靠外范围=1；靠内范围=2]
+        /// 获取合适的出库任务UID
         /// </summary>
-        /// <param name="range"></param>
-        /// <param name="X"></param>
+        /// <param name="P"></param>
+        /// <param name="area"></param>
         /// <returns></returns>
-        public String[] GetSuitableTask(int range, int X)
+        public String[] GetSuitableTask(int P, string area)
         {
             try
             {
-                // 行车中间值
-                int AA = Convert.ToInt32(DataControl._mStools.GetValueByKey("CenterX"));
-                // 大小运算符号
-                String sign;
-                if (range == 1)
-                {
-                    sign = "<=";
-                }
-                else if (range == 2)
-                {
-                    sign = ">";
-                }
-                else
-                {
-                    return null;
-                }
-
                 // 获取X轴值与当前行车X轴值差值最小的任务UID
-                String sql = String.Format(@"select (case when t.X > {0} then (t.X - {0})
-						 when t.X < {0} then ({0} - t.X)
-			       else t.X end) as locX, t.TASK_UID, t.Z
-  from (select a.TASK_UID, (b.STOCK_X + 0) X, (b.STOCK_Z + 0) Z
-          from (select distinct TASK_UID, W_S_LOC from wcs_task_info where SITE = '{3}' and TASK_TYPE = '{4}') a, 
-	             (select distinct WMS_LOC, SUBSTRING_INDEX(ABC_LOC_STOCK,'-',1) STOCK_X, SUBSTRING_INDEX(ABC_LOC_STOCK,'-',-1) STOCK_Z from wcs_config_loc) b
-         where a.W_S_LOC = b.WMS_LOC and (b.STOCK_X + 0) {1} {2}
-       ) t order by locX asc, Z desc", X, sign, AA, TaskSite.未执行, TaskType.出库);
+                String sql = String.Format(@"select * from WCS_TASK_OUT_RANGE_V where AREA = '{0}' and P_RANGE = '{1}' and SITE = '{2}'",
+                    area, P, TaskSite.未执行);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {
@@ -1133,6 +1128,47 @@ namespace TaskManager
                     t2 = dt.Rows[1]["TASK_UID"].ToString();
                 }
                 return new String[] { t1, t2 };
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 移动至合适的分区
+        /// </summary>
+        /// <param name="range"></param>
+        /// <param name="X"></param>
+        /// <returns></returns>
+        public void RunOtherRange(string dev, ABC abc, int P, string area, int parity)
+        {
+            try
+            {
+                // 获取存在出库任务的分区
+                String sql = String.Format(@"select distinct P_RANGE,WMS_LOC from WCS_TASK_OUT_RANGE_V where AREA = '{0}' and SITE = '{1}' 
+                                and P_RANGE%2 = {2} order by P_RANGE", area, TaskSite.未执行, parity == 1 ? 1: 0);
+                DataTable dt = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dt))
+                {
+                    return;
+                }
+                string p_range = dt.Rows[0]["P_RANGE"].ToString();
+                string wms_loc = DataControl._mTaskTools.GetABCStockLoc(dt.Rows[0]["WMS_LOC"].ToString());
+                string[] LOC = wms_loc.Split('-');
+                byte[] locX = DataControl._mStools.IntToBytes(Convert.ToInt32(String.IsNullOrEmpty(LOC[0]) ? "0" : LOC[0]));
+                byte[] locY = DataControl._mStools.IntToBytes(Convert.ToInt32(String.IsNullOrEmpty(LOC[1]) ? "0" : LOC[1]));
+                byte[] locZ = DataControl._mStools.IntToBytes(Convert.ToInt32(String.IsNullOrEmpty(LOC[2]) ? "0" : LOC[2]));
+                // 获取指令
+                byte[] orderABC = ABC._TaskControl(ABC.TaskLocate, abc.ABCNum(), locX, locY, locZ);
+                DataControl._mSocket.SwithRefresh(dev, false);
+                if (!DataControl._mSocket.SendToClient(dev, orderABC, out string result))
+                {
+                    DataControl._mSocket.SwithRefresh(dev, true);
+                    throw new Exception(result);
+                }
+                // 发后立即获取
+                DataControl._mSocket.SwithRefresh(dev, true);
             }
             catch (Exception ex)
             {
@@ -1348,7 +1384,7 @@ namespace TaskManager
                         // 获取作业区域内的行车
                         List<WCS_CONFIG_DEVICE> dList_ABC = DataControl._mTaskTools.GetDeviceList(area, DeviceType.行车, duty);
                         // 确认其中最适合的行车
-                        String abc = GetSuitableABC(item.LOC_TO, dList_ABC);
+                        String abc = GetSuitableABC(item.LOC_TO, dList_ABC, duty);
                         if (String.IsNullOrEmpty(abc))
                         {
                             return;
@@ -1575,7 +1611,7 @@ namespace TaskManager
         /// <param name="loc"></param>
         /// <param name="device"></param>
         /// <returns></returns>
-        public String GetSuitableABC(String loc, List<WCS_CONFIG_DEVICE> dList)
+        public String GetSuitableABC(String loc, List<WCS_CONFIG_DEVICE> dList, String duty)
         {
             try
             {
@@ -1592,6 +1628,12 @@ namespace TaskManager
                 // 遍历比对
                 foreach (WCS_CONFIG_DEVICE d in dList)
                 {
+                    // 仅有一个设备可用，直接选取该设备
+                    if (dList.Count == 1)
+                    {
+                        abc = d.DEVICE;
+                        break;
+                    }
                     // 获取行车设备资讯
                     dev = new ABC(d.DEVICE);
                     int abcX = DataControl._mStools.BytesToInt(dev.CurrentXsite());
@@ -1603,35 +1645,45 @@ namespace TaskManager
                         return null;
                     }
 
-
-                    // 仅有一个设备可用，直接选取该设备
-                    if (dList.Count == 1)
+                    // 所需分区
+                    int P = DataControl._mTaskTools.GetABCPartitionParity(d.AREA,X);
+                    switch (duty)
                     {
-                        abc = d.DEVICE;
-                        break;
-                    }
-                    // 比较目标X轴值与对接点
-                    else if (X <= AA)
-                    {
-                        // 仅获取位置于行车[外]运输范围内的 ABC
-                        if (Convert.ToInt32(result) <= AA)
-                        {
-                            // 锁定设备
-                            abc = d.DEVICE;
+                        case DeviceDuty.负责入库:
+                            // 是否同一分区
+                            if (P == DataControl._mTaskTools.GetABCPartitionParity(d.AREA, Convert.ToInt32(result)))
+                            {
+                                // 锁定设备
+                                abc = d.DEVICE;
+                                break;
+                            }
+                            continue;
+                        case DeviceDuty.负责出库:
+                            // 比较目标X轴值与对接点
+                            if (X <= AA)
+                            {
+                                // 仅获取位置于行车[外]运输范围内的 ABC
+                                if (Convert.ToInt32(result) <= AA)
+                                {
+                                    // 锁定设备
+                                    abc = d.DEVICE;
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                // 仅获取位置于行车[内]运输范围内的 ABC
+                                if (Convert.ToInt32(result) > AA)
+                                {
+                                    // 锁定设备
+                                    abc = d.DEVICE;
+                                    break;
+                                }
+                            }
+                            continue;
+                        default:
                             break;
-                        }
                     }
-                    else
-                    {
-                        // 仅获取位置于行车[内]运输范围内的 ABC
-                        if (Convert.ToInt32(result) > AA)
-                        {
-                            // 锁定设备
-                            abc = d.DEVICE;
-                            break;
-                        }
-                    }
-
                     dev = null;
                 }
 
