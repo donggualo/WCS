@@ -89,11 +89,11 @@ namespace NdcManager
         /// <param name="taskid"></param>
         /// <param name="unloadstation"></param>
         /// <returns></returns>
-        public bool DoReDerect(int taskid, string unloadstation, out string result,int order = -1)
+        public bool DoReDerect(int taskid, string unloadstation, out string result,int index = -1)
         {
             NDCItem item = Items.Find(c =>
             {
-                return c._mTask.TASKID == taskid && (order == -1 || c._mTask.NDCINDEX == order);
+                return c._mTask.TASKID == taskid && (index == -1 || c._mTask.NDCINDEX == index);
             });
 
             if (item != null)

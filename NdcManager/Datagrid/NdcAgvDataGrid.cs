@@ -39,7 +39,7 @@ namespace NdcManager.DataGrid
             {
                 m.Update(item);
             }
-            else if (item._mTask.IKEY != 0 || item._mTask.NDCINDEX != 0)
+            else if (item._mTask.IKEY != 0 || item._mTask.NDCINDEX != -1)
             {
                 _mTaskList.Add(new NdcTaskModel(item));
             }

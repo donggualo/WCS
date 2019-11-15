@@ -95,7 +95,7 @@ namespace ModuleManager.NDC
             s.CarrierId = message.CarrierNumber;
             CarrierId = message.CarrierNumber;
             s.Station = message.CarrierStation;
-            _mTask.NDCLOADSITE = message.CarrierStation != 0 ? message.CarrierStation + "" : "";
+            //_mTask.NDCLOADSITE = message.CarrierStation != 0 ? message.CarrierStation + "" : "";
             StatusInfo = s.ToString();
         }
 

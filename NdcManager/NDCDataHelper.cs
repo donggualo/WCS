@@ -354,7 +354,11 @@ namespace NdcManager
                 if (ndcItem == null)
                 {
                     ndcItem = TempItems.Find(c => { return c._mTask.NDCINDEX == message.Index; });
-                    if (ndcItem == null)
+                    
+                    if (ndcItem != null)
+                    {
+                        ndcItem.CarrierId = message.CarrierNumber;
+                    }else
                     {
                         ndcItem = new NDCItem
                         {
@@ -394,7 +398,10 @@ namespace NdcManager
                 if (ndcItem == null)
                 {
                     ndcItem = TempItems.Find(c => { return c._mTask.NDCINDEX == message.Index; });
-                    if (ndcItem == null)
+                    if (ndcItem != null)
+                    {
+                        ndcItem._mTask.IKEY = message.IKEY;
+                    }else
                     {
                         ndcItem = new NDCItem();
                         ndcItem._mTask.IKEY = message.IKEY;
@@ -490,8 +497,8 @@ namespace NdcManager
             switch (item.Magic)
             {
                 case 2://确定生成任务
-                    item._mTask.NDCLOADSITE = item.s.Magic2 + "";
-                    item._mTask.NDCUNLOADSITE = item.s.Magic3 + "";
+                    item._mTask.NDCLOADSITE = s.Magic2 + "";
+                    item._mTask.NDCUNLOADSITE = s.Magic3 + "";
                     break;
 
                 case 5:
@@ -614,6 +621,30 @@ namespace NdcManager
         {
             try
             {
+                if (item._mTask.TASKID == 0 && item._mTask.NDCINDEX != -1)
+                {
+                    NDCItem tempItem = TempItems.Find(c =>
+                    {
+                        return c._mTask.IKEY == item._mTask.IKEY
+                                && c._mTask.NDCLOADSITE == item._mTask.NDCLOADSITE
+                                && c._mTask.NDCUNLOADSITE == item._mTask.NDCUNLOADSITE;
+                    });
+                    if (tempItem != null)
+                    {
+                        NDCItem i = Items.Find(c => c._mTask.IKEY == tempItem._mTask.IKEY);
+                        if (i != null)
+                        {
+                            i._mTask.NDCINDEX = tempItem._mTask.NDCINDEX;
+                            i.CarrierId = tempItem.CarrierId;
+                            i.DirectStatus = tempItem.DirectStatus;
+                            i.Magic = tempItem.Magic;
+                            i.Status = tempItem.Status;
+                            TempItems.Remove(tempItem);
+                            item = i;
+                        }
+                    }
+                }
+
                 if (item._mTask.TASKID != 0 && item._mTask.NDCINDEX != 0)
                 {
                     try
@@ -634,20 +665,6 @@ namespace NdcManager
                     {
                         Console.WriteLine(e.Message);
                     }
-                }
-                if (item._mTask.NDCLOADSITE == null) return;
-                NDCItem tempItem = TempItems.Find(c => {
-                            return c._mTask.IKEY == item._mTask.IKEY 
-                                    && c._mTask.NDCLOADSITE == item._mTask.NDCLOADSITE
-                                    && c._mTask.NDCUNLOADSITE == item._mTask.NDCUNLOADSITE;});
-                if (tempItem != null)
-                {
-                    item._mTask.NDCINDEX = tempItem._mTask.NDCINDEX;
-                    item.CarrierId = tempItem.CarrierId;
-                    item.DirectStatus = tempItem.DirectStatus;
-                    item.Magic = tempItem.Magic;
-                    item.Status = tempItem.Status;
-                    TempItems.Remove(tempItem);
                 }
                 _sqlControl.UpdateNdcItem(item);
             }

@@ -30,36 +30,36 @@ namespace ModuleManager.NDC.SQL
         /// <summary>
         /// NDC 任务序列号
         /// </summary>
-        public int NDCINDEX { set; get; } = 0;
+        public int NDCINDEX { set; get; } = -1;
 
         /// <summary>
         /// WCS 装货位置信息
         /// </summary>
-        public string LOADSITE { set; get; }
+        public string LOADSITE { set; get; } = "";
 
         /// <summary>
         /// WCS  卸货位置信息
         /// </summary>
-        public string UNLOADSITE { set; get; }
+        public string UNLOADSITE { set; get; } = "";
         /// <summary>
         /// WCS 重定位信息
         /// </summary>
-        public string REDIRECTSITE { set; get; }
+        public string REDIRECTSITE { set; get; } = "";
 
         /// <summary>
         /// NDC 装货位置信息
         /// </summary>
-        public string NDCLOADSITE { set; get; }
+        public string NDCLOADSITE { set; get; } = "";
 
         /// <summary>
         /// NDC 卸货位置数据
         /// </summary>
-        public string NDCUNLOADSITE { set; get; }
+        public string NDCUNLOADSITE { set; get; } = "";
 
         /// <summary>
         /// NDC 重定位位置数据
         /// </summary>
-        public string NDCREDIRECTSITE { set; get; }
+        public string NDCREDIRECTSITE { set; get; } = "";
 
         /// <summary>
         /// 是否已经装货
