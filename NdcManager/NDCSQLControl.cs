@@ -143,7 +143,8 @@ namespace NdcManager
             string sql = string.Format(@sqls, i._mTask.IKEY, i._mTask.NDCINDEX,
                    i._mTask.LOADSITE, i._mTask.UNLOADSITE, i._mTask.REDIRECTSITE,
                    i._mTask.NDCLOADSITE, i._mTask.NDCUNLOADSITE, i._mTask.NDCREDIRECTSITE,
-                   i._mTask.HADLOAD ? 1 : 0, i._mTask.HADUNLOAD ? 1 : 0, i.CarrierId, i.IsFinish ? Yes:No,i._mTask.PAUSE ? Yes:No, i._mTask.TASKID);
+                   i._mTask.HADLOAD ? Yes : No, i._mTask.HADUNLOAD ? Yes : No, i.CARRIERID, 
+                   i.IsFinish ? Yes:No, i._mTask.PAUSE ? Yes:No, i._mTask.TASKID);
             mysql.ExcuteSql(sql);
         }
 
@@ -171,7 +172,7 @@ namespace NdcManager
             string sql = string.Format(@sqls, i._mTask.TASKID, i._mTask.IKEY, i._mTask.NDCINDEX,
                    i._mTask.LOADSITE, i._mTask.UNLOADSITE, i._mTask.REDIRECTSITE,
                    i._mTask.NDCLOADSITE, i._mTask.NDCUNLOADSITE, i._mTask.NDCREDIRECTSITE,
-                   i._mTask.HADLOAD ? 1 : 0, i._mTask.HADUNLOAD ? 1 : 0, i.CarrierId, No, No);
+                   i._mTask.HADLOAD ? 1 : 0, i._mTask.HADUNLOAD ? 1 : 0, i.CARRIERID, No, No);
             mysql.ExcuteSql(sql);
         }
 
@@ -182,7 +183,7 @@ namespace NdcManager
         public void InsertTempItem(NDCItem i)
         {
             string sqls = "INSERT INTO WCS_NDC_TASK_TEMP(NDCINDEX, IKEY, CARRIERID) VALUES('{0}', '{1}', '{2}')";
-            string sql = string.Format(@sqls, i._mTask.NDCINDEX, i._mTask.IKEY, i.CarrierId);
+            string sql = string.Format(@sqls, i._mTask.NDCINDEX, i._mTask.IKEY, i.CARRIERID);
             mysql.ExcuteSql(sql);
         }
 

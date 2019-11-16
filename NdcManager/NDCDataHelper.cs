@@ -170,9 +170,9 @@ namespace NdcManager
                         {
                             item = new NDCItem()
                             {
-                                _mTask = i,
-                                CarrierId = i.CARRIERID != 0 ? i.CARRIERID : item.CarrierId
+                                _mTask = i
                             };
+
                             Items.Add(item) ;
 
                             _NoticeUpdate(item);
@@ -188,16 +188,14 @@ namespace NdcManager
                         {
                             return c._mTask.IKEY == t.IKEY && c._mTask.NDCINDEX == t.NDCINDEX;
                         });
-                        if (item != null && item.CarrierId == 0)
+                        if (item != null)
                         {
-                            item.CarrierId = t.CARRIERID;
+                            item.CARRIERID = t.CARRIERID;
                         }
                         else
                         {
-                            item = new NDCItem()
-                            {
-                                CarrierId = t.CARRIERID
-                            };
+                            item = new NDCItem();
+                            item.CARRIERID = t.CARRIERID;
                             item._mTask.NDCINDEX = t.NDCINDEX;
                             item._mTask.IKEY = t.IKEY;
                             TempItems.Add(item);
@@ -272,7 +270,7 @@ namespace NdcManager
                 NDCItem item = Items.Find(c => { return c._mTask.NDCINDEX == index; });
                 if (item != null && item.CanLoadPlc())
                 {
-                    DoLoad(item._mTask.NDCINDEX, item.CarrierId);
+                    DoLoad(item._mTask.NDCINDEX, item.CARRIERID);
                 }
             }
         }
@@ -287,7 +285,7 @@ namespace NdcManager
                 NDCItem item = Items.Find(c => { return c._mTask.NDCINDEX == index; });
                 if (item != null && item.CanUnLoadPlc())
                 {
-                    DoUnLoad(item._mTask.NDCINDEX, item.CarrierId);
+                    DoUnLoad(item._mTask.NDCINDEX, item.CARRIERID);
                 }
             }
         }
@@ -357,13 +355,11 @@ namespace NdcManager
                     
                     if (ndcItem != null)
                     {
-                        ndcItem.CarrierId = message.CarrierNumber;
+                        ndcItem.CARRIERID = message.CarrierNumber;
                     }else
                     {
-                        ndcItem = new NDCItem
-                        {
-                            CarrierId = message.CarrierNumber
-                        };
+                        ndcItem = new NDCItem();
+                        ndcItem.CARRIERID = message.CarrierNumber;
                         ndcItem._mTask.NDCINDEX = message.Index;
                         TempItems.Add(ndcItem);
                     }
@@ -434,7 +430,7 @@ namespace NdcManager
         {
             try
             {
-                NDCItem ndcItem = Items.Find(c => { return c.CarrierId == message.CarId; });
+                NDCItem ndcItem = Items.Find(c => { return c.CARRIERID == message.CarId; });
                 if (ndcItem != null)
                 {
                     ndcItem.SetVMessage(message);
@@ -457,7 +453,7 @@ namespace NdcManager
             switch (item.Status)
             {
                 case 37: //小车已经分配
-                    item.CarrierId = b.ParNo;
+                    item.CARRIERID = b.ParNo;
                     break;
 
                 case 3://任务完成
@@ -603,7 +599,7 @@ namespace NdcManager
                 item.PLCStatus = NDCPlcStatus.Loading;
                 LoadItemList.Remove(item._mTask.NDCINDEX);
                 //通知WCS
-                _NoticeWcsLoading(item._mTask.TASKID, item.CarrierId + "");
+                _NoticeWcsLoading(item._mTask.TASKID, item.CARRIERID + "");
             }
             else if (v.PlcLp1 == 29 && v.Value1 == 2)
             {
@@ -635,7 +631,7 @@ namespace NdcManager
                         if (i != null)
                         {
                             i._mTask.NDCINDEX = tempItem._mTask.NDCINDEX;
-                            i.CarrierId = tempItem.CarrierId;
+                            i.CARRIERID = tempItem.CARRIERID;
                             i.DirectStatus = tempItem.DirectStatus;
                             i.Magic = tempItem.Magic;
                             i.Status = tempItem.Status;
@@ -656,7 +652,7 @@ namespace NdcManager
                         }
                         else
                         {
-                            _NoticeWcsMagic(item._mTask.TASKID, item.CarrierId + "", item.Magic);
+                            _NoticeWcsMagic(item._mTask.TASKID, item.CARRIERID + "", item.Magic);
                         }
                         _sqlControl.UpdateNdcItem(item);
                         return;
@@ -682,8 +678,7 @@ namespace NdcManager
         {
             int index = message.Index;
             int car = message.Magic2;
-            int ikey = message.Magic3;
-            NDCItem item = Items.Find(c => c._mTask.IKEY == ikey && c.CarrierId == car &&  c._mTask.PAUSE);
+            NDCItem item = Items.Find(c => c.CARRIERID == car &&  c._mTask.PAUSE && c._mTask.HADLOAD);
             if (item == null)
             {
                 string msg = "找不到挂起的小车（" + car + "）任务";

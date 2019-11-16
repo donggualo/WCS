@@ -21,7 +21,6 @@ namespace ModuleManager.NDC
 
         public int Magic;
         public int Status;
-        public int CarrierId;//分配的agv小车
         public bool IsFinish = false;
 
         /// <summary>
@@ -93,9 +92,7 @@ namespace ModuleManager.NDC
             s.Magic2 = message.Magic2;
             s.Magic3 = message.Magic3;
             s.CarrierId = message.CarrierNumber;
-            CarrierId = message.CarrierNumber;
             s.Station = message.CarrierStation;
-            //_mTask.NDCLOADSITE = message.CarrierStation != 0 ? message.CarrierStation + "" : "";
             StatusInfo = s.ToString();
         }
 
@@ -202,6 +199,25 @@ namespace ModuleManager.NDC
             _mTask.PAUSE = false;
 
         }
+        
+        /// <summary>
+        /// 任务小车
+        /// </summary>
+        public int CARRIERID
+        {
+            get
+            {
+                return _mTask.CARRIERID;
+            }
+            set
+            {
+                if (_mTask.CARRIERID == 0)
+                {
+                    _mTask.CARRIERID = value;
+                }
+            }
+        }
+
         #endregion
     }
 }

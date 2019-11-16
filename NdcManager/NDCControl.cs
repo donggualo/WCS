@@ -120,7 +120,7 @@ namespace NdcManager
                     }
                     else
                     {
-                        result = "该区域的对应关系还没有";
+                        result = "该区域("+ unloadstation +")的对应关系还没有设置";
                         return false;
                     }
                 }
@@ -153,7 +153,7 @@ namespace NdcManager
 
             NDCItem item = Items.Find(c =>
             {
-                return c._mTask.TASKID == taskid && c.CarrierId == carid;
+                return c._mTask.TASKID == taskid && c.CARRIERID == carid;
             });
 
             if(item == null)
@@ -167,7 +167,7 @@ namespace NdcManager
             {
                 LoadItemList.Remove(item._mTask.NDCINDEX);
                 //通知WCS
-                NoticeWcsOnLoad?.Invoke(item._mTask.TASKID, item.CarrierId + "");
+                NoticeWcsOnLoad?.Invoke(item._mTask.TASKID, item.CARRIERID + "");
                 result = "小车已经启动辊台了";
                 return true;
             }
@@ -206,7 +206,7 @@ namespace NdcManager
 
             NDCItem item = Items.Find(c =>
             {
-                return c._mTask.TASKID == taskid && c.CarrierId == carid;
+                return c._mTask.TASKID == taskid && c.CARRIERID == carid;
             });
 
             if (item == null)
