@@ -55,7 +55,7 @@ namespace SockManager
         {
             while (runRefresh)
             {
-                Thread.Sleep(5000);
+                Thread.Sleep(3000);
                 foreach (var client in Clients)
                 {
                     client.Refresh();

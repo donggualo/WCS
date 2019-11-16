@@ -441,6 +441,29 @@ namespace TaskManager.Functions
         #region 位置点位
 
         /// <summary>
+        /// 获取摆渡车于目的固定辊台对接点位
+        /// </summary>
+        /// <param name="frt"></param>
+        /// <returns></returns>
+        public String GetFRTByARFLoc(String loc)
+        {
+            try
+            {
+                String sql = String.Format(@"select distinct FRT_LOC from WCS_CONFIG_LOC where ARF_LOC = '{0}'", loc);
+                DataTable dtloc = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dtloc))
+                {
+                    return "";
+                }
+                return dtloc.Rows[0]["FRT_LOC"].ToString();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
         /// 获取固定辊台所在设备作业区域
         /// </summary>
         /// <param name="frt"></param>
@@ -829,7 +852,7 @@ namespace TaskManager.Functions
             {
                 int value = 0;
                 // 获取 WCS库存划分范围（行车）
-                String sql = String.Format(@"select * from wcs_param where NAME = 'WCS_STOCK_PARTITION_RANGE' where VALUE6 = '{0}'", area);
+                String sql = String.Format(@"select * from wcs_param where NAME = 'WCS_STOCK_PARTITION_RANGE' and VALUE6 = '{0}'", area);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {
@@ -840,7 +863,7 @@ namespace TaskManager.Functions
                 foreach (WCS_PARAM p in pList)
                 {
                     // 范围区间
-                    if (Convert.ToInt32(p.VALUE2) <= loc && loc >= Convert.ToInt32(p.VALUE2))
+                    if (Convert.ToInt32(p.VALUE2) <= loc && loc <= Convert.ToInt32(p.VALUE3))
                     {
                         value = Convert.ToInt32(p.VALUE1);
                         break;
@@ -864,7 +887,7 @@ namespace TaskManager.Functions
             try
             {
                 // 获取 WCS库存划分范围（行车）
-                String sql = String.Format(@"select * from wcs_param where NAME = 'WCS_STOCK_PARTITION_RANGE' where VALUE6 = '{0}'",area);
+                String sql = String.Format(@"select * from wcs_param where NAME = 'WCS_STOCK_PARTITION_RANGE' and VALUE6 = '{0}'",area);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {
@@ -876,7 +899,7 @@ namespace TaskManager.Functions
                 foreach (WCS_PARAM p in pList)
                 {
                     // 范围区间
-                    if (Convert.ToInt32(p.VALUE2) <= loc && loc >= Convert.ToInt32(p.VALUE2))
+                    if (Convert.ToInt32(p.VALUE2) <= loc && loc<= Convert.ToInt32(p.VALUE3))
                     {
                         value = Convert.ToInt32(p.VALUE1);
                         break;
@@ -1061,6 +1084,29 @@ namespace TaskManager.Functions
         }
 
         /// <summary>
+        /// 根据入库任务获取对应分区行车
+        /// </summary>
+        /// <param name="taskuid"></param>
+        /// <returns></returns>
+        public String GetABCByInTaskUID(String taskuid)
+        {
+            try
+            {
+                String sql = String.Format(@"select distinct ABC from WCS_TASK_IN_RANGE_V where TASK_UID = '{0}'", taskuid);
+                DataTable dt = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dt))
+                {
+                    return "";
+                }
+                return dt.Rows[0]["ABC"].ToString();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
         /// 该设备是否锁定
         /// </summary>
         /// <param name="device"></param>
@@ -1145,6 +1191,30 @@ namespace TaskManager.Functions
                     return "";
                 }
                 return dtstep.Rows[0]["STEP"].ToString();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 获取入库方向对接设备的任务状态
+        /// </summary>
+        /// <param name="wcs_no"></param>
+        /// <returns></returns>
+        public String GetInTaskStatus(int ID)
+        {
+            try
+            {
+                ID--; // 任务ID差1
+                String sql = String.Format(@"select STATUS from wcs_task_item where id = '{0}'", ID);
+                DataTable dt = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dt))
+                {
+                    return "";
+                }
+                return dt.Rows[0]["STATUS"].ToString();
             }
             catch (Exception ex)
             {
@@ -1438,6 +1508,53 @@ where (a.TASK_UID_1 = b.TASK_UID or a.TASK_UID_2 = b.TASK_UID) and a.STEP = '{1}
             }
         }
 
+        /// <summary>
+        /// 清单任务分配RGV是否完成
+        /// </summary>
+        /// <param name="wcs_no"></param>
+        /// <returns></returns>
+        public bool IsRGVtaskOK(string wcs_no)
+        {
+            try
+            {
+                int num;
+                // 获取清单 WMS任务数量
+                String sqlC = String.Format(@"select distinct TASK_UID_1,TASK_UID_1 from wcs_command_master where WCS_NO = '{0}'", wcs_no);
+                DataTable dtC = DataControl._mMySql.SelectAll(sqlC);
+                if (DataControl._mStools.IsNoData(dtC))
+                {
+                    return false;
+                }
+                if (string.IsNullOrEmpty(dtC.Rows[0]["TASK_UID_1"].ToString()) || string.IsNullOrEmpty(dtC.Rows[0]["TASK_UID_2"].ToString()))
+                {
+                    num = 1;
+                }
+                else
+                {
+                    num = 2;
+                }
+                // 当前Item内RGV任务比对
+                String sql = String.Format(@"select distinct LOC_FROM from wcs_task_item where LEFT(ITEM_ID,2) = '02' and WCS_NO = '{0}'", wcs_no);
+                DataTable dt = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dt))
+                {
+                    return false;
+                }
+                if (dt.Columns.Count == num)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        
         #endregion
 
         #region 日志记录

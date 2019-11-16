@@ -985,16 +985,6 @@ namespace TaskManager
                 // 异常
                 if (_device.DeviceStatus() == ABC.DeviceError || _device.CommandStatus() == ABC.CommandError)
                 {
-                    // 异常立即复位
-                    byte[] order = ABC._ResetTask(_device.ABCNum());
-                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
-                    if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, order, out string res))
-                    {
-                        throw new Exception(res);
-                    }
-                    // LOG
-                    log.LOG(DataControl._mTaskTools.GetLogMess(ITEM, order));
-
                     // 异常处理任务
                     ISetTaskErr();
                     // LOG
@@ -1158,16 +1148,18 @@ namespace TaskManager
         /// </summary>
         private void ThreadFunc()
         {
+            TaskLogic _task = new TaskLogic();
             List<Task> taskList = new List<Task>();
             while (PowerSwitch)
             {
-                Thread.Sleep(500);
+                Thread.Sleep(1000);
                 if (!PublicParam.IsRunTaskOrder)
                 {
                     continue;
                 }
                 try
                 {
+                    _task.Run_Order();
                     // 同步任务
                     lock (_ans)
                     {
