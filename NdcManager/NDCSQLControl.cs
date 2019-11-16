@@ -2,12 +2,8 @@
 using ModuleManager.NDC.SQL;
 using ModuleManager.PUB;
 using PubResourceManager;
-using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NdcManager
 {

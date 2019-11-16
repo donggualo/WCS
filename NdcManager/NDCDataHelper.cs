@@ -562,7 +562,7 @@ namespace NdcManager
                 case 255://取消任务
                 case 48://取消任务
                     if (!item.CancleFromSystem)//Carwash
-                    {
+                    { 
                         item._mTask.PAUSE = true;
                     }
                     break;
@@ -571,6 +571,13 @@ namespace NdcManager
                     if(item.PLCStatus != NDCPlcStatus.Unloaded && item._mTask.PAUSE)
                     {
                         item.IsFinish = false;
+                        //装货前 取消任务不用恢复，只需重新呼叫AGV
+                        if (!item._mTask.HADLOAD && !item._mTask.HADUNLOAD)
+                        {
+                            item.BeforeReCall(Ikey++);
+                            DoStartOrder(item);
+                            log.LOG(item._mTask.TASKID+":任务车出现问题，现在重新呼叫AGV");
+                        }
                     }
                     else
                     {

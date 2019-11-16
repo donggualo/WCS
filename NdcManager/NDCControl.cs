@@ -311,7 +311,7 @@ namespace NdcManager
 
         #endregion
 
-        #region 实现抽象方法
+        #region [实现抽象方法]
 
 
         internal override void _NoticeMsg(string msg)

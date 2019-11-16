@@ -19,8 +19,8 @@ namespace ModuleManager.NDC
         public _vpilMessage v;
 
 
-        public int Magic;
-        public int Status;
+        public int Magic = -1 ;
+        public int Status = -1;
         public bool IsFinish = false;
 
         /// <summary>
@@ -218,6 +218,19 @@ namespace ModuleManager.NDC
             }
         }
 
+        /// <summary>
+        /// 恢复初始状态，重新呼叫AGV
+        /// </summary>
+        /// <param name="newikey"></param>
+        public void BeforeReCall(int newikey)
+        {
+            _mTask.IKEY = newikey;
+            _mTask.NDCINDEX = -1;
+            _mTask.CARRIERID = 0;
+            _mTask.PAUSE = false;
+            Magic = 0;
+            Status = 0;
+        }
         #endregion
     }
 }
