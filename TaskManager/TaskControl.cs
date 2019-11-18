@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data;
-using System.Configuration;
 using System.Threading;
 using ToolManager;
 using TaskManager.Devices;
@@ -81,14 +76,14 @@ namespace TaskManager
         }
 
         /// <summary>
-        /// 定位任务等待对接
+        /// 任务等待对接
         /// </summary>
         public void ISetTaskWait()
         {
             if (_ITEM.ID.ToString() != null)
             {
                 // 更新数据库资讯
-                DataControl._mTaskTools.UpdateItem(_ITEM.ID, _ITEM.WCS_NO, _ITEM.ITEM_ID, ItemColumnName.作业状态, ItemStatus.交接中);
+                DataControl._mTaskTools.UpdateItem(_ITEM.ID, _ITEM.WCS_NO, ItemColumnName.作业状态, ItemStatus.交接中);
                 // 任务完成
                 _isSuc = true;
                 DataControl._mSocket.SwithRefresh(_ITEM.DEVICE, true);
@@ -102,7 +97,7 @@ namespace TaskManager
             if (_ITEM.ID.ToString() != null)
             {
                 // 更新数据库资讯
-                DataControl._mTaskTools.UpdateItem(_ITEM.ID, _ITEM.WCS_NO, _ITEM.ITEM_ID, ItemColumnName.作业状态, ItemStatus.完成任务);
+                DataControl._mTaskTools.UpdateItem(_ITEM.ID, _ITEM.WCS_NO, ItemColumnName.作业状态, ItemStatus.完成任务);
                 // 任务完成
                 _isSuc = true;
                 DataControl._mSocket.SwithRefresh(_ITEM.DEVICE, true);
@@ -116,7 +111,7 @@ namespace TaskManager
             if (_ITEM.ID.ToString() != null)
             {
                 // 更新数据库资讯
-                DataControl._mTaskTools.UpdateItem(_ITEM.ID, _ITEM.WCS_NO, _ITEM.ITEM_ID, ItemColumnName.作业状态, ItemStatus.出现异常);
+                DataControl._mTaskTools.UpdateItem(_ITEM.ID, _ITEM.WCS_NO, ItemColumnName.作业状态, ItemStatus.出现异常);
                 // 任务完成
                 _isErr = true;
                 DataControl._mSocket.SwithRefresh(_ITEM.DEVICE, true);
@@ -418,7 +413,7 @@ namespace TaskManager
                 else if (_device.CurrentTask() != _device.FinishTask() || _device.ActionStatus() == FRT.Stop)
                 {
                     DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
-                    if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, rollOutOrder == null ? Order : rollOutOrder, out string result))
+                    if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, rollOutOrder ?? Order, out string result))
                     {
                         DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                         throw new Exception(result);
@@ -573,7 +568,7 @@ namespace TaskManager
                             _device.FinishTask() == ARF.TaskRelease)
                         {
                             // 完成任务
-                            ISetTaskSuc();
+                            ISetTaskWait();
                             // 解锁设备数据状态
                             DataControl._mTaskTools.DeviceUnLock(ITEM.DEVICE);
                             // LOG
@@ -595,7 +590,7 @@ namespace TaskManager
                                     && _device.ActionStatus() == ARF.Stop && _device.FinishTask() == ARF.TaskRelease)
                                 {
                                     // 完成任务
-                                    ISetTaskSuc();
+                                    ISetTaskWait();
                                     // LOG
                                     log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
                                     return;
@@ -613,7 +608,7 @@ namespace TaskManager
                                     && _device.ActionStatus() == ARF.Stop && _device.FinishTask() == ARF.TaskRelease)
                                 {
                                     // 完成任务
-                                    ISetTaskSuc();
+                                    ISetTaskWait();
                                     // LOG
                                     log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
                                     return;
@@ -644,7 +639,7 @@ namespace TaskManager
                     else if (_device.CurrentTask() != _device.FinishTask() || _device.ActionStatus() == ARF.Stop)
                     {
                         DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
-                        if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, rollOutOrder == null ? Order : rollOutOrder, out string result))
+                        if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, rollOutOrder ?? Order, out string result))
                         {
                             DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                             throw new Exception(result);
@@ -836,7 +831,7 @@ namespace TaskManager
                             _device.FinishTask() == RGV.TaskRelease)
                         {
                             // 完成任务
-                            ISetTaskSuc();
+                            ISetTaskWait();
                             // 解锁设备数据状态
                             DataControl._mTaskTools.DeviceUnLock(ITEM.DEVICE);
                             // LOG
@@ -858,7 +853,7 @@ namespace TaskManager
                                     _device.ActionStatus() == RGV.Stop && _device.FinishTask() == RGV.TaskRelease)
                                 {
                                     // 完成任务
-                                    ISetTaskSuc();
+                                    ISetTaskWait();
                                     // LOG
                                     log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
                                     return;
@@ -876,7 +871,7 @@ namespace TaskManager
                                     _device.ActionStatus() == RGV.Stop && _device.FinishTask() == RGV.TaskRelease)
                                 {
                                     // 完成任务
-                                    ISetTaskSuc();
+                                    ISetTaskWait();
                                     // LOG
                                     log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
                                     return;
@@ -907,7 +902,7 @@ namespace TaskManager
                     else if (_device.CurrentTask() != _device.FinishTask() || _device.ActionStatus() == RGV.Stop)
                     {
                         DataControl._mSocket.SwithRefresh(ITEM.DEVICE, false);
-                        if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, rollOutOrder == null ? Order : rollOutOrder, out string result))
+                        if (!DataControl._mSocket.SendToClient(ITEM.DEVICE, rollOutOrder ?? Order, out string result))
                         {
                             DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                             throw new Exception(result);
@@ -920,8 +915,7 @@ namespace TaskManager
                 else
                 {
                     /* 设备坐标偏差 */
-                    string resultRGV;
-                    if (!DataControl._mTaskTools.GetLocByAddGap(ITEM.DEVICE, ITEM.LOC_TO, out resultRGV))
+                    if (!DataControl._mTaskTools.GetLocByAddGap(ITEM.DEVICE, ITEM.LOC_TO, out string resultRGV))
                     {
                         // 记录LOG
                         DataControl._mTaskTools.RecordTaskErrLog("RGVTack.DoWork()", "RGV指令任务[设备号,坐标]", ITEM.DEVICE, ITEM.LOC_TO, resultRGV);
@@ -1029,7 +1023,7 @@ namespace TaskManager
                     if (_device.GoodsStatus() == ABC.GoodsYes && _device.ActionStatus() == ABC.Stop && _device.FinishTask() == ABC.TaskTake)
                     {
                         // 完成任务
-                        ISetTaskSuc();
+                        ISetTaskWait();
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
                         return;
@@ -1041,7 +1035,7 @@ namespace TaskManager
                     if (_device.GoodsStatus() == ABC.GoodsNo && _device.ActionStatus() == ABC.Stop && _device.FinishTask() == ABC.TaskRelease)
                     {
                         // 完成任务
-                        ISetTaskSuc();
+                        ISetTaskWait();
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
                         return;
@@ -1058,8 +1052,7 @@ namespace TaskManager
                         int Y = DataControl._mStools.BytesToInt(_device.CurrentYsite(), 0);
 
                         /* 设备坐标偏差 */
-                        string resultABC;
-                        if (!DataControl._mTaskTools.GetLocByAddGap(ITEM.DEVICE, ITEM.LOC_TO, out resultABC))
+                        if (!DataControl._mTaskTools.GetLocByAddGap(ITEM.DEVICE, ITEM.LOC_TO, out string resultABC))
                         {
                             // 记录LOG
                             DataControl._mTaskTools.RecordTaskErrLog("ABCTack.DoWork()", "ABC指令任务[设备号,坐标]", ITEM.DEVICE, ITEM.LOC_TO, resultABC);
@@ -1148,7 +1141,6 @@ namespace TaskManager
         /// </summary>
         private void ThreadFunc()
         {
-            TaskLogic _task = new TaskLogic();
             List<Task> taskList = new List<Task>();
             while (PowerSwitch)
             {
@@ -1159,7 +1151,6 @@ namespace TaskManager
                 }
                 try
                 {
-                    _task.Run_Order();
                     // 同步任务
                     lock (_ans)
                     {

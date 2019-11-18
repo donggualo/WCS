@@ -7,13 +7,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using TaskManager;
 
 namespace WindowManager
@@ -272,11 +265,12 @@ namespace WindowManager
         {
             try
             {
-                _TASK.Run_TaskContinued();
                 _TASK.Run_InInitial();
-                _TASK.Run_LinkDevice();
-                _TASK.Run_OutFollow();
+                _TASK.Run_WCStask_In();
 
+                _TASK.Run_OutInitial();
+                _TASK.Run_WCStask_Out();
+                
                 RefreshData();
                 GetDGitemInfo();
 
@@ -304,21 +298,15 @@ namespace WindowManager
                     return;
                 }
                 string wcs = (DGcommand.SelectedItem as DataRowView).Row[0].ToString();
-
-                // 获取待分配设备任务
-                String sql = String.Format(@"select * from WCS_TASK_ITEM where (DEVICE is null or DEVICE = '') and STATUS = '{1}' and WCS_NO = '{0}' order by CREATION_TIME", wcs, ItemStatus.不可执行);
-                DataTable dtitem = DataControl._mMySql.SelectAll(sql);
-                if (DataControl._mStools.IsNoData(dtitem))
+                // 获取WCS清单
+                String sql = String.Format(@"select * from wcs_command_v where WCS_NO = '{0}'", wcs);
+                DataTable dtcommand = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dtcommand))
                 {
-                    Notice.Show("无可分配任务！", "错误", 3, MessageBoxIcon.Error);
                     return;
                 }
-                List<WCS_TASK_ITEM> itemList = dtitem.ToDataList<WCS_TASK_ITEM>();
-                // 遍历分配设备
-                foreach (WCS_TASK_ITEM item in itemList)
-                {
-                    _TASK.ReadDevice(item);
-                }
+                WCS_COMMAND_V com = dt.ToDataEntity<WCS_COMMAND_V>();
+                _TASK.AllotItemDev(com);
 
                 RefreshData();
                 GetDGitemInfo();

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ModuleManager.WCS
 {
@@ -22,9 +18,19 @@ namespace ModuleManager.WCS
         public String WCS_NO { get; set; }
 
         /// <summary>
+        /// 当前Task
+        /// </summary>
+        public String TASK_NOW { get; set; }
+
+        /// <summary>
         /// 项目ID
         /// </summary>
         public String ITEM_ID { get; set; }
+
+        /// <summary>
+        /// 设备类型
+        /// </summary>
+        public String DEV_TYPE { get; set; }
 
         /// <summary>
         /// 设备

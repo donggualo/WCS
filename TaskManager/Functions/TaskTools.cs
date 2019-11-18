@@ -108,6 +108,8 @@ namespace TaskManager.Functions
             }
         }
 
+        #region 复位
+
         /// <summary>
         /// 设备复位待命点
         /// </summary>
@@ -438,7 +440,9 @@ namespace TaskManager.Functions
 
         #endregion
 
-        #region 位置点位
+        #endregion
+
+        #region 位置坐标
 
         /// <summary>
         /// 获取摆渡车于目的固定辊台对接点位
@@ -842,42 +846,6 @@ namespace TaskManager.Functions
         }
 
         /// <summary>
-        /// 获取行车目的分区
-        /// </summary>
-        /// <param name="loc"></param>
-        /// <returns></returns>
-        public int GetABCPartition(string area, int loc)
-        {
-            try
-            {
-                int value = 0;
-                // 获取 WCS库存划分范围（行车）
-                String sql = String.Format(@"select * from wcs_param where NAME = 'WCS_STOCK_PARTITION_RANGE' and VALUE6 = '{0}'", area);
-                DataTable dt = DataControl._mMySql.SelectAll(sql);
-                if (DataControl._mStools.IsNoData(dt))
-                {
-                    return value;
-                }
-                List<WCS_PARAM> pList = dt.ToDataList<WCS_PARAM>();
-                // 遍历获取所在分区数
-                foreach (WCS_PARAM p in pList)
-                {
-                    // 范围区间
-                    if (Convert.ToInt32(p.VALUE2) <= loc && loc <= Convert.ToInt32(p.VALUE3))
-                    {
-                        value = Convert.ToInt32(p.VALUE1);
-                        break;
-                    }
-                }
-                return value;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        /// <summary>
         /// 获取行车目的分区奇偶性
         /// </summary>
         /// <param name="loc"></param>
@@ -887,7 +855,7 @@ namespace TaskManager.Functions
             try
             {
                 // 获取 WCS库存划分范围（行车）
-                String sql = String.Format(@"select * from wcs_param where NAME = 'WCS_STOCK_PARTITION_RANGE' and VALUE6 = '{0}'",area);
+                String sql = String.Format(@"select * from wcs_param where NAME = 'WCS_STOCK_PARTITION_RANGE' and VALUE6 = '{0}'", area);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {
@@ -899,7 +867,7 @@ namespace TaskManager.Functions
                 foreach (WCS_PARAM p in pList)
                 {
                     // 范围区间
-                    if (Convert.ToInt32(p.VALUE2) <= loc && loc<= Convert.ToInt32(p.VALUE3))
+                    if (Convert.ToInt32(p.VALUE2) <= loc && loc <= Convert.ToInt32(p.VALUE3))
                     {
                         value = Convert.ToInt32(p.VALUE1);
                         break;
@@ -924,72 +892,67 @@ namespace TaskManager.Functions
                 throw ex;
             }
         }
-        #endregion
-
-        #region 设备编号
 
         /// <summary>
-        /// 获取清单号对应固定辊台设备
+        /// 获取Task RGV之间的对接点坐标
         /// </summary>
-        /// <param name="wcs_no"></param>
+        /// <param name="distance"></param>
+        /// <param name="taskID"></param>
+        /// <param name="loc1"></param>
+        /// <param name="loc2"></param>
         /// <returns></returns>
-        public String GetFRTByWCSNo(String wcs_no)
+        public int GetCloseRGVLoc(string distance, string taskID, out string loc1, out string loc2)
         {
             try
             {
-                String sql = String.Format(@"select FRT from wcs_command_master where WCS_NO = '{0}'", wcs_no);
-                DataTable dtloc = DataControl._mMySql.SelectAll(sql);
-                if (DataControl._mStools.IsNoData(dtloc))
-                {
-                    return "";
-                }
-                return dtloc.Rows[0]["FRT"].ToString();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// 获取摆渡车对接的固定辊台的设备编号
-        /// </summary>
-        /// <param name="arf"></param>
-        /// <returns></returns>
-        public String GetFRTDevice(String arf)
-        {
-            try
-            {
-                String sql = String.Format(@"select distinct FRT_LOC from WCS_CONFIG_LOC where ARF_LOC = '{0}'", arf);
-                DataTable dtloc = DataControl._mMySql.SelectAll(sql);
-                if (DataControl._mStools.IsNoData(dtloc))
-                {
-                    return "";
-                }
-                return dtloc.Rows[0]["FRT_LOC"].ToString();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// 获取 COMMAND 内 ITEM 最后指定任务所用的设备
-        /// </summary>
-        /// <param name="wcs_no"></param>
-        /// <param name="item_id"></param>
-        /// <returns></returns>
-        public String GetItemDeviceLast(String wcs_no, String item_id)
-        {
-            try
-            {
-                String sql = String.Format(@"select DEVICE from WCS_TASK_ITEM where WCS_NO = '{0}' and ITEM_ID = '{1}' and (WCS_NO, ITEM_ID, CREATION_TIME) in 
-                                            (select WCS_NO, ITEM_ID, MAX(CREATION_TIME) from WCS_TASK_ITEM group by WCS_NO, ITEM_ID) order by CREATION_TIME", wcs_no, item_id);
+                // 获取 WCS库存划分范围（行车）
+                String sql = String.Format(@"select P_RANGE, RR, (RR - {1}) R1 from wcs_task_out_range_v where TASK_UID = '{0}'", taskID, distance);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {
-                    return "";
+                    loc1 = null;
+                    loc2 = null;
+                    return 0;
+                }
+                int P = Convert.ToInt32(dt.Rows[0]["P_RANGE"].ToString());
+                loc1 = dt.Rows[0]["RR"].ToString();
+                loc2 = dt.Rows[0]["R1"].ToString();
+
+                // 判断奇偶数
+                if (Convert.ToBoolean(P % 2))
+                {
+                    return 1; // 奇数行车1，靠外的
+                }
+                else
+                {
+                    return 2; // 偶数行车2，靠内的
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        #endregion
+
+        #region 设备信息
+
+        /// <summary>
+        /// 获取同区域另一RGV
+        /// </summary>
+        /// <param name="rgv"></param>
+        /// <returns></returns>
+        public String GetOtherRGV(String rgv)
+        {
+            try
+            {
+                String sql = String.Format(@"select DEVICE from wcs_config_device where FLAG <> '{0}' and TYPE = '{1}' and 
+                        AREA in (select AREA from wcs_config_device where DEVICE = '{2}')", DeviceFlag.失效, DeviceType.运输车, rgv);
+                DataTable dt = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dt))
+                {
+                    return null;
                 }
                 return dt.Rows[0]["DEVICE"].ToString();
             }
@@ -1171,26 +1134,44 @@ namespace TaskManager.Functions
             }
         }
 
-        #endregion
-
-        #region 任务清单
-
         /// <summary>
-        /// 获取 COMMAND 状态
+        /// 解锁设备(By 设备号&清单号)
         /// </summary>
+        /// <param name="dev"></param>
         /// <param name="wcs_no"></param>
-        /// <returns></returns>
-        public String GetCommandStep(String wcs_no)
+        public void UnLockByDevAndWcsNo(string dev, string wcs_no)
         {
             try
             {
-                String sql = String.Format(@"select distinct STEP from WCS_COMMAND_MASTER where WCS_NO = '{0}'", wcs_no);
+                String sql = String.Format(@"update wcs_config_device set FLAG = '{1}', LOCK_WCS_NO = null where 
+                    DEVICE = '{0}' and LOCK_WCS_NO = '{0}'", dev, wcs_no, DeviceFlag.空闲);
+                DataControl._mMySql.ExcuteSql(sql);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion
+
+        #region 任务信息
+
+        /// <summary>
+        /// 获取Item状态
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
+        public string GetItemStatus(int ID)
+        {
+            try
+            {
+                String sql = String.Format(@"select STATUS from wcs_task_item where ID = {0}", ID);
                 DataTable dtstep = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dtstep))
                 {
                     return "";
                 }
-                return dtstep.Rows[0]["STEP"].ToString();
+                return dtstep.Rows[0]["STATUS"].ToString();
             }
             catch (Exception ex)
             {
@@ -1199,40 +1180,17 @@ namespace TaskManager.Functions
         }
 
         /// <summary>
-        /// 获取入库方向对接设备的任务状态
+        /// 获取当前Task最新设备任务
         /// </summary>
         /// <param name="wcs_no"></param>
+        /// <param name="dev_type"></param>
         /// <returns></returns>
-        public String GetInTaskStatus(int ID)
+        public List<WCS_TASK_ITEM> GetItemList_Now(String wcs_no, String dev_type)
         {
             try
             {
-                ID--; // 任务ID差1
-                String sql = String.Format(@"select STATUS from wcs_task_item where id = '{0}'", ID);
-                DataTable dt = DataControl._mMySql.SelectAll(sql);
-                if (DataControl._mStools.IsNoData(dt))
-                {
-                    return "";
-                }
-                return dt.Rows[0]["STATUS"].ToString();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// 获取对应 item_id 属对接状态中的 Item List
-        /// </summary>
-        /// <param name="item_id"></param>
-        /// <returns></returns>
-        public List<WCS_TASK_ITEM> GetItemList_R(String item_id)
-        {
-            String sql;
-            try
-            {
-                sql = String.Format(@"select * From WCS_TASK_ITEM where STATUS = '{1}' and ITEM_ID = '{0}' order by CREATION_TIME", item_id, ItemStatus.交接中);
+                String sql = String.Format(@"select * from wcs_task_item where ID in (select MAX(ID) from wcs_task_item where 
+                        WCS_NO = '{0}' and DEV_TYPE = '{1}' GROUP BY TASK_NOW)", wcs_no, dev_type);
                 DataTable dtitem = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dtitem))
                 {
@@ -1316,10 +1274,24 @@ namespace TaskManager.Functions
         {
             try
             {
-                String sql = String.Format(@"update WCS_TASK_INFO set SITE = '{0}',UPDATE_TIME = NOW()
-                                              where TASK_UID in (select TASK_UID_1 from WCS_COMMAND_MASTER where WCS_NO = '{1}')
-                                                 or TASK_UID in (select TASK_UID_2 from WCS_COMMAND_MASTER where WCS_NO = '{1}')", site, wcs_no);
-                DataControl._mMySql.ExcuteSql(sql);
+                String sql = String.Format(@"select TASK_UID_1,TASK_UID_2 from wcs_command_master where WCS_NO = '{0}'", wcs_no);
+                DataTable dt = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dt))
+                {
+                    return;
+                }
+                string task1 = dt.Rows[0]["TASK_UID_1"].ToString();
+                string task2 = dt.Rows[0]["TASK_UID_2"].ToString();
+
+                if (!string.IsNullOrEmpty(task1))
+                {
+                    UpdateTask(task1, site);
+                }
+
+                if (!string.IsNullOrEmpty(task2))
+                {
+                    UpdateTask(task2, site);
+                }
             }
             catch (Exception ex)
             {
@@ -1331,19 +1303,18 @@ namespace TaskManager.Functions
         /// 更新 ITEM 明细：
         /// 设备编号(key = DEVICE)；
         /// 来源位置(key = LOC_FROM)；
-        /// 作业状态(key = STATUS)[value = N:不可执行,Q:请求执行,W:任务中,X:失效,R:交接,E:出现异常,Y:完成任务]
+        /// 作业状态(key = STATUS)
         /// </summary>
+        /// <param name="id"></param>
         /// <param name="wcs_no"></param>
-        /// <param name="item_id"></param>
         /// <param name="key"></param>
-        /// <param name="oldvalue"></param>
-        /// <param name="newvalue"></param>
-        public void UpdateItem(int id, String wcs_no, String item_id, String key, String value)
+        /// <param name="value"></param>
+        public void UpdateItem(int id, String wcs_no, String key, String value)
         {
             try
             {
-                String sql = String.Format(@"update WCS_TASK_ITEM set {0} = '{1}',UPDATE_TIME = NOW() where ID = {2} and WCS_NO = '{3}' and ITEM_ID = '{4}'",
-                    key, value, id, wcs_no, item_id);
+                String sql = String.Format(@"update WCS_TASK_ITEM set {0} = '{1}',UPDATE_TIME = NOW() where ID = {2} and WCS_NO = '{3}'",
+                    key, value, id, wcs_no);
                 DataControl._mMySql.ExcuteSql(sql);
             }
             catch (Exception ex)
@@ -1367,7 +1338,7 @@ namespace TaskManager.Functions
                 if (DataControl._mStools.IsNoData(dt))
                 {
                     // 无则新增
-                    wcs_no = "I" + System.DateTime.Now.ToString("yyMMddHHmmss"); // 生成 WCS 清单号
+                    wcs_no = "I" + System.DateTime.Now.ToString("yyMMddHHmmssff"); // 生成 WCS 清单号
                     sql = String.Format(@"insert into wcs_command_master(WCS_NO, FRT, TASK_UID_1) values('{0}','{1}','{2}')", wcs_no, frt, task_uid);
                 }
                 else
@@ -1391,40 +1362,57 @@ namespace TaskManager.Functions
         }
 
         /// <summary>
-        /// 创建 ITEM 初始任务
+        /// 创建 WCS 出库清单
         /// </summary>
-        /// <param name="wcs_no"></param>
-        /// <param name="item_id"></param>
-        /// <param name="loc_to"></param>
-        public void CreateItem(String wcs_no, String item_id, String loc_to)
+        /// <param name="area"></param>
+        /// <param name="taskuid_1"></param>
+        /// <param name="taskuid_2"></param>
+        /// <returns></returns>
+        public string CreateCommandOut(String area, String taskuid_1, String taskuid_2)
         {
             try
             {
-                String sql = String.Format(@"insert into WCS_TASK_ITEM(WCS_NO,ITEM_ID,LOC_TO) values('{0}','{1}','{2}')", wcs_no, item_id, loc_to);
+                // 获取该区域可用的固定辊台
+                String sqlfrt = String.Format(@"select MAX(device) FRT from wcs_config_device where AREA = '{0}' and FLAG <> '{1}' and 
+                        TYPE = '{2}' and DUTY = '{3}'", area, DeviceFlag.失效, DeviceType.固定辊台, DeviceDuty.负责出库);
+                DataTable dtfrt = DataControl._mMySql.SelectAll(sqlfrt);
+                if (DataControl._mStools.IsNoData(dtfrt))
+                {
+                    return null;
+                }
+                string frt = dtfrt.Rows[0]["FRT"].ToString();
+                //生成 WCS 清单号
+                String wcs_no = "O" + DateTime.Now.ToString("yyMMddHHmmssff");
+                // 生成 COMMAND
+                String sql = String.Format(@"insert into wcs_command_master(WCS_NO, FRT, TASK_UID_1, TASK_UID_2) values('{0}','{1}','{2}','{3}')",
+                        wcs_no, frt, taskuid_1, String.IsNullOrEmpty(taskuid_2) ? null : taskuid_2);
                 DataControl._mMySql.ExcuteSql(sql);
+                return wcs_no;
             }
             catch (Exception ex)
             {
-
                 throw ex;
             }
         }
 
         /// <summary>
-        /// 创建自定义 ITEM 任务
+        /// 创建任务Item
         /// </summary>
         /// <param name="wcs_no"></param>
+        /// <param name="task_now"></param>
         /// <param name="item_id"></param>
-        /// <param name="device"></param>
+        /// <param name="dev_type"></param>
         /// <param name="loc_from"></param>
         /// <param name="loc_to"></param>
         /// <param name="status"></param>
-        public void CreateCustomItem(String wcs_no, String item_id, String device, String loc_from, String loc_to, String status)
+        /// <param name="device"></param>
+        public void CreateTaskItem(String wcs_no, String task_now, String item_id, String dev_type, String loc_from, String loc_to, String status, String device = null)
         {
             try
             {
-                String sql = String.Format(@"insert into WCS_TASK_ITEM(WCS_NO,ITEM_ID,DEVICE,LOC_FROM,LOC_TO,STATUS) values('{0}','{1}','{2}','{3}','{4}','{5}')",
-                             wcs_no, item_id, device, loc_from, loc_to, status);
+                String sql = String.Format(@"insert into WCS_TASK_ITEM(WCS_NO,TASK_NOW,ITEM_ID,DEV_TYPE,DEVICE,LOC_FROM,LOC_TO,STATUS) 
+                    values('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}')",
+                             wcs_no, task_now, item_id, dev_type, device, loc_from, loc_to, status);
                 DataControl._mMySql.ExcuteSql(sql);
             }
             catch (Exception ex)
@@ -1456,12 +1444,12 @@ namespace TaskManager.Functions
         /// </summary>
         /// <param name="wcs_no"></param>
         /// <param name="item_id"></param>
-        public void DeleteItem(String wcs_no, String item_id)
+        public void DeleteItem(String wcs_no, String item_id = null)
         {
             String sql;
             try
             {
-                if (String.IsNullOrEmpty(item_id.Trim()))
+                if (String.IsNullOrEmpty(item_id))
                 {
                     sql = String.Format(@"delete from WCS_TASK_ITEM where STATUS in ('{1}','{2}') and WCS_NO = '{0}'", wcs_no, ItemStatus.不可执行, ItemStatus.请求执行);
                 }
@@ -1519,7 +1507,7 @@ where (a.TASK_UID_1 = b.TASK_UID or a.TASK_UID_2 = b.TASK_UID) and a.STEP = '{1}
             {
                 int num;
                 // 获取清单 WMS任务数量
-                String sqlC = String.Format(@"select distinct TASK_UID_1,TASK_UID_1 from wcs_command_master where WCS_NO = '{0}'", wcs_no);
+                String sqlC = String.Format(@"select distinct TASK_UID_1,TASK_UID_2 from wcs_command_master where WCS_NO = '{0}'", wcs_no);
                 DataTable dtC = DataControl._mMySql.SelectAll(sqlC);
                 if (DataControl._mStools.IsNoData(dtC))
                 {
@@ -1534,13 +1522,13 @@ where (a.TASK_UID_1 = b.TASK_UID or a.TASK_UID_2 = b.TASK_UID) and a.STEP = '{1}
                     num = 2;
                 }
                 // 当前Item内RGV任务比对
-                String sql = String.Format(@"select distinct LOC_FROM from wcs_task_item where LEFT(ITEM_ID,2) = '02' and WCS_NO = '{0}'", wcs_no);
+                String sql = String.Format(@"select distinct TASK_NOW from wcs_task_item where LEFT(ITEM_ID,2) = '02' and WCS_NO = '{0}'", wcs_no);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {
                     return false;
                 }
-                if (dt.Columns.Count == num)
+                if (dt.Rows.Count == num)
                 {
                     return true;
                 }
@@ -1554,7 +1542,76 @@ where (a.TASK_UID_1 = b.TASK_UID or a.TASK_UID_2 = b.TASK_UID) and a.STEP = '{1}
                 throw ex;
             }
         }
-        
+
+        /// <summary>
+        /// 是否满足交接条件
+        /// </summary>
+        /// <param name="wcsNO"></param>
+        /// <param name="taskID"></param>
+        /// <param name="itemID"></param>
+        /// <param name="ID"></param>
+        /// <param name="dev"></param>
+        /// <returns></returns>
+        public bool IsStandBy(string wcsNO, string taskID, string itemID, out int ID, out string dev)
+        {
+            try
+            {
+                String sql = String.Format(@"select distinct ID, STATUS, DEVICE from wcs_task_item where WCS_NO = '{0}' and TASK_NOW = '{1}' and 
+                        ITEM_ID = '{2}' order by ID desc", wcsNO, taskID, itemID);
+                DataTable dt = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dt))
+                {
+                    ID = 0;
+                    dev = "";
+                    return false;
+                }
+                ID = Convert.ToInt32(dt.Rows[0]["ID"].ToString());
+                dev = dt.Rows[0]["DEVICE"].ToString();
+                if (dt.Rows[0]["STATUS"].ToString() == ItemStatus.交接中)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 是否存在另一任务
+        /// </summary>
+        /// <param name="wcsNO"></param>
+        /// <param name="taskID"></param>
+        /// <param name="dev"></param>
+        /// <param name="status"></param>
+        /// <param name="ID"></param>
+        /// <returns></returns>
+        public bool IsOtherTask(string wcsNO, string taskID, string dev, string status, out int ID)
+        {
+            try
+            {
+                String sql = String.Format(@"select distinct ID from wcs_task_item where WCS_NO = '{0}' and TASK_NOW <> '{1}' and 
+                    DEVICE = '{2}' and STATUS = '{3}'", wcsNO, taskID, dev, status);
+                DataTable dt = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dt))
+                {
+                    ID = 0;
+                    return false;
+                }
+                ID = Convert.ToInt32(dt.Rows[0]["ID"].ToString());
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         #endregion
 
         #region 日志记录

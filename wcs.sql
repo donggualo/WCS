@@ -11,7 +11,7 @@
  Target Server Version : 80016
  File Encoding         : 65001
 
- Date: 15/11/2019 01:02:28
+ Date: 18/11/2019 21:26:43
 */
 
 SET NAMES utf8mb4;
@@ -101,9 +101,9 @@ INSERT INTO `wcs_config_device` VALUES ('ARF01', '192.168.8.80', 2000, 'Y', NULL
 INSERT INTO `wcs_config_device` VALUES ('ARF02', '192.168.8.83', 2000, 'Y', NULL, 'ARF', 'B01', 'O', '摆渡车2', '2019-10-23 09:07:08', NULL);
 INSERT INTO `wcs_config_device` VALUES ('AWC01', '192.168.8.40', 2000, 'Y', NULL, 'ABC', 'B01', 'A', '行车1', '2019-10-23 09:08:24', NULL);
 INSERT INTO `wcs_config_device` VALUES ('AWC02', '192.168.8.48', 2000, 'Y', NULL, 'ABC', 'B01', 'A', '行车2', '2019-10-23 09:08:42', NULL);
-INSERT INTO `wcs_config_device` VALUES ('FRT01', '192.168.8.90', 2000, 'Y', NULL, 'FRT', 'A01', 'I', '固定辊台1', '2019-09-23 16:52:50', '2019-10-29 09:22:37');
-INSERT INTO `wcs_config_device` VALUES ('FRT02', '192.168.8.90', 2001, 'Y', '', 'FRT', 'A01', 'I', '固定辊台2', '2019-09-23 16:06:49', '2019-10-23 09:09:18');
-INSERT INTO `wcs_config_device` VALUES ('FRT03', '192.168.8.90', 2002, 'Y', '', 'FRT', 'B01', 'O', '固定辊台3', '2019-09-23 17:06:55', '2019-10-27 08:51:38');
+INSERT INTO `wcs_config_device` VALUES ('FRT01', '192.168.8.90', 2000, 'Y', NULL, 'FRT', 'B01', 'I', '固定辊台1', '2019-09-23 16:52:50', '2019-10-29 09:22:37');
+INSERT INTO `wcs_config_device` VALUES ('FRT02', '192.168.8.90', 2001, 'Y', NULL, 'FRT', 'B01', 'I', '固定辊台2', '2019-09-23 16:06:49', '2019-10-23 09:09:18');
+INSERT INTO `wcs_config_device` VALUES ('FRT03', '192.168.8.90', 2002, 'Y', NULL, 'FRT', 'B01', 'O', '固定辊台3', '2019-09-23 17:06:55', '2019-10-27 08:51:38');
 INSERT INTO `wcs_config_device` VALUES ('RGV01', '192.168.8.60', 2002, 'Y', NULL, 'RGV', 'B01', 'A', '运输车1', '2019-10-23 09:06:18', NULL);
 INSERT INTO `wcs_config_device` VALUES ('RGV02', '192.168.8.66', 2002, 'Y', NULL, 'RGV', 'B01', 'A', '运输车2', '2019-10-23 09:06:32', NULL);
 INSERT INTO `wcs_config_device` VALUES ('RGV03', '192.168.8.71', 2002, 'N', NULL, 'RGV', 'B01', 'A', '运输车3', '2019-09-24 17:06:52', '2019-10-23 09:05:59');
@@ -139,13 +139,7 @@ CREATE TABLE `wcs_function_log`  (
   `MESSAGE` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '讯息',
   `CREATION_TIME` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of wcs_function_log
--- ----------------------------
-INSERT INTO `wcs_function_log` VALUES (3, 'DELETE_DATA()', '按时清除过期资讯', NULL, NULL, NULL, 'JOB[保留备份数据30天，程序异常记录7天]', '2019-11-14 00:00:00');
-INSERT INTO `wcs_function_log` VALUES (4, 'DELETE_DATA()', '按时清除过期资讯', NULL, NULL, NULL, 'JOB[保留备份数据30天，程序异常记录7天]', '2019-11-15 00:00:00');
+) ENGINE = InnoDB AUTO_INCREMENT = 7550 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for wcs_ndc_site
@@ -161,9 +155,9 @@ CREATE TABLE `wcs_ndc_site`  (
 -- ----------------------------
 -- Records of wcs_ndc_site
 -- ----------------------------
-INSERT INTO `wcs_ndc_site` VALUES ('FRT01', '81', 'loadsite');
+INSERT INTO `wcs_ndc_site` VALUES ('FRT01', '82', 'unloadsite');
 INSERT INTO `wcs_ndc_site` VALUES ('FRT02', '91', 'loadsite');
-INSERT INTO `wcs_ndc_site` VALUES ('FRT03', '122', 'unloadsite');
+INSERT INTO `wcs_ndc_site` VALUES ('FRT03', '121', 'loadsite');
 INSERT INTO `wcs_ndc_site` VALUES ('FRT99', '102', 'unloadarea');
 
 -- ----------------------------
@@ -189,7 +183,12 @@ CREATE TABLE `wcs_ndc_task`  (
   `CREATETIME` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `UPDATE_TIME` datetime(0) NULL DEFAULT NULL,
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 23 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 33 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of wcs_ndc_task
+-- ----------------------------
+INSERT INTO `wcs_ndc_task` VALUES (33, '17160809', 103, 3, 2, 'FRT03', 'FRT99', '', '121', '102', '', 0, 0, 0, 0, '2019-11-17 16:08:09', '2019-11-18 21:21:22');
 
 -- ----------------------------
 -- Table structure for wcs_ndc_task_temp
@@ -201,7 +200,8 @@ CREATE TABLE `wcs_ndc_task_temp`  (
   `IKEY` int(11) NULL DEFAULT NULL,
   `CARRIERID` int(11) NULL DEFAULT NULL,
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 76 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
 
 -- ----------------------------
 -- Table structure for wcs_param
@@ -218,20 +218,20 @@ CREATE TABLE `wcs_param`  (
   `VALUE5` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `VALUE6` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of wcs_param
 -- ----------------------------
 INSERT INTO `wcs_param` VALUES (1, 'NDC_SERVER_IP', 'NDC服务IP', '192.168.8.120', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `wcs_param` VALUES (2, 'NDC_SERVER_PORT', 'NDC服务端口', '30001', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `wcs_param` VALUES (3, 'NDC_TASK_IKEY', '用于计算生成任务的IKEY值', '97', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `wcs_param` VALUES (3, 'NDC_TASK_IKEY', '用于计算生成任务的IKEY值', '104', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `wcs_param` VALUES (4, 'WCS_HTTP_SERVER_PORT', 'WCS提供WMS的服务端口', '8080', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `wcs_param` VALUES (5, 'WMS_SERVER_URL', 'WMS服务地址', 'http://192.168.8.244:8081', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `wcs_param` VALUES (6, 'WCS_STOCK_PARTITION_RANGE', 'WCS库存划分范围（行车）', '1', '11300', '82550', NULL, NULL, 'B01');
-INSERT INTO `wcs_param` VALUES (7, 'WCS_STOCK_PARTITION_RANGE', 'WCS库存划分范围（行车）', '2', '83800', '155050', NULL, NULL, 'B01');
-INSERT INTO `wcs_param` VALUES (8, 'WCS_STOCK_PARTITION_RANGE', 'WCS库存划分范围（行车）', '3', '156300', '227550', NULL, NULL, 'B01');
-INSERT INTO `wcs_param` VALUES (9, 'WCS_STOCK_PARTITION_RANGE', 'WCS库存划分范围（行车）', '4', '228800', '300050', NULL, NULL, 'B01');
+INSERT INTO `wcs_param` VALUES (7, 'WCS_STOCK_PARTITION_RANGE', 'WCS库存划分范围（行车）', '1', '0', '22550', 'AWC01', 'RGV01', 'B01');
+INSERT INTO `wcs_param` VALUES (8, 'WCS_STOCK_PARTITION_RANGE', 'WCS库存划分范围（行车）', '2', '23800', '35050', 'AWC02', 'RGV02', 'B01');
+INSERT INTO `wcs_param` VALUES (9, 'WCS_STOCK_PARTITION_RANGE', 'WCS库存划分范围（行车）', '3', '36300', '47550', 'AWC01', 'RGV01', 'B01');
+INSERT INTO `wcs_param` VALUES (10, 'WCS_STOCK_PARTITION_RANGE', 'WCS库存划分范围（行车）', '4', '48800', '60050', 'AWC02', 'RGV02', 'B01');
 
 -- ----------------------------
 -- Table structure for wcs_task_backup
@@ -248,7 +248,7 @@ CREATE TABLE `wcs_task_backup`  (
   `W_D_LOC` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '目标货位',
   `BACKUP_TIME` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP COMMENT '备份时间',
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 56 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 156 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for wcs_task_info
@@ -274,15 +274,17 @@ DROP TABLE IF EXISTS `wcs_task_item`;
 CREATE TABLE `wcs_task_item`  (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `WCS_NO` varchar(15) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'WCS单号',
+  `TASK_NOW` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '当前执行任务',
   `ITEM_ID` varchar(5) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '项目ID',
-  `DEVICE` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '设备',
+  `DEV_TYPE` varchar(5) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '设备类型',
+  `DEVICE` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '设备号',
   `LOC_FROM` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '启动位置',
   `LOC_TO` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '目的位置',
   `STATUS` varchar(2) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'N' COMMENT '任务状态(N:不可执行；Q:请求执行；W:任务中；R:交接中；E:异常；\nY:完成；\nX:失效)',
   `CREATION_TIME` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `UPDATE_TIME` timestamp(0) NULL DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 335 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = 'WCS指令资讯  ' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 401 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = 'WCS指令资讯  ' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- View structure for wcs_command_v
@@ -291,10 +293,16 @@ DROP VIEW IF EXISTS `wcs_command_v`;
 CREATE ALGORITHM = UNDEFINED DEFINER = `root`@`localhost` SQL SECURITY DEFINER VIEW `wcs_command_v` AS select `a`.`WCS_NO` AS `WCS_NO`,`a`.`FRT` AS `FRT`,`a`.`STEP` AS `STEP`,`b`.`TASK_TYPE` AS `TASK_TYPE`,`a`.`CREATION_TIME` AS `CREATION_TIME`,`a`.`TASK_UID_1` AS `TASK_UID_1`,`b`.`BARCODE` AS `CODE_1`,`b`.`W_S_LOC` AS `LOC_FROM_1`,`b`.`W_D_LOC` AS `LOC_TO_1`,`b`.`SITE` AS `SITE_1`,`a`.`TASK_UID_2` AS `TASK_UID_2`,`c`.`BARCODE` AS `CODE_2`,`c`.`W_S_LOC` AS `LOC_FROM_2`,`c`.`W_D_LOC` AS `LOC_TO_2`,`c`.`SITE` AS `SITE_2` from ((`wcs_command_master` `a` left join `wcs_task_info` `b` on((`a`.`TASK_UID_1` = `b`.`TASK_UID`))) left join `wcs_task_info` `c` on((`a`.`TASK_UID_2` = `c`.`TASK_UID`)));
 
 -- ----------------------------
+-- View structure for wcs_task_in_range_v
+-- ----------------------------
+DROP VIEW IF EXISTS `wcs_task_in_range_v`;
+CREATE ALGORITHM = UNDEFINED DEFINER = `root`@`localhost` SQL SECURITY DEFINER VIEW `wcs_task_in_range_v` AS select `l`.`AREA` AS `AREA`,`t`.`TASK_UID` AS `TASK_UID`,`t`.`SITE` AS `SITE`,`l`.`WMS_LOC` AS `WMS_LOC`,`l`.`WMS_Z` AS `WMS_Z`,`l`.`STOCK_X` AS `STOCK_X`,`l`.`VALUE1` AS `P_RANGE`,`l`.`VALUE2` AS `RANGE_FROM`,`l`.`VALUE3` AS `RANGE_TO`,`l`.`VALUE4` AS `ABC` from ((select distinct `wcs_task_info`.`TASK_UID` AS `TASK_UID`,`wcs_task_info`.`W_D_LOC` AS `W_D_LOC`,`wcs_task_info`.`SITE` AS `SITE` from `wcs_task_info` where (`wcs_task_info`.`TASK_TYPE` = '1')) `t` join (select `a`.`WMS_LOC` AS `WMS_LOC`,`a`.`STOCK_X` AS `STOCK_X`,`a`.`AREA` AS `AREA`,`a`.`WMS_Z` AS `WMS_Z`,`b`.`VALUE1` AS `VALUE1`,`b`.`VALUE2` AS `VALUE2`,`b`.`VALUE3` AS `VALUE3`,`b`.`VALUE4` AS `VALUE4` from ((select `wcs_config_loc`.`WMS_LOC` AS `WMS_LOC`,substring_index(`wcs_config_loc`.`ABC_LOC_STOCK`,'-',1) AS `STOCK_X`,substring_index(`wcs_config_loc`.`WMS_LOC`,'-',1) AS `AREA`,substring_index(`wcs_config_loc`.`WMS_LOC`,'-',-(1)) AS `WMS_Z` from `wcs_config_loc`) `a` join (select `wcs_param`.`VALUE1` AS `VALUE1`,`wcs_param`.`VALUE2` AS `VALUE2`,`wcs_param`.`VALUE3` AS `VALUE3`,`wcs_param`.`VALUE4` AS `VALUE4`,`wcs_param`.`VALUE6` AS `VALUE6` from `wcs_param` where (`wcs_param`.`NAME` = 'WCS_STOCK_PARTITION_RANGE')) `b`) where (((`b`.`VALUE2` + 0) <= (`a`.`STOCK_X` + 0)) and ((`b`.`VALUE3` + 0) >= (`a`.`STOCK_X` + 0)) and (`b`.`VALUE6` = `a`.`AREA`))) `l`) where (`t`.`W_D_LOC` = `l`.`WMS_LOC`) order by `l`.`STOCK_X`,`l`.`WMS_Z` desc;
+
+-- ----------------------------
 -- View structure for wcs_task_out_range_v
 -- ----------------------------
 DROP VIEW IF EXISTS `wcs_task_out_range_v`;
-CREATE ALGORITHM = UNDEFINED DEFINER = `root`@`localhost` SQL SECURITY DEFINER VIEW `wcs_task_out_range_v` AS select `l`.`AREA` AS `AREA`,`t`.`TASK_UID` AS `TASK_UID`,`t`.`SITE` AS `SITE`,`l`.`WMS_LOC` AS `WMS_LOC`,`l`.`WMS_Z` AS `WMS_Z`,`l`.`STOCK_X` AS `STOCK_X`,`l`.`VALUE1` AS `P_RANGE`,`l`.`VALUE2` AS `RANGE_FROM`,`l`.`VALUE3` AS `RANGE_TO` from ((select distinct `wcs_task_info`.`TASK_UID` AS `TASK_UID`,`wcs_task_info`.`W_S_LOC` AS `W_S_LOC`,`wcs_task_info`.`SITE` AS `SITE` from `wcs_task_info` where (`wcs_task_info`.`TASK_TYPE` = '2')) `t` join (select `a`.`WMS_LOC` AS `WMS_LOC`,`a`.`STOCK_X` AS `STOCK_X`,`a`.`AREA` AS `AREA`,`a`.`WMS_Z` AS `WMS_Z`,`b`.`VALUE1` AS `VALUE1`,`b`.`VALUE2` AS `VALUE2`,`b`.`VALUE3` AS `VALUE3` from ((select `wcs_config_loc`.`WMS_LOC` AS `WMS_LOC`,substring_index(`wcs_config_loc`.`ABC_LOC_STOCK`,'-',1) AS `STOCK_X`,substring_index(`wcs_config_loc`.`WMS_LOC`,'-',1) AS `AREA`,substring_index(`wcs_config_loc`.`WMS_LOC`,'-',-(1)) AS `WMS_Z` from `wcs_config_loc`) `a` join (select `wcs_param`.`VALUE1` AS `VALUE1`,`wcs_param`.`VALUE2` AS `VALUE2`,`wcs_param`.`VALUE3` AS `VALUE3`,`wcs_param`.`VALUE6` AS `VALUE6` from `wcs_param` where (`wcs_param`.`NAME` = 'WCS_STOCK_PARTITION_RANGE')) `b`) where (((`b`.`VALUE2` + 0) <= (`a`.`STOCK_X` + 0)) and ((`b`.`VALUE3` + 0) >= (`a`.`STOCK_X` + 0)) and (`b`.`VALUE6` = `a`.`AREA`))) `l`) where (`t`.`W_S_LOC` = `l`.`WMS_LOC`) order by `l`.`STOCK_X`,`l`.`WMS_Z` desc;
+CREATE ALGORITHM = UNDEFINED DEFINER = `root`@`localhost` SQL SECURITY DEFINER VIEW `wcs_task_out_range_v` AS select `l`.`AREA` AS `AREA`,`t`.`TASK_UID` AS `TASK_UID`,`t`.`SITE` AS `SITE`,`l`.`WMS_LOC` AS `WMS_LOC`,`l`.`WMS_Z` AS `WMS_Z`,`l`.`STOCK_X` AS `STOCK_X`,`l`.`RR` AS `RR`,`l`.`VALUE1` AS `P_RANGE`,`l`.`VALUE2` AS `RANGE_FROM`,`l`.`VALUE3` AS `RANGE_TO`,`l`.`VALUE4` AS `ABC`,`l`.`VALUE5` AS `RGV` from ((select distinct `wcs_task_info`.`TASK_UID` AS `TASK_UID`,`wcs_task_info`.`W_S_LOC` AS `W_S_LOC`,`wcs_task_info`.`SITE` AS `SITE` from `wcs_task_info` where (`wcs_task_info`.`TASK_TYPE` = '2')) `t` join (select `a`.`WMS_LOC` AS `WMS_LOC`,`a`.`STOCK_X` AS `STOCK_X`,`a`.`AREA` AS `AREA`,`a`.`WMS_Z` AS `WMS_Z`,`a`.`RR` AS `RR`,`b`.`VALUE1` AS `VALUE1`,`b`.`VALUE2` AS `VALUE2`,`b`.`VALUE3` AS `VALUE3`,`b`.`VALUE4` AS `VALUE4`,`b`.`VALUE5` AS `VALUE5` from ((select `wcs_config_loc`.`WMS_LOC` AS `WMS_LOC`,substring_index(`wcs_config_loc`.`ABC_LOC_STOCK`,'-',1) AS `STOCK_X`,substring_index(`wcs_config_loc`.`WMS_LOC`,'-',1) AS `AREA`,substring_index(`wcs_config_loc`.`WMS_LOC`,'-',-(1)) AS `WMS_Z`,`wcs_config_loc`.`RGV_LOC_2` AS `RR` from `wcs_config_loc`) `a` join (select `wcs_param`.`VALUE1` AS `VALUE1`,`wcs_param`.`VALUE2` AS `VALUE2`,`wcs_param`.`VALUE3` AS `VALUE3`,`wcs_param`.`VALUE4` AS `VALUE4`,`wcs_param`.`VALUE5` AS `VALUE5`,`wcs_param`.`VALUE6` AS `VALUE6` from `wcs_param` where (`wcs_param`.`NAME` = 'WCS_STOCK_PARTITION_RANGE')) `b`) where (((`b`.`VALUE2` + 0) <= (`a`.`STOCK_X` + 0)) and ((`b`.`VALUE3` + 0) >= (`a`.`STOCK_X` + 0)) and (`b`.`VALUE6` = `a`.`AREA`))) `l`) where (`t`.`W_S_LOC` = `l`.`WMS_LOC`) order by `l`.`STOCK_X`,`l`.`WMS_Z` desc;
 
 -- ----------------------------
 -- Procedure structure for DELETE_DATA
