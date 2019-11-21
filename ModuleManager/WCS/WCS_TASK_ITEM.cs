@@ -79,7 +79,7 @@ namespace ModuleManager.WCS
 
         public const String 摆渡车复位 = "011";
         public const String 摆渡车定位固定辊台 = "012";
-        public const String 摆渡车定位运输车对接 = "013";
+        public const String 摆渡车定位运输车 = "013";
 
         public const String 运输车定位 = "021";
         public const String 运输车复位1 = "022";    // 摆渡车对接待命点
@@ -127,7 +127,7 @@ namespace ModuleManager.WCS
                 case 摆渡车定位固定辊台:
                     name = "摆渡车移至与固定辊台对接";
                     break;
-                case 摆渡车定位运输车对接:
+                case 摆渡车定位运输车:
                     name = "摆渡车移至与运输车对接";
                     break;
                 case 摆渡车复位:

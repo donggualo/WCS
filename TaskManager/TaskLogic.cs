@@ -351,7 +351,7 @@ namespace TaskManager
                     foreach (WCS_TASK_ITEM item in itemList_RGV)
                     {
                         // 获取同区内另一个RGV
-                        string RGVother = DataControl._mTaskTools.GetOtherRGV(item.DEVICE);
+                        string RGVother = DataControl._mTaskTools.GetOtherDev(item.DEVICE, DeviceType.运输车);
                         switch (item.ITEM_ID)
                         {
                             case ItemId.运输车复位1:
@@ -361,7 +361,7 @@ namespace TaskManager
                                     break;
                                 }
                                 // 获取对应任务的摆渡车是否到位
-                                if (DataControl._mTaskTools.IsStandBy(item.WCS_NO, item.TASK_NOW, ItemId.摆渡车定位运输车对接, out int arfID, out string arf))
+                                if (DataControl._mTaskTools.IsStandBy(item.WCS_NO, item.TASK_NOW, ItemId.摆渡车定位运输车, out int arfID, out string arf))
                                 {
                                     // 摆渡车辊台, 入库目的为运输车
                                     DataControl._mTaskTools.CreateTaskItem(item.WCS_NO, item.TASK_NOW, ItemId.摆渡车正向, DeviceType.摆渡车, null, item.DEVICE, ItemStatus.请求执行, arf);
@@ -536,12 +536,12 @@ namespace TaskManager
                                 if (com.FRT == DataControl._mTaskTools.GetFRTByARFLoc(AR))
                                 {
                                     // 生成摆渡车任务
-                                    DataControl._mTaskTools.CreateTaskItem(item.WCS_NO, item.TASK_NOW, ItemId.摆渡车定位运输车对接, DeviceType.摆渡车, null, AR, ItemStatus.交接中, item.DEVICE);
+                                    DataControl._mTaskTools.CreateTaskItem(item.WCS_NO, item.TASK_NOW, ItemId.摆渡车定位运输车, DeviceType.摆渡车, null, AR, ItemStatus.交接中, item.DEVICE);
                                 }
                                 else
                                 {
                                     // 生成摆渡车任务
-                                    DataControl._mTaskTools.CreateTaskItem(item.WCS_NO, item.TASK_NOW, ItemId.摆渡车定位运输车对接, DeviceType.摆渡车, null, AR, ItemStatus.请求执行, item.DEVICE);
+                                    DataControl._mTaskTools.CreateTaskItem(item.WCS_NO, item.TASK_NOW, ItemId.摆渡车定位运输车, DeviceType.摆渡车, null, AR, ItemStatus.请求执行, item.DEVICE);
                                 }
 
                                 // 获取对应任务
@@ -572,7 +572,7 @@ namespace TaskManager
 
         #endregion
 
-        
+
         #region 出库流程
 
         #region 初步出库任务
@@ -718,7 +718,7 @@ namespace TaskManager
 
                 // 生成摆渡车对接运输车任务
                 string ARFloc = DataControl._mStools.GetValueByKey("StandbyAR");
-                DataControl._mTaskTools.CreateTaskItem(com.WCS_NO, com.WCS_NO, ItemId.摆渡车定位运输车对接, DeviceType.摆渡车, null, ARFloc, ItemStatus.不可执行);
+                DataControl._mTaskTools.CreateTaskItem(com.WCS_NO, com.WCS_NO, ItemId.摆渡车定位运输车, DeviceType.摆渡车, null, ARFloc, ItemStatus.不可执行);
 
                 //更新WCS COMMAND状态——执行中
                 DataControl._mTaskTools.UpdateCommand(wcs_no, CommandStep.执行中);
@@ -762,7 +762,7 @@ namespace TaskManager
                     if (com.STEP == CommandStep.结束)
                     {
                         // 备份任务数据
-                        //DataControl._mTaskTools.BackupTask(com.WCS_NO);
+                        DataControl._mTaskTools.BackupTask(com.WCS_NO);
                         // 解锁对应清单所有设备数据状态
                         DataControl._mTaskTools.DeviceUnLock(com.WCS_NO);
                         continue;
@@ -896,7 +896,7 @@ namespace TaskManager
                     foreach (WCS_TASK_ITEM item in itemList_RGV)
                     {
                         // 获取同区内另一个RGV
-                        string RGVother = DataControl._mTaskTools.GetOtherRGV(item.DEVICE);
+                        string RGVother = DataControl._mTaskTools.GetOtherDev(item.DEVICE, DeviceType.运输车);
                         switch (item.ITEM_ID)
                         {
                             case ItemId.运输车定位:
@@ -981,11 +981,11 @@ namespace TaskManager
                                 {
                                     // 生成运输车复位任务
                                     DataControl._mTaskTools.CreateTaskItem(item.WCS_NO, item.TASK_NOW, ItemId.运输车复位1, DeviceType.运输车, null, R1, ItemStatus.请求执行, item.DEVICE);
-
                                     // 更新状态=> 完成
                                     DataControl._mTaskTools.UpdateItem(item.ID - 1, item.WCS_NO, ItemColumnName.作业状态, ItemStatus.完成任务);
-                                    DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, ItemColumnName.作业状态, ItemStatus.完成任务);
                                 }
+                                // 更新状态=> 完成
+                                DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, ItemColumnName.作业状态, ItemStatus.完成任务);
 
                                 #endregion
                                 break;
@@ -1018,7 +1018,7 @@ namespace TaskManager
                     {
                         switch (item.ITEM_ID)
                         {
-                            case ItemId.摆渡车定位运输车对接:
+                            case ItemId.摆渡车定位运输车:
                                 #region 生成 运输车-摆渡车 辊台任务
                                 if (item.STATUS != ItemStatus.交接中)
                                 {
@@ -1085,13 +1085,6 @@ namespace TaskManager
                                     DataControl._mTaskTools.CreateTaskItem(item.WCS_NO, item.TASK_NOW, ItemId.摆渡车定位固定辊台, DeviceType.摆渡车, null, ARFloc, ItemStatus.请求执行, item.DEVICE);
                                 }
 
-                                // 获取对应任务
-                                string itemid = DataControl._mTaskTools.GetDeviceType(item.LOC_TO) == DeviceType.固定辊台 ? ItemId.固定辊台反向 : ItemId.运输车反向;
-                                if (DataControl._mTaskTools.IsStandBy(item.WCS_NO, item.TASK_NOW, itemid, out int devID, out string dev))
-                                {
-                                    // 更新状态=> 完成
-                                    DataControl._mTaskTools.UpdateItem(devID, item.WCS_NO, ItemColumnName.作业状态, ItemStatus.完成任务);
-                                }
                                 // 更新状态=> 完成
                                 DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, ItemColumnName.作业状态, ItemStatus.完成任务);
 
@@ -1114,7 +1107,7 @@ namespace TaskManager
 
         #endregion
 
-        
+
         #region 分配设备
 
         public void AllotItemDev(WCS_COMMAND_V com)
@@ -1152,7 +1145,7 @@ namespace TaskManager
                         // 锁定设备
                         DataControl._mTaskTools.DeviceLock(item.WCS_NO, item.DEVICE);
 
-                        break;
+                        continue;
                     }
                     else if (string.IsNullOrEmpty(item.DEVICE))
                     {
@@ -1194,7 +1187,7 @@ namespace TaskManager
                         // 确认设备是否锁定
                         if (String.IsNullOrEmpty(device) || DataControl._mTaskTools.IsDeviceLock(device))
                         {
-                            return;
+                            continue;
                         }
                         // 确认任务设备
                         DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, ItemColumnName.设备编号, device);
@@ -1674,7 +1667,7 @@ namespace TaskManager
                         break;
                     case ItemId.摆渡车复位:
                     case ItemId.摆渡车定位固定辊台:
-                    case ItemId.摆渡车定位运输车对接:
+                    case ItemId.摆渡车定位运输车:
                         #region ARF 定位指令
                         ARF arfMove = new ARF(item.DEVICE);
                         // 提取目的位置

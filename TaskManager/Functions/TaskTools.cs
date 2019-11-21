@@ -939,16 +939,16 @@ namespace TaskManager.Functions
         #region 设备信息
 
         /// <summary>
-        /// 获取同区域另一RGV
+        /// 获取同区域另一设备
         /// </summary>
-        /// <param name="rgv"></param>
+        /// <param name="dev"></param>
         /// <returns></returns>
-        public String GetOtherRGV(String rgv)
+        public String GetOtherDev(String dev, String type)
         {
             try
             {
                 String sql = String.Format(@"select DEVICE from wcs_config_device where FLAG <> '{0}' and TYPE = '{1}' and 
-                        AREA in (select AREA from wcs_config_device where DEVICE = '{2}')", DeviceFlag.失效, DeviceType.运输车, rgv);
+                        AREA in (select AREA from wcs_config_device where DEVICE = '{2}')", DeviceFlag.失效, type, dev);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {
@@ -1143,8 +1143,8 @@ namespace TaskManager.Functions
         {
             try
             {
-                String sql = String.Format(@"update wcs_config_device set FLAG = '{1}', LOCK_WCS_NO = null where 
-                    DEVICE = '{0}' and LOCK_WCS_NO = '{0}'", dev, wcs_no, DeviceFlag.空闲);
+                String sql = String.Format(@"update wcs_config_device set FLAG = '{2}', LOCK_WCS_NO = null where 
+                    DEVICE = '{0}' and LOCK_WCS_NO = '{1}'", dev, wcs_no, DeviceFlag.空闲);
                 DataControl._mMySql.ExcuteSql(sql);
             }
             catch (Exception ex)
@@ -1152,6 +1152,7 @@ namespace TaskManager.Functions
                 throw ex;
             }
         }
+
         #endregion
 
         #region 任务信息

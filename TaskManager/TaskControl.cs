@@ -278,7 +278,6 @@ namespace TaskManager
     {
         FRT _device;
         Log log;
-        int rollOutStep;
         byte[] rollOutOrder;
         public FRTTack(WCS_TASK_ITEM item, string deviceType, byte[] order) : base(item, deviceType, order)
         {
@@ -287,8 +286,7 @@ namespace TaskManager
             // 记录生成指令LOG
             log.LOG(DataControl._mTaskTools.GetLogMessC(item, order));
 
-            // 送货指令分段记录 （1.先执行送货方向靠外辊台，2.全辊台启动送货）
-            rollOutStep = 1;
+            // 分段指令
             rollOutOrder = null;
         }
 
@@ -338,15 +336,6 @@ namespace TaskManager
                 // 对接设备状态
                 if (!string.IsNullOrEmpty(ITEM.LOC_TO)) // 目标不为空即最终无货 --送货
                 {
-                    // 摆渡车辊台停止状态
-                    if (_arf.CurrentStatus() == ARF.RollerStop)
-                    {
-                        // 摆渡车辊台上无货物
-                        if (_arf.GoodsStatus() == ARF.GoodsNoAll)
-                        {
-                            return;
-                        }
-                    }
                     // 固定辊台无货物
                     if (_device.GoodsStatus() == FRT.GoodsNoAll && _device.ActionStatus() == FRT.Stop &&
                         _device.FinishTask() == FRT.TaskRelease)
@@ -354,25 +343,32 @@ namespace TaskManager
                         // 完成任务
                         ISetTaskSuc();
                         // 解锁设备数据状态
-                        DataControl._mTaskTools.DeviceUnLock(ITEM.DEVICE);
+                        DataControl._mTaskTools.UnLockByDevAndWcsNo(ITEM.DEVICE, ITEM.WCS_NO);
                         // LOG
                         log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
                         return;
                     }
-                    else if (_device.GoodsStatus() == FRT.GoodsYesAll && _device.ActionStatus() == FRT.Stop &&
-                             _arf.GoodsStatus() == ARF.GoodsYesAll && _arf.ActionStatus() == ARF.Stop)
+                    // 摆渡车辊台停止状态, 无货物
+                    if (_arf.CurrentStatus() == ARF.RollerStop && _arf.GoodsStatus() == ARF.GoodsNoAll)
                     {
-                        return; // 固定辊台与摆渡车都有货，不启动辊台
+                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
+                        return;
                     }
-
+                    // 固定辊台与摆渡车都有货，不启动辊台
+                    if (_device.ActionStatus() == FRT.Stop && (
+                        (_device.GoodsStatus() != FRT.GoodsNoAll && _arf.GoodsStatus() == ARF.GoodsYesAll) || 
+                        (_device.GoodsStatus() == FRT.GoodsYesAll && _arf.GoodsStatus() != ARF.GoodsNoAll)))
+                    {
+                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
+                        return;
+                    }
                     // 分段送货
-                    if (_device.GoodsStatus() == FRT.GoodsYesAll && rollOutStep == 1)
+                    if (_device.GoodsStatus() == FRT.GoodsYesAll)
                     {
                         // 固定辊台送摆渡车只有 正向
                         rollOutOrder = FRT._RollerControl(_device.FRTNum(), FRT.RollerRun1, FRT.RunFront, FRT.GoodsDeliver, FRT.GoodsQty1);
-                        rollOutStep++;
                     }
-                    else if ((_device.GoodsStatus() == FRT.GoodsYes2 && rollOutStep == 2) || _device.GoodsStatus() == FRT.GoodsBetween)
+                    else
                     {
                         rollOutOrder = null;
                     }
@@ -391,10 +387,20 @@ namespace TaskManager
                         log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
                         return;
                     }
-                    else if (_device.GoodsStatus() == FRT.GoodsYesAll && _device.ActionStatus() == FRT.Stop &&
-                             _arf.GoodsStatus() == ARF.GoodsYesAll && _arf.ActionStatus() == ARF.Stop)
+                    // 固定辊台与摆渡车都有货，不启动辊台
+                    if (_device.ActionStatus() == FRT.Stop && (_device.GoodsStatus() == FRT.GoodsYesAll ||
+                        (_device.GoodsStatus() != FRT.GoodsNoAll && _arf.GoodsStatus() == ARF.GoodsYesAll)))
                     {
-                        return; // 固定辊台与摆渡车都有货，不启动辊台
+                        DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
+                        return; 
+                    }
+                    // 固定辊台与摆渡车都只有1货
+                    if (_device.ActionStatus() == FRT.Stop && (
+                             (_device.GoodsStatus() != FRT.GoodsNoAll || _device.GoodsStatus() != FRT.GoodsYesAll) &&
+                             (_arf.GoodsStatus() != ARF.GoodsNoAll || _arf.GoodsStatus() != ARF.GoodsYesAll)))
+                    {
+                        // 固定辊台接摆渡车只有 反向
+                        rollOutOrder = FRT._RollerControl(_device.FRTNum(), FRT.RollerRunAll, FRT.RunObverse, FRT.GoodsReceive, FRT.GoodsQty2);
                     }
                 }
                 // 当完成状态-辊台任务，立即发送 停止辊台任务 指令
@@ -437,7 +443,6 @@ namespace TaskManager
     {
         ARF _device;
         Log log;
-        int rollOutStep;
         byte[] rollOutOrder;
         public ARFTack(WCS_TASK_ITEM item, string deviceType, byte[] order) : base(item, deviceType, order)
         {
@@ -446,8 +451,7 @@ namespace TaskManager
             // 记录生成指令LOG
             log.LOG(DataControl._mTaskTools.GetLogMessC(item, order));
 
-            // 送货指令分段记录 （1.先执行送货方向靠外辊台，2.全辊台启动送货）
-            rollOutStep = 1;
+            // 分段指令
             rollOutOrder = null;
         }
 
@@ -497,72 +501,6 @@ namespace TaskManager
 
                     if (!string.IsNullOrEmpty(ITEM.LOC_TO)) // 目标不为空即最终无货 --送货
                     {
-                        // 获取目标设备类型
-                        String typeTo = DataControl._mTaskTools.GetDeviceType(ITEM.LOC_TO);
-                        // 摆渡车对接 固定辊台/运输车
-                        switch (typeTo)
-                        {
-                            case DeviceType.固定辊台:
-                                FRT _frt = new FRT(ITEM.LOC_TO);
-                                // 固定辊台停止状态
-                                if (_frt.CurrentStatus() == FRT.RollerStop)
-                                {
-                                    // 固定辊台上无货物
-                                    if (_frt.GoodsStatus() == FRT.GoodsNoAll)
-                                    {
-                                        return;
-                                    }
-                                }
-                                else if (_device.GoodsStatus() == ARF.GoodsYesAll && _device.ActionStatus() == ARF.Stop &&
-                                         _frt.GoodsStatus() == FRT.GoodsYesAll && _frt.ActionStatus() == FRT.Stop)
-                                {
-                                    return; // 摆渡车与固定辊台都有货，不启动辊台
-                                }
-
-                                // 分段送货
-                                if (_device.GoodsStatus() == ARF.GoodsYesAll && rollOutStep == 1)
-                                {
-                                    // 摆渡车送固定辊台只有 反向
-                                    rollOutOrder = ARF._RollerControl(_device.ARFNum(), ARF.RollerRun2, ARF.RunObverse, ARF.GoodsDeliver, ARF.GoodsQty1);
-                                    rollOutStep++;
-                                }
-                                else if ((_device.GoodsStatus() == ARF.GoodsYes1 && rollOutStep == 2) || _device.GoodsStatus() == ARF.GoodsBetween)
-                                {
-                                    rollOutOrder = null;
-                                }
-                                break;
-                            case DeviceType.运输车:
-                                RGV _rgv = new RGV(ITEM.LOC_TO);
-                                // 运输车辊台停止状态
-                                if (_rgv.CurrentStatus() == RGV.RollerStop)
-                                {
-                                    // 运输车辊台上无货物
-                                    if (_rgv.GoodsStatus() == RGV.GoodsNoAll)
-                                    {
-                                        return;
-                                    }
-                                }
-                                else if (_device.GoodsStatus() == ARF.GoodsYesAll && _device.ActionStatus() == ARF.Stop &&
-                                         _rgv.GoodsStatus() == RGV.GoodsYesAll && _rgv.ActionStatus() == RGV.Stop)
-                                {
-                                    return; // 摆渡车与运输车都有货，不启动辊台
-                                }
-
-                                // 分段送货
-                                if (_device.GoodsStatus() == ARF.GoodsYesAll && rollOutStep == 1)
-                                {
-                                    // 摆渡车送运输车只有 正向
-                                    rollOutOrder = ARF._RollerControl(_device.ARFNum(), ARF.RollerRun1, ARF.RunFront, ARF.GoodsDeliver, ARF.GoodsQty1);
-                                    rollOutStep++;
-                                }
-                                else if ((_device.GoodsStatus() == ARF.GoodsYes2 && rollOutStep == 2) || _device.GoodsStatus() == ARF.GoodsBetween)
-                                {
-                                    rollOutOrder = null;
-                                }
-                                break;
-                            default:
-                                break;
-                        }
                         // 摆渡车无货物
                         if (_device.GoodsStatus() == ARF.GoodsNoAll && _device.ActionStatus() == ARF.Stop &&
                             _device.FinishTask() == ARF.TaskRelease)
@@ -570,10 +508,71 @@ namespace TaskManager
                             // 完成任务
                             ISetTaskWait();
                             // 解锁设备数据状态
-                            DataControl._mTaskTools.DeviceUnLock(ITEM.DEVICE);
+                            DataControl._mTaskTools.UnLockByDevAndWcsNo(ITEM.DEVICE, ITEM.WCS_NO);
                             // LOG
                             log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
                             return;
+                        }
+                        // 获取目标设备类型
+                        String typeTo = DataControl._mTaskTools.GetDeviceType(ITEM.LOC_TO);
+                        // 摆渡车对接 固定辊台/运输车
+                        switch (typeTo)
+                        {
+                            case DeviceType.固定辊台:
+                                FRT _frt = new FRT(ITEM.LOC_TO);
+                                // 固定辊台停止状态, 无货物
+                                if (_frt.CurrentStatus() == FRT.RollerStop && _frt.GoodsStatus() == FRT.GoodsNoAll)
+                                {
+                                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
+                                    return;
+                                }
+                                // 摆渡车与固定辊台都有货，不启动辊台
+                                if (_device.ActionStatus() == ARF.Stop && (
+                                    (_device.GoodsStatus() != ARF.GoodsNoAll && _frt.GoodsStatus() == FRT.GoodsYesAll) ||
+                                    (_device.GoodsStatus() == ARF.GoodsYesAll && _frt.GoodsStatus() != FRT.GoodsNoAll)))
+                                {
+                                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
+                                    return;
+                                }
+                                // 分段送货
+                                if (_device.GoodsStatus() == ARF.GoodsYesAll)
+                                {
+                                    // 摆渡车送固定辊台只有 反向
+                                    rollOutOrder = ARF._RollerControl(_device.ARFNum(), ARF.RollerRun2, ARF.RunObverse, ARF.GoodsDeliver, ARF.GoodsQty1);
+                                }
+                                else
+                                {
+                                    rollOutOrder = null;
+                                }
+                                break;
+                            case DeviceType.运输车:
+                                RGV _rgv = new RGV(ITEM.LOC_TO);
+                                // 运输车辊台停止状态, 无货物
+                                if (_rgv.CurrentStatus() == RGV.RollerStop && _rgv.GoodsStatus() == RGV.GoodsNoAll)
+                                {
+                                    return;
+                                }
+                                // 摆渡车与运输车都有货，不启动辊台
+                                if (_device.ActionStatus() == ARF.Stop && (
+                                    (_device.GoodsStatus() != ARF.GoodsNoAll && _rgv.GoodsStatus() == RGV.GoodsYesAll) ||
+                                    (_device.GoodsStatus() == ARF.GoodsYesAll && _rgv.GoodsStatus() != RGV.GoodsNoAll)))
+                                {
+                                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
+                                    return; 
+                                }
+                                // 分段送货
+                                if (_device.GoodsStatus() == ARF.GoodsYesAll)
+                                {
+                                    // 摆渡车送运输车只有 正向
+                                    rollOutOrder = ARF._RollerControl(_device.ARFNum(), ARF.RollerRun1, ARF.RunFront, ARF.GoodsDeliver, ARF.GoodsQty1);
+                                }
+                                else
+                                {
+                                    rollOutOrder = null;
+                                }
+                                break;
+                            default:
+                                break;
                         }
                     }
                     else // 接货
@@ -595,16 +594,27 @@ namespace TaskManager
                                     log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
                                     return;
                                 }
-                                else if (_device.GoodsStatus() == ARF.GoodsYesAll && _device.ActionStatus() == ARF.Stop &&
-                                         _frt.GoodsStatus() == FRT.GoodsYesAll && _frt.ActionStatus() == FRT.Stop)
+                                // 固定辊台与摆渡车都有货，不启动辊台
+                                if (_device.ActionStatus() == ARF.Stop && (_device.GoodsStatus() == ARF.GoodsYesAll ||
+                                    (_device.GoodsStatus() != ARF.GoodsNoAll && _frt.GoodsStatus() == FRT.GoodsYesAll)))
                                 {
-                                    return; // 固定辊台与摆渡车都有货，不启动辊台
+                                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
+                                    return;
                                 }
+                                // 固定辊台与摆渡车都只有1货
+                                if (_device.ActionStatus() == ARF.Stop && (
+                                    (_device.GoodsStatus() != ARF.GoodsNoAll || _device.GoodsStatus() != ARF.GoodsYesAll) &&
+                                    (_frt.GoodsStatus() != FRT.GoodsNoAll || _frt.GoodsStatus() != FRT.GoodsYesAll)))
+                                {
+                                    // 摆渡车接固定辊台只有 正向
+                                    rollOutOrder = ARF._RollerControl(_device.ARFNum(), ARF.RollerRunAll, ARF.RunFront, ARF.GoodsReceive, ARF.GoodsQty2);
+                                }
+
                                 break;
                             case DeviceType.运输车:
                                 RGV _rgv = new RGV(ITEM.LOC_FROM);
                                 // 运输车辊台上无货物,摆渡车辊台上有货物
-                                if (_rgv.GoodsStatus() == FRT.GoodsNoAll && _device.GoodsStatus() != ARF.GoodsNoAll
+                                if (_rgv.GoodsStatus() == RGV.GoodsNoAll && _device.GoodsStatus() != ARF.GoodsNoAll
                                     && _device.ActionStatus() == ARF.Stop && _device.FinishTask() == ARF.TaskRelease)
                                 {
                                     // 完成任务
@@ -613,11 +623,22 @@ namespace TaskManager
                                     log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
                                     return;
                                 }
-                                else if (_device.GoodsStatus() == ARF.GoodsYesAll && _device.ActionStatus() == ARF.Stop &&
-                                         _rgv.GoodsStatus() == RGV.GoodsYesAll && _rgv.ActionStatus() == RGV.Stop)
+                                // 摆渡车与运输车都有货，不启动辊台
+                                if (_device.ActionStatus() == ARF.Stop && (_device.GoodsStatus() == ARF.GoodsYesAll ||
+                                    (_device.GoodsStatus() != ARF.GoodsNoAll && _rgv.GoodsStatus() == RGV.GoodsYesAll)))
                                 {
-                                    return; // 摆渡车与运输车都有货，不启动辊台
+                                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
+                                    return;
                                 }
+                                // 运输车与摆渡车都只有1货
+                                if (_device.ActionStatus() == ARF.Stop && (
+                                    (_device.GoodsStatus() != ARF.GoodsNoAll || _device.GoodsStatus() != ARF.GoodsYesAll) &&
+                                    (_rgv.GoodsStatus() != RGV.GoodsNoAll || _rgv.GoodsStatus() != RGV.GoodsYesAll)))
+                                {
+                                    // 摆渡车接运输车只有 反向
+                                    rollOutOrder = ARF._RollerControl(_device.ARFNum(), ARF.RollerRunAll, ARF.RunObverse, ARF.GoodsReceive, ARF.GoodsQty2);
+                                }
+
                                 break;
                             default:
                                 break;
@@ -691,7 +712,6 @@ namespace TaskManager
     {
         RGV _device;
         Log log;
-        int rollOutStep;
         byte[] rollOutOrder;
         public RGVTack(WCS_TASK_ITEM item, string deviceType, byte[] order) : base(item, deviceType, order)
         {
@@ -700,8 +720,7 @@ namespace TaskManager
             // 记录生成指令LOG
             log.LOG(DataControl._mTaskTools.GetLogMessC(item, order));
 
-            // 送货指令分段记录 （1.先执行送货方向靠外辊台，2.全辊台启动送货）
-            rollOutStep = 1;
+            // 分段指令
             rollOutOrder = null;
         }
 
@@ -751,6 +770,18 @@ namespace TaskManager
 
                     if (!string.IsNullOrEmpty(ITEM.LOC_TO)) // 目标不为空即最终无货 --送货
                     {
+                        // 运输车无货物
+                        if (_device.GoodsStatus() == RGV.GoodsNoAll && _device.ActionStatus() == RGV.Stop &&
+                            _device.FinishTask() == RGV.TaskRelease)
+                        {
+                            // 完成任务
+                            ISetTaskWait();
+                            // 解锁设备数据状态
+                            DataControl._mTaskTools.UnLockByDevAndWcsNo(ITEM.DEVICE, ITEM.WCS_NO);
+                            // LOG
+                            log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
+                            return;
+                        }
                         // 获取目标设备类型
                         String typeTo = DataControl._mTaskTools.GetDeviceType(ITEM.LOC_TO);
                         // 运输车对接 摆渡车/运输车
@@ -758,52 +789,49 @@ namespace TaskManager
                         {
                             case DeviceType.摆渡车:
                                 ARF _arf = new ARF(ITEM.LOC_TO);
-                                // 摆渡车辊台停止状态
-                                if (_arf.CurrentStatus() == ARF.RollerStop)
+                                // 摆渡车辊台停止状态, 无货物
+                                if (_arf.CurrentStatus() == ARF.RollerStop && _arf.GoodsStatus() == ARF.GoodsNoAll)
                                 {
-                                    // 摆渡车辊台上无货物
-                                    if (_arf.GoodsStatus() == ARF.GoodsNoAll)
-                                    {
-                                        return;
-                                    }
+                                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
+                                    return;
                                 }
-                                else if (_device.GoodsStatus() == RGV.GoodsYesAll && _device.ActionStatus() == RGV.Stop &&
-                                         _arf.GoodsStatus() == ARF.GoodsYesAll && _arf.ActionStatus() == ARF.Stop)
+                                // 摆渡车与运输车都有货，不启动辊台
+                                if (_device.ActionStatus() == RGV.Stop && (
+                                    (_device.GoodsStatus() != RGV.GoodsNoAll && _arf.GoodsStatus() == ARF.GoodsYesAll) ||
+                                    (_device.GoodsStatus() == RGV.GoodsYesAll && _arf.GoodsStatus() != ARF.GoodsNoAll)))
                                 {
-                                    return; // 摆渡车与运输车都有货，不启动辊台
+                                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
+                                    return;
                                 }
-
                                 // 分段送货
-                                if (_device.GoodsStatus() == RGV.GoodsYesAll && rollOutStep == 1)
+                                if (_device.GoodsStatus() == RGV.GoodsYesAll)
                                 {
                                     // 运输车送摆渡车只有 反向
                                     rollOutOrder = RGV._RollerControl(_device.RGVNum(), RGV.RollerRun2, RGV.RunObverse, RGV.GoodsDeliver, RGV.GoodsQty1);
-                                    rollOutStep++;
                                 }
-                                else if ((_device.GoodsStatus() == RGV.GoodsYes1 && rollOutStep == 2) || _device.GoodsStatus() == RGV.GoodsBetween)
+                                else
                                 {
                                     rollOutOrder = null;
                                 }
+
                                 break;
                             case DeviceType.运输车:
                                 RGV _rgv = new RGV(ITEM.LOC_TO);
-                                // 目的运输车辊台停止状态
-                                if (_rgv.CurrentStatus() == RGV.RollerStop)
+                                // 目的运输车辊台停止状态, 无货物
+                                if (_rgv.CurrentStatus() == RGV.RollerStop && _rgv.GoodsStatus() == RGV.GoodsNoAll)
                                 {
-                                    // 目的运输车辊台上无货物
-                                    if (_rgv.GoodsStatus() == RGV.GoodsNoAll)
-                                    {
-                                        return;
-                                    }
+                                    return;
                                 }
-                                else if (_device.GoodsStatus() == RGV.GoodsYesAll && _device.ActionStatus() == RGV.Stop &&
-                                         _rgv.GoodsStatus() == RGV.GoodsYesAll && _rgv.ActionStatus() == RGV.Stop)
+                                // 运输车与运输车都有货，不启动辊台
+                                if (_device.ActionStatus() == RGV.Stop && (
+                                    (_device.GoodsStatus() != RGV.GoodsNoAll && _rgv.GoodsStatus() == RGV.GoodsYesAll) ||
+                                    (_device.GoodsStatus() == RGV.GoodsYesAll && _rgv.GoodsStatus() != RGV.GoodsNoAll)))
                                 {
-                                    return; // 运输车与运输车都有货，不启动辊台
+                                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
+                                    return; 
                                 }
-
                                 // 分段送货
-                                if (_device.GoodsStatus() == RGV.GoodsYesAll && rollOutStep == 1)
+                                if (_device.GoodsStatus() == RGV.GoodsYesAll)
                                 {
                                     if (_device.GetCurrentSite() > _rgv.GetCurrentSite())
                                     {
@@ -815,28 +843,14 @@ namespace TaskManager
                                         // 靠外的运输车送靠内的运输车只有 正向
                                         rollOutOrder = RGV._RollerControl(_device.RGVNum(), RGV.RollerRun1, RGV.RunFront, RGV.GoodsDeliver, RGV.GoodsQty1);
                                     }
-
-                                    rollOutStep++;
                                 }
-                                else if (((_device.GoodsStatus() == FRT.GoodsYes1 || _device.GoodsStatus() == FRT.GoodsYes2) && rollOutStep == 2) || _device.GoodsStatus() == RGV.GoodsBetween)
+                                else
                                 {
                                     rollOutOrder = null;
                                 }
                                 break;
                             default:
                                 break;
-                        }
-                        // 运输车无货物
-                        if (_device.GoodsStatus() == RGV.GoodsNoAll && _device.ActionStatus() == RGV.Stop &&
-                            _device.FinishTask() == RGV.TaskRelease)
-                        {
-                            // 完成任务
-                            ISetTaskWait();
-                            // 解锁设备数据状态
-                            DataControl._mTaskTools.DeviceUnLock(ITEM.DEVICE);
-                            // LOG
-                            log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
-                            return;
                         }
                     }
                     else //接货
@@ -858,11 +872,22 @@ namespace TaskManager
                                     log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
                                     return;
                                 }
-                                else if (_device.GoodsStatus() == RGV.GoodsYesAll && _device.ActionStatus() == RGV.Stop &&
-                                         _arf.GoodsStatus() == ARF.GoodsYesAll && _arf.ActionStatus() == ARF.Stop)
+                                // 摆渡车与运输车都有货，不启动辊台
+                                if (_device.ActionStatus() == RGV.Stop && (_device.GoodsStatus() == RGV.GoodsYesAll ||
+                                    (_device.GoodsStatus() != RGV.GoodsNoAll && _arf.GoodsStatus() == ARF.GoodsYesAll)))
                                 {
-                                    return; // 摆渡车与运输车都有货，不启动辊台
+                                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
+                                    return;
                                 }
+                                // 摆渡车与运输车都只有1货
+                                if (_device.ActionStatus() == RGV.Stop && (
+                                         (_device.GoodsStatus() != RGV.GoodsNoAll || _device.GoodsStatus() != RGV.GoodsYesAll) &&
+                                         (_arf.GoodsStatus() != ARF.GoodsNoAll || _arf.GoodsStatus() != ARF.GoodsYesAll)))
+                                {
+                                    // 运输车接摆渡车只有 正向
+                                    rollOutOrder = RGV._RollerControl(_device.RGVNum(), RGV.RollerRunAll, RGV.RunFront, RGV.GoodsReceive, RGV.GoodsQty2);
+                                }
+
                                 break;
                             case DeviceType.运输车:
                                 RGV _rgv = new RGV(ITEM.LOC_FROM);
@@ -876,11 +901,30 @@ namespace TaskManager
                                     log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
                                     return;
                                 }
-                                else if (_device.GoodsStatus() == RGV.GoodsYesAll && _device.ActionStatus() == RGV.Stop &&
-                                         _rgv.GoodsStatus() == RGV.GoodsYesAll && _rgv.ActionStatus() == RGV.Stop)
+                                // 运输车与运输车都有货，不启动辊台
+                                if (_device.ActionStatus() == RGV.Stop && (_device.GoodsStatus() == RGV.GoodsYesAll ||
+                                    (_device.GoodsStatus() != RGV.GoodsNoAll && _rgv.GoodsStatus() == RGV.GoodsYesAll)))
                                 {
-                                    return; // 运输车与运输车都有货，不启动辊台
+                                    DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
+                                    return;
                                 }
+                                // 运输车与运输车都只有1货
+                                if (_device.ActionStatus() == RGV.Stop && (
+                                         (_device.GoodsStatus() != RGV.GoodsNoAll || _device.GoodsStatus() != RGV.GoodsYesAll) &&
+                                         (_rgv.GoodsStatus() != RGV.GoodsNoAll || _rgv.GoodsStatus() != RGV.GoodsYesAll)))
+                                {
+                                    if (_device.GetCurrentSite() > _rgv.GetCurrentSite())
+                                    {
+                                        // 靠内的运输车接靠外的运输车只有 正向
+                                        rollOutOrder = RGV._RollerControl(_device.RGVNum(), RGV.RollerRunAll, RGV.RunFront, RGV.GoodsReceive, RGV.GoodsQty2);
+                                    }
+                                    else
+                                    {
+                                        // 靠外的运输车接靠内的运输车只有 反向
+                                        rollOutOrder = RGV._RollerControl(_device.RGVNum(), RGV.RollerRunAll, RGV.RunObverse, RGV.GoodsReceive, RGV.GoodsQty2);
+                                    }
+                                }
+
                                 break;
                             default:
                                 break;
