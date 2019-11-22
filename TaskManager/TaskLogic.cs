@@ -269,13 +269,7 @@ namespace TaskManager
                                 // 生成库存定位任务
                                 String ABCloc = DataControl._mTaskTools.GetABCStockLoc(item.TASK_NOW == com.TASK_UID_1 ? com.LOC_TO_1 : com.LOC_TO_2);
                                 DataControl._mTaskTools.CreateTaskItem(item.WCS_NO, item.TASK_NOW, ItemId.行车库存定位, DeviceType.行车, null, ABCloc, ItemStatus.请求执行, item.DEVICE);
-
-                                // 获取对应任务的运输车
-                                if (DataControl._mTaskTools.IsStandBy(item.WCS_NO, item.TASK_NOW, ItemId.运输车定位, out int rgvID2, out string rgv2))
-                                {
-                                    // 更新状态=> 完成
-                                    DataControl._mTaskTools.UpdateItem(rgvID2, item.WCS_NO, ItemColumnName.作业状态, ItemStatus.完成任务);
-                                }
+                                
                                 // 更新状态=> 完成
                                 DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, ItemColumnName.作业状态, ItemStatus.完成任务);
 
@@ -346,6 +340,8 @@ namespace TaskManager
                     String R2 = DataControl._mStools.GetValueByKey("StandbyR2");
                     // 运输车于运输车对接点
                     String RR = DataControl._mStools.GetValueByKey("StandbyRR");
+                    // 行车&运输车 取货安全高度
+                    String AR = DataControl._mStools.GetValueByKey("ARTake");
 
                     // 遍历生成后续任务
                     foreach (WCS_TASK_ITEM item in itemList_RGV)
@@ -438,48 +434,64 @@ namespace TaskManager
                                 break;
                             case ItemId.运输车定位:
                                 #region 生成定位任务 || 对接任务
-                                if (item.STATUS != ItemStatus.完成任务)
+                                if (item.STATUS != ItemStatus.交接中)
                                 {
                                     break;
                                 }
-                                // 存在任务则跳过
-                                int taskcount = DataControl._mMySql.GetCount("wcs_task_item", String.Format(@"WCS_NO = '{0}' and ITEM_ID = '{1}'",
-                                    item.WCS_NO, ItemId.运输车定位));
-                                if (taskcount > 1)
+                                // 获取对应行车任务
+                                if (!DataControl._mTaskTools.IsStandBy(item.WCS_NO, item.TASK_NOW, ItemId.行车取货, out int abcID, out string abc))
                                 {
-                                    break;
+                                    // 获取行车设备资讯
+                                    ABC _abc = new ABC(abc);
+                                    int abcZ = DataControl._mStools.BytesToInt(_abc.CurrentZsite());
+                                    /* 设备坐标偏差 */
+                                    if (!DataControl._mTaskTools.GetLocByLessGap(abc, abcZ.ToString(), out string result, "Z"))
+                                    {
+                                        // 记录LOG
+                                        DataControl._mTaskTools.RecordTaskErrLog("TaskIn_RGV()", "运输车入库流程获取行车位置[设备号,坐标]", abc, abcZ.ToString(), result);
+                                        break;
+                                    }
+
+                                    if (DataControl._mTaskTools.GetItemStatus(abcID) == ItemStatus.完成任务 || Convert.ToInt32(result) >= Convert.ToInt32(AR))
+                                    {
+                                        string taskNext;
+                                        string locNext;
+                                        if (DataControl._mTaskTools.IsRGVtaskOK(item.WCS_NO))
+                                        {
+                                            // 更新状态=> 完成
+                                            DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, ItemColumnName.作业状态, ItemStatus.完成任务);
+                                            // 解锁当前设备
+                                            DataControl._mTaskTools.UnLockByDevAndWcsNo(item.DEVICE, item.WCS_NO);
+                                            break;
+                                        }
+                                        else if (item.TASK_NOW == com.TASK_UID_1)
+                                        {
+                                            taskNext = com.TASK_UID_2;
+                                            locNext = DataControl._mTaskTools.GetRGVLoc(2, com.LOC_TO_2);
+                                        }
+                                        else
+                                        {
+                                            taskNext = com.TASK_UID_1;
+                                            locNext = DataControl._mTaskTools.GetRGVLoc(1, com.LOC_TO_1);
+                                        }
+                                        // 判断是否需要对接到运输车[内]范围内作业
+                                        if (Convert.ToInt32(item.LOC_TO) <= Convert.ToInt32(RR) && Convert.ToInt32(locNext) >= Convert.ToInt32(R2))  // 需对接运输车[内]
+                                        {
+                                            // 生成运输车[外]对接运输车[内]任务
+                                            DataControl._mTaskTools.CreateTaskItem(item.WCS_NO, taskNext, ItemId.运输车对接定位, DeviceType.运输车, null, RR, ItemStatus.请求执行, item.DEVICE);
+                                            // 生成运输车[内]复位任务,待分配设备
+                                            DataControl._mTaskTools.CreateTaskItem(item.WCS_NO, taskNext, ItemId.运输车复位2, DeviceType.运输车, null, R2, ItemStatus.不可执行, RGVother);
+                                        }
+                                        else
+                                        {
+                                            // 生成运输车定位任务
+                                            DataControl._mTaskTools.CreateTaskItem(item.WCS_NO, taskNext, ItemId.运输车定位, DeviceType.运输车, null, locNext, ItemStatus.请求执行, item.DEVICE);
+                                        }
+                                        // 更新状态=> 完成
+                                        DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, ItemColumnName.作业状态, ItemStatus.完成任务);
+                                    }
                                 }
-                                string taskNext;
-                                string locNext;
-                                if (DataControl._mTaskTools.IsRGVtaskOK(item.WCS_NO))
-                                {
-                                    // 解锁当前设备
-                                    DataControl._mTaskTools.UnLockByDevAndWcsNo(item.DEVICE, item.WCS_NO);
-                                    break;
-                                }
-                                else if (item.TASK_NOW == com.TASK_UID_1)
-                                {
-                                    taskNext = com.TASK_UID_2;
-                                    locNext = DataControl._mTaskTools.GetRGVLoc(2, com.LOC_TO_2);
-                                }
-                                else
-                                {
-                                    taskNext = com.TASK_UID_1;
-                                    locNext = DataControl._mTaskTools.GetRGVLoc(1, com.LOC_TO_1);
-                                }
-                                // 判断是否需要对接到运输车[内]范围内作业
-                                if (Convert.ToInt32(item.LOC_TO) <= Convert.ToInt32(RR) && Convert.ToInt32(locNext) >= Convert.ToInt32(R2))  // 需对接运输车[内]
-                                {
-                                    // 生成运输车[外]对接运输车[内]任务
-                                    DataControl._mTaskTools.CreateTaskItem(item.WCS_NO, taskNext, ItemId.运输车对接定位, DeviceType.运输车, null, RR, ItemStatus.请求执行, item.DEVICE);
-                                    // 生成运输车[内]复位任务,待分配设备
-                                    DataControl._mTaskTools.CreateTaskItem(item.WCS_NO, taskNext, ItemId.运输车复位2, DeviceType.运输车, null, R2, ItemStatus.不可执行, RGVother);
-                                }
-                                else
-                                {
-                                    // 生成运输车定位任务
-                                    DataControl._mTaskTools.CreateTaskItem(item.WCS_NO, taskNext, ItemId.运输车定位, DeviceType.运输车, null, locNext, ItemStatus.请求执行, item.DEVICE);
-                                }
+
                                 #endregion
                                 break;
                             default:
@@ -891,6 +903,8 @@ namespace TaskManager
                     String R2 = DataControl._mStools.GetValueByKey("StandbyR2");
                     // 运输车于运输车对接点
                     String RR = DataControl._mStools.GetValueByKey("StandbyRR");
+                    // 行车&运输车 放货安全高度
+                    String AR = DataControl._mStools.GetValueByKey("ARRelease");
 
                     // 遍历生成后续任务
                     foreach (WCS_TASK_ITEM item in itemList_RGV)
@@ -908,7 +922,18 @@ namespace TaskManager
                                 // 获取对应行车任务
                                 if (!DataControl._mTaskTools.IsStandBy(item.WCS_NO, item.TASK_NOW, ItemId.行车放货, out int abcID, out string abc))
                                 {
-                                    if (DataControl._mTaskTools.GetItemStatus(abcID) == ItemStatus.完成任务)
+                                    // 获取行车设备资讯
+                                    ABC _abc = new ABC(abc);
+                                    int abcZ = DataControl._mStools.BytesToInt(_abc.CurrentZsite());
+                                    /* 设备坐标偏差 */
+                                    if (!DataControl._mTaskTools.GetLocByLessGap(abc, abcZ.ToString(), out string result, "Z"))
+                                    {
+                                        // 记录LOG
+                                        DataControl._mTaskTools.RecordTaskErrLog("TaskOut_RGV()", "运输车出库流程获取行车位置[设备号,坐标]", abc, abcZ.ToString(), result);
+                                        break;
+                                    }
+
+                                    if (DataControl._mTaskTools.GetItemStatus(abcID) == ItemStatus.完成任务 || Convert.ToInt32(result) >= Convert.ToInt32(AR))
                                     {
                                         // 是否存在另一笔任务待完成
                                         if (DataControl._mTaskTools.IsOtherTask(item.WCS_NO, item.TASK_NOW, item.DEVICE, ItemStatus.不可执行, out int ID))
