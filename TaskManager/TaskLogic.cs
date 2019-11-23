@@ -187,6 +187,7 @@ namespace TaskManager
                 DataControl._mTaskTools.RecordTaskErrLog("Task_InInitial()", "生成初始入库任务", command.WCS_NO, null, ex.Message);
             }
         }
+
         #endregion
 
         #region 各设备入库步骤
@@ -269,7 +270,7 @@ namespace TaskManager
                                 // 生成库存定位任务
                                 String ABCloc = DataControl._mTaskTools.GetABCStockLoc(item.TASK_NOW == com.TASK_UID_1 ? com.LOC_TO_1 : com.LOC_TO_2);
                                 DataControl._mTaskTools.CreateTaskItem(item.WCS_NO, item.TASK_NOW, ItemId.行车库存定位, DeviceType.行车, null, ABCloc, ItemStatus.请求执行, item.DEVICE);
-                                
+
                                 // 更新状态=> 完成
                                 DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, ItemColumnName.作业状态, ItemStatus.完成任务);
 
@@ -564,6 +565,19 @@ namespace TaskManager
                                 }
                                 // 更新状态=> 完成
                                 DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, ItemColumnName.作业状态, ItemStatus.完成任务);
+
+                                #endregion
+                                break;
+                            case ItemId.摆渡车复位:
+                                #region 解锁任务设备
+                                if (item.STATUS != ItemStatus.交接中)
+                                {
+                                    break;
+                                }
+                                // 更新状态=> 完成
+                                DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, ItemColumnName.作业状态, ItemStatus.完成任务);
+                                // 解锁当前设备
+                                DataControl._mTaskTools.UnLockByDevAndWcsNo(item.DEVICE, item.WCS_NO);
 
                                 #endregion
                                 break;
@@ -992,6 +1006,9 @@ namespace TaskManager
                                     // 更新状态=> 完成
                                     DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, ItemColumnName.作业状态, ItemStatus.完成任务);
                                     DataControl._mTaskTools.UpdateItem(rgvID, item.WCS_NO, ItemColumnName.作业状态, ItemStatus.完成任务);
+
+                                    // 运输车[内]复位任务
+                                    DataControl._mTaskTools.CreateTaskItem(item.WCS_NO, "ResetLoc", ItemId.运输车复位2, DeviceType.运输车, null, R2, ItemStatus.不可执行, rgv);
                                 }
 
                                 #endregion
@@ -1011,6 +1028,19 @@ namespace TaskManager
                                 }
                                 // 更新状态=> 完成
                                 DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, ItemColumnName.作业状态, ItemStatus.完成任务);
+                                
+                                #endregion
+                                break;
+                            case ItemId.运输车复位2:
+                                #region 解锁任务设备
+                                if (item.STATUS != ItemStatus.交接中)
+                                {
+                                    break;
+                                }
+                                // 更新状态=> 完成
+                                DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, ItemColumnName.作业状态, ItemStatus.完成任务);
+                                // 解锁当前设备
+                                DataControl._mTaskTools.UnLockByDevAndWcsNo(item.DEVICE, item.WCS_NO);
 
                                 #endregion
                                 break;
@@ -1115,6 +1145,19 @@ namespace TaskManager
 
                                 #endregion
                                 break;
+                            case ItemId.摆渡车复位:
+                                #region 解锁任务设备
+                                if (item.STATUS != ItemStatus.交接中)
+                                {
+                                    break;
+                                }
+                                // 更新状态=> 完成
+                                DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, ItemColumnName.作业状态, ItemStatus.完成任务);
+                                // 解锁当前设备
+                                DataControl._mTaskTools.UnLockByDevAndWcsNo(item.DEVICE, item.WCS_NO);
+
+                                #endregion
+                                break;
                             default:
                                 break;
                         }
@@ -1204,6 +1247,24 @@ namespace TaskManager
                                         break;
                                     }
                                     device = arf;
+
+                                    // 挡路就让开
+                                    if (item.LOC_TO == DataControl._mStools.GetValueByKey("StandbyAR") &&
+                                        (item.ITEM_ID == ItemId.摆渡车定位固定辊台 || item.ITEM_ID == ItemId.摆渡车定位运输车))
+                                    {
+                                        string ARFother = DataControl._mTaskTools.GetOtherDev(device, DeviceType.摆渡车);
+                                        if (!String.IsNullOrEmpty(ARFother))
+                                        {
+                                            string arfLoc = duty == DeviceDuty.负责出库 ? DataControl._mStools.GetValueByKey("StandbyF1") :
+                                                DataControl._mStools.GetValueByKey("StandbyF2");
+                                            ARF _arf = new ARF(ARFother);
+                                            if (_arf.CurrentSite() != Convert.ToInt32(arfLoc))
+                                            {
+                                                // 生成复位任务
+                                                DataControl._mTaskTools.CreateTaskItem(com.WCS_NO, "ResetLoc", ItemId.摆渡车复位, DeviceType.摆渡车, null, arfLoc, ItemStatus.不可执行, ARFother);
+                                            }
+                                        }
+                                    }
                                 }
                                 break;
                             default:

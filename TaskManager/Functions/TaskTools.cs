@@ -948,7 +948,7 @@ namespace TaskManager.Functions
             try
             {
                 String sql = String.Format(@"select DEVICE from wcs_config_device where FLAG <> '{0}' and TYPE = '{1}' and 
-                        AREA in (select AREA from wcs_config_device where DEVICE = '{2}')", DeviceFlag.失效, type, dev);
+                        DEVICE <> '{2}' and AREA in (select AREA from wcs_config_device where DEVICE = '{2}')", DeviceFlag.失效, type, dev);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {
