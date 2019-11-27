@@ -73,7 +73,7 @@ namespace WindowManager
                 CBitemid.Items.Add(ItemId.行车放货 + " - " + ItemId.GetItemIdName(ItemId.行车放货));
                 CBitemid.Items.Add(ItemId.摆渡车复位 + " - " + ItemId.GetItemIdName(ItemId.摆渡车复位));
                 CBitemid.Items.Add(ItemId.摆渡车定位固定辊台 + " - " + ItemId.GetItemIdName(ItemId.摆渡车定位固定辊台));
-                CBitemid.Items.Add(ItemId.摆渡车定位运输车对接 + " - " + ItemId.GetItemIdName(ItemId.摆渡车定位运输车对接));
+                CBitemid.Items.Add(ItemId.摆渡车定位运输车 + " - " + ItemId.GetItemIdName(ItemId.摆渡车定位运输车));
                 CBitemid.Items.Add(ItemId.运输车定位 + " - " + ItemId.GetItemIdName(ItemId.运输车定位));
                 CBitemid.Items.Add(ItemId.运输车复位1 + " - " + ItemId.GetItemIdName(ItemId.运输车复位1));
                 CBitemid.Items.Add(ItemId.运输车复位2 + " - " + ItemId.GetItemIdName(ItemId.运输车复位2));
@@ -115,7 +115,7 @@ namespace WindowManager
                         devtype = DeviceType.固定辊台;
                         break;
                     case ItemId.摆渡车定位固定辊台:
-                    case ItemId.摆渡车定位运输车对接:
+                    case ItemId.摆渡车定位运输车:
                     case ItemId.摆渡车复位:
                     case ItemId.摆渡车正向:
                     case ItemId.摆渡车反向:

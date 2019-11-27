@@ -395,14 +395,6 @@ namespace TaskManager
                         DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                         return;
                     }
-                    // 固定辊台与摆渡车都只有1货
-                    if (_device.ActionStatus() == FRT.Stop && (
-                             (_device.GoodsStatus() != FRT.GoodsNoAll && _device.GoodsStatus() != FRT.GoodsYesAll) &&
-                             (_arf.GoodsStatus() != ARF.GoodsNoAll && _arf.GoodsStatus() != ARF.GoodsYesAll)))
-                    {
-                        // 固定辊台接摆渡车只有 反向
-                        rollOutOrder = FRT._RollerControl(_device.FRTNum(), FRT.RollerRunAll, FRT.RunObverse, FRT.GoodsReceive, FRT.GoodsQty2);
-                    }
                 }
                 // 当完成状态-辊台任务，立即发送 停止辊台任务 指令
                 if (_device.FinishTask() == FRT.TaskTake)
@@ -508,8 +500,6 @@ namespace TaskManager
                         {
                             // 完成任务
                             ISetTaskWait();
-                            // 解锁设备数据状态
-                            DataControl._mTaskTools.UnLockByDevAndWcsNo(ITEM.DEVICE, ITEM.WCS_NO);
                             // LOG
                             log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
                             return;
@@ -602,14 +592,6 @@ namespace TaskManager
                                     DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                                     return;
                                 }
-                                // 固定辊台与摆渡车都只有1货
-                                if (_device.ActionStatus() == ARF.Stop && (
-                                    (_device.GoodsStatus() != ARF.GoodsNoAll && _device.GoodsStatus() != ARF.GoodsYesAll) &&
-                                    (_frt.GoodsStatus() != FRT.GoodsNoAll && _frt.GoodsStatus() != FRT.GoodsYesAll)))
-                                {
-                                    // 摆渡车接固定辊台只有 正向
-                                    rollOutOrder = ARF._RollerControl(_device.ARFNum(), ARF.RollerRunAll, ARF.RunFront, ARF.GoodsReceive, ARF.GoodsQty2);
-                                }
 
                                 break;
                             case DeviceType.运输车:
@@ -630,14 +612,6 @@ namespace TaskManager
                                 {
                                     DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                                     return;
-                                }
-                                // 运输车与摆渡车都只有1货
-                                if (_device.ActionStatus() == ARF.Stop && (
-                                    (_device.GoodsStatus() != ARF.GoodsNoAll || _device.GoodsStatus() != ARF.GoodsYesAll) &&
-                                    (_rgv.GoodsStatus() != RGV.GoodsNoAll || _rgv.GoodsStatus() != RGV.GoodsYesAll)))
-                                {
-                                    // 摆渡车接运输车只有 反向
-                                    rollOutOrder = ARF._RollerControl(_device.ARFNum(), ARF.RollerRunAll, ARF.RunObverse, ARF.GoodsReceive, ARF.GoodsQty2);
                                 }
 
                                 break;
@@ -777,8 +751,6 @@ namespace TaskManager
                         {
                             // 完成任务
                             ISetTaskWait();
-                            // 解锁设备数据状态
-                            DataControl._mTaskTools.UnLockByDevAndWcsNo(ITEM.DEVICE, ITEM.WCS_NO);
                             // LOG
                             log.LOG(DataControl._mTaskTools.GetLogMessS(ITEM, Order));
                             return;
@@ -893,15 +865,6 @@ namespace TaskManager
                                     DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                                     return;
                                 }
-                                // 摆渡车与运输车都只有1货
-                                if (_device.ActionStatus() == RGV.Stop && (
-                                         (_device.GoodsStatus() != RGV.GoodsNoAll && _device.GoodsStatus() != RGV.GoodsYesAll) &&
-                                         (_arf.GoodsStatus() != ARF.GoodsNoAll && _arf.GoodsStatus() != ARF.GoodsYesAll)))
-                                {
-                                    // 运输车接摆渡车只有 正向
-                                    rollOutOrder = RGV._RollerControl(_device.RGVNum(), RGV.RollerRunAll, RGV.RunFront, RGV.GoodsReceive, RGV.GoodsQty2);
-                                }
-
                                 break;
                             case DeviceType.运输车:
                                 RGV _rgv = new RGV(ITEM.LOC_FROM);
@@ -922,23 +885,6 @@ namespace TaskManager
                                     DataControl._mSocket.SwithRefresh(ITEM.DEVICE, true);
                                     return;
                                 }
-                                // 运输车与运输车都只有1货
-                                if (_device.ActionStatus() == RGV.Stop && (
-                                         (_device.GoodsStatus() != RGV.GoodsNoAll || _device.GoodsStatus() != RGV.GoodsYesAll) &&
-                                         (_rgv.GoodsStatus() != RGV.GoodsNoAll || _rgv.GoodsStatus() != RGV.GoodsYesAll)))
-                                {
-                                    if (_device.GetCurrentSite() > _rgv.GetCurrentSite())
-                                    {
-                                        // 靠内的运输车接靠外的运输车只有 正向
-                                        rollOutOrder = RGV._RollerControl(_device.RGVNum(), RGV.RollerRunAll, RGV.RunFront, RGV.GoodsReceive, RGV.GoodsQty2);
-                                    }
-                                    else
-                                    {
-                                        // 靠外的运输车接靠内的运输车只有 反向
-                                        rollOutOrder = RGV._RollerControl(_device.RGVNum(), RGV.RollerRunAll, RGV.RunObverse, RGV.GoodsReceive, RGV.GoodsQty2);
-                                    }
-                                }
-
                                 break;
                             default:
                                 break;

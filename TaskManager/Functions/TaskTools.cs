@@ -1074,7 +1074,7 @@ namespace TaskManager.Functions
         /// </summary>
         /// <param name="device"></param>
         /// <returns></returns>
-        public bool IsDeviceLock(String device)
+        public bool IsDeviceLock(string device)
         {
             try
             {
@@ -1153,6 +1153,51 @@ namespace TaskManager.Functions
             }
         }
 
+        /// <summary>
+        /// 是否允许下笔任务接管设备
+        /// </summary>
+        /// <param name="wcs_no"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public bool IsDevTaskAllow(string wcs_no, string type, string loc_to)
+        {
+            try
+            {
+                String sql = String.Format(@"select DEVICE from wcs_config_device where TYPE = '{0}' and LOCK_WCS_NO in (
+select WCS_NO from wcs_command_master where CREATION_TIME < (select CREATION_TIME from wcs_command_master where WCS_NO = '{1}') 
+ORDER BY CREATION_TIME DESC, WCS_NO DESC )", type, wcs_no);
+                DataTable dt = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dt))
+                {
+                    return true;
+                }
+
+                // 摆渡车不挡就行
+                if (type == DeviceType.摆渡车 && dt.Rows.Count == 1 && !string.IsNullOrEmpty(loc_to))
+                {
+                    ARF _arf = new ARF(dt.Rows[0]["DEVICE"].ToString());
+                    if (_arf.CurrentSite() != Convert.ToInt32(loc_to) &&
+                        ((_arf.ActionStatus() == ARF.Stop && _arf.FinishTask() == ARF.TaskLocate) || 
+                         (_arf.ActionStatus() == ARF.Run && _arf.CurrentTask() == ARF.TaskTake))
+                        )
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         #endregion
 
         #region 任务信息
