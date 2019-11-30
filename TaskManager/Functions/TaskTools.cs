@@ -1163,28 +1163,36 @@ namespace TaskManager.Functions
         {
             try
             {
-                String sql = String.Format(@"select DEVICE from wcs_config_device where TYPE = '{0}' and LOCK_WCS_NO in (
-select WCS_NO from wcs_command_master where CREATION_TIME < (select CREATION_TIME from wcs_command_master where WCS_NO = '{1}') 
-ORDER BY CREATION_TIME DESC, WCS_NO DESC )", type, wcs_no);
+                // 所有设备当前面存在任务未执行则不可再分配
+                String sql = String.Format(@"select * from wcs_task_item where STATUS = '{0}' and DEV_TYPE = '{1}' and WCS_NO in 
+(select WCS_NO from wcs_command_master where CREATION_TIME < (select CREATION_TIME from wcs_command_master where WCS_NO = '{2}'))", 
+                    ItemStatus.不可执行, type, wcs_no);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
                 {
-                    return true;
-                }
-
-                // 摆渡车不挡就行
-                if (type == DeviceType.摆渡车 && dt.Rows.Count == 1 && !string.IsNullOrEmpty(loc_to))
-                {
-                    ARF _arf = new ARF(dt.Rows[0]["DEVICE"].ToString());
-                    if (_arf.CurrentSite() != Convert.ToInt32(loc_to) &&
-                        ((_arf.ActionStatus() == ARF.Stop && _arf.FinishTask() == ARF.TaskLocate) || 
-                         (_arf.ActionStatus() == ARF.Run && _arf.CurrentTask() == ARF.TaskTake))
-                        )
+                    sql = String.Format(@"select DEVICE from wcs_config_device where TYPE = '{0}' and LOCK_WCS_NO in (
+select WCS_NO from wcs_command_master where CREATION_TIME < (select CREATION_TIME from wcs_command_master where WCS_NO = '{1}') 
+ORDER BY CREATION_TIME DESC, WCS_NO DESC )", type, wcs_no);
+                    dt = DataControl._mMySql.SelectAll(sql);
+                    if (DataControl._mStools.IsNoData(dt))
                     {
                         return true;
                     }
                     else
                     {
+                        // 摆渡车不挡就行
+                        if (type == DeviceType.摆渡车 && !string.IsNullOrEmpty(loc_to))
+                        {
+                            ARF _arf = new ARF(dt.Rows[0]["DEVICE"].ToString());
+                            if (dt.Rows.Count == 1 && _arf.CurrentSite() != Convert.ToInt32(loc_to) &&
+                                ((_arf.ActionStatus() == ARF.Stop && _arf.FinishTask() == ARF.TaskLocate) ||
+                                 (_arf.ActionStatus() == ARF.Run && _arf.CurrentTask() == ARF.TaskTake))
+                                )
+                            {
+                                return true;
+                            }
+                        }
+
                         return false;
                     }
                 }

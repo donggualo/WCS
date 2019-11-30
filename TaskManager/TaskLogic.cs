@@ -197,7 +197,7 @@ namespace TaskManager
             try
             {
                 // 获取执行中的入库清单
-                String sql = String.Format(@"select * from wcs_command_v where TASK_TYPE = '{0}' and STEP in('{1}','{2}') order by CREATION_TIME",
+                String sql = String.Format(@"select * from wcs_command_v where TASK_TYPE = '{0}' and STEP in('{1}','{2}') order by CREATION_TIME,WCS_NO",
                     TaskType.入库, CommandStep.执行中, CommandStep.结束);
                 DataTable dtcommand = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dtcommand))
@@ -212,7 +212,7 @@ namespace TaskManager
                     if (com.STEP == CommandStep.结束)
                     {
                         // 备份任务数据
-                        //DataControl._mTaskTools.BackupTask(com.WCS_NO);
+                        DataControl._mTaskTools.BackupTask(com.WCS_NO);
                         // 解锁对应清单所有设备数据状态
                         DataControl._mTaskTools.DeviceUnLock(com.WCS_NO);
                         continue;
@@ -776,7 +776,7 @@ namespace TaskManager
             try
             {
                 // 获取执行中的出库清单
-                String sql = String.Format(@"select * from wcs_command_v where TASK_TYPE = '{0}' and STEP in('{1}','{2}') order by CREATION_TIME",
+                String sql = String.Format(@"select * from wcs_command_v where TASK_TYPE = '{0}' and STEP in('{1}','{2}') order by CREATION_TIME,WCS_NO",
                     TaskType.出库, CommandStep.执行中, CommandStep.结束);
                 DataTable dtcommand = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dtcommand))
