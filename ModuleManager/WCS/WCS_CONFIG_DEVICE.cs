@@ -13,24 +13,14 @@ namespace ModuleManager.WCS
     public class WCS_CONFIG_DEVICE
     {
         /// <summary>
-        /// 设备名
+        /// 设备
         /// </summary>
-        public string DEVICE { get; set; }
-
-        /// <summary>
-        /// 设备类型
-        /// </summary>
-        public string TYPE { get; set; }
-
-        /// <summary>
-        /// 所属区域
-        /// </summary>
-        public string AREA { get; set; }
+        public String DEVICE { get; set; }
 
         /// <summary>
         /// IP地址
         /// </summary>
-        public string IP { get; set; }
+        public String IP { get; set; }
 
         /// <summary>
         /// 端口
@@ -38,55 +28,44 @@ namespace ModuleManager.WCS
         public int PORT { get; set; }
 
         /// <summary>
+        /// 类型
+        /// </summary>
+        public String TYPE { get; set; }
+
+        /// <summary>
+        /// 区域
+        /// </summary>
+        public String AREA { get; set; }
+
+        /// <summary>
         /// 备注说明
         /// </summary>
-        public string REMARK { get; set; }
-
-        /// <summary>
-        /// 是否使用
-        /// </summary>
-        public int IS_UREFUL { get; set; }
-
-        /// <summary>
-        /// 是否锁定
-        /// </summary>
-        public int IS_LOCK { get; set; }
-
-        /// <summary>
-        /// 锁定单号
-        /// </summary>
-        public string LOCK_ID { get; set; }
+        public String REMARK { get; set; }
 
         /// <summary>
         /// 设备状态
         /// </summary>
-        public int FLAG { get; set; }
+        public String FLAG { get; set; }
 
         /// <summary>
-        /// X轴偏差
+        /// 锁定清单号
         /// </summary>
-        public int GAP_X { get; set; }
+        public String LOCK_WCS_NO { get; set; }
 
         /// <summary>
-        /// Y轴偏差
+        /// 职责
         /// </summary>
-        public int GAP_Y { get; set; }
+        public String DUTY { get; set; }
 
         /// <summary>
-        /// Z轴偏差
+        /// 创建时间
         /// </summary>
-        public int GAP_Z { get; set; }
+        public DateTime? CREATION_TIME { get; set; }
 
         /// <summary>
-        /// X轴误差范围
+        /// 更新时间
         /// </summary>
-        public int LIMIT_X { get; set; }
-
-        /// <summary>sss
-        /// Y轴误差范围
-        /// </summary>
-        public int LIMIT_Y { get; set; }
-
+        public DateTime? UPDATE_TIME { get; set; }
     }
 
     /// <summary>
@@ -94,12 +73,30 @@ namespace ModuleManager.WCS
     /// </summary>
     public class DeviceType
     {
-        public const string 行车 = "AWC";
+        public const string 行车 = "ABC";
         public const string 运输车 = "RGV";
         public const string 摆渡车 = "ARF";
         public const string 固定辊台 = "FRT";
-        public const string 包装线 = "PKL";
-        public const string AGV = "AGV";
     }
 
+    /// <summary>
+    /// 设备状态
+    /// </summary>
+    public class DeviceFlag
+    {
+        public const string 失效 = "N";
+        public const string 空闲 = "Y";
+        public const string 占用 = "U";  // 已使用其中一个辊台
+        public const string 锁定 = "L";
+    }
+
+    /// <summary>
+    /// 设备职责
+    /// </summary>
+    public class DeviceDuty
+    {
+        public const string 负责全部 = "A";
+        public const string 负责入库 = "I";
+        public const string 负责出库 = "O";
+    }
 }

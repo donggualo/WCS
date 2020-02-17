@@ -35,16 +35,13 @@ namespace TaskManager
                     return;
                 }
                 List<WCS_COMMAND_V> comList1 = dtcommand1.ToDataList<WCS_COMMAND_V>();
+                // 遍历执行单托任务请求WMS分配库位
                 foreach (WCS_COMMAND_V com1 in comList1)
                 {
-                    // 不存在AGV任务中
-                    if (DataControl._mMySql.GetCount("wcs_agv_info", string.Format("DROPSTATION = '{0}' and MAGIC <> '{1}'", com1.FRT, AGVMagic.任务完成)) == 0)
-                    {
-                        //更新WCS COMMAND状态——请求执行
-                        DataControl._mTaskTools.UpdateCommand(com1.WCS_NO, CommandStep.请求执行);
-                        // 锁定设备
-                        DataControl._mTaskTools.DeviceLock(com1.WCS_NO, com1.FRT);
-                    }
+                    //更新WCS COMMAND状态——请求执行
+                    DataControl._mTaskTools.UpdateCommand(com1.WCS_NO, CommandStep.请求执行);
+                    // 锁定设备
+                    DataControl._mTaskTools.DeviceLock(com1.WCS_NO, com1.FRT);
                 }
 
                 // 获取双托任务清单
@@ -57,6 +54,7 @@ namespace TaskManager
                     return;
                 }
                 List<WCS_COMMAND_V> comList2 = dtcommand2.ToDataList<WCS_COMMAND_V>();
+                // 遍历执行双托任务请求WMS分配库位
                 foreach (WCS_COMMAND_V com2 in comList2)
                 {
                     //更新WCS COMMAND状态——请求执行
@@ -101,66 +99,23 @@ namespace TaskManager
         /// <summary>
         /// 执行入库任务（初步执行）
         /// </summary>
-        /// <param name="com"></param>
-        public void Task_InInitial(WCS_COMMAND_V com)
+        /// <param name="command"></param>
+        public void Task_InInitial(WCS_COMMAND_V command)
         {
             try
             {
-                // 作业区域
-                string area = DataControl._mTaskTools.GetArea(com.FRT);
-
                 // 选择目的货位最靠外的货物优先处理
-                string loc1 = DataControl._mTaskTools.GetRGVLoc(1, com.LOC_TO_1);  // 运输车辊台①任务1
-                string loc2 = DataControl._mTaskTools.GetRGVLoc(2, com.LOC_TO_2);  // 运输车辊台②任务2
-                string loc = DataControl._mTaskTools.GetLocByRgvToLoc(loc1, loc2); // 处理货位
+                String loc1 = DataControl._mTaskTools.GetRGVLoc(1, command.LOC_TO_1); //运输车辊台①任务1
+                String loc2 = DataControl._mTaskTools.GetRGVLoc(2, command.LOC_TO_2); //运输车辊台②任务2
+                String loc = DataControl._mTaskTools.GetLocByRgvToLoc(loc1, loc2); //处理货位
                 if (loc == "NG")
                 {
                     //不能没有货物目的位置
                     return;
                 }
-
-                // 优先执行任务
-                string task = loc == loc1 ? com.TASK_UID_1 : com.TASK_UID_2;
-
-                // 摆渡车到固定辊台对接点
-                string arf = DataControl._mTaskTools.GetDevByDuty(area, DeviceType.摆渡车, DeviceDuty.负责入库); // 摆渡车
-                string ARFloc = DataControl._mTaskTools.GetARFLoc(com.FRT); // 获取对应摆渡车位置
-                DataControl._mTaskTools.CreateTaskItem(com.WCS_NO, task, ItemId.摆渡车定位固定辊台, DeviceType.摆渡车, null, ARFloc, ItemStatus.不可执行, arf);
-
-                // 运输车定位类型任务
-                string R2 = DataControl._mStools.GetValueByKey("StandbyR2"); // 运输车[内]待命复位点
-                string RR = DataControl._mStools.GetValueByKey("StandbyRR"); // 运输车于运输车对接点
-                string rgv1 = DataControl._mTaskTools.GetDevByDuty(area, DeviceType.运输车, DeviceDuty.临近入库口);
-                string rgv2 = DataControl._mTaskTools.GetDevByDuty(area, DeviceType.运输车, DeviceDuty.远离入库口);
-                // 运输车到摆渡车对接点
-                string RGVloc = DataControl._mStools.GetValueByKey("StandbyR1"); //获取运输车复位1位置
-                DataControl._mTaskTools.CreateTaskItem(com.WCS_NO, task, ItemId.运输车复位1, DeviceType.运输车, null, RGVloc, ItemStatus.不可执行, rgv1);
-                // 单托
-                if (string.IsNullOrEmpty(com.TASK_UID_2))
-                {
-                    if (Convert.ToInt32(loc) >= Convert.ToInt32(R2))
-                    {
-                        // 运输车对接任务
-                        DataControl._mTaskTools.CreateTaskItem(com.WCS_NO, task, ItemId.运输车对接定位, DeviceType.运输车, null, RR, ItemStatus.不可执行, rgv1);
-                        DataControl._mTaskTools.CreateTaskItem(com.WCS_NO, task, ItemId.运输车复位2, DeviceType.运输车, null, RR, ItemStatus.不可执行, rgv2);
-                    }
-                    else
-                    {
-
-                    }
-                }
-                // 双托
-                else
-                {
-
-                }
-                
-
-
-
                 // 获取清单任务分别对应的分区行车
-                string ABC_1 = DataControl._mTaskTools.GetABCByInTaskUID(com.TASK_UID_1);
-                string ABC_2 = DataControl._mTaskTools.GetABCByInTaskUID(com.TASK_UID_2);
+                string ABC_1 = DataControl._mTaskTools.GetABCByInTaskUID(command.TASK_UID_1);
+                string ABC_2 = DataControl._mTaskTools.GetABCByInTaskUID(command.TASK_UID_2);
                 string ABCloc_1;
                 string ABCloc_2;
                 string ABCtask_1;
@@ -171,22 +126,22 @@ namespace TaskManager
                     // 当所有入库坐标为同一行车分区，确认执行先后
                     if (loc == loc1)
                     {
-                        ABCtask_1 = com.TASK_UID_1;
-                        ABCloc_1 = DataControl._mTaskTools.GetABCTrackLoc(com.LOC_TO_1);
+                        ABCtask_1 = command.TASK_UID_1;
+                        ABCloc_1 = DataControl._mTaskTools.GetABCTrackLoc(command.LOC_TO_1);
 
-                        ABCtask_2 = com.TASK_UID_2;
-                        ABCloc_2 = DataControl._mTaskTools.GetABCTrackLoc(com.LOC_TO_2);
+                        ABCtask_2 = command.TASK_UID_2;
+                        ABCloc_2 = DataControl._mTaskTools.GetABCTrackLoc(command.LOC_TO_2);
                     }
                     else
                     {
-                        ABCtask_1 = com.TASK_UID_2;
-                        ABCloc_1 = DataControl._mTaskTools.GetABCTrackLoc(com.LOC_TO_2);
+                        ABCtask_1 = command.TASK_UID_2;
+                        ABCloc_1 = DataControl._mTaskTools.GetABCTrackLoc(command.LOC_TO_2);
 
-                        ABCtask_2 = com.TASK_UID_1;
-                        ABCloc_2 = DataControl._mTaskTools.GetABCTrackLoc(com.LOC_TO_1);
+                        ABCtask_2 = command.TASK_UID_1;
+                        ABCloc_2 = DataControl._mTaskTools.GetABCTrackLoc(command.LOC_TO_1);
                     }
-                    DataControl._mTaskTools.CreateTaskItem(com.WCS_NO, ABCtask_1, ItemId.行车轨道定位, DeviceType.行车, null, ABCloc_1, ItemStatus.不可执行, ABC_1);
-                    DataControl._mTaskTools.CreateTaskItem(com.WCS_NO, ABCtask_2, ItemId.行车轨道定位, DeviceType.行车, null, ABCloc_2, ItemStatus.不可执行, ABC_2);
+                    DataControl._mTaskTools.CreateTaskItem(command.WCS_NO, ABCtask_1, ItemId.行车轨道定位, DeviceType.行车, null, ABCloc_1, ItemStatus.不可执行, ABC_1);
+                    DataControl._mTaskTools.CreateTaskItem(command.WCS_NO, ABCtask_2, ItemId.行车轨道定位, DeviceType.行车, null, ABCloc_2, ItemStatus.不可执行, ABC_2);
                 }
                 else if (string.IsNullOrEmpty(ABC_1) && string.IsNullOrEmpty(ABC_2))
                 {
@@ -194,31 +149,42 @@ namespace TaskManager
                 }
                 else if (string.IsNullOrEmpty(ABC_1) || string.IsNullOrEmpty(ABC_2))
                 {
-                    ABCtask_1 = string.IsNullOrEmpty(ABC_1) ? com.TASK_UID_2 : com.TASK_UID_1;
-                    ABCloc_1 = DataControl._mTaskTools.GetABCTrackLoc(string.IsNullOrEmpty(ABC_1) ? com.LOC_TO_2 : com.LOC_TO_1);
-                    DataControl._mTaskTools.CreateTaskItem(com.WCS_NO, ABCtask_1, ItemId.行车轨道定位, DeviceType.行车, null, ABCloc_1, ItemStatus.不可执行, string.IsNullOrEmpty(ABC_1) ? ABC_2 : ABC_1);
+                    ABCtask_1 = string.IsNullOrEmpty(ABC_1) ? command.TASK_UID_2 : command.TASK_UID_1;
+                    ABCloc_1 = DataControl._mTaskTools.GetABCTrackLoc(string.IsNullOrEmpty(ABC_1) ? command.LOC_TO_2 : command.LOC_TO_1);
+                    DataControl._mTaskTools.CreateTaskItem(command.WCS_NO, ABCtask_1, ItemId.行车轨道定位, DeviceType.行车, null, ABCloc_1, ItemStatus.不可执行, string.IsNullOrEmpty(ABC_1) ? ABC_2 : ABC_1);
                 }
                 else
                 {
-                    ABCloc_1 = DataControl._mTaskTools.GetABCTrackLoc(com.LOC_TO_1);
-                    ABCloc_2 = DataControl._mTaskTools.GetABCTrackLoc(com.LOC_TO_2);
-                    DataControl._mTaskTools.CreateTaskItem(com.WCS_NO, com.TASK_UID_1, ItemId.行车轨道定位, DeviceType.行车, null, ABCloc_1, ItemStatus.不可执行, ABC_1);
-                    DataControl._mTaskTools.CreateTaskItem(com.WCS_NO, com.TASK_UID_2, ItemId.行车轨道定位, DeviceType.行车, null, ABCloc_2, ItemStatus.不可执行, ABC_2);
+                    ABCloc_1 = DataControl._mTaskTools.GetABCTrackLoc(command.LOC_TO_1);
+                    ABCloc_2 = DataControl._mTaskTools.GetABCTrackLoc(command.LOC_TO_2);
+                    DataControl._mTaskTools.CreateTaskItem(command.WCS_NO, command.TASK_UID_1, ItemId.行车轨道定位, DeviceType.行车, null, ABCloc_1, ItemStatus.不可执行, ABC_1);
+                    DataControl._mTaskTools.CreateTaskItem(command.WCS_NO, command.TASK_UID_2, ItemId.行车轨道定位, DeviceType.行车, null, ABCloc_2, ItemStatus.不可执行, ABC_2);
                 }
 
+                // 优先执行任务
+                String task = loc == loc1 ? command.TASK_UID_1 : command.TASK_UID_2;
+
+                // 摆渡车到固定辊台对接点
+                String ARFloc = DataControl._mTaskTools.GetARFLoc(command.FRT); //获取对应摆渡车位置
+                DataControl._mTaskTools.CreateTaskItem(command.WCS_NO, task, ItemId.摆渡车定位固定辊台, DeviceType.摆渡车, null, ARFloc, ItemStatus.不可执行);
+
+                // 运输车到摆渡车对接点
+                String RGVloc = DataControl._mStools.GetValueByKey("StandbyR1"); //获取运输车复位1位置
+                DataControl._mTaskTools.CreateTaskItem(command.WCS_NO, task, ItemId.运输车复位1, DeviceType.运输车, null, RGVloc, ItemStatus.不可执行);
+
                 //更新WCS COMMAND状态——执行中
-                DataControl._mTaskTools.UpdateCommand(com.WCS_NO, CommandStep.执行中);
+                DataControl._mTaskTools.UpdateCommand(command.WCS_NO, CommandStep.执行中);
                 //更新WCS TASK状态——任务中
-                DataControl._mTaskTools.UpdateTaskByWCSNo(com.WCS_NO, TaskSite.任务中);
+                DataControl._mTaskTools.UpdateTaskByWCSNo(command.WCS_NO, TaskSite.任务中);
             }
             catch (Exception ex)
             {
                 // 初始化
-                DataControl._mTaskTools.UpdateCommand(com.WCS_NO, CommandStep.请求执行);
-                DataControl._mTaskTools.UpdateTaskByWCSNo(com.WCS_NO, TaskSite.未执行);
-                DataControl._mTaskTools.DeleteItem(com.WCS_NO);
+                DataControl._mTaskTools.UpdateCommand(command.WCS_NO, CommandStep.请求执行);
+                DataControl._mTaskTools.UpdateTaskByWCSNo(command.WCS_NO, TaskSite.未执行);
+                DataControl._mTaskTools.DeleteItem(command.WCS_NO);
                 // 记录LOG
-                DataControl._mTaskTools.RecordTaskErrLog("Task_InInitial()", "生成初始入库任务", com.WCS_NO, null, ex.Message);
+                DataControl._mTaskTools.RecordTaskErrLog("Task_InInitial()", "生成初始入库任务", command.WCS_NO, null, ex.Message);
             }
         }
 
@@ -489,7 +455,7 @@ namespace TaskManager
                                         break;
                                     }
 
-                                    if (DataControl._mTaskTools.GetItemStatus(abcID) == ItemStatus.完成任务 ||
+                                    if (DataControl._mTaskTools.GetItemStatus(abcID) == ItemStatus.完成任务 || 
                                         (Convert.ToInt32(result) >= Convert.ToInt32(AR) && _abc.GoodsStatus() == ABC.GoodsYes))
                                     {
                                         string taskNext;
@@ -1073,7 +1039,7 @@ namespace TaskManager
                                 }
                                 // 更新状态=> 完成
                                 DataControl._mTaskTools.UpdateItem(item.ID, item.WCS_NO, ItemColumnName.作业状态, ItemStatus.完成任务);
-
+                                
                                 #endregion
                                 break;
                             case ItemId.运输车复位2:
@@ -1250,7 +1216,7 @@ namespace TaskManager
                 // 遍历分配设备
                 foreach (WCS_TASK_ITEM item in itemList)
                 {
-                    if (!DataControl._mTaskTools.IsDevTaskAllow(item.WCS_NO, item.DEV_TYPE, item.LOC_TO))
+                    if (!DataControl._mTaskTools.IsDevTaskAllow(item.WCS_NO, item.DEV_TYPE,item.LOC_TO))
                     {
                         continue;
                     }

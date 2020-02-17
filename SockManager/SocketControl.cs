@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Socket
+namespace SockManager
 {
     /// <summary>
     /// 设备管理器

@@ -33,29 +33,29 @@ namespace TaskManager
         /// </summary>
         public static MySQL _mMySql;
 
-        /// <summary>
-        /// 简易功能
-        /// </summary>
+        ///// <summary>
+        ///// 简易功能
+        ///// </summary>
         public static SimpleTools _mStools;
 
-        /// <summary>
-        /// 任务服务
-        /// </summary>
+        ///// <summary>
+        ///// 任务服务
+        ///// </summary>
         public static TaskTools _mTaskTools;
 
-        /// <summary>
-        /// WCS 任务指令管理
-        /// </summary>
+        ///// <summary>
+        ///// WCS 任务指令管理
+        ///// </summary>
         public static TaskControler _mTaskControler;
 
-        /// <summary>
-        /// WCS 任务逻辑执行
-        /// </summary>
+        ///// <summary>
+        ///// WCS 任务逻辑执行
+        ///// </summary>
         public static RunTask _mRunTask;
 
-        /// <summary>
-        /// AGV 任务
-        /// </summary>
+        ///// <summary>
+        ///// AGV 任务
+        ///// </summary>
         public static ForAGVControl _mForAGVControl;
 
         /// <summary>

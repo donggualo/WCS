@@ -228,15 +228,11 @@ namespace TaskManager
                     // 固定辊台上有1#有货 或者 都有货
                     if (isOK)
                     {
-                        // 请求WMS分配库位
-                        if (DataControl._mForWmsControl.GetLocationByWMS(ITEM.WCS_NO, ITEM.DEVICE))
-                        {
-                            // 完成任务
-                            ISetTaskSuc();
-                            // LOG
-                            log.LOG(String.Format(@"【Success】{0}：WMS任务ID[ {1} ]，AGV任务ID[ {2} ]，设备号[ {3} ], 指令[ {4} ].",
-                            ITEM.ITEM_ID, ITEM.WCS_NO, ITEM.ID, ITEM.DEVICE, DataControl._mStools.BytetToString(Order)));
-                        }
+                        // 完成任务
+                        ISetTaskSuc();
+                        // LOG
+                        log.LOG(String.Format(@"【Success】{0}：WMS任务ID[ {1} ]，AGV任务ID[ {2} ]，设备号[ {3} ], 指令[ {4} ].",
+                        ITEM.ITEM_ID, ITEM.WCS_NO, ITEM.ID, ITEM.DEVICE, DataControl._mStools.BytetToString(Order)));
                         return;
                     }
                 }
