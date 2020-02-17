@@ -5,7 +5,7 @@ using System.Text;
 using System.Net.Sockets;
 using System.Net;
 
-namespace SockManager
+namespace Socket
 {
     /// <summary>
     /// 异步TCP服务器

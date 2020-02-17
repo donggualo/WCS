@@ -1,0 +1,23 @@
+﻿<Window x:Class="TestWim.TaskTest"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
+        xmlns:local="clr-namespace:TestWim"
+        mc:Ignorable="d"
+        Title="TaskTest" Height="450" Width="800">
+    <Grid>
+        <TextBox Name="TBtaskid" pu:TextBoxHelper.Watermark="任务ID" Margin="25,10,600,380" Text="test"/>
+        <TextBox Name="TBbarcode" pu:TextBoxHelper.Watermark="货物贴码" Margin="25,50,600,340" Text="test"/>
+        <TextBox Name="TBfromloc" pu:TextBoxHelper.Watermark="来源" Margin="25,90,600,300" Text="B01"/>
+        <TextBox Name="TBtoloc" pu:TextBoxHelper.Watermark="目的" Margin="25,130,600,260" Text="B01-1-1-1"/>
+
+        <ComboBox Name="CBfrt" Margin="25,180,600,200" pu:ComboBoxHelper.Watermark="入库固定辊台"/>
+
+        <Button Name="BTNtemp" Content="加入临时" Margin="25,250,650,130" Click="BTNtemp_Click"/>
+        <CheckBox Name="CHBdojob" Content="开始入库作业" Margin="25,300,650,80" Click="CHBdojob_Click"/>
+        <CheckBox Name="CHBdotask" Content="开始设备任务" Margin="25,350,650,30" Click="CHBdotask_Click"/>
+
+    </Grid>
+</Window>

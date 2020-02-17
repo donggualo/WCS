@@ -58,19 +58,22 @@
     <Compile Include="WCS\WCS_AGV_INFO.cs" />
     <Compile Include="WCS\WCS_COMMAND_MASTER.cs" />
     <Compile Include="WCS\WCS_COMMAND_V.cs" />
+    <Compile Include="WCS\WCS_CONFIG_AREA.cs" />
     <Compile Include="WCS\WCS_CONFIG_DEVICE.cs" />
     <Compile Include="WCS\WCS_CONFIG_DEV_GAP.cs" />
     <Compile Include="WCS\WCS_CONFIG_LOC.cs" />
     <Compile Include="WCS\WCS_FUNCTION_LOG.cs" />
+    <Compile Include="WCS\WCS_JOB_DETAIL.cs" />
+    <Compile Include="WCS\WCS_JOB_HEADER.cs" />
     <Compile Include="WCS\WCS_TASK_INFO.cs" />
     <Compile Include="WCS\WCS_TASK_ITEM.cs" />
+    <Compile Include="WCS\WCS_WMS_TASK.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ACINET\ACINET.csproj">
-      <Project>{7E2B7915-6CB9-432D-88B0-F635E3BF354E}</Project>
+      <Project>{7e2b7915-6cb9-432d-88b0-f635e3bf354e}</Project>
       <Name>ACINET</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

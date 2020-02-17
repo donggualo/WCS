@@ -9,7 +9,7 @@ namespace PubResourceManager
 {
     public class MySQL
     {
-        static readonly string conn = ConfigurationManager.AppSettings["MySqlConn"];
+        static readonly string conn = "SslMode = None; server=localhost;database=wcs;uid=root;pwd=kd123";
         Log log;
         public MySQL()
         {

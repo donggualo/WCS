@@ -117,7 +117,7 @@ namespace TaskManager
         /// </summary>
         /// <param name="taskuid"></param>
         /// <param name="frt"></param>
-        public void GetLocationByWMS(string taskuid, string frt)
+        public bool GetLocationByWMS(string taskuid, string frt)
         {
             try
             {
@@ -131,24 +131,25 @@ namespace TaskManager
                 {
                     // 无数据则异常 LOG
                     DataControl._mTaskTools.RecordTaskErrLog("GetLocationByWMS()", "AGV卸货完成分配库位[扫码位置,任务号]", frt, taskuid, "不存在WMS入库任务ID！");
-                    return;
+                    return false;
                 }
 
                 // 呼叫WMS 请求入库资讯---库位
                 WmsModel wms = DataControl._mHttp.DoReachStockinPosTask(DataControl._mTaskTools.GetArea(frt), taskuid);
                 // 更新任务资讯
-                sql = String.Format(@"update WCS_TASK_INFO set UPDATE_TIME = NOW(), TASK_TYPE = '{0}', W_S_LOC = '{1}', W_D_LOC = '{2}' where TASK_UID = '{3}'",
-                    TaskType.入库, wms.W_S_Loc, wms.W_D_Loc, taskuid);
+                sql = String.Format(@"update WCS_TASK_INFO set UPDATE_TIME = NOW(), TASK_TYPE = '{0}', W_S_LOC = W_D_LOC, W_D_LOC = '{1}' where TASK_UID = '{2}'",
+                    TaskType.入库, wms.W_D_Loc, taskuid);
                 DataControl._mMySql.ExcuteSql(sql);
 
                 // 对应 WCS 清单
                 DataControl._mTaskTools.CreateCommandIn(taskuid, frt);
-                return;
+                return true;
             }
             catch (Exception ex)
             {
                 // LOG
                 DataControl._mTaskTools.RecordTaskErrLog("GetLocationByWMS()", "AGV卸货完成分配库位[扫码位置,任务号]", frt, taskuid, ex.Message);
+                return false;
             }
         }
 

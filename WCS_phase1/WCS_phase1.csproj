@@ -140,10 +140,6 @@
       <Project>{9E139539-C272-488A-BFCF-CADDF458DF9D}</Project>
       <Name>MHttpServer</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ModuleManager\ModuleManager.csproj">
-      <Project>{36A19B28-36C5-42A8-9360-A5FFF1891DC7}</Project>
-      <Name>ModuleManager</Name>
-    </ProjectReference>
     <ProjectReference Include="..\NdcManager\NdcManager.csproj">
       <Project>{D7F23C4B-2E0E-4A97-A0DA-7AF778E26A60}</Project>
       <Name>NdcManager</Name>
@@ -152,10 +148,6 @@
       <Project>{20AFF318-2F10-47E9-A66C-AED5B9C5E5F5}</Project>
       <Name>PubResourceManager</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TaskManager\TaskManager.csproj">
-      <Project>{0F7B97C2-6B7E-46B0-8D3D-005C4971ED64}</Project>
-      <Name>TaskManager</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ToolManager\ToolManager.csproj">
       <Project>{b65231a1-c544-4279-ac1a-c62194c4ad3f}</Project>
       <Name>ToolManager</Name>
@@ -163,6 +155,10 @@
     <ProjectReference Include="..\WcsHttpManager\WcsHttpManager.csproj">
       <Project>{1B6193D0-25F4-4405-883A-5999C0E8F42B}</Project>
       <Name>WcsHttpManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WcsManager\WcsManager.csproj">
+      <Project>{16df486b-dab3-4b75-b3c1-0dc95def791f}</Project>
+      <Name>WcsManager</Name>
     </ProjectReference>
     <ProjectReference Include="..\WindowManager\WindowManager.csproj">
       <Project>{C422AB6D-FDF4-46B2-8ED2-35C8EB6DB6D8}</Project>

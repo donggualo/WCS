@@ -934,9 +934,79 @@ namespace TaskManager.Functions
             }
         }
 
+        /// <summary>
+        /// 2坐标间是否属安全距离（仅行车&运输车）
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="loc1"></param>
+        /// <param name="loc2"></param>
+        /// <param name="loc2_Change"></param>
+        /// <returns></returns>
+        public bool IsSafeDistance(string type, string loc1, string loc2, out string loc2_Change)
+        {
+            try
+            {
+                // 安全距离
+                int safe;
+                switch (type)
+                {
+                    case DeviceType.运输车:
+                        safe = Convert.ToInt32(DataControl._mStools.GetValueByKey("RGVsafe"));
+                        break;
+                    case DeviceType.行车:
+                        safe = Convert.ToInt32(DataControl._mStools.GetValueByKey("ABCsafe"));
+                        break;
+                    default:
+                        loc2_Change = null;
+                        return false;
+                }
+
+                if (Math.Abs(Convert.ToInt32(loc1) - Convert.ToInt32(loc2)) < safe)
+                {
+                    loc2_Change = (Convert.ToInt32(loc1) + safe).ToString();
+                    return false;
+                }
+                else
+                {
+                    loc2_Change = null;
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         #endregion
 
         #region 设备信息
+
+        /// <summary>
+        /// 根据设备职责获取对应区域内设备
+        /// </summary>
+        /// <param name="area"></param>
+        /// <param name="type"></param>
+        /// <param name="duty"></param>
+        /// <returns></returns>
+        public string GetDevByDuty(string area, string type, string duty)
+        {
+            try
+            {
+                String sql = String.Format(@"select DEVICE from wcs_config_device where AREA ='{0}' and TYPE = '{1}' and DUTY in ('{2}','{3}') and FLAG <> '{4}'",
+                    area, type, duty, DeviceDuty.负责全部, DeviceFlag.失效);
+                DataTable dt = DataControl._mMySql.SelectAll(sql);
+                if (DataControl._mStools.IsNoData(dt))
+                {
+                    return null;
+                }
+                return dt.Rows[0]["DEVICE"].ToString();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
 
         /// <summary>
         /// 获取同区域另一设备
@@ -1165,7 +1235,7 @@ namespace TaskManager.Functions
             {
                 // 所有设备当前面存在任务未执行则不可再分配
                 String sql = String.Format(@"select * from wcs_task_item where STATUS = '{0}' and DEV_TYPE = '{1}' and WCS_NO in 
-(select WCS_NO from wcs_command_master where CREATION_TIME < (select CREATION_TIME from wcs_command_master where WCS_NO = '{2}'))", 
+(select WCS_NO from wcs_command_master where CREATION_TIME < (select CREATION_TIME from wcs_command_master where WCS_NO = '{2}'))",
                     ItemStatus.不可执行, type, wcs_no);
                 DataTable dt = DataControl._mMySql.SelectAll(sql);
                 if (DataControl._mStools.IsNoData(dt))
