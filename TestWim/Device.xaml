@@ -1,0 +1,39 @@
+﻿<Window x:Class="TestWim.Device"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TestWim"
+        mc:Ignorable="d"
+        Title="Device" Height="450" Width="800">
+    <Grid>
+        <TabControl>
+            <TabItem Header="行车">
+                <Grid Background="#FFE5E5E5">
+                    <DataGrid Name="DG_AWC" Margin="10" ItemsSource="{Binding Path=ListRGV}" IsReadOnly="True" AutoGenerateColumns="True"
+                              SelectionMode="Single" CanUserReorderColumns="False" CanUserSortColumns="False" CanUserAddRows="False"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="运输车">
+                <Grid Background="#FFE5E5E5">
+                    <DataGrid Name="DG_RGV" Margin="10" ItemsSource="{Binding Path=ListRGV}" IsReadOnly="True" AutoGenerateColumns="True"
+                              SelectionMode="Single" CanUserReorderColumns="False" CanUserSortColumns="False" CanUserAddRows="False"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="摆渡车">
+                <Grid Background="#FFE5E5E5">
+                    <DataGrid Name="DG_ARF" Margin="10" ItemsSource="{Binding Path=ListARF}" IsReadOnly="True" AutoGenerateColumns="True"
+                              SelectionMode="Single" CanUserReorderColumns="False" CanUserSortColumns="False" CanUserAddRows="False"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="固定辊台">
+                <Grid Background="#FFE5E5E5">
+                    <DataGrid Name="DG_FRT" Margin="10" ItemsSource="{Binding Path=ListFRT}" IsReadOnly="True" AutoGenerateColumns="True"
+                              SelectionMode="Single" CanUserReorderColumns="False" CanUserSortColumns="False" CanUserAddRows="False"/>
+                </Grid>
+            </TabItem>
+
+        </TabControl>
+
+    </Grid>
+</Window>

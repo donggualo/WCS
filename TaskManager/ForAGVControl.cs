@@ -183,7 +183,6 @@ namespace TaskManager
                             return;
                         }
                         // 是否存在货物
-                        //if (frt.GoodsStatus() == FRT.GoodsYesAll)
                         if (frt.GoodsStatus() != FRT.GoodsNoAll || PublicParam.IsIgnoreFRT)  //add调试判断
                         {
                             // 分配 WMS TASK
@@ -257,7 +256,7 @@ namespace TaskManager
                             return;
                         }
                         // 是否作业中
-                        if (frtdrop.CurrentStatus() != FRT.RollerStop)
+                        if (frtdrop.ActionStatus() == FRT.Run)
                         {
                             // 当已启动辊台
                             if (frtdrop.CurrentTask() == FRT.TaskTake && (frtdrop.CurrentStatus() == FRT.RollerRun2 || frtdrop.CurrentStatus() == FRT.RollerRunAll))
@@ -278,7 +277,6 @@ namespace TaskManager
                             // 默认送往固定辊台 1#辊台
                             string rollerNum = "-1";
                             // 当辊台都无货
-                            //if (frtdrop.GoodsStatus() == FRT.GoodsNoAll)
                             if (frtdrop.GoodsStatus() == FRT.GoodsNoAll || PublicParam.IsIgnoreFRT) //add调试判断
                             {
                                 // 获取指令-- 启动所有辊台 正向接1货 
@@ -381,24 +379,6 @@ namespace TaskManager
                 }
                 // 更新AGV任务资讯
                 DataControl._mMySql.ExcuteSql(sql.ToString());
-
-                if (magic == AGVMagic.任务完成)
-                {
-                    // 获取Task资讯
-                    String sqltask = String.Format(@"select TASK_UID,DROPSTATION from wcs_agv_info where ID = '{0}'", id);
-                    DataTable dt = DataControl._mMySql.SelectAll(sqltask);
-                    if (DataControl._mStools.IsNoData(dt))
-                    {
-                        return;
-                    }
-                    // 获取对应任务ID
-                    string taskuid = dt.Rows[0]["TASK_UID"].ToString();
-                    // 获取对应固定辊台号
-                    string frt = dt.Rows[0]["DROPSTATION"].ToString();
-
-                    // 请求WMS分配库位
-                    new ForWMSControl().GetLocationByWMS(taskuid, frt);
-                }
             }
             catch (Exception ex)
             {

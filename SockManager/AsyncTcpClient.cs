@@ -7,7 +7,7 @@ using System.Net;
 using System.Threading;
 using System.Globalization;
 
-namespace SockManager
+namespace Socket
 {
     /// <summary>
     /// 异步TCP客户端
