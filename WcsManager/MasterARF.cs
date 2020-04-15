@@ -169,7 +169,7 @@ namespace WcsManager
                                 // 入库作业接货固定辊台
                                 if (t.tasktype == TaskTypeEnum.入库)
                                 {
-                                    // ?请求JOB更新
+                                    // ? JOB 更新请求
                                     int Tsite = ADS.JobPartARF_Site(t.jobid);
                                     if (Tsite != 0)
                                     {
@@ -216,7 +216,7 @@ namespace WcsManager
                             }
                             else
                             {
-                                // ?请求JOB更新
+                                // ? JOB 更新请求
                                 t.takeready = ADS.JobPartARF_Take(t.jobid, t.tasktype);
                             }
                             break;
@@ -247,7 +247,7 @@ namespace WcsManager
                                 // 出库作业送货固定辊台
                                 if (t.tasktype == TaskTypeEnum.出库)
                                 {
-                                    // ?请求JOB更新
+                                    // ? JOB 更新请求
                                     int Gsite = ADS.JobPartARF_Site(t.jobid);
                                     if (Gsite != 0)
                                     {
@@ -294,7 +294,7 @@ namespace WcsManager
                             }
                             else
                             {
-                                // ?请求JOB更新
+                                // ? JOB 更新请求
                                 t.giveready = ADS.JobPartARF_Give(t.jobid, t.tasktype);
                             }
                             break;

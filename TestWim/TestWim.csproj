@@ -131,6 +131,10 @@
       <Project>{AA1DAE48-F73F-4E40-9993-C7D32CA683F0}</Project>
       <Name>Socket</Name>
     </ProjectReference>
+    <ProjectReference Include="..\WcsHttpManager\WcsHttpManager.csproj">
+      <Project>{1B6193D0-25F4-4405-883A-5999C0E8F42B}</Project>
+      <Name>WcsHttpManager</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WcsManager\WcsManager.csproj">
       <Project>{16DF486B-DAB3-4B75-B3C1-0DC95DEF791F}</Project>
       <Name>WcsManager</Name>

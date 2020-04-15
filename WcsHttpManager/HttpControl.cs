@@ -29,7 +29,7 @@ namespace WcsHttpManager
 
         private void ReadWmsServerUrl()
         {
-            if(CommonSQL.GetWcsParamValue(new MySQL(), "WMS_SERVER_URL", out WCS_PARAM param))
+            if(CommonSQL.GetWcsParamValue("WMS_SERVER_URL", out WCS_PARAM param))
             {
                 wcsUrl = param.VALUE1;
             }
@@ -248,6 +248,113 @@ namespace WcsHttpManager
 
         #endregion
 
+        #region 取消&异常
+
+        /// <summary>
+        /// 取消任务
+        /// </summary>
+        /// <param name="from"></param>
+        /// <returns></returns>
+        public string DoCancelTask(WmsStatus ws, string taskuid)
+        {
+            string type;
+            switch (ws)
+            {
+                case WmsStatus.StockInTask:
+                    type = WmsParam.GetAllStockInTask;
+                    break;
+                case WmsStatus.StockOutTask:
+                    type = WmsParam.GetAllStockOutTask;
+                    break;
+                case WmsStatus.StockMoveTask:
+                    type = WmsParam.GetAllStockMoveTask;
+                    break;
+                case WmsStatus.StockCheckTask:
+                    type = WmsParam.GetAllStockCheckTask;
+                    break;
+                default:
+                    type = WmsParam.GetAllUnFinishTask;
+                    break;
+            }
+            StringBuilder url = new StringBuilder();
+            url.Append(wcsUrl + "/" + serverName + "/");
+            url.Append(type + ",");
+            url.Append(WmsParam.Status + "=" + (int)WmsStatus.Cancel + ",");
+            url.Append(WmsParam.TaskUID + "=" + taskuid + ",");
+            url.Append(WmsParam.DateTime + "=" + DateTime.Now.ToString("yyyyMMddHHmmss") + ",");
+            url.Append(CommandEnd);
+
+            Console.WriteLine(url.ToString());
+            string result = DoPost(url.ToString());
+            return result;
+        }
+
+        /// <summary>
+        /// 反馈异常
+        /// </summary>
+        /// <param name="from"></param>
+        /// <returns></returns>
+        public string DoShowError(WmsStatus ws, string taskuid, int errNo, string msg)
+        {
+            string type;
+            switch (ws)
+            {
+                case WmsStatus.StockInTask:
+                    type = WmsParam.GetAllStockInTask;
+                    break;
+                case WmsStatus.StockOutTask:
+                    type = WmsParam.GetAllStockOutTask;
+                    break;
+                case WmsStatus.StockMoveTask:
+                    type = WmsParam.GetAllStockMoveTask;
+                    break;
+                case WmsStatus.StockCheckTask:
+                    type = WmsParam.GetAllStockCheckTask;
+                    break;
+                default:
+                    type = WmsParam.GetAllUnFinishTask;
+                    break;
+            }
+            StringBuilder url = new StringBuilder();
+            url.Append(wcsUrl + "/" + serverName + "/");
+            url.Append(type + ",");
+            url.Append(WmsParam.TaskUID + "=" + taskuid + ",");
+            url.Append(WmsParam.ErrorCode + "=" + errNo + ",");
+            url.Append(WmsParam.TextMessage + "=" + msg + ",");
+            url.Append(WmsParam.DateTime + "=" + DateTime.Now.ToString("yyyyMMddHHmmss") + ",");
+            url.Append(CommandEnd);
+
+            Console.WriteLine(url.ToString());
+            string result = DoPost(url.ToString());
+            return result;
+        }
+        #endregion
+
+        #region 库位坐标
+
+        /// <summary>
+        /// 申请货位坐标
+        /// </summary>
+        /// <param name="version"></param>
+        /// <returns></returns>
+        public WmsLocation DoLocationData(int version, int lot, string area)
+        {
+            StringBuilder url = new StringBuilder();
+            url.Append(wcsUrl + "/" + serverName + "/");
+            url.Append(WmsParam.GetAllStockLocation + ",");
+            url.Append(WmsParam.DataVersion + "=" + version + ",");
+            url.Append(WmsParam.DataLot + "=" + lot + ",");
+            url.Append(WmsParam.From + "=" + area + ",");
+            url.Append(WmsParam.DateTime + "=" + DateTime.Now.ToString("yyyyMMddHHmmss") + ",");
+            url.Append(CommandEnd);
+
+            Console.WriteLine(url.ToString());
+            string result = DoPost(url.ToString(), WmsParam.GetAllStockLocation);
+            return JsonConvert.DeserializeObject<WmsLocation>(result);
+        }
+
+        #endregion
+
         #region 网络请求逻辑
 
         /// <summary>
@@ -255,7 +362,7 @@ namespace WcsHttpManager
         /// </summary>
         /// <param name=""></param>
         /// <returns></returns>
-        public string DoPost(string url)
+        public string DoPost(string url, string key = null)
         {
             try
             {
@@ -276,7 +383,11 @@ namespace WcsHttpManager
                 Stream dataStream = response.GetResponseStream();
                 StreamReader reader = new StreamReader(dataStream);
                 string responseFromServer = reader.ReadToEnd();//读取所有
-                Console.WriteLine(responseFromServer);
+
+                if (string.IsNullOrEmpty(key) && key != WmsParam.GetAllStockLocation)
+                {
+                    Console.WriteLine(responseFromServer);
+                }
 
                 //关闭资源
                 reader.Close();

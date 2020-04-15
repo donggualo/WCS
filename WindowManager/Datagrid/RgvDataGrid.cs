@@ -33,7 +33,7 @@ namespace WindowManager.Datagrid
             }
             else
             {
-                RGVDeviceModel m = _mDeviceList.FirstOrDefault(c => { return c.DeviceID == name; });
+                RGVDeviceModel m = _mDeviceList.FirstOrDefault(c => { return c.DevName == name; });
                 if (m == null)
                 {
                     _mDeviceList.Add(new RGVDeviceModel(name, area));
@@ -51,11 +51,11 @@ namespace WindowManager.Datagrid
             }
         }
 
-        public void UpdateDeviceNameList(string abc)
+        public void UpdateDeviceNameList(string rgv)
         {
-            if (!_mDeviceNameList.Contains(abc))
+            if (!_mDeviceNameList.Contains(rgv))
             {
-                _mDeviceNameList.Add(abc);
+                _mDeviceNameList.Add(rgv);
             }
         }
 

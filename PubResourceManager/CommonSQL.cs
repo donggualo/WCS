@@ -3,9 +3,8 @@ using ModuleManager.WCS;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
+using System.Data.OleDb;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace PubResourceManager
 {
@@ -14,13 +13,32 @@ namespace PubResourceManager
     /// </summary>
     public class CommonSQL
     {
+        public static MySQL mysql = new MySQL();
+
+        /// <summary>
+        /// 判断DataTable是否无数据
+        /// </summary>
+        public static bool IsNoData(DataTable dt)
+        {
+            if (dt == null || dt.Rows.Count == 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        #region NDC
+
         /// <summary>
         /// 获取公共参数的内容
         /// </summary>
         /// <param name="mysql"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static bool GetWcsParamValue(MySQL mysql, string name, out WCS_PARAM param)
+        public static bool GetWcsParamValue(string name, out WCS_PARAM param)
         {
             List<WCS_PARAM> list = new List<WCS_PARAM>();
             string sql = string.Format(@"select ID,NAME,INFO,VALUE1,VALUE2,VALUE3,VALUE4,VALUE5,VALUE6 from wcs_param where NAME = '{0}'", name);
@@ -37,16 +55,16 @@ namespace PubResourceManager
             return list.Count > 0;
         }
 
-        public static void UpdateWcsParamValue(MySQL mysql, string name, string value)
+        public static void UpdateWcsParamValue(string name, string value)
         {
             string sql = string.Format(@"UPDATE wcs_param set VALUE1 = '{0}' where NAME = '{1}' ", value, name);
             mysql.ExcuteSql(sql);
         }
 
-        public static List<WCS_CONFIG_DEVICE> GetDeviceNameList(MySQL mysql, string type)
+        public static List<WCS_CONFIG_DEVICE> GetDeviceNameList(string type)
         {
             List<WCS_CONFIG_DEVICE> list = new List<WCS_CONFIG_DEVICE>();
-            string sql = string.Format(@"select DEVICE,AREA from wcs_config_device where FLAG <> 'N' and TYPE = '{0}'", type);
+            string sql = string.Format(@"select DEVICE,AREA from wcs_config_device where IS_USEFUL <> 0 and TYPE = '{0}'", type);
             DataTable dt = mysql.SelectAll(sql);
             if (IsNoData(dt))
             {
@@ -56,26 +74,9 @@ namespace PubResourceManager
             return list;
         }
 
-        /// <summary>
-        /// 判断DataTable是否无数据
-        /// </summary>
-        /// <param name="dt"></param>
-        /// <returns></returns>
-        public static bool IsNoData(DataTable dt)
-        {
-            if (dt == null || dt.Rows.Count == 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
+        #endregion
 
         #region [WCS]
-        private static MySQL mysql = new MySQL();
 
         /// <summary>
         /// 获取作业表头
@@ -348,7 +349,7 @@ namespace PubResourceManager
                 {
                     sql = string.Format(@"update wcs_job_header set UPDATE_TIME = CURRENT_TIMESTAMP, TASK_ID1 = {1} where JOB_ID = '{0}'", jobid, wmsTask);
                 }
-                else if(string.IsNullOrEmpty(dt.Rows[0]["TASK_ID2"].ToString()))
+                else if (string.IsNullOrEmpty(dt.Rows[0]["TASK_ID2"].ToString()))
                 {
                     sql = string.Format(@"update wcs_job_header set UPDATE_TIME = CURRENT_TIMESTAMP, TASK_ID2 = {1} where JOB_ID = '{0}'", jobid, wmsTask);
                 }
@@ -502,8 +503,27 @@ TAKE_SITE_Z= {3}, GIVE_SITE_X= {4}, GIVE_SITE_Y= {5}, GIVE_SITE_Z= {6} where ID 
                 /*清作业*/
                     delete from wcs_job_header where JOB_ID = '{0}';
                 /*解设备*/
-                    update wcs_config_device set IS_LOCK = 0, LOCK_ID = null where LOCK_ID = '{0}'", 
+                    update wcs_config_device set IS_LOCK = 0, LOCK_ID = null where LOCK_ID = '{0}'",
                     jobid, remark);
+
+                mysql.ExcuteSql(sql);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 异常记录
+        /// </summary>
+        public static void LogErr(string fnc, string remark, string err, string v1 = "", string v2 = "", string v3 = "")
+        {
+            try
+            {
+                string sql = string.Format(@"insert into wcs_function_log(FUNCTION_NAME, REMARK, MESSAGE, VALUE1, VALUE2, VALUE3)
+		 values('{0}', '{1}', '{2}', '{3}', '{4}', '{5}')",
+                    fnc, remark, err, v1, v2, v3);
 
                 mysql.ExcuteSql(sql);
             }
@@ -515,5 +535,36 @@ TAKE_SITE_Z= {3}, GIVE_SITE_X= {4}, GIVE_SITE_Y= {5}, GIVE_SITE_Z= {6} where ID 
 
         #endregion
 
+        #region Excel
+
+        /// <summary>
+        /// 导入Excel文件转为 DataTable
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static DataTable GetExcelData(string path)
+        {
+            try
+            {
+                //连接语句，读取文件路劲
+                string strConn = "Provider=Microsoft.ACE.OLEDB.12.0;" + "Data Source=" + path + ";" + "Extended Properties=Excel 12.0;";
+                //查询Excel表名，默认是Sheet1
+                string strExcel = "select * from [Sheet1$]";
+
+                OleDbConnection ole = new OleDbConnection(strConn);
+                ole.Open(); //打开连接
+                DataTable dt = new DataTable();
+                OleDbDataAdapter odp = new OleDbDataAdapter(strExcel, strConn);
+                odp.Fill(dt);
+                ole.Close();
+                return dt;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        #endregion
     }
 }

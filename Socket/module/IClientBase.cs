@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using ToolManager;
 
 namespace Socket.module
 {
@@ -29,6 +30,8 @@ namespace Socket.module
 
         internal Timer m_RetryTimer;
 
+        internal Log log;
+
         #endregion
 
         #region[构造方法]
@@ -47,46 +50,6 @@ namespace Socket.module
             {
                 return m_Client != null && m_Connected;
             }
-        }
-
-        public bool Open(string host, int port)
-        {
-            try
-            {
-                if (IsConnected)
-                {
-                    string logMessage = "VCP9412 client already started";
-                    throw new InvalidOperationException(logMessage);
-                }
-
-                if (string.IsNullOrEmpty(host))
-                {
-                    string logMessage = string.Format("VCP9412 server ip not valid: '{0}'", host);
-                    throw new ArgumentNullException(logMessage);
-                }
-
-                if (port <= 0 || port < IPEndPoint.MinPort || port > IPEndPoint.MaxPort)
-                {
-                    string logMessage = string.Format("VCP9412 server port not valid: '{0}'", port);
-                    throw new ArgumentOutOfRangeException(logMessage);
-                }
-
-                m_IP = host;
-                m_Port = port;
-
-                new Thread(() =>
-                {
-                    Connect(m_IP, m_Port);
-                }).Start();
-            }
-            catch (Exception ex)
-            {
-
-                Close();
-                throw ex;
-            }
-
-            return true;
         }
 
         internal void Connect(string ip, int port)
@@ -142,17 +105,13 @@ namespace Socket.module
                 }
 
                 Disconnect();
+                log.LOG("Close: 关闭连接！");
             }
             catch (Exception ex)
             {
+                log.LOG(ex);
                 throw ex;
             }
-        }
-
-        public void Stop()
-        {
-            Disconnect();
-            Close();
         }
 
         #endregion

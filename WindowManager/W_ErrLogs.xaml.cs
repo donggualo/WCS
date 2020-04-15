@@ -1,20 +1,8 @@
 ﻿using ModuleManager;
 using Panuon.UI.Silver;
+using PubResourceManager;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using TaskManager;
 
 namespace WindowManager
 {
@@ -48,9 +36,10 @@ namespace WindowManager
                 // 清空数据
                 DGlog.ItemsSource = null;
 
-                string sql = @"select FUNCTION_NAME '方法名', REMARK '说明', WCS_NO '参数1', ITEM_ID '参数2', MESSAGE '描述', CREATION_TIME '时间' from wcs_function_log order by CREATION_TIME desc";
+                string sql = @"select FUNCTION_NAME '方法名', CREATION_TIME '时间' , REMARK '说明', VALUE1 '参数1', VALUE2 '参数2', VALUE3 '参数3', MESSAGE '描述'
+                    from wcs_function_log order by CREATION_TIME desc";
                 // 获取数据
-                DGlog.ItemsSource = DataControl._mMySql.SelectAll(sql).DefaultView;
+                DGlog.ItemsSource = CommonSQL.mysql.SelectAll(sql).DefaultView;
             }
             catch (Exception e)
             {

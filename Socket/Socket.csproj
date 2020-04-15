@@ -8,11 +8,12 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Socket</RootNamespace>
     <AssemblyName>Socket</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -57,6 +58,7 @@
     <Compile Include="message\ArfMessage.cs" />
     <Compile Include="message\AwcMessage.cs" />
     <Compile Include="message\FrtMessage.cs" />
+    <Compile Include="message\PklMessage.cs" />
     <Compile Include="message\RgvMessage.cs" />
     <Compile Include="module\IClientBase.cs" />
     <Compile Include="module\IMessage.cs" />
@@ -92,6 +94,10 @@
     <ProjectReference Include="..\Module\Module.csproj">
       <Project>{2F5A910A-312B-4B22-A8F1-CBE8086B60CD}</Project>
       <Name>Module</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToolManager\ToolManager.csproj">
+      <Project>{B65231A1-C544-4279-AC1A-C62194C4AD3F}</Project>
+      <Name>ToolManager</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

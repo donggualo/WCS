@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Xml;
 using System.Windows;
 using System.Data.OleDb;
+using System.Windows.Controls;
 //using Excel = Microsoft.Office.Interop.Excel;
 
 namespace TaskManager.Functions
@@ -202,7 +203,7 @@ namespace TaskManager.Functions
         /// (DataGrid)导出为Excel文件
         /// </summary>
         /// <param name="dg"></param>
-        public void SaveToExcel(System.Windows.Controls.DataGrid dg)
+        public void SaveToExcel(DataGrid dg)
         {
             //    string fileName = "";
             //    string saveFileName = "";

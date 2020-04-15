@@ -199,7 +199,7 @@ namespace WcsManager
                             }
                             else
                             {
-                                // ?请求JOB更新
+                                // ? JOB 更新请求
                                 t.takeready = ADS.JobPartFRT_Take(t.jobid, t.fromdev);
                             }
                             break;
@@ -239,7 +239,15 @@ namespace WcsManager
                             break;
 
                         case TaskStatus.taked:
-                            t.UpdateStatus(TaskStatus.togivesite);
+                            // AGV搬运 直接完成
+                            if (t.tasktype == TaskTypeEnum.AGV搬运)
+                            {
+                                t.UpdateStatus(TaskStatus.gived);
+                            }
+                            else
+                            {
+                                t.UpdateStatus(TaskStatus.togivesite);
+                            }
                             break;
 
                         case TaskStatus.togivesite:
@@ -270,7 +278,7 @@ namespace WcsManager
                             }
                             else
                             {
-                                // ?请求JOB更新
+                                // ? JOB 更新请求
                                 t.giveready = ADS.JobPartFRT_Give(t.jobid);
                             }
                             break;
@@ -345,6 +353,19 @@ namespace WcsManager
             if (task.Exists(c => c.jobid == jobid && c.device != null))
             {
                 return task.Find(c => c.jobid == jobid).device.devName;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// 获取固定辊台所属区域
+        /// </summary>
+        public string GetFrtArea(string jobid)
+        {
+            if (task.Exists(c => c.jobid == jobid && c.device != null))
+            {
+                return task.Find(c => c.jobid == jobid).device.area;
             }
 
             return null;

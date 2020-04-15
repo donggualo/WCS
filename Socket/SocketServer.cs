@@ -17,7 +17,7 @@ namespace Socket
         /// <summary>
         /// 刷新间隔
         /// </summary>
-        internal const int REFRESH_TIMEOUT = 1 * 1000;
+        internal const int REFRESH_TIMEOUT = 3 * 1000;
 
         public delegate void ReciveAwcDataHandler(string devName, DeviceAWC module);
         public delegate void ReciveArfDataHandler(string devName, DeviceARF module);
@@ -64,7 +64,7 @@ namespace Socket
                 case DevType.运输车:
                     RgvDataRecive?.Invoke(devName, (DeviceRGV)module);
                     break;
-                case DevType.包装线:
+                case DevType.包装线辊台:
                     PklDataRecive?.Invoke(devName, (DevicePKL)module);
                     break;
                 default:

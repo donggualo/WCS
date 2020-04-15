@@ -31,37 +31,37 @@ namespace TestWim
                 return;
             }
 
-            //admin.AddFrtTempJob(new WmsTask()
-            //{
-            //    frt = CBfrt.Text,
-            //    taskuid = TBtaskid.Text,
-            //    tasktype = TaskTypeEnum.入库,
-            //    taskstatus = WmsStatus.init,
-            //    barcode = TBbarcode.Text,
-            //    takesite = TBfromloc.Text,
-            //    givesite = TBtoloc.Text,
-            //    site = new JobSite()
-            //}, CBfrt.Text);
-
-            admin.AddAwcTempJob(new WmsTask()
+            admin.AddFrtTempJob(new WmsTask()
             {
-                dev = "",
+                dev = CBfrt.Text,
                 taskuid = TBtaskid.Text,
-                tasktype = TaskTypeEnum.出库,
+                tasktype = TaskTypeEnum.入库,
                 taskstatus = WmsTaskStatus.init,
                 barcode = TBbarcode.Text,
-                takesite = TBtoloc.Text,
-                givesite = TBfromloc.Text,
+                takesite = TBfromloc.Text,
+                givesite = TBtoloc.Text,
                 site = new JobSite()
-            });
+            }, CBfrt.Text);
+
+            //admin.AddAwcTempJob(new WmsTask()
+            //{
+            //    dev = "",
+            //    taskuid = TBtaskid.Text,
+            //    tasktype = TaskTypeEnum.出库,
+            //    taskstatus = WmsTaskStatus.init,
+            //    barcode = TBbarcode.Text,
+            //    takesite = TBtoloc.Text,
+            //    givesite = TBfromloc.Text,
+            //    site = new JobSite()
+            //});
 
             Notice.Show("OK！", "完成", 3, MessageBoxIcon.Success);
         }
 
         private void CHBdojob_Click(object sender, RoutedEventArgs e)
         {
-            //admin.AlterDoJobIn((bool)CHBdojob.IsChecked);
-            admin.AlterDoJobOut((bool)CHBdojob.IsChecked);
+            admin.AlterDoJobIn((bool)CHBdojob.IsChecked);
+            //admin.AlterDoJobOut((bool)CHBdojob.IsChecked);
             Notice.Show("OK！", "完成", 3, MessageBoxIcon.Success);
         }
 

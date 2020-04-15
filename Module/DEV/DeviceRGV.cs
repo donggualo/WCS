@@ -1,5 +1,8 @@
 ﻿namespace Module.DEV
 {
+    /// <summary>
+    /// 有轨制导运输车 Rail Guided Vehicle
+    /// </summary>
     public class DeviceRGV : IBaseModule
     {
         /// <summary>

@@ -32,15 +32,15 @@ namespace NdcManager
             port = 0;
             ikey = 0;
 
-            if(CommonSQL.GetWcsParamValue(mysql, "NDC_SERVER_IP",out WCS_PARAM ipp)){
+            if(CommonSQL.GetWcsParamValue("NDC_SERVER_IP",out WCS_PARAM ipp)){
                 ip = ipp.VALUE1;
             }
 
-            if (CommonSQL.GetWcsParamValue(mysql, "NDC_SERVER_PORT", out WCS_PARAM portp)){
+            if (CommonSQL.GetWcsParamValue("NDC_SERVER_PORT", out WCS_PARAM portp)){
                 port = int.Parse(portp.VALUE1);
             }
 
-            if (CommonSQL.GetWcsParamValue(mysql, "NDC_TASK_IKEY", out WCS_PARAM ikp)){
+            if (CommonSQL.GetWcsParamValue("NDC_TASK_IKEY", out WCS_PARAM ikp)){
                 ikey = int.Parse(ikp.VALUE1);
             }
         }
@@ -51,7 +51,7 @@ namespace NdcManager
         /// <param name="value"></param>
         public void UpdateIkeyValue(int value)
         {
-            CommonSQL.UpdateWcsParamValue(mysql, "NDC_TASK_IKEY", value + "");
+            CommonSQL.UpdateWcsParamValue("NDC_TASK_IKEY", value + "");
         }
 
         /// <summary>

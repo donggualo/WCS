@@ -21,6 +21,8 @@ namespace Socket.module
                         return new ArfMessage(msg).Module;
                     case DevType.运输车:
                         return new RgvMessage(msg).Module;
+                    case DevType.包装线辊台:
+                        return new PklMessage(msg).Module;
                     default:
                         return null;
                 }

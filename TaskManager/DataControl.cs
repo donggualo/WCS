@@ -1,4 +1,4 @@
-﻿using SockManager;
+﻿//using SockManager;
 using WcsHttpManager;
 using NdcManager;
 using TaskManager.Functions;
@@ -8,10 +8,12 @@ namespace TaskManager
 {
     public class DataControl
     {
+        #region parm
+
         /// <summary>
         /// 获取设备通信信息
         /// </summary>
-        public static SocketControl _mSocket;
+        //public static SocketControl _mSocket;
 
         /// <summary>
         /// 控制提供给WMS的服务
@@ -63,6 +65,7 @@ namespace TaskManager
         /// </summary>
         public static ForWMSControl _mForWmsControl;
 
+        #endregion
 
         private static bool init = false;//是否已经初始化
 
@@ -72,7 +75,7 @@ namespace TaskManager
             {
                 init = true;
 
-                _mSocket = new SocketControl();
+                //_mSocket = new SocketControl();
 
                 _mMySql = new MySQL();
 
@@ -92,8 +95,8 @@ namespace TaskManager
 
                 _mForAGVControl = new ForAGVControl();
 
-                _mNDCControl.NoticeWcsMagic += _mForAGVControl.SubmitAgvMagic;
-                _mNDCControl.NoticeWcsOnLoad += _mForAGVControl.SubmitAgvLoading;
+                //_mNDCControl.NoticeWcsMagic += _mForAGVControl.SubmitAgvMagic;
+                //_mNDCControl.NoticeWcsOnLoad += _mForAGVControl.SubmitAgvLoading;
 
                 _mForWmsControl = new ForWMSControl();
 
@@ -114,12 +117,12 @@ namespace TaskManager
 
                 if (_mNDCControl != null && _mForAGVControl != null)
                 {
-                    _mNDCControl.NoticeWcsMagic -= _mForAGVControl.SubmitAgvMagic;
-                    _mNDCControl.NoticeWcsOnLoad -= _mForAGVControl.SubmitAgvLoading;
+                    //_mNDCControl.NoticeWcsMagic -= _mForAGVControl.SubmitAgvMagic;
+                    //_mNDCControl.NoticeWcsOnLoad -= _mForAGVControl.SubmitAgvLoading;
                 }
 
 
-                if (_mSocket != null) _mSocket.Exiting();
+                //if (_mSocket != null) _mSocket.Exiting();
                 if (_mHttpServer != null) _mHttpServer.Close();
                 if (_mNDCControl != null) _mNDCControl.Close();
 

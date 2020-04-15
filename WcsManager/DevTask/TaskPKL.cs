@@ -69,7 +69,7 @@ namespace WcsManager.DevTask
         /// </summary>
         public void InsertDB()
         {
-            CommonSQL.InsertJobDetail(id, jobid, area, (int)tasktype, null, DeviceType.包装线, (int)tasktype, device?.devName,
+            CommonSQL.InsertJobDetail(id, jobid, area, (int)tasktype, null, DeviceType.包装线辊台, (int)tasktype, device?.devName,
                 GetDevTypeS(fromdev), GetDevTypeS(todev), goodsnum, 0, 0, 0, goodsnum, 0, 0, 0);
         }
 
@@ -80,8 +80,8 @@ namespace WcsManager.DevTask
         {
             switch (dt)
             {
-                case DevType.包装线:
-                    return DeviceType.包装线;
+                case DevType.包装线辊台:
+                    return DeviceType.包装线辊台;
                 case DevType.行车:
                     return DeviceType.行车;
                 case DevType.固定辊台:

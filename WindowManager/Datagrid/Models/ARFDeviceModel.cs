@@ -1,12 +1,9 @@
-﻿using Panuon.UI.Silver;
-using Panuon.UI.Silver.Core;
+﻿using Module;
+using Module.DEV;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TaskManager.Devices;
+
+using ADS = WcsManager.Administartor;
 
 namespace WindowManager.Datagrid.Models
 {
@@ -16,266 +13,235 @@ namespace WindowManager.Datagrid.Models
     [Serializable]
     public class ARFDeviceModel : BaseDataGrid
     {
-        private string deviceid;
-        private byte actionsta;
-        private byte devicesta;
-        private byte commandsta;
-        private long des_x_y_z;
-        private byte now_task;
-        private long now_x_y_z;
-        private byte finish_task;
-        private byte loadstatus;
-        private byte rollerstatus;
-        private byte rollerdirection;
-        private byte errormsg;
         private bool isconnect;
-        private string datatime;
-        private ARF arf;
+        private ActionEnum actionsta;
+        private DeviceEnum devicesta;
+        private CommandEnum commandsta;
+        private TaskEnum currenttask;
+        private TaskEnum finishtask;
+        private GoodsEnum goodstatus;
+        private RollerStatusEnum rollersta;
+        private RollerDiretionEnum rollerdir;
+        private int errormsg;
+        private int site;
+        private string datetime;
 
 
-
-        [DisplayName("设备号")]
-        public string DeviceID
-        {
-            get { return deviceid; }
-            set
-            {
-                deviceid = value;
-                OnPropertyChanged("DeviceID");
-            }
-        }
-
-        [DisplayName("区域")]
-        public string Area { set; get; }
-
-
-        [DisplayName("运动状态")]
-        public string ActionStatus
-        {
-            get { return actionsta == ARF.Stop ? "停止" : "运行中"; }
-            set
-            {
-                OnPropertyChanged("ActionStatus");
-            }
-        }
-
-        [DisplayName("设备状态")]
-        public string DeviceStatus
-        {
-            get { return devicesta == ARF.DeviceError ? "故障" : "正常"; }
-            set
-            {
-                OnPropertyChanged("DeviceStatus");
-            }
-        }
-
-        [DisplayName("命令状态")]
-        public string CommandStatus
-        {
-            get { return commandsta == ARF.CommandError ? "命令异常" : "命令正常"; }
-            set
-            {
-                OnPropertyChanged("CommandStatus");
-            }
-        }
-
-
-        [DisplayName("目标坐标")]
-        public long Des_X_Y_Z
-        {
-            get { return des_x_y_z; }
-            set
-            {
-                des_x_y_z = value;
-                OnPropertyChanged("Des_X_Y_Z");
-            }
-        }
-
-
-        [DisplayName("当前任务")]
-        public string Now_Task
-        {
-            get { return ARF.GetTaskMes(now_task); }
-            set
-            {
-                OnPropertyChanged("Now_Task");
-            }
-        }
-
-
-        [DisplayName("当前坐标")]
-        public long Now_X_Y_Z
-        {
-            get { return now_x_y_z; }
-            set
-            {
-                now_x_y_z = value;
-                OnPropertyChanged("Now_X_Y_Z");
-            }
-        }
-
-        [DisplayName("棍台状态")]
-        public string RollerStatus
-        {
-            get { return ARF.GetRollerStatusMes(rollerstatus); }
-            set
-            {
-                OnPropertyChanged("RollerStatus");
-            }
-        }
-
-        [DisplayName("棍台方向")]
-        public string RollerDirection
-        {
-            get { return rollerdirection == ARF.RunFront ? "正向启动" : "反向启动"; }
-            set
-            {
-                OnPropertyChanged("RollerDirection");
-            }
-        }
-
-
-        [DisplayName("完成任务")]
-        public string Finish_Task
-        {
-            get { return ARF.GetTaskMes(finish_task); }
-            set
-            {
-                OnPropertyChanged("Finish_Task");
-            }
-        }
-
-        [DisplayName("货物状态")]
-        public string LoadStatus
-        {
-            get { return ARF.GetGoodsStatusMes(loadstatus); }
-            set
-            {
-                OnPropertyChanged("LoadStatus");
-            }
-        }
-
-        [DisplayName("故障信息")]
-        public string ErrorMsg
-        {
-            get { return errormsg.ToString("X2"); }
-            set
-            {
-                OnPropertyChanged("ErrorMsg");
-            }
-        }
+        #region info
 
         [DisplayName("连接")]
-        public bool ISConnect
+        public bool IsConnected
         {
             get { return isconnect; }
             set
             {
                 isconnect = value;
-                OnPropertyChanged("ISConnect");
+                OnPropertyChanged("IsConnected");
             }
         }
 
-        [DisplayName("刷新时间")]
-        public string DataTime
+        [DisplayName("设备名")]
+        public string DevName { set; get; }
+
+        [DisplayName("区域")]
+        public string Area { set; get; }
+
+        [DisplayName("运行状态")]
+        public ActionEnum ActionStatus
         {
-            get { return datatime; }
+            get { return actionsta; }
             set
             {
-                datatime = value;
-                OnPropertyChanged("DataTime");
+                actionsta = value;
+                OnPropertyChanged("ActionStatus");
             }
         }
 
+        [DisplayName("设备状态")]
+        public DeviceEnum DeviceStatus
+        {
+            get { return devicesta; }
+            set
+            {
+                devicesta = value;
+                OnPropertyChanged("DeviceStatus");
+            }
+        }
+
+        [DisplayName("命令状态")]
+        public CommandEnum CommandStatus
+        {
+            get { return commandsta; }
+            set
+            {
+                commandsta = value;
+                OnPropertyChanged("CommandStatus");
+            }
+        }
+
+        [DisplayName("当前任务")]
+        public TaskEnum CurrentTask
+        {
+            get { return currenttask; }
+            set
+            {
+                currenttask = value;
+                OnPropertyChanged("CurrentTask");
+            }
+        }
+
+        [DisplayName("当前坐标")]
+        public int CurrentSite
+        {
+            get { return site; }
+            set
+            {
+                site = value;
+                OnPropertyChanged("CurrentSite");
+            }
+        }
+
+        [DisplayName("完成任务")]
+        public TaskEnum FinishTask
+        {
+            get { return finishtask; }
+            set
+            {
+                finishtask = value;
+                OnPropertyChanged("FinishTask");
+            }
+        }
+
+        [DisplayName("棍台状态")]
+        public RollerStatusEnum RollerStatus
+        {
+            get { return rollersta; }
+            set
+            {
+                rollersta = value;
+                OnPropertyChanged("RollerStatus");
+            }
+        }
+
+        [DisplayName("棍台方向")]
+        public RollerDiretionEnum RollerDiretion
+        {
+            get { return rollerdir; }
+            set
+            {
+                rollerdir = value;
+                OnPropertyChanged("RollerDirection");
+            }
+        }
+
+        [DisplayName("货物状态")]
+        public GoodsEnum GoodsStatus
+        {
+            get { return goodstatus; }
+            set
+            {
+                goodstatus = value;
+                OnPropertyChanged("GoodsStatus");
+            }
+        }
+
+        [DisplayName("故障信息")]
+        public int ErrorMessage
+        {
+            get { return errormsg; }
+            set
+            {
+                errormsg = value;
+                OnPropertyChanged("ErrorMessage");
+            }
+        }
+
+        [DisplayName("更新时间")]
+        public string UpdateTime
+        {
+            get { return datetime; }
+            set
+            {
+                datetime = value;
+                OnPropertyChanged("UpdateTime");
+            }
+        }
+
+        #endregion
 
 
         public void Update()
         {
-            if (isconnect != arf.IsAlive())
+            bool con = ADS.mSocket.IsConnected(DevName);
+
+            DeviceARF arf = ADS.mArf.devices.Find(c => c.devName == DevName)._;
+
+            if (isconnect != con)
             {
-                ISConnect = arf.IsAlive();
+                IsConnected = con;
             }
 
-            if (!arf.IsAlive()) return;
+            if (!con) return;
 
-            if (actionsta != arf.ActionStatus())
+            if (actionsta != arf.ActionStatus)
             {
-                actionsta = arf.ActionStatus();
-                ActionStatus = "";
+                ActionStatus = arf.ActionStatus;
             }
 
-            if (devicesta != arf.DeviceStatus())
+            if (devicesta != arf.DeviceStatus)
             {
-                devicesta = arf.DeviceStatus();
-                DeviceStatus = "";
+                DeviceStatus = arf.DeviceStatus;
             }
 
-            if (commandsta != arf.CommandStatus())
+            if (commandsta != arf.CommandStatus)
             {
-                commandsta = arf.CommandStatus();
-                CommandStatus = "";
+                CommandStatus = arf.CommandStatus;
             }
 
-            if (des_x_y_z != arf.Goods1site())
+            if (currenttask != arf.CurrentTask)
             {
-                Des_X_Y_Z = arf.Goods1site();
+                CurrentTask = arf.CurrentTask;
             }
 
-            if (now_task != arf.CurrentTask())
-            {
-                now_task = arf.CurrentTask();
-                Now_Task = "";
-            }
-
-            if (now_x_y_z != arf.CurrentSite())
-            {
-                Now_X_Y_Z = arf.CurrentSite();
-            }
-
-            if (finish_task != arf.FinishTask())
+            if (finishtask != arf.FinishTask)
             {
 
-                finish_task = arf.FinishTask();
-                Finish_Task = "";
+                FinishTask = arf.FinishTask;
             }
 
-            if (loadstatus != arf.GoodsStatus())
+            if (site != arf.CurrentSite)
             {
-                loadstatus = arf.GoodsStatus();
-                LoadStatus = "";
+
+                CurrentSite = arf.CurrentSite;
             }
 
-            if (rollerstatus != arf.CurrentStatus())
+            if (rollersta != arf.RollerStatus)
             {
-                rollerstatus = arf.CurrentStatus();
-                RollerStatus = "";
+                RollerStatus = arf.RollerStatus;
             }
 
-            if (rollerdirection != arf.RunDirection())
+            if (rollerdir != arf.RollerDiretion)
             {
-                rollerdirection = arf.RunDirection();
-                RollerDirection = "";
+                RollerDiretion = arf.RollerDiretion;
             }
 
-            if (errormsg != arf.ErrorMessage())
+            if (goodstatus != arf.GoodsStatus)
             {
-                errormsg = arf.ErrorMessage();
-                ErrorMsg = "";
+                GoodsStatus = arf.GoodsStatus;
             }
 
-            if (arf.GetUpdateTime(out string time))
+            if (errormsg != arf.ErrorMessage)
             {
-                if (datatime != time)
-                {
-                    DataTime = time;
-                }
+                ErrorMessage = arf.ErrorMessage;
             }
+
+            UpdateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
         }
 
-        public ARFDeviceModel(string devid, string area)
+        public ARFDeviceModel(string dev, string area)
         {
-            arf = new ARF(devid);
-            DeviceID = devid;
+            DevName = dev;
             Area = area;
             Update();
         }

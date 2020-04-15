@@ -1,5 +1,8 @@
 ﻿namespace Module.DEV
 {
+    /// <summary>
+    /// 自动有轨摆渡车 Automatic Railway Ferry
+    /// </summary>
     public class DeviceARF : IBaseModule
     {
         /// <summary>

@@ -170,6 +170,8 @@ namespace WcsManager.Base
 
                 InitData();
 
+                mHttpServer.WmsModelAdd += AddWmsTask;
+
                 mSocket.AwcDataRecive += mAwc.UpdateDevice;
                 mSocket.RgvDataRecive += mRgv.UpdateDevice;
                 mSocket.ArfDataRecive += mArf.UpdateDevice;
@@ -294,7 +296,7 @@ namespace WcsManager.Base
 
                     switch (detail.DEV_TYPE)
                     {
-                        case DeviceType.包装线:
+                        case DeviceType.包装线辊台:
                             mPkl.InitTask(detail, ts);
                             break;
                         case DeviceType.固定辊台:
@@ -402,12 +404,18 @@ namespace WcsManager.Base
 
                     mSocket.Close();
                 }
+
+                if (mHttpServer != null)
+                {
+                    mHttpServer.WmsModelAdd -= AddWmsTask;
+                }
             }
 
             return true;
         }
 
         #endregion
+
 
         #region [ 入库作业 ]
 
@@ -677,13 +685,15 @@ namespace WcsManager.Base
         /// <summary>
         /// 检查AGV任务 & 生成FRT搬运作业
         /// </summary>
-        public bool CheckAgvTempTask(string jobid, string pkl)
+        public bool CheckAgvTempTask(string jobid, string pkl, out WmsTask task)
         {
+            task = null;
             if (mTempAgvJob == null || mTempAgvJob.Count == 0) return false;
 
             if (mTempAgvJob.Exists(c => c.pkl == pkl && c.CanStart()))
             {
                 AgvTempTask agv = mTempAgvJob.Find(c => c.pkl == pkl && c.CanStart());
+                task = agv.task;
                 // 库区辊台任务
                 mFrt.AddTask(jobid, agv.areaWH, TaskTypeEnum.AGV搬运, 1, DevType.AGV, DevType.空设备);
 
@@ -696,6 +706,7 @@ namespace WcsManager.Base
         }
 
         #endregion
+
 
         #region [ 作业执行 ]
 
@@ -888,10 +899,10 @@ namespace WcsManager.Base
                         break;
 
                     case WcsInStatus.finish:
-                        // ?WMS完成
+                        // ? WMS 通知完成
                         if (j.wmstask1 != null) FinishWms(j.wmstask1.taskuid);
                         if (j.wmstask2 != null) FinishWms(j.wmstask2.taskuid);
-                        // ?备份
+                        // ? 备份
                         CommonSQL.Backup(j.jobid);
                         break;
 
@@ -992,7 +1003,7 @@ namespace WcsManager.Base
                         break;
 
                     case WcsOutStatus.finish:
-                        // ?WMS完成
+                        // ? WMS 通知完成
                         if (j.wmstask1 != null) FinishWms(j.wmstask1.taskuid);
                         if (j.wmstask2 != null) FinishWms(j.wmstask2.taskuid);
                         // ?备份
@@ -1041,24 +1052,30 @@ namespace WcsManager.Base
                         break;
 
                     case WcsAgvStatus.pktoagv:
-                        // ? AGV 任务是否存在
-                        if (true)
+                        // ? NDC 任务是否存在
+                        if (!mNDCControl.IsExist(aID))
                         {
-                            // ? 发送 NDC 生成 AGV 搬运任务  
+                            // ? NDC 生成 AGV 搬运任务  
                             if (!mNDCControl.AddNDCTask(aID, pkl, PublicParam.AgvUnLoadArea, out string result))
                             {
                                 // LOG
+                                CommonSQL.LogErr("DoAgvJob()", "AGV生成任务[ID，包装线辊台]", result, aID.ToString(), pkl);
                                 break;
                             }
                         }
 
                         if (mPkl.IsTaskConform(j.jobid, TaskStatus.ongivesite))
                         {
-                            // ? 发送 NDC 请求 AGV 启动辊台装货
-                            if (!mNDCControl.DoLoad(aID, 0, out string result))
+                            // ? NDC 是否装货准备就绪
+                            if (mNDCControl.IsLoadReady(aID))
                             {
-                                // LOG
-                                break;
+                                // ? NDC 请求 AGV 启动辊台装货
+                                if (!mNDCControl.DoLoad(aID, out string result))
+                                {
+                                    // LOG
+                                    CommonSQL.LogErr("DoAgvJob()", "AGV辊台装货[ID]", result, aID.ToString());
+                                    break;
+                                }
                             }
                         }
 
@@ -1070,30 +1087,33 @@ namespace WcsManager.Base
                         break;
 
                     case WcsAgvStatus.waitforwms:
-                        if (CheckAgvTempTask(j.jobid, pkl))
+                        if (CheckAgvTempTask(j.jobid, pkl, out WmsTask task))
                         {
+                            j.wmstask1 = task;
                             j.UpdateStatus((int)WcsAgvStatus.agvtowh);
                         }
                         break;
 
                     case WcsAgvStatus.agvtowh:
-                        // ? AGV 任务是否需要重定向
-                        if (true)
+                        // ? NDC 任务是否需要重定向
+                        if (!mNDCControl.IsRedirected(aID))
                         {
-                            // ? 发送 NDC 更新 AGV搬运卸货点 
-                            if (!mNDCControl.DoReDerect(aID, mPkl.GetPklName(j.jobid), out string result))
+                            // ? NDC 更新 AGV搬运卸货点 
+                            if (!mNDCControl.DoReDerect(aID, mFrt.GetFrtName(j.jobid), out string result))
                             {
                                 // LOG
+                                CommonSQL.LogErr("DoAgvJob()", "AGV更新卸货点[ID]", result, aID.ToString());
                                 break;
                             }
                         }
 
                         if (mFrt.IsTaskConform(j.jobid, TaskTypeEnum.AGV搬运, TaskStatus.taking))
                         {
-                            // ? 发送 NDC 请求 AGV 启动辊台卸货
-                            if (!mNDCControl.DoUnLoad(aID, 0, out string result))
+                            // ? NDC 请求 AGV 启动辊台卸货
+                            if (!mNDCControl.DoUnLoad(aID, out string result))
                             {
                                 // LOG
+                                CommonSQL.LogErr("DoAgvJob()", "AGV辊台卸货[ID]", result, aID.ToString());
                                 break;
                             }
                         }
@@ -1105,7 +1125,8 @@ namespace WcsManager.Base
                         break;
 
                     case WcsAgvStatus.finish:
-                        // ? 请求WMS生成货位入库任务
+                        // ? WMS 生成货位入库任务
+                        AddWmsInTask_Site(mFrt.GetFrtArea(j.jobid), mFrt.GetFrtName(j.jobid), j.wmstask1.taskuid);
                         break;
                     default:
                         break;
@@ -1115,6 +1136,7 @@ namespace WcsManager.Base
         }
 
         #endregion
+
 
         #region [ WMS ]
 
@@ -1129,18 +1151,13 @@ namespace WcsManager.Base
         }
 
         /// <summary>
-        /// 添加 WMS 出库任务
+        /// 添加 WMS 任务(出库/取消)
         /// </summary>
-        public bool AddWmsOutTask(WmsModel wms, out string result)
+        public bool AddWmsTask(WmsModel wms, out string result)
         {
             try
             {
-                if (wms.Task_type != WmsStatus.StockOutTask)
-                {
-                    result = "仅接收出库任务";
-                    return false;
-                }
-                else
+                if (wms.Task_type == WmsStatus.StockOutTask)
                 {
                     AddAwcTempJob(new WmsTask()
                     {
@@ -1151,14 +1168,19 @@ namespace WcsManager.Base
                         //givesite = wms.W_D_Loc
                         givesite = wms.W_S_Loc.Split('-')[0]
                     });
-
-                    result = "";
-                    return true;
                 }
+                else if (wms.Task_type == WmsStatus.Cancel)
+                {
+                    // ? WMS 取消任务
+                }
+
+                result = "";
+                return true;
             }
             catch (Exception ex)
             {
                 // LOG
+                CommonSQL.LogErr("AddWmsOutTask()", "WMS出库任务[任务ID]", ex.Message, wms.Task_UID);
                 result = ex.Message;
                 return false;
             }
@@ -1178,7 +1200,7 @@ namespace WcsManager.Base
                     return false;
                 }
 
-                // ? 请求 WMS 入库区域
+                // ? WMS 入库区域请求
                 WmsModel wms = mHttp.DoBarcodeScanTask(area, code);
 
                 AddAgvTempTask(new WmsTask()
@@ -1188,13 +1210,14 @@ namespace WcsManager.Base
                     barcode = wms.Barcode,
                     takesite = wms.W_S_Loc,
                     givesite = wms.W_D_Loc
-                },pkl);
+                }, pkl);
 
                 return true;
             }
             catch (Exception ex)
             {
                 // LOG
+                CommonSQL.LogErr("AddWmsInTask_Area()", "WMS入库任务[区域，二维码]", ex.Message, area, code);
                 return false;
             }
         }
@@ -1202,18 +1225,18 @@ namespace WcsManager.Base
         /// <summary>
         /// WMS 入库任务（分配货位）
         /// </summary>
-        public bool AddWmsInTask_Site(string area, string frt, string takeid)
+        public bool AddWmsInTask_Site(string area, string frt, string taskid)
         {
             try
             {
-                if (mWmsTask.Exists(c => c.taskuid != takeid))
+                if (mWmsTask.Exists(c => c.taskuid != taskid))
                 {
                     // 不存在Task资讯则略过
                     return false;
                 }
 
-                // ? 请求 WMS 入库货位
-                WmsModel wms = mHttp.DoReachStockinPosTask(area, takeid);
+                // ? WMS 入库货位请求
+                WmsModel wms = mHttp.DoReachStockinPosTask(area, taskid);
 
                 AddFrtTempJob(new WmsTask()
                 {
@@ -1229,6 +1252,7 @@ namespace WcsManager.Base
             catch (Exception ex)
             {
                 // LOG
+                CommonSQL.LogErr("AddWmsInTask_Site()", "WMS入库任务[任务ID]", ex.Message, taskid);
                 return false;
             }
         }
@@ -1245,7 +1269,7 @@ namespace WcsManager.Base
                 // 更新状态
                 wms.UpdateStatus(WmsTaskStatus.finish);
 
-                // ? Call WMS（通知完成）
+                // ? WMS（通知完成）
                 switch (wms.tasktype)
                 {
                     case TaskTypeEnum.入库:
@@ -1262,7 +1286,104 @@ namespace WcsManager.Base
             }
         }
 
+        /// <summary>
+        /// 取消 WMS任务
+        /// </summary>
+        public string CancelWms(string wmsid, TaskTypeEnum tt)
+        {
+            WmsStatus ws;
+            switch (tt)
+            {
+                case TaskTypeEnum.AGV搬运:
+                case TaskTypeEnum.入库:
+                    ws = WmsStatus.StockInTask;
+                    break;
+                case TaskTypeEnum.出库:
+                    ws = WmsStatus.StockOutTask;
+                    break;
+                default:
+                    ws = WmsStatus.Empty;
+                    break;
+            }
+            string result = mHttp.DoCancelTask(ws, wmsid);
+            return result;
+        }
+
+        /// <summary>
+        /// 反馈WMS任务异常
+        /// </summary>
+        public string ErrorWms(string wmsid, TaskTypeEnum tt, int err, string msg)
+        {
+            WmsStatus ws;
+            switch (tt)
+            {
+                case TaskTypeEnum.AGV搬运:
+                case TaskTypeEnum.入库:
+                    ws = WmsStatus.StockInTask;
+                    break;
+                case TaskTypeEnum.出库:
+                    ws = WmsStatus.StockOutTask;
+                    break;
+                default:
+                    ws = WmsStatus.Empty;
+                    break;
+            }
+            string result = mHttp.DoShowError(ws, wmsid, err, msg);
+            return result;
+        }
+
+        /// <summary>
+        /// 获取WMS库存坐标更新WCS坐标表
+        /// </summary>
+        /// <param name="version"></param>
+        public static bool UpdateLocation(out string result, string area = "", int version = 1)
+        {
+            try
+            {
+                bool next = true;
+                string sql;
+                int lot = 1;
+                do
+                {
+                    WmsLocation wl = mHttp.DoLocationData(version, lot, area);
+                    if (wl == null)
+                    {
+                        throw new Exception("No Data!");
+                    }
+                    lot = wl.BI + 1;
+                    if (wl.BC == wl.BI)
+                    {
+                        next = false;
+                    }
+
+                    if (CommonSQL.mysql.GetCount("WCS_LOC_TEMP", string.Format(@"BI = '{0}'", wl.BI)) != 0)
+                    {
+                        continue;
+                    }
+
+                    foreach (Loction l in wl.D)
+                    {
+                        sql = string.Format(@"insert into WCS_LOC_TEMP(AV,BN,BC,BI,D1,D2,D3) values({0},{1},{2},{3},'{4}','{5}','{6}')",
+                            wl.AV, wl.BN, wl.BC, wl.BI, l.D1, l.D2, l.D3);
+                        CommonSQL.mysql.ExcuteSql(sql);
+                    }
+
+                } while (next);
+
+                result = "";
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // LOG
+                CommonSQL.LogErr("UpdateLocation()", "请求WMS库位坐标[版本号]", ex.Message.Replace("'", "’"), version.ToString(), "");
+                result = ex.Message;
+                return false;
+            }
+        }
+
         #endregion
+
 
         #region [ 其他 ]
 
@@ -1281,8 +1402,8 @@ namespace WcsManager.Base
                 case DeviceType.AGV:
                     return DevType.AGV;
 
-                case DeviceType.包装线:
-                    return DevType.包装线;
+                case DeviceType.包装线辊台:
+                    return DevType.包装线辊台;
 
                 case DeviceType.固定辊台:
                     return DevType.固定辊台;

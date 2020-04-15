@@ -65,6 +65,7 @@
     <Compile Include="WCS\WCS_FUNCTION_LOG.cs" />
     <Compile Include="WCS\WCS_JOB_DETAIL.cs" />
     <Compile Include="WCS\WCS_JOB_HEADER.cs" />
+    <Compile Include="WCS\WCS_LOC_TEMP.cs" />
     <Compile Include="WCS\WCS_TASK_INFO.cs" />
     <Compile Include="WCS\WCS_TASK_ITEM.cs" />
     <Compile Include="WCS\WCS_WMS_TASK.cs" />

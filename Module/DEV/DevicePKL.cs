@@ -1,5 +1,8 @@
 ﻿namespace Module.DEV
 {
+    /// <summary>
+    /// 包装线设备
+    /// </summary>
     public class DevicePKL : IBaseModule
     {
         /// <summary>
@@ -21,16 +24,6 @@
         /// 当前任务
         /// </summary>
         public TaskEnum CurrentTask;
-
-        /// <summary>
-        /// 辊台状态
-        /// </summary>
-        public RollerStatusEnum RollerStatus;
-
-        /// <summary>
-        /// 辊台方向
-        /// </summary>
-        public RollerDiretionEnum RollerDiretion;
 
         /// <summary>
         /// 完成任务

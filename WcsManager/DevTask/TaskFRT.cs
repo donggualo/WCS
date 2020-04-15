@@ -93,6 +93,8 @@ namespace WcsManager.DevTask
                     return DeviceType.摆渡车;
                 case DevType.运输车:
                     return DeviceType.运输车;
+                case DevType.包装线辊台:
+                    return DeviceType.包装线辊台;
                 default:
                     return null;
             }

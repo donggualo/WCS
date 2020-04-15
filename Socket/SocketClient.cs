@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
+using ToolManager;
 
 namespace Socket
 {
@@ -38,6 +39,8 @@ namespace Socket
             m_Port = port;
 
             ReOrder = order;
+
+            log = new Log(m_DevName);
 
             Connect(m_IP, m_Port);
         }
@@ -77,7 +80,7 @@ namespace Socket
                 {
                     Connected(host, port);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     // don't care about error
                     Console.WriteLine(ex.Message + ex.StackTrace);
@@ -121,7 +124,7 @@ namespace Socket
                 {
                     Disconnected(host, port);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     // don't care about error
                     Console.WriteLine(ex.Message + ex.StackTrace);
@@ -156,8 +159,9 @@ namespace Socket
 
                 NoticesConnect(m_IP, m_Port);
             }
-            catch
+            catch (Exception e)
             {
+                Console.WriteLine(e.Message + e.StackTrace);
                 m_RetryTimer = new Timer(delegate (object state)
                 {
                     m_RetryTimer = null;
@@ -175,18 +179,19 @@ namespace Socket
             {
                 if (!IsConnected)
                 {
-                    //string logMessage = "Cannot start receiver - client not started";
-                    //throw new InvalidOperationException(logMessage);
+                    string logMessage = "Cannot start receiver - client not started";
+                    throw new InvalidOperationException(logMessage);
                 }
 
                 byte[] buffer = new byte[ISocketConst.BUFFER_SIZE];
                 int bytesRead = m_Stream.Read(buffer, 0, ISocketConst.BUFFER_SIZE);
                 if (bytesRead == 0)
                 {
-                    Reconnect();
+                    throw new IOException("No Data!");
                 }
 
                 byte[] readData = buffer.Take(bytesRead).ToArray();
+                log.LOG("Read: " + BitConverter.ToString(readData));
 
                 // make sure we at least have one header
                 while (readData.Count() > ISocketConst.HEADTAIL_SIZE)
@@ -206,6 +211,9 @@ namespace Socket
                             break;
                         case DevType.行车:
                             size = ISocketConst.AWC_SIZE;
+                            break;
+                        case DevType.包装线辊台:
+                            size = ISocketConst.PKL_SIZE;
                             break;
                         default:
                             size = 0;
@@ -264,10 +272,12 @@ namespace Socket
                 if (data != null && data.Count() > 0)
                 {
                     m_Client.GetStream().BeginWrite(data, 0, data.Length, HandleDatagramWritten, m_Client);
+                    log.LOG("Send: " + BitConverter.ToString(data));
                 }
             }
             catch (Exception ex)
             {
+                log.LOG(ex);
                 Console.WriteLine(ex.Message + ex.StackTrace);
             }
         }
@@ -282,7 +292,7 @@ namespace Socket
             {
                 ((TcpClient)ar.AsyncState).GetStream().EndWrite(ar);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message + e.StackTrace);
             }

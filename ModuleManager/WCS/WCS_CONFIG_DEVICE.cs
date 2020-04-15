@@ -98,8 +98,37 @@ namespace ModuleManager.WCS
         public const string 运输车 = "RGV";
         public const string 摆渡车 = "ARF";
         public const string 固定辊台 = "FRT";
-        public const string 包装线 = "PKL";
+        public const string 包装线辊台 = "PKL";
         public const string AGV = "AGV";
+
+        public static string GetDevTypeName(string dev)
+        {
+            string name = "";
+            switch (dev)
+            {
+                case DeviceType.AGV:
+                    name = "AGV";
+                    break;
+                case DeviceType.行车:
+                    name = "行车";
+                    break;
+                case DeviceType.运输车:
+                    name = "运输车";
+                    break;
+                case DeviceType.摆渡车:
+                    name = "摆渡车";
+                    break;
+                case DeviceType.固定辊台:
+                    name = "固定辊台";
+                    break;
+                case DeviceType.包装线辊台:
+                    name = "包装线辊台";
+                    break;
+                default:
+                    break;
+            }
+            return name;
+        }
     }
 
 }

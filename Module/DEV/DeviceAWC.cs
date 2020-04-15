@@ -1,5 +1,8 @@
 ﻿namespace Module.DEV
 {
+    /// <summary>
+    /// 自动行车 Automatic Bridge Crane
+    /// </summary>
     public class DeviceAWC : IBaseModule
     {
         /// <summary>

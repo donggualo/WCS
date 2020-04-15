@@ -17,6 +17,11 @@ namespace ModuleManager.WCS
         public string AREA { get; set; }
 
         /// <summary>
+        /// 区域描述
+        /// </summary>
+        public string REMARK { get; set; }
+
+        /// <summary>
         /// 行车安全间距
         /// </summary>
         public int AWC_DIS_SAFE { get; set; }

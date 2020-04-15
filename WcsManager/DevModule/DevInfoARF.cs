@@ -56,7 +56,7 @@ namespace WcsManager.DevModule
         #region 任务
 
         /// <summary>
-        /// 摆渡车—获取当前数据
+        /// 获取当前数据
         /// </summary>
         /// <returns></returns>
         public static byte[] GetDataOrder()
@@ -73,7 +73,7 @@ namespace WcsManager.DevModule
         {
             //                             字头    设备号 控制码     值1    值2   值3   值4    结束符
             byte[] order = new byte[] { 0x94, 0x02, 0x01, 0x01, (byte)site, 0x00, 0x00, 0x00, 0xFF, 0xFE };
-            ADS.mSocket.SendOrder(devName,order,false);
+            ADS.mSocket.SendOrder(devName, order, false);
         }
 
         /// <summary>
@@ -152,6 +152,35 @@ namespace WcsManager.DevModule
             //                             字头    设备号 控制码  值1      值2      值3     值4      结束符
             byte[] order = new byte[] { 0x94, 0x02, 0x01, 0x02, roller, direction, take, goodsnum, 0xFF, 0xFE };
             ADS.mSocket.SendOrder(devName, order, true);
+        }
+
+        /// <summary>
+        /// 辊台控制
+        /// </summary>
+        /// <param name="site1">启动方式</param>
+        /// <param name="site2">启动方向</param>
+        /// <param name="site3">接送类型</param>
+        /// <param name="site4">货物数量</param>
+        /// <returns></returns>
+        public void ControlRoller(int site1, int site2, int site3, int site4)
+        {
+            byte roller = (byte)site1;
+            byte direction = (byte)site2;
+            byte take = (byte)site3;
+            byte goodsnum = (byte)site4;
+            //                             字头    设备号 控制码  值1      值2      值3     值4      结束符
+            byte[] order = new byte[] { 0x94, 0x02, 0x01, 0x02, roller, direction, take, goodsnum, 0xFF, 0xFE };
+            ADS.mSocket.SendOrder(devName, order, true);
+        }
+
+        /// <summary>
+        /// 停止辊台
+        /// </summary>
+        public void StopRoller()
+        {
+            //                             字头   设备号 控制码  值1  值2   值3   值4    结束符
+            byte[] order = new byte[] { 0x94, 0x02, 0x01, 0x03, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFE };
+            ADS.mSocket.SendOrder(devName, order, false);
         }
 
         #endregion

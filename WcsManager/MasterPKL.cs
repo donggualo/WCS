@@ -40,7 +40,7 @@ namespace WcsManager
         /// </summary>
         private void AddAllPkl()
         {
-            List<WCS_CONFIG_DEVICE> list = CommonSQL.GetDevInfo(DeviceType.包装线);
+            List<WCS_CONFIG_DEVICE> list = CommonSQL.GetDevInfo(DeviceType.包装线辊台);
             if (list == null || list.Count == 0) return;
 
             foreach (WCS_CONFIG_DEVICE d in list)
@@ -159,63 +159,22 @@ namespace WcsManager
                     switch (t.taskstatus)
                     {
                         case TaskStatus.init:
-                            //t.UpdateStatus(TaskStatus.totakesite);
-                            t.UpdateStatus(TaskStatus.togivesite);
+                            t.UpdateStatus(TaskStatus.ongivesite);
                             break;
 
                         case TaskStatus.totakesite:
-                            t.UpdateStatus(TaskStatus.ontakesite);
                             break;
 
                         case TaskStatus.ontakesite:
-                            // 判断是否启动辊台接货
-                            if (t.takeready)
-                            {
-                                if (t.device._.GoodsStatus != GoodsEnum.辊台满货 && t.device._.ActionStatus == ActionEnum.停止)
-                                {
-                                    t.device.StartTakeRoll(t.tasktype, t.goodsnum);
-                                }
-
-                                if (t.device._.RollerStatus != RollerStatusEnum.辊台停止 && t.device._.CurrentTask == TaskEnum.辊台任务)
-                                {
-                                    t.UpdateStatus(TaskStatus.taking);
-                                }
-                            }
-                            else
-                            {
-                                // ?请求JOB更新
-                                //t.takeready = ADS.JobPartPKL_Take(t.jobid);
-                            }
                             break;
 
                         case TaskStatus.taking:
-                            if ((t.goodsnum == 1 && t.device._.GoodsStatus != GoodsEnum.辊台无货) ||
-                                (t.goodsnum == 2 && t.device._.GoodsStatus == GoodsEnum.辊台满货))
-                            {
-                                if (t.device._.ActionStatus == ActionEnum.停止)
-                                {
-                                    t.UpdateStatus(TaskStatus.taked);
-                                }
-                            }
-                            else
-                            {
-                                t.device.StartTakeRoll(t.tasktype, t.goodsnum);
-                            }
                             break;
 
                         case TaskStatus.taked:
-                            t.UpdateStatus(TaskStatus.togivesite);
                             break;
 
                         case TaskStatus.togivesite:
-                            if (t.todev == DevType.AGV)
-                            {
-                                t.UpdateStatus(TaskStatus.ongivesite);
-                            }
-                            else
-                            {
-                                t.UpdateStatus(TaskStatus.giving);
-                            }
                             break;
 
                         case TaskStatus.ongivesite:
@@ -224,17 +183,17 @@ namespace WcsManager
                             {
                                 if (t.device._.GoodsStatus != GoodsEnum.辊台无货 && t.device._.ActionStatus == ActionEnum.停止)
                                 {
-                                    t.device.StartGiveRoll(t.tasktype);
+                                    t.device.StartGiveRoll();
                                 }
 
-                                if (t.device._.RollerStatus != RollerStatusEnum.辊台停止 && t.device._.CurrentTask == TaskEnum.辊台任务)
+                                if (t.device._.CurrentTask == TaskEnum.辊台任务)
                                 {
                                     t.UpdateStatus(TaskStatus.giving);
                                 }
                             }
                             else
                             {
-                                // ?请求JOB更新
+                                // ? JOB 更新请求
                                 t.giveready = ADS.JobPartPKL_Give(t.jobid);
                             }
                             break;
@@ -246,10 +205,14 @@ namespace WcsManager
                                 {
                                     t.UpdateStatus(TaskStatus.gived);
                                 }
+                                else
+                                {
+                                    t.device.StopTask();
+                                }
                             }
                             else
                             {
-                                t.device.StartGiveRoll(t.tasktype);
+                                t.device.StartGiveRoll();
                             }
                             break;
 

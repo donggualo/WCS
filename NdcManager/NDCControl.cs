@@ -14,7 +14,7 @@ namespace NdcManager
         /// <summary>
         /// 构造方法
         /// </summary>
-        public NDCControl():base()
+        public NDCControl() : base()
         {
 
         }
@@ -89,7 +89,7 @@ namespace NdcManager
         /// <param name="taskid"></param>
         /// <param name="unloadstation"></param>
         /// <returns></returns>
-        public bool DoReDerect(int taskid, string unloadstation, out string result,int index = -1)
+        public bool DoReDerect(int taskid, string unloadstation, out string result, int index = -1)
         {
             NDCItem item = Items.Find(c =>
             {
@@ -120,7 +120,7 @@ namespace NdcManager
                     }
                     else
                     {
-                        result = "该区域("+ unloadstation +")的对应关系还没有设置";
+                        result = "该区域(" + unloadstation + ")的对应关系还没有设置";
                         return false;
                     }
                 }
@@ -143,31 +143,36 @@ namespace NdcManager
         /// <param name="carid"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        public bool DoLoad(int taskid, int carid, out string result)
+        //public bool DoLoad(int taskid, int carid, out string result)
+        public bool DoLoad(int taskid, out string result)
         {
-            if (taskid == 0 || carid == 0)
+            //if (taskid == 0 || carid == 0)
+            if (taskid == 0)
             {
-                result = "任务ID,车ID不能为零";
+                //result = "任务ID,车ID不能为零";
+                result = "任务ID不能为零";
                 return false;
             }
 
             NDCItem item = Items.Find(c =>
             {
-                return c._mTask.TASKID == taskid && c.CARRIERID == carid;
+                //return c._mTask.TASKID == taskid && c.CARRIERID == carid;
+                return c._mTask.TASKID == taskid;
             });
 
-            if(item == null)
+            if (item == null)
             {
-                result = "找不到任务ID:" + taskid + ",小车:" + carid + "的任务.";
+                //result = "找不到任务ID:" + taskid + ",小车:" + carid + "的任务.";
+                result = "找不到任务ID:" + taskid + "的任务.";
                 return false;
             }
 
 
-            if(item.PLCStatus == NDCPlcStatus.Loading)
+            if (item.PLCStatus == NDCPlcStatus.Loading)
             {
                 LoadItemList.Remove(item._mTask.NDCINDEX);
                 //通知WCS
-                NoticeWcsOnLoad?.Invoke(item._mTask.TASKID, item.CARRIERID + "");
+                //NoticeWcsOnLoad?.Invoke(item._mTask.TASKID, item.CARRIERID + "");
                 result = "小车已经启动辊台了";
                 return true;
             }
@@ -196,22 +201,27 @@ namespace NdcManager
         /// <param name="carid"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        public bool DoUnLoad(int taskid, int carid, out string result)
+        //public bool DoUnLoad(int taskid, int carid, out string result)
+        public bool DoUnLoad(int taskid, out string result)
         {
-            if (taskid == 0 || carid == 0)
+            //if (taskid == 0 || carid == 0)
+            if (taskid == 0)
             {
-                result = "任务ID,车ID不能为零";
+                //result = "任务ID,车ID不能为零";
+                result = "任务ID不能为零";
                 return false;
             }
 
             NDCItem item = Items.Find(c =>
             {
-                return c._mTask.TASKID == taskid && c.CARRIERID == carid;
+                //return c._mTask.TASKID == taskid && c.CARRIERID == carid;
+                return c._mTask.TASKID == taskid;
             });
 
             if (item == null)
             {
-                result = "找不到任务ID:" + taskid + ",小车:" + carid + "的任务.";
+                //result = "找不到任务ID:" + taskid + ",小车:" + carid + "的任务.";
+                result = "找不到任务ID:" + taskid + "的任务.";
                 return false;
             }
 
@@ -238,7 +248,7 @@ namespace NdcManager
         /// <param name="index"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        public bool DoCancelIndex(int index,out string result)
+        public bool DoCancelIndex(int index, out string result)
         {
             if (index == 0 || index == 0)
             {
@@ -246,16 +256,16 @@ namespace NdcManager
                 return false;
             }
 
-            NDCItem item = Items.Find(c =>{ return c._mTask.NDCINDEX == index; });
+            NDCItem item = Items.Find(c => { return c._mTask.NDCINDEX == index; });
 
-            if(item == null)
+            if (item == null)
             {
                 item = TempItems.Find(c => { return c._mTask.NDCINDEX == index; });
             }
 
             if (item == null)
             {
-                result = "找不到任务Index:"+index+"任务.";
+                result = "找不到任务Index:" + index + "任务.";
                 return false;
             }
             item.CancleFromSystem = true;
@@ -263,6 +273,159 @@ namespace NdcManager
             DoDeleteOrder(index + "");
             result = "取消成功";
             return true;
+        }
+
+        /// <summary>
+        /// 是否存在任务
+        /// </summary>
+        /// <param name="taskid"></param>
+        /// <returns></returns>
+        public bool IsExist (int taskid)
+        {
+            if (taskid == 0)
+            {
+                return false;
+            }
+
+            if (Items.Find(c => { return c._mTask.TASKID == taskid; }) != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 是否已重定位
+        /// </summary>
+        /// <param name="taskid"></param>
+        /// <returns></returns>
+        public bool IsRedirected(int taskid)
+        {
+            if (taskid == 0)
+            {
+                return false;
+            }
+
+            NDCItem item = Items.Find(c =>
+            {
+                return c._mTask.TASKID == taskid;
+            });
+
+            if (item == null)
+            {
+                return false;
+            }
+
+            if (item.DirectStatus == NDCItemStatus.Redirected)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 是否准备装货
+        /// </summary>
+        /// <param name="taskid"></param>
+        /// <returns></returns>
+        public bool IsLoadReady(int taskid)
+        {
+            if (taskid == 0)
+            {
+                return false;
+            }
+
+            NDCItem item = Items.Find(c =>
+            {
+                return c._mTask.TASKID == taskid;
+            });
+
+            if (item == null)
+            {
+                return false;
+            }
+
+            if (item.PLCStatus == NDCPlcStatus.LoadReady)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
+        /// <summary>
+        /// 是否装货中
+        /// </summary>
+        /// <param name="taskid"></param>
+        /// <returns></returns>
+        public bool IsLoading(int taskid)
+        {
+            if (taskid == 0)
+            {
+                return false;
+            }
+
+            NDCItem item = Items.Find(c =>
+            {
+                return c._mTask.TASKID == taskid;
+            });
+
+            if (item == null)
+            {
+                return false;
+            }
+
+            if (item.PLCStatus == NDCPlcStatus.Loading)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
+        /// <summary>
+        /// 是否准备卸货
+        /// </summary>
+        /// <param name="taskid"></param>
+        /// <returns></returns>
+        public bool IsUnLoadReady(int taskid)
+        {
+            if (taskid == 0)
+            {
+                return false;
+            }
+
+            NDCItem item = Items.Find(c =>
+            {
+                return c._mTask.TASKID == taskid;
+            });
+
+            if (item == null)
+            {
+                return false;
+            }
+
+            if (item.PLCStatus == NDCPlcStatus.UnloadReady)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
         }
 
         #endregion
@@ -296,18 +459,18 @@ namespace NdcManager
 
         #region[通知WCS：agv状态]
 
-        public delegate void NDCLoadHandler(int taskid,string agvid);
-        public delegate void NDCMagicHandler(int id, string agv, int magic);
+        //public delegate void NDCLoadHandler(int taskid,string agvid);
+        //public delegate void NDCMagicHandler(int id, string agv, int magic);
 
         /// <summary>
         /// AGV 装货中 通知句柄
         /// </summary>
-        public event NDCLoadHandler NoticeWcsOnLoad;
+        //public event NDCLoadHandler NoticeWcsOnLoad;
 
         /// <summary>
         /// 更新AGV当前任务状态
         /// </summary>
-        public event NDCMagicHandler NoticeWcsMagic;
+        //public event NDCMagicHandler NoticeWcsMagic;
 
         #endregion
 
@@ -349,13 +512,13 @@ namespace NdcManager
 
         internal override void _NoticeWcsLoading(int taskid, string agvid)
         {
-            NoticeWcsOnLoad?.Invoke(taskid, agvid);
+            //NoticeWcsOnLoad?.Invoke(taskid, agvid);
 
         }
 
         internal override void _NoticeWcsMagic(int id, string agv, int magic)
         {
-            NoticeWcsMagic?.Invoke(id, agv, magic);
+            //NoticeWcsMagic?.Invoke(id, agv, magic);
         }
         #endregion
 

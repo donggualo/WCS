@@ -143,7 +143,12 @@ namespace WcsHttpManager
         /// 目标位无货：目标位没有货物
         /// </summary>
         DestinationFree = 24,
-        
+
+        /// <summary>
+        /// 取消任务
+        /// </summary>
+        Cancel = 99,
+
         /// <summary>
         /// 未知
         /// </summary>
@@ -183,6 +188,11 @@ namespace WcsHttpManager
         /// 获取全部盘点任务 
         /// </summary>
         public static string GetAllStockCheckTask = "A4";
+
+        /// <summary>
+        /// 获取全部库位坐标
+        /// </summary>
+        public static string GetAllStockLocation = "G1";
 
         #endregion
 
@@ -279,6 +289,15 @@ namespace WcsHttpManager
         /// </summary>
         public static string PackDamageProcess = "P10";
 
+        /// <summary>
+        /// 获取可用数据架构版本
+        /// </summary>
+        public static string DataVersion = "V";
+
+        /// <summary>
+        /// 获取可用数据架构批号
+        /// </summary>
+        public static string DataLot = "R";
 
         #endregion
     }

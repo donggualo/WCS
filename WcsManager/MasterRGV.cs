@@ -354,7 +354,7 @@ namespace WcsManager
                             }
                             else
                             {
-                                // ?请求JOB更新
+                                // ? JOB 更新请求
                                 if (t.fromdev == DevType.运输车)
                                 {
                                     t.takeready = IsTakeButtRGV(t.jobid, DevType.运输车);
@@ -376,7 +376,7 @@ namespace WcsManager
                                 }
                                 else
                                 {
-                                    // ?请求JOB更新
+                                    // ? JOB 更新请求
                                     t.isLeaveAble = ADS.JobPartRGV_TakeLeave(t.area, t.taskid);
                                 }
                             }
@@ -453,7 +453,7 @@ namespace WcsManager
                             }
                             else
                             {
-                                // ?请求JOB更新
+                                // ? JOB 更新请求
                                 if (t.todev == DevType.运输车)
                                 {
                                     t.giveready = IsGiveButtRGV(t.jobid, DevType.运输车);
@@ -475,7 +475,7 @@ namespace WcsManager
                                 }
                                 else
                                 {
-                                    // ?请求JOB更新
+                                    // ? JOB 更新请求
                                     t.isLeaveAble = ADS.JobPartRGV_GiveLeave(t.area, t.taskid);
                                 }
                             }

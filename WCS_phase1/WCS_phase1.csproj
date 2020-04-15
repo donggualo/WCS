@@ -86,16 +86,8 @@
     <Compile Include="WcsWindow.xaml.cs">
       <DependentUpon>WcsWindow.xaml</DependentUpon>
     </Compile>
-    <Page Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Resources\Styles.xaml">
@@ -140,6 +132,10 @@
       <Project>{9E139539-C272-488A-BFCF-CADDF458DF9D}</Project>
       <Name>MHttpServer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ModuleManager\ModuleManager.csproj">
+      <Project>{36A19B28-36C5-42A8-9360-A5FFF1891DC7}</Project>
+      <Name>ModuleManager</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NdcManager\NdcManager.csproj">
       <Project>{D7F23C4B-2E0E-4A97-A0DA-7AF778E26A60}</Project>
       <Name>NdcManager</Name>
@@ -169,24 +165,6 @@
     <Resource Include="Resources\head.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <COMReference Include="Microsoft.Office.Core">
-      <Guid>{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}</Guid>
-      <VersionMajor>2</VersionMajor>
-      <VersionMinor>8</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>primary</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
-    <COMReference Include="Microsoft.Office.Interop.Excel">
-      <Guid>{00020813-0000-0000-C000-000000000046}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>9</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>primary</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
     <COMReference Include="VBIDE">
       <Guid>{0002E157-0000-0000-C000-000000000046}</Guid>
       <VersionMajor>5</VersionMajor>

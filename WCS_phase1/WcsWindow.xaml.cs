@@ -2,11 +2,13 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using ModuleManager;
 using Panuon.UI.Silver;
 using Panuon.UI.Silver.Core;
 using PubResourceManager;
-using WcsHttpManager;
 using WindowManager;
+
+using ADS = WcsManager.Administartor;
 
 namespace WCS_phase1
 {
@@ -15,15 +17,16 @@ namespace WCS_phase1
     /// </summary>
     public partial class WcsWindow : WindowX
     {
+        public ADS admin;
         public WcsWindow()
         {
             InitializeComponent();
-            DataControl.Init();
+            admin = new ADS();
 
-            CheckTask_I.IsChecked = PublicParam.IsRunTaskLogic_I;
-            CheckTask_O.IsChecked = PublicParam.IsRunTaskLogic_O;
-            CheckOrder.IsChecked = PublicParam.IsRunTaskOrder;
-            CheckAGV.IsChecked = PublicParam.IsRunSendAGV;
+            CheckIn.IsChecked = PublicParam.IsDoJobIn;
+            CheckOut.IsChecked = PublicParam.IsDoJobOut;
+            CheckDev.IsChecked = PublicParam.IsDoTask;
+            CheckAGV.IsChecked = PublicParam.IsDoJobAGV;
         }
 
         private void TreeView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -50,10 +53,10 @@ namespace WCS_phase1
                 wcsTabControl.SelectedIndex = 0;
                 return;
             }
-            else if ("ABC".Equals(itemTag))
+            else if ("AWC".Equals(itemTag))
             {
-                tabItem.Tag = "ABC";
-                tabItem.Content = new W_ABC();
+                tabItem.Tag = "AWC";
+                tabItem.Content = new W_AWC();
             }
             else if ("RGV".Equals(itemTag))
             {
@@ -70,30 +73,35 @@ namespace WCS_phase1
                 tabItem.Tag = "ARF";
                 tabItem.Content = new W_ARF();
             }
-            else if ("DevIgnore".Equals(itemTag))
+            else if ("PKL".Equals(itemTag))
             {
-                tabItem.Tag = "DevIgnore";
-                tabItem.Content = new W_SettingDevIgnore();
+                tabItem.Tag = "PKL";
+                //tabItem.Content = new W_PKL();
+            }
+            else if ("AreaData".Equals(itemTag))
+            {
+                tabItem.Tag = "AreaData";
+                tabItem.Content = new W_SettingAreaData();
             }
             else if ("DevData".Equals(itemTag))
             {
                 tabItem.Tag = "DevData";
                 tabItem.Content = new W_SettingDevData();
             }
-            else if ("Location".Equals(itemTag))
+            else if ("LocData".Equals(itemTag))
             {
-                tabItem.Tag = "Location";
+                tabItem.Tag = "LocData";
                 tabItem.Content = new W_SettingLocation();
             }
-            else if ("ManualWms".Equals(itemTag))
+            else if ("WorkData".Equals(itemTag))
             {
-                tabItem.Tag = "ManualWms";
-                tabItem.Content = new W_ManualWms();
+                tabItem.Tag = "WorkData";
+                tabItem.Content = new W_WcsWorkData();
             }
             else if ("TaskData".Equals(itemTag))
             {
                 tabItem.Tag = "TaskData";
-                tabItem.Content = new W_TaskData();
+                tabItem.Content = new W_WmsTaskData();
             }
             else if ("ErrLogs".Equals(itemTag))
             {
@@ -141,7 +149,7 @@ namespace WCS_phase1
             });
             if (result == MessageBoxResult.Yes || result == MessageBoxResult.OK)
             {
-                DataControl.BeforeClose();
+                admin.BeforeClose();
                 System.Environment.Exit(0);
             }
             else
@@ -150,54 +158,33 @@ namespace WCS_phase1
             }
         }
 
-        private void GetWmsInfo_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// 是否生成入库任务
+        /// </summary>
+        private void CheckIn_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-
-                WmsModel result = DataControl._mHttp.DoBarcodeScanTask("A01","BARCODE");
-                if (result != null)
-                {
-                    Notice.Show(result.ToString(), "信息", 15, MessageBoxIcon.Info);
-
-                }
-            }
-            catch(Exception ex)
-            {
-                Notice.Show(ex.Message, "错误", 3, MessageBoxIcon.Error);
-
-            }
+            PublicParam.IsRunTaskLogic_I = (bool)CheckIn.IsChecked;
         }
 
         /// <summary>
-        /// 是否执行出入库任务生成
+        /// 是否生成出库任务
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void CheckTask_I_Click(object sender, RoutedEventArgs e)
+        private void CheckOut_Click(object sender, RoutedEventArgs e)
         {
-            PublicParam.IsRunTaskLogic_I = (bool)CheckTask_I.IsChecked;
-        }
-        private void CheckTask_O_Click(object sender, RoutedEventArgs e)
-        {
-            PublicParam.IsRunTaskLogic_O = (bool)CheckTask_O.IsChecked;
+            PublicParam.IsRunTaskLogic_O = (bool)CheckOut.IsChecked;
         }
 
         /// <summary>
-        /// 是否执行指令发送
+        /// 是否运作设备
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void CheckOrder_Click(object sender, RoutedEventArgs e)
+        private void CheckDev_Click(object sender, RoutedEventArgs e)
         {
-            PublicParam.IsRunTaskOrder = (bool)CheckOrder.IsChecked;
+            PublicParam.IsRunTaskOrder = (bool)CheckDev.IsChecked;
         }
 
         /// <summary>
         /// 是否运行AGV派送
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void CheckAGV_Click(object sender, RoutedEventArgs e)
         {
             PublicParam.IsRunSendAGV = (bool)CheckAGV.IsChecked;
@@ -206,19 +193,17 @@ namespace WCS_phase1
         /// <summary>
         /// Ndc连接服务
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void NdcConnectCB_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 if (ndcConnectCB.IsChecked != null && (bool)ndcConnectCB.IsChecked)
                 {
-                    DataControl._mNDCControl.DoConnectNDC();
+                    ADS.mNDCControl.DoConnectNDC();
                 }
                 else
                 {
-                    DataControl._mNDCControl.DoDisConnectNDC();
+                    ADS.mNDCControl.DoDisConnectNDC();
                 }
             }
             catch (Exception ex)

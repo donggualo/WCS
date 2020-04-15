@@ -1,5 +1,8 @@
 ﻿namespace Module.DEV
 {
+    /// <summary>
+    /// 固定辊台 Fixed Roller Table
+    /// </summary>
     public class DeviceFRT : IBaseModule
     {
         /// <summary>

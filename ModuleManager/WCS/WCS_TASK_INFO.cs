@@ -62,6 +62,7 @@ namespace ModuleManager.WCS
         public const String 出库 = "2";
         public const String 移仓 = "3";
         public const String 盘点 = "4";
+        public const String 取消 = "99";
     }
 
     /// <summary>

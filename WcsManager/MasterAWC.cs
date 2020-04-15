@@ -229,7 +229,7 @@ namespace WcsManager
                                 }
                                 else
                                 {
-                                    // ?请求JOB更新
+                                    // ? JOB 更新请求
                                     t.takeready = ADS.JobPartAWC_Take(t.taskid);
                                 }
                             }
@@ -291,7 +291,7 @@ namespace WcsManager
                                 }
                                 else
                                 {
-                                    // ?请求JOB更新
+                                    // ? JOB 更新请求
                                     t.giveready = ADS.JobPartAWC_Give(t.taskid);
                                 }
                             }
@@ -314,7 +314,7 @@ namespace WcsManager
                         case TaskStatus.gived:
                             if (t.tasktype == TaskTypeEnum.入库)
                             {
-                                // ?请求JOB更新
+                                // ? JOB 更新请求
                                 ADS.JobPartAWC_FinishIn(t.taskid);
                             }
                             // 解锁设备、完成任务

@@ -39,6 +39,61 @@ namespace TaskManager
         }
 
         /// <summary>
+        /// 取消WMS任务
+        /// </summary>
+        /// <param name="taskuid"></param>
+        /// <param name="tt"></param>
+        /// <returns></returns>
+        public bool CancelTask(string taskuid, string tt)
+        {
+            WmsStatus ws;
+            switch (tt)
+            {
+                case TaskType.AGV搬运:
+                case TaskType.入库:
+                    ws = WmsStatus.StockInTask;
+                    break;
+                case TaskType.出库:
+                    ws = WmsStatus.StockOutTask;
+                    break;
+                default:
+                    ws = WmsStatus.Empty;
+                    break;
+            }
+            string res = DataControl._mHttp.DoCancelTask(ws, taskuid);
+
+            return true;
+        }
+
+        /// <summary>
+        /// 反馈WMS任务异常
+        /// </summary>
+        /// <param name="taskuid"></param>
+        /// <param name="tt"></param>
+        /// <param name="err"></param>
+        /// <param name="msg"></param>
+        /// <returns></returns>
+        public bool ErrorTask(string taskuid, string tt, int err, string msg)
+        {
+            WmsStatus ws;
+            switch (tt)
+            {
+                case TaskType.AGV搬运:
+                case TaskType.入库:
+                    ws = WmsStatus.StockInTask;
+                    break;
+                case TaskType.出库:
+                    ws = WmsStatus.StockOutTask;
+                    break;
+                default:
+                    ws = WmsStatus.Empty;
+                    break;
+            }
+            string res = DataControl._mHttp.DoShowError(ws, taskuid, err, msg);
+            return true;
+        }
+
+        /// <summary>
         /// 扫码任务(包装线)
         /// </summary>
         /// <param name="frt"></param>

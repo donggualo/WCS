@@ -12,6 +12,10 @@ namespace WcsManager
 {
     public class Administartor : AdminBase
     {
+        public Administartor() : base()
+        {
+        }
+
         #region [ 行车 ]
 
         /// <summary>
@@ -154,8 +158,8 @@ namespace WcsManager
             switch (dev)
             {
                 case DevType.AGV:
-                    // ? 请求 NDC 确认AGV是否到达卸货点
-
+                    // ? NDC 确认AGV是否到达卸货点
+                    result = mNDCControl.IsUnLoadReady(Convert.ToInt32(jobid.Substring(1)));
                     break;
                 case DevType.摆渡车:
                     result = mArf.IsTaskConform(jobid, TaskStatus.ongivesite);
@@ -191,8 +195,8 @@ namespace WcsManager
         public static bool JobPartPKL_Give(string jobid)
         {
             // 当前方案仅搬运作业存在送货任务(AGV)
-            // ? 请求 NDC 确认AGV是否装货中
-            return false;
+            // ? NDC 确认AGV是否装货中
+            return mNDCControl.IsLoading(Convert.ToInt32(jobid.Substring(1)));
         }
 
         #endregion

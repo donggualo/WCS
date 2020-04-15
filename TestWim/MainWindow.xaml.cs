@@ -110,5 +110,10 @@ namespace TestWim
             }
         }
 
+        private void BTNtest_Click(object sender, RoutedEventArgs e)
+        {
+            WmsTest d = new WmsTest();
+            d.Show();
+        }
     }
 }
