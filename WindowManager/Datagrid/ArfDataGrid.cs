@@ -33,7 +33,7 @@ namespace WindowManager.Datagrid
             }
             else
             {
-                ARFDeviceModel m = _mDeviceList.FirstOrDefault(c => { return c.DeviceID == name; });
+                ARFDeviceModel m = _mDeviceList.FirstOrDefault(c => { return c.DevName == name; });
                 if (m == null)
                 {
                     _mDeviceList.Add(new ARFDeviceModel(name, area));
@@ -51,11 +51,11 @@ namespace WindowManager.Datagrid
             }
         }
 
-        public void UpdateDeviceNameList(string abc)
+        public void UpdateDeviceNameList(string arf)
         {
-            if (!_mDeviceNameList.Contains(abc))
+            if (!_mDeviceNameList.Contains(arf))
             {
-                _mDeviceNameList.Add(abc);
+                _mDeviceNameList.Add(arf);
             }
         }
 

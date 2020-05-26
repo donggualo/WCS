@@ -36,8 +36,10 @@
       <HintPath>..\DLL\Panuon.UI.Silver.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -54,14 +56,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Datagrid\ArfDataGrid.cs" />
-    <Compile Include="Datagrid\Models\ARFDeviceModel.cs" />
-    <Compile Include="Datagrid\Models\FRTDeviceModel.cs" />
-    <Compile Include="Datagrid\FrtDataGrid.cs" />
-    <Compile Include="Datagrid\RgvDataGrid.cs" />
-    <Compile Include="Datagrid\AbcDataGrid.cs" />
+    <Compile Include="Datagrid\AwcDataGrid.cs" />
     <Compile Include="Datagrid\BaseDataGrid.cs" />
+    <Compile Include="Datagrid\FrtDataGrid.cs" />
+    <Compile Include="Datagrid\Models\ARFDeviceModel.cs" />
+    <Compile Include="Datagrid\Models\AWCDeviceModel.cs" />
+    <Compile Include="Datagrid\Models\FRTDeviceModel.cs" />
     <Compile Include="Datagrid\Models\RGVDeviceModel.cs" />
-    <Compile Include="Datagrid\Models\ABCDeviceModel.cs" />
+    <Compile Include="Datagrid\RgvDataGrid.cs" />
     <Compile Include="WindowCommon.cs" />
     <Compile Include="W_ARF.xaml.cs">
       <DependentUpon>W_ARF.xaml</DependentUpon>
@@ -69,82 +71,79 @@
     <Compile Include="W_ErrLogs.xaml.cs">
       <DependentUpon>W_ErrLogs.xaml</DependentUpon>
     </Compile>
+    <Compile Include="W_AWC.xaml.cs">
+      <DependentUpon>W_AWC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="W_FRT.xaml.cs">
       <DependentUpon>W_FRT.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="W_ManualWms.xaml.cs">
-      <DependentUpon>W_ManualWms.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="W_RGV.xaml.cs">
-      <DependentUpon>W_RGV.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="W_ABC.xaml.cs">
-      <DependentUpon>W_ABC.xaml</DependentUpon>
     </Compile>
     <Compile Include="W_NdcAgv.xaml.cs">
       <DependentUpon>W_NdcAgv.xaml</DependentUpon>
     </Compile>
+    <Compile Include="W_RGV.xaml.cs">
+      <DependentUpon>W_RGV.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="W_SettingAreaData.xaml.cs">
+      <DependentUpon>W_SettingAreaData.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="W_SettingAreaDetail.xaml.cs">
+      <DependentUpon>W_SettingAreaDetail.xaml</DependentUpon>
+    </Compile>
     <Compile Include="W_SettingDevData.xaml.cs">
       <DependentUpon>W_SettingDevData.xaml</DependentUpon>
     </Compile>
-    <Compile Include="W_SettingDevData_Gap.xaml.cs">
-      <DependentUpon>W_SettingDevData_Gap.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="W_SettingDevIgnore.xaml.cs">
-      <DependentUpon>W_SettingDevIgnore.xaml</DependentUpon>
+    <Compile Include="W_SettingDevDetail.xaml.cs">
+      <DependentUpon>W_SettingDevDetail.xaml</DependentUpon>
     </Compile>
     <Compile Include="W_SettingLocation.xaml.cs">
       <DependentUpon>W_SettingLocation.xaml</DependentUpon>
     </Compile>
-    <Compile Include="W_TaskData.xaml.cs">
-      <DependentUpon>W_TaskData.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="W_TaskData_CMD.xaml.cs">
-      <DependentUpon>W_TaskData_CMD.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="W_TaskData_Task.xaml.cs">
-      <DependentUpon>W_TaskData_Task.xaml</DependentUpon>
-    </Compile>
     <Compile Include="W_WcsNdcSite.xaml.cs">
       <DependentUpon>W_WcsNdcSite.xaml</DependentUpon>
     </Compile>
+    <Compile Include="W_WcsWorkData.xaml.cs">
+      <DependentUpon>W_WcsWorkData.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="W_WmsTaskData.xaml.cs">
+      <DependentUpon>W_WmsTaskData.xaml</DependentUpon>
+    </Compile>
     <Page Include="W_ARF.xaml">
       <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
     </Page>
     <Page Include="W_ErrLogs.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="W_AWC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="W_FRT.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="W_ManualWms.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="W_RGV.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="W_ABC.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
     </Page>
     <Page Include="W_NdcAgv.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="W_RGV.xaml">
+      <SubType>Designer</SubType>
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
+    </Page>
+    <Page Include="W_SettingAreaData.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="W_SettingAreaDetail.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="W_SettingDevData.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="W_SettingDevData_Gap.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="W_SettingDevIgnore.xaml">
+    <Page Include="W_SettingDevDetail.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -152,19 +151,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="W_TaskData.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="W_TaskData_CMD.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="W_TaskData_Task.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="W_WcsNdcSite.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="W_WcsWorkData.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="W_WmsTaskData.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -197,6 +192,10 @@
       <Project>{36A19B28-36C5-42A8-9360-A5FFF1891DC7}</Project>
       <Name>ModuleManager</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Module\Module.csproj">
+      <Project>{2f5a910a-312b-4b22-a8f1-cbe8086b60cd}</Project>
+      <Name>Module</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NdcManager\NdcManager.csproj">
       <Project>{d7f23c4b-2e0e-4a97-a0da-7af778e26a60}</Project>
       <Name>NdcManager</Name>
@@ -205,13 +204,9 @@
       <Project>{20AFF318-2F10-47E9-A66C-AED5B9C5E5F5}</Project>
       <Name>PubResourceManager</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SockManager\SockManager.csproj">
-      <Project>{3f05540d-b196-4fc8-b6be-df7fe9245a8d}</Project>
-      <Name>SockManager</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TaskManager\TaskManager.csproj">
-      <Project>{0f7b97c2-6b7e-46b0-8d3d-005c4971ed64}</Project>
-      <Name>TaskManager</Name>
+    <ProjectReference Include="..\Socket\Socket.csproj">
+      <Project>{AA1DAE48-F73F-4E40-9993-C7D32CA683F0}</Project>
+      <Name>Socket</Name>
     </ProjectReference>
     <ProjectReference Include="..\ToolManager\ToolManager.csproj">
       <Project>{b65231a1-c544-4279-ac1a-c62194c4ad3f}</Project>
@@ -220,6 +215,10 @@
     <ProjectReference Include="..\WcsHttpManager\WcsHttpManager.csproj">
       <Project>{1b6193d0-25f4-4405-883a-5999c0e8f42b}</Project>
       <Name>WcsHttpManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WcsManager\WcsManager.csproj">
+      <Project>{16df486b-dab3-4b75-b3c1-0dc95def791f}</Project>
+      <Name>WcsManager</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

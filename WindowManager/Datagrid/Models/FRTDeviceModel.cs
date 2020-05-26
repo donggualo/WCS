@@ -1,243 +1,229 @@
-﻿using Panuon.UI.Silver;
-using Panuon.UI.Silver.Core;
+﻿using Module;
+using Module.DEV;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TaskManager.Devices;
+
+using ADS = WcsManager.Administartor;
 
 namespace WindowManager.Datagrid.Models
 {
     /// <summary>
-    /// 行车设备信息
+    /// 固定辊台设备信息
     /// </summary>
     [Serializable]
     public class FRTDeviceModel : BaseDataGrid
     {
-        private string deviceid;
-        private byte actionsta;
-        private byte devicesta;
-        private byte commandsta;
-        private byte now_task;
-        private byte finish_task;
-        private byte loadstatus;
-        private byte rollerstatus;
-        private byte rollerdirection;
-        private byte errormsg;
         private bool isconnect;
-        private string datatime;
-        private FRT frt;
+        private ActionEnum actionsta;
+        private DeviceEnum devicesta;
+        private CommandEnum commandsta;
+        private TaskEnum currenttask;
+        private TaskEnum finishtask;
+        private GoodsEnum goodstatus;
+        private RollerStatusEnum rollersta;
+        private RollerDiretionEnum rollerdir;
+        private int errormsg;
+        private string datetime;
 
 
-
-        [DisplayName("设备号")]
-        public string DeviceID {
-            get { return deviceid; }
-            set {
-                deviceid = value;
-                OnPropertyChanged("DeviceID");
-            }
-        }
-
-        [DisplayName("区域")]
-        public string Area{ set; get; }
-
-
-        [DisplayName("运动状态")]
-        public string ActionStatus
-        {
-            get { return actionsta == FRT.Stop ? "停止" : "运行中"; }
-            set
-            {
-                OnPropertyChanged("ActionStatus");
-            }
-        }
-
-        [DisplayName("设备状态")]
-        public string DeviceStatus
-        {
-            get { return devicesta == FRT.DeviceError ? "故障" : "正常"; }
-            set
-            {
-                OnPropertyChanged("DeviceStatus");
-            }
-        }
-
-        [DisplayName("命令状态")]
-        public string CommandStatus
-        {
-            get { return commandsta == FRT.CommandError ? "命令异常" : "命令正常"; }
-            set
-            {
-                OnPropertyChanged("CommandStatus");
-            }
-        }
-
-
-        [DisplayName("当前任务")]
-        public string Now_Task
-        {
-            get { return now_task == FRT.TaskTake ? "辊台任务" : "停止辊台任务"; }
-            set
-            {
-                OnPropertyChanged("Now_Task");
-            }
-        }
-
-        [DisplayName("棍台状态")]
-        public string RollerStatus
-        {
-            get { return FRT.GetRollerStatusMes(rollerstatus); }
-            set
-            {
-                OnPropertyChanged("RollerStatus");
-            }
-        }
-
-        [DisplayName("棍台方向")]
-        public string RollerDirection
-        {
-            get { return rollerdirection == FRT.RunFront ? "正向启动" : "反向启动"; }
-            set
-            {
-                OnPropertyChanged("RollerDirection");
-            }
-        }
-
-
-        [DisplayName("完成任务")]
-        public string Finish_Task
-        {
-            get { return finish_task == FRT.TaskTake ? "辊台任务" : "停止辊台任务"; }
-            set
-            {
-                OnPropertyChanged("Finish_Task");
-            }
-        }
-
-        [DisplayName("货物状态")]
-        public string LoadStatus
-        {
-            get { return FRT.GetGoodsStatusMes(loadstatus); }
-            set
-            {
-                OnPropertyChanged("LoadStatus");
-            }
-        }
-
-        [DisplayName("故障信息")]
-        public string ErrorMsg
-        {
-            get { return errormsg.ToString("X2"); }
-            set
-            {
-                OnPropertyChanged("ErrorMsg");
-            }
-        }
+        #region info
 
         [DisplayName("连接")]
-        public bool ISConnect
+        public bool IsConnected
         {
             get { return isconnect; }
             set
             {
                 isconnect = value;
-                OnPropertyChanged("ISConnect");
+                OnPropertyChanged("IsConnected");
             }
         }
 
-        [DisplayName("刷新时间")]
-        public string DataTime
+        [DisplayName("设备名")]
+        public string DevName { set; get; }
+
+        [DisplayName("区域")]
+        public string Area { set; get; }
+
+        [DisplayName("运行状态")]
+        public ActionEnum ActionStatus
         {
-            get { return datatime; }
+            get { return actionsta; }
             set
             {
-                datatime = value;
-                OnPropertyChanged("DataTime");
+                actionsta = value;
+                OnPropertyChanged("ActionStatus");
             }
         }
 
+        [DisplayName("设备状态")]
+        public DeviceEnum DeviceStatus
+        {
+            get { return devicesta; }
+            set
+            {
+                devicesta = value;
+                OnPropertyChanged("DeviceStatus");
+            }
+        }
+
+        [DisplayName("命令状态")]
+        public CommandEnum CommandStatus
+        {
+            get { return commandsta; }
+            set
+            {
+                commandsta = value;
+                OnPropertyChanged("CommandStatus");
+            }
+        }
+
+        [DisplayName("当前任务")]
+        public TaskEnum CurrentTask
+        {
+            get { return currenttask; }
+            set
+            {
+                currenttask = value;
+                OnPropertyChanged("CurrentTask");
+            }
+        }
+
+        [DisplayName("完成任务")]
+        public TaskEnum FinishTask
+        {
+            get { return finishtask; }
+            set
+            {
+                finishtask = value;
+                OnPropertyChanged("FinishTask");
+            }
+        }
+
+        [DisplayName("棍台状态")]
+        public RollerStatusEnum RollerStatus
+        {
+            get { return rollersta; }
+            set
+            {
+                rollersta = value;
+                OnPropertyChanged("RollerStatus");
+            }
+        }
+
+        [DisplayName("棍台方向")]
+        public RollerDiretionEnum RollerDiretion
+        {
+            get { return rollerdir; }
+            set
+            {
+                rollerdir = value;
+                OnPropertyChanged("RollerDirection");
+            }
+        }
+
+        [DisplayName("货物状态")]
+        public GoodsEnum GoodsStatus
+        {
+            get { return goodstatus; }
+            set
+            {
+                goodstatus = value;
+                OnPropertyChanged("GoodsStatus");
+            }
+        }
+
+        [DisplayName("故障信息")]
+        public int ErrorMessage
+        {
+            get { return errormsg; }
+            set
+            {
+                errormsg = value;
+                OnPropertyChanged("ErrorMessage");
+            }
+        }
+
+        [DisplayName("更新时间")]
+        public string UpdateTime
+        {
+            get { return datetime; }
+            set
+            {
+                datetime = value;
+                OnPropertyChanged("UpdateTime");
+            }
+        }
+
+        #endregion
 
 
         public void Update()
         {
-            if (isconnect != frt.IsAlive())
+            bool con = ADS.mSocket.IsConnected(DevName);
+
+            DeviceFRT frt = ADS.mFrt.devices.Find(c => c.devName == DevName)._;
+
+            if (isconnect != con)
             {
-                ISConnect = frt.IsAlive();
+                IsConnected = con;
             }
 
-            if (!frt.IsAlive()) return;
+            if (!con) return;
 
-            if (actionsta != frt.ActionStatus())
+            if (actionsta != frt.ActionStatus)
             {
-                actionsta = frt.ActionStatus();
-                ActionStatus = "";
+                ActionStatus = frt.ActionStatus;
             }
 
-            if(devicesta != frt.DeviceStatus())
+            if (devicesta != frt.DeviceStatus)
             {
-                devicesta = frt.DeviceStatus();
-                DeviceStatus = "";
+                DeviceStatus = frt.DeviceStatus;
             }
 
-            if(commandsta != frt.CommandStatus())
+            if (commandsta != frt.CommandStatus)
             {
-                commandsta = frt.CommandStatus();
-                CommandStatus = "";
+                CommandStatus = frt.CommandStatus;
             }
 
-            if (now_task != frt.CurrentTask())
+            if (currenttask != frt.CurrentTask)
             {
-                now_task = frt.CurrentTask();
-                Now_Task = "";
+                CurrentTask = frt.CurrentTask;
             }
 
-            if(finish_task != frt.FinishTask())
+            if (finishtask != frt.FinishTask)
             {
 
-                finish_task = frt.FinishTask();
-                Finish_Task = "";
+                FinishTask = frt.FinishTask;
             }
 
-            if(loadstatus != frt.GoodsStatus())
+            if (rollersta != frt.RollerStatus)
             {
-                loadstatus = frt.GoodsStatus();
-                LoadStatus = "";
+                RollerStatus = frt.RollerStatus;
             }
 
-            if(rollerstatus != frt.CurrentStatus())
+            if (rollerdir != frt.RollerDiretion)
             {
-                rollerstatus = frt.CurrentStatus();
-                RollerStatus = "";
+                RollerDiretion = frt.RollerDiretion;
             }
 
-            if(rollerdirection != frt.RunDirection())
+            if (goodstatus != frt.GoodsStatus)
             {
-                rollerdirection = frt.RunDirection();
-                RollerDirection = "";
+                GoodsStatus = frt.GoodsStatus;
             }
 
-            if(errormsg != frt.ErrorMessage())
+            if (errormsg != frt.ErrorMessage)
             {
-                errormsg = frt.ErrorMessage();
-                ErrorMsg = "";
+                ErrorMessage = frt.ErrorMessage;
             }
 
-            if(frt.GetUpdateTime(out string time))
-            {
-                if(datatime != time)
-                {
-                    DataTime = time;
-                }
-            }
+            UpdateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
         }
 
-        public FRTDeviceModel(string devid,string area)
+        public FRTDeviceModel(string dev,string area)
         {
-            frt = new FRT(devid);
-            DeviceID = devid;
+            DevName = dev;
             Area = area;
             Update();
         }

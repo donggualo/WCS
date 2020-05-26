@@ -42,6 +42,8 @@
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="【WMS】任务完成" Click="BtnFinish_Click"/>
+                    <MenuItem Header="【WMS】任务取消" Click="BtnCancel_Click"/>
+                    <MenuItem Header="【WMS】任务异常" Click="BtnError_Click"/>
                     <MenuItem Header="【NDC】派车装货"/>
                     <MenuItem Header="【NDC】辊台装货"/>
                     <MenuItem Header="【NDC】辊台卸货"/>

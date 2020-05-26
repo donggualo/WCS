@@ -417,6 +417,75 @@ namespace WindowManager
             }
         }
 
+        /// <summary>
+        /// 取消任务
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BtnCancel_Click(object sender, RoutedEventArgs e)
+        {
+            if (DGinfo.SelectedItem == null)
+            {
+                Notice.Show("请选中任务！", "提示", 3, MessageBoxIcon.Info);
+                return;
+            }
+            string uid = (DGinfo.SelectedItem as DataRowView)["WCS任务ID"].ToString();
+
+            // 获取Task资讯
+            String sql = String.Format(@"select TASK_TYPE from wcs_task_info where TASK_UID = '{0}'", uid);
+            DataTable dt = DataControl._mMySql.SelectAll(sql);
+            if (DataControl._mStools.IsNoData(dt))
+            {
+                Notice.Show("不存在任务Task资讯！", "错误", 3, MessageBoxIcon.Error);
+                return;
+            }
+
+            string type = dt.Rows[0]["TASK_TYPE"].ToString();
+            // 通知WMS取消
+            if (DataControl._mForWmsControl.CancelTask(uid, type))
+            {
+                sql = String.Format(@"update wcs_task_info set SITE = '{1}' where TASK_UID = '{0}'", uid, TaskSite.失效);
+                DataControl._mMySql.ExcuteSql(sql);
+                Notice.Show("完成！", "成功", 3, MessageBoxIcon.Success);
+            }
+
+        }
+
+        /// <summary>
+        /// 异常处理
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BtnError_Click(object sender, RoutedEventArgs e)
+        {
+            if (DGinfo.SelectedItem == null)
+            {
+                Notice.Show("请选中任务！", "提示", 3, MessageBoxIcon.Info);
+                return;
+            }
+            string uid = (DGinfo.SelectedItem as DataRowView)["WCS任务ID"].ToString();
+
+            // 获取Task资讯
+            String sql = String.Format(@"select TASK_TYPE from wcs_task_info where TASK_UID = '{0}'", uid);
+            DataTable dt = DataControl._mMySql.SelectAll(sql);
+            if (DataControl._mStools.IsNoData(dt))
+            {
+                Notice.Show("不存在任务Task资讯！", "错误", 3, MessageBoxIcon.Error);
+                return;
+            }
+
+            string type = dt.Rows[0]["TASK_TYPE"].ToString();
+            // 通知WMS异常
+            if (DataControl._mForWmsControl.ErrorTask(uid, type, 1, "异常！"))
+            {
+                sql = String.Format(@"update wcs_task_info set SITE = '{1}' where TASK_UID = '{0}'", uid, TaskSite.失效);
+                DataControl._mMySql.ExcuteSql(sql);
+                Notice.Show("完成！", "成功", 3, MessageBoxIcon.Success);
+            }
+
+        }
+
+
         #region 定时刷新数据    
 
         /// <summary>

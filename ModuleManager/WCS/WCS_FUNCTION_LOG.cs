@@ -24,17 +24,17 @@ namespace ModuleManager.WCS
         /// <summary>
         /// WCS单号
         /// </summary>
-        public String WCS_NO { get; set; }
+        public String VALUE1 { get; set; }
 
         /// <summary>
         /// 项目ID
         /// </summary>
-        public String ITEM_ID { get; set; }
+        public String VALUE2 { get; set; }
 
         /// <summary>
         /// 结果
         /// </summary>
-        public String RESULT { get; set; }
+        public String VALUE3 { get; set; }
 
         /// <summary>
         /// 讯息

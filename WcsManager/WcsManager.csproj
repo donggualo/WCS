@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{16DF486B-DAB3-4B75-B3C1-0DC95DEF791F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>WcsManager</RootNamespace>
+    <AssemblyName>WcsManager</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Administartor.cs" />
+    <Compile Include="Base\AdminBase.cs" />
+    <Compile Include="DevModule\DevInfoARF.cs" />
+    <Compile Include="DevModule\DevInfoAWC.cs" />
+    <Compile Include="DevModule\DevInfoFRT.cs" />
+    <Compile Include="DevModule\DevInfoPKL.cs" />
+    <Compile Include="DevModule\DevInfoRGV.cs" />
+    <Compile Include="DevTask\TaskARF.cs" />
+    <Compile Include="DevTask\TaskAWC.cs" />
+    <Compile Include="DevTask\TaskFRT.cs" />
+    <Compile Include="DevTask\TaskPKL.cs" />
+    <Compile Include="DevTask\TaskRGV.cs" />
+    <Compile Include="MasterARF.cs" />
+    <Compile Include="MasterAWC.cs" />
+    <Compile Include="MasterDistance.cs" />
+    <Compile Include="MasterFRT.cs" />
+    <Compile Include="MasterPKL.cs" />
+    <Compile Include="MasterRGV.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ModuleManager\ModuleManager.csproj">
+      <Project>{36A19B28-36C5-42A8-9360-A5FFF1891DC7}</Project>
+      <Name>ModuleManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Module.csproj">
+      <Project>{2F5A910A-312B-4B22-A8F1-CBE8086B60CD}</Project>
+      <Name>Module</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NdcManager\NdcManager.csproj">
+      <Project>{D7F23C4B-2E0E-4A97-A0DA-7AF778E26A60}</Project>
+      <Name>NdcManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PubResourceManager\PubResourceManager.csproj">
+      <Project>{20AFF318-2F10-47E9-A66C-AED5B9C5E5F5}</Project>
+      <Name>PubResourceManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Socket\Socket.csproj">
+      <Project>{AA1DAE48-F73F-4E40-9993-C7D32CA683F0}</Project>
+      <Name>Socket</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WcsHttpManager\WcsHttpManager.csproj">
+      <Project>{1B6193D0-25F4-4405-883A-5999C0E8F42B}</Project>
+      <Name>WcsHttpManager</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

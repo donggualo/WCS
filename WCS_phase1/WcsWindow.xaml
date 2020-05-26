@@ -6,7 +6,7 @@
             xmlns:local="clr-namespace:WCS_phase1"
             xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
             mc:Ignorable="d"
-            Title="NavbarWindow"
+            Title="WCS设备调度系统"
             Icon="/WCS_phase1;component/Resources/wcs.png"
             WindowStartupLocation="CenterScreen"
             MinHeight="700"
@@ -69,7 +69,7 @@
                         Padding="10,0,0,0"
                         pu:TreeViewHelper.ItemIcon="&#xf022;">
                         <TreeViewItem
-                            Tag="ABC"
+                            Tag="AWC"
                             MouseDoubleClick="TreeView_MouseDoubleClick"
                             FontSize="20"
                             Header="行车信息"
@@ -93,16 +93,16 @@
                             Header="固定棍台"
                             Padding="20,0,0,0" />
                         <TreeViewItem
-                            Tag=""
+                            Tag="PKL"
                             MouseDoubleClick="TreeView_MouseDoubleClick"
                             FontSize="20"
-                            Header="喷码机"
+                            Header="包装线辊台"
                             Padding="20,0,0,0" />
                     </TreeViewItem>
                     <TreeViewItem
                         FontSize="20"
                         Header="NDC"
-                        IsExpanded="True"
+                        IsExpanded="False"
                         Padding="10,0,0,0"
                         pu:TreeViewHelper.ItemIcon="&#xf022;">
                         <TreeViewItem
@@ -119,51 +119,56 @@
                             Padding="20,0,0,0" />
                     </TreeViewItem>
                     <TreeViewItem
-                        Tag="ManualWms"
-                        MouseDoubleClick="TreeView_MouseDoubleClick"
                         FontSize="20"
-                        Header="手动出入库"
-                        Padding="10,0,0,0"
-                        pu:TreeViewHelper.ItemIcon="&#xf022;" />
-                    <TreeViewItem
-                        Tag="TaskData"
-                        MouseDoubleClick="TreeView_MouseDoubleClick"
-                        FontSize="20"
-                        Header="任务清单"
-                        Padding="10,0,0,0"
-                        pu:TreeViewHelper.ItemIcon="&#xf022;" />
-                    <TreeViewItem
-                        Tag="ErrLogs"
-                        MouseDoubleClick="TreeView_MouseDoubleClick"
-                        FontSize="20"
-                        Header="异常LOG"
-                        Padding="10,0,0,0"
-                        pu:TreeViewHelper.ItemIcon="&#xf022;" />
-                    <TreeViewItem
-                        FontSize="20"
-                        Header="设置"
+                        Header="作业任务"
                         IsExpanded="False"
                         Padding="10,0,0,0"
                         pu:TreeViewHelper.ItemIcon="&#xf013;">
                         <TreeViewItem
-                            Tag="DevIgnore"
-                            Header="设备调试"
+                            Tag="WorkData"
+                            Header="WCS作业"
+                            MouseDoubleClick="TreeView_MouseDoubleClick"
+                            FontSize="20"
+                            Padding="20,0,0,0"/>
+                        <TreeViewItem
+                            Tag="TaskData"
+                            Header="WMS任务"
+                            MouseDoubleClick="TreeView_MouseDoubleClick"
+                            FontSize="20"
+                            Padding="20,0,0,0"/>
+                    </TreeViewItem>
+                    <TreeViewItem
+                        FontSize="20"
+                        Header="基础设置"
+                        IsExpanded="False"
+                        Padding="10,0,0,0"
+                        pu:TreeViewHelper.ItemIcon="&#xf013;">
+                        <TreeViewItem
+                            Tag="AreaData"
+                            Header="区域"
                             MouseDoubleClick="TreeView_MouseDoubleClick"
                             FontSize="20"
                             Padding="20,0,0,0"/>
                         <TreeViewItem
                             Tag="DevData"
-                            Header="设备资料"
+                            Header="设备"
                             MouseDoubleClick="TreeView_MouseDoubleClick"
                             FontSize="20"
                             Padding="20,0,0,0"/>
                         <TreeViewItem
-                            Tag="Location"
-                            Header="位置资料"
+                            Tag="LocData"
+                            Header="坐标"
                             MouseDoubleClick="TreeView_MouseDoubleClick"
                             FontSize="20"
                             Padding="20,0,0,0"/>
                     </TreeViewItem>
+                    <TreeViewItem
+                        Tag="ErrLogs"
+                        MouseDoubleClick="TreeView_MouseDoubleClick"
+                        FontSize="20"
+                        Header="异常记录"
+                        Padding="10,0,0,0"
+                        pu:TreeViewHelper.ItemIcon="&#xf022;" />
                 </TreeView>
             </Grid>
             <Grid Grid.Column="1">
@@ -172,27 +177,27 @@
                     <RowDefinition />
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10">
-                    <CheckBox Name="CheckAGV" Content="派送AGV" Click="CheckAGV_Click"
+                    <CheckBox Name="CheckAGV" Content="AGV搬运" Click="CheckAGV_Click"
                               pu:CheckBoxHelper.BoxHeight="30"
                               pu:CheckBoxHelper.BoxWidth="70"
                               pu:CheckBoxHelper.CheckBoxStyle="Switch2" 
                               pu:CheckBoxHelper.CheckedBackground="#FF67DA82"  Margin="0,0,20,0"/>
-                    <CheckBox Name="CheckTask_I" Content="入库任务" Click="CheckTask_I_Click"
+                    <CheckBox Name="CheckIn" Content="入库作业" Click="CheckIn_Click"
                               pu:CheckBoxHelper.BoxHeight="30"
                               pu:CheckBoxHelper.BoxWidth="70"
                               pu:CheckBoxHelper.CheckBoxStyle="Switch2" 
                               pu:CheckBoxHelper.CheckedBackground="#FF67DA82" Margin="0,0,20,0"/>
-                    <CheckBox Name="CheckTask_O" Content="出库任务" Click="CheckTask_O_Click"
+                    <CheckBox Name="CheckOut" Content="出库作业" Click="CheckOut_Click"
                               pu:CheckBoxHelper.BoxHeight="30"
                               pu:CheckBoxHelper.BoxWidth="70"
                               pu:CheckBoxHelper.CheckBoxStyle="Switch2" 
                               pu:CheckBoxHelper.CheckedBackground="#FF67DA82" Margin="0,0,20,0"/>
-                    <CheckBox Name="CheckOrder" Content="发送指令" Click="CheckOrder_Click"
+                    <CheckBox Name="CheckDev" Content="设备运作" Click="CheckDev_Click"
                               pu:CheckBoxHelper.BoxHeight="30"
                               pu:CheckBoxHelper.BoxWidth="70"
                               pu:CheckBoxHelper.CheckBoxStyle="Switch2" 
                               pu:CheckBoxHelper.CheckedBackground="#FF67DA82"  Margin="0,0,20,0"/>
-                    <CheckBox Name="ndcConnectCB" Content="连接NDC" Click="NdcConnectCB_Click"
+                    <CheckBox Name="ndcConnectCB" Content="NDC连接" Click="NdcConnectCB_Click"
                               pu:CheckBoxHelper.BoxHeight="30"
                               pu:CheckBoxHelper.BoxWidth="70"
                               pu:CheckBoxHelper.CheckBoxStyle="Switch2" 

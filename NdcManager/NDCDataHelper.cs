@@ -606,7 +606,7 @@ namespace NdcManager
                 item.PLCStatus = NDCPlcStatus.Loading;
                 LoadItemList.Remove(item._mTask.NDCINDEX);
                 //通知WCS
-                _NoticeWcsLoading(item._mTask.TASKID, item.CARRIERID + "");
+                //_NoticeWcsLoading(item._mTask.TASKID, item.CARRIERID + "");
             }
             else if (v.PlcLp1 == 29 && v.Value1 == 2)
             {
@@ -659,7 +659,7 @@ namespace NdcManager
                         }
                         else
                         {
-                            _NoticeWcsMagic(item._mTask.TASKID, item.CARRIERID + "", item.Magic);
+                            //_NoticeWcsMagic(item._mTask.TASKID, item.CARRIERID + "", item.Magic);
                         }
                         _sqlControl.UpdateNdcItem(item);
                         return;

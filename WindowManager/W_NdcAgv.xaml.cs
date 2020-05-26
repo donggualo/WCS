@@ -1,14 +1,13 @@
 ﻿using ModuleManager;
 using ModuleManager.NDC;
 using NdcManager.DataGrid;
-using NdcManager.DataGrid.Models;
 using Panuon.UI.Silver;
 using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using TaskManager;
-using WindowManager.Datagrid;
+
+using ADS = WcsManager.Administartor;
 
 namespace WindowManager
 {
@@ -31,10 +30,10 @@ namespace WindowManager
             taskDataGrid = new NdcAgvDataGrid();
 
             DataContext = taskDataGrid;
-            DataControl._mNDCControl.NoticeUpdate += _mNDCControl_TaskListUpdate;
-            DataControl._mNDCControl.NoticeDelete += _mNDCControl_TaskListDelete;
-            DataControl._mNDCControl.NoticeRedirect += _mNDCControl_NoticeRedirect;
-            DataControl._mNDCControl.NoticeMsg += _mNDCControl_NoticeMsg;
+            ADS.mNDCControl.NoticeUpdate += _mNDCControl_TaskListUpdate;
+            ADS.mNDCControl.NoticeDelete += _mNDCControl_TaskListDelete;
+            ADS.mNDCControl.NoticeRedirect += _mNDCControl_NoticeRedirect;
+            ADS.mNDCControl.NoticeMsg += _mNDCControl_NoticeMsg;
         }
 
         private void _mNDCControl_NoticeMsg(string msg)
@@ -57,10 +56,10 @@ namespace WindowManager
         /// </summary>
         public void Close()
         {
-            DataControl._mNDCControl.NoticeUpdate -= _mNDCControl_TaskListUpdate;
-            DataControl._mNDCControl.NoticeDelete -= _mNDCControl_TaskListDelete;
-            DataControl._mNDCControl.NoticeRedirect -= _mNDCControl_NoticeRedirect;
-            DataControl._mNDCControl.NoticeMsg -= _mNDCControl_NoticeMsg;
+            ADS.mNDCControl.NoticeUpdate -= _mNDCControl_TaskListUpdate;
+            ADS.mNDCControl.NoticeDelete -= _mNDCControl_TaskListDelete;
+            ADS.mNDCControl.NoticeRedirect -= _mNDCControl_NoticeRedirect;
+            ADS.mNDCControl.NoticeMsg -= _mNDCControl_NoticeMsg;
         }
         private void _mNDCControl_NoticeRedirect(NDCItem model)
         {
@@ -100,11 +99,12 @@ namespace WindowManager
                 {
                     taskDataGrid.UpdateTaskInList(item);
                 });
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }
-            
+
         }
 
         private void AddTaskBtn_Click(object sender, RoutedEventArgs e)
@@ -120,7 +120,7 @@ namespace WindowManager
                 return;
             }
 
-            if (!DataControl._mNDCControl.AddNDCTask(taskid, loadSite.Text, unloadSite.Text, out string result))
+            if (!ADS.mNDCControl.AddNDCTask(taskid, loadSite.Text, unloadSite.Text, out string result))
             {
                 Notice.Show(result, "错误", 3, MessageBoxIcon.Error);
             }
@@ -138,19 +138,20 @@ namespace WindowManager
                 Notice.Show("任务ID必须是整型数字", "错误", 3, MessageBoxIcon.Error);
                 return;
             }
-            if (!int.TryParse(agvName.Text, out int agvid))
-            {
 
-                Notice.Show("AGVID必须是整型数字", "错误", 3, MessageBoxIcon.Error);
-                return;
-            }
+            //if (!int.TryParse(agvName.Text, out int agvid))
+            //{
+            //    Notice.Show("AGVID必须是整型数字", "错误", 3, MessageBoxIcon.Error);
+            //    return;
+            //}
 
             if (!WindowCommon.ConfirmAction("是否进行[取货任务]！！"))
             {
                 return;
             }
 
-            if (!DataControl._mNDCControl.DoLoad(taskid, agvid, out string result))
+            //if (!ADS.mNDCControl.DoLoad(taskid, agvid, out string result))
+            if (!ADS.mNDCControl.DoLoad(taskid, out string result))
             {
                 Notice.Show(result, "错误", 3, MessageBoxIcon.Error);
             }
@@ -169,18 +170,19 @@ namespace WindowManager
                 return;
             }
 
-            if (!int.TryParse(agvName.Text, out int agvid))
-            {
-                Notice.Show("AGVID必须是整型数字", "错误", 3, MessageBoxIcon.Error);
-                return;
-            }
+            //if (!int.TryParse(agvName.Text, out int agvid))
+            //{
+            //    Notice.Show("AGVID必须是整型数字", "错误", 3, MessageBoxIcon.Error);
+            //    return;
+            //}
 
             if (!WindowCommon.ConfirmAction("是否进行[卸货任务]！！"))
             {
                 return;
             }
 
-            if (!DataControl._mNDCControl.DoUnLoad(taskid, agvid, out string result))
+            //if (!ADS.mNDCControl.DoUnLoad(taskid, agvid, out string result))
+            if (!ADS.mNDCControl.DoUnLoad(taskid, out string result))
             {
                 Notice.Show(result, "错误", 3, MessageBoxIcon.Error);
             }
@@ -200,7 +202,7 @@ namespace WindowManager
             }
 
             int orderint = -1;
-            if (order.Text != "" && !int.TryParse(order.Text,out orderint))
+            if (order.Text != "" && !int.TryParse(order.Text, out orderint))
             {
                 Notice.Show("Order必须是数字", "错误", 3, MessageBoxIcon.Error);
                 return;
@@ -211,7 +213,7 @@ namespace WindowManager
                 return;
             }
 
-            if (!DataControl._mNDCControl.DoReDerect(taskid, redirectArea.Text, out string result, orderint))
+            if (!ADS.mNDCControl.DoReDerect(taskid, redirectArea.Text, out string result, orderint))
             {
 
                 Notice.Show(result, "错误", 3, MessageBoxIcon.Error);
@@ -242,7 +244,7 @@ namespace WindowManager
                 return;
             }
 
-            if (!DataControl._mNDCControl.DoCancelIndex(i, out string result))
+            if (!ADS.mNDCControl.DoCancelIndex(i, out string result))
             {
 
                 Notice.Show(result, "错误", 3, MessageBoxIcon.Error);

@@ -51,6 +51,13 @@ namespace WcsHttpManager
                         UrlRegex = "^\\/StockCheckHandle$",
                         Method = "GET"
                     }
+                    //处理：WMS向WCS发送的取消任务
+                    ,new Route()
+                    {
+                        Callable = StockCancelHandle,
+                        UrlRegex = "^\\/StockCancelHandle$",
+                        Method = "GET"
+                    }
                 };
 
             }
@@ -135,6 +142,44 @@ namespace WcsHttpManager
                     return OkResponse();
                 }
             }catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            return EmptyMssage();
+        }
+
+        /// <summary>
+        /// 取消任务
+        /// 处理：WMS向WCS发送的取消任务
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        private HttpResponse StockCancelHandle(HttpRequest request)
+        {
+            try
+            {
+                if (request.Content != null)
+                {
+                    WmsModel model = JsonConvert.DeserializeObject<WmsModel>(request.Content);
+                    if (string.IsNullOrEmpty(model.Task_UID) && model.Task_type != WmsStatus.Cancel)
+                    {
+                        return new HttpResponse()
+                        {
+                            ContentAsUTF8 = "Task error",
+                            ReasonPhrase = "OK",
+                            StatusCode = "200"
+                        };
+                    }
+
+                    if (!WmsModelAdd(model, out string result))
+                    {
+
+                        return FailResponse(model.Task_UID);
+                    }
+                    return OkResponse(model.Task_UID);
+                }
+            }
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }

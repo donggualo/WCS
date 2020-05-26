@@ -14,83 +14,43 @@ namespace ModuleManager.WCS
         /// <summary>
         /// WMS回馈位置
         /// </summary>
-        public String WMS_LOC { get; set; }
+        public string WMS_LOC { get; set; }
 
         /// <summary>
         /// 固定辊台位置
         /// </summary>
-        public String FRT_LOC { get; set; }
-
-        /// <summary>
-        /// AGV定位站点
-        /// </summary>
-        public String AGV_LOC { get; set; }
+        public string FRT_LOC { get; set; }
 
         /// <summary>
         /// 摆渡车定位
         /// </summary>
-        public String ARF_LOC { get; set; }
+        public string ARF_LOC { get; set; }
 
         /// <summary>
         /// 运输车辊台①定位
         /// </summary>
-        public String RGV_LOC_1 { get; set; }
+        public string RGV_LOC_1 { get; set; }
 
         /// <summary>
         /// 运输车辊台②定位
         /// </summary>
-        public String RGV_LOC_2 { get; set; }
+        public string RGV_LOC_2 { get; set; }
 
         /// <summary>
         /// 行车轨道定位
         /// </summary>
-        public String ABC_LOC_TRACK { get; set; }
+        public string AWC_LOC_TRACK { get; set; }
 
         /// <summary>
         /// 行车库存定位
         /// </summary>
-        public String ABC_LOC_STOCK { get; set; }
+        public string AWC_LOC_STOCK { get; set; }
 
         /// <summary>
         /// 创建时间
         /// </summary>
         public DateTime? CREATION_TIME { get; set; }
 
-        /// <summary>
-        /// 行车坐标轴值
-        /// </summary>
-        /// <param name="site"></param>
-        /// <param name="loc"></param>
-        /// <returns></returns>
-        public String ABC_Site(String xyz, String loc)
-        {
-            String[] LOC = loc.Split('-');
-            String site = String.Empty;
-            switch (xyz)
-            {
-                case "X":
-                    site = LOC[0];
-                    break;
-                case "Y":
-                    site = LOC[1];
-                    break;
-                case "Z":
-                    site = LOC[2];
-                    break;
-                default:
-                    break;
-            }
-            return site;
-        }
     }
 
-    /// <summary>
-    /// X,Y,Z 轴值
-    /// </summary>
-    public class XYZSite
-    {
-        public const String X = "X";
-        public const String Y = "Y";
-        public const String Z = "Z";
-    }
 }
