@@ -23,14 +23,14 @@
         </Grid.RowDefinitions>
 
         <TextBlock FontSize="22" Grid.Row="0" Margin="10">
-                        WCS 位置资讯
+                        坐标设置
         </TextBlock>
 
         <Button Content="刷新列表" 
                 Click="BtnRefresh_Click" 
                 Grid.Column="1" 
                 Grid.Row="0" 
-                Margin="5,10,5,9" Height="30" Width="80"
+                Margin="10" Height="30" Width="80"
                 pu:ButtonHelper.ClickStyle="Sink"
                 FontFamily="{DynamicResource FontAwesome}"
                 pu:ButtonHelper.ButtonStyle="Hollow"
@@ -42,7 +42,7 @@
                 Click="BtnExport_Click" 
                 Grid.Column="2" 
                 Grid.Row="0" 
-                Margin="5,10,5,9"
+                Margin="10"
                 Height="30" Width="80"
                 pu:ButtonHelper.ClickStyle="Sink"
                 FontFamily="{DynamicResource FontAwesome}"
@@ -55,7 +55,7 @@
                 Name="BtnInsertDB" 
                 Click="BtnInsertDB_Click" 
                 IsEnabled="False" 
-                Grid.Column="3" Grid.Row="0" Margin="5,10,5,9"
+                Grid.Column="3" Grid.Row="0" Margin="10"
                 Height="30" Width="80"
                 pu:ButtonHelper.ClickStyle="Sink"
                 FontFamily="{DynamicResource FontAwesome}"
@@ -68,7 +68,7 @@
         <Button Content="获取数据" 
                 Name="BtnGetData" 
                 Click="BtnGetData_Click" 
-                Grid.Column="4" Grid.Row="0" Margin="5,10,5,9"
+                Grid.Column="4" Grid.Row="0" Margin="10"
                 Height="30" Width="80"
                 pu:ButtonHelper.ClickStyle="Sink"
                 FontFamily="{DynamicResource FontAwesome}"
@@ -79,9 +79,9 @@
                 pu:ButtonHelper.CornerRadius="6" />
         <Button Content="更新坐标" 
                 Name="BtnUpLoc" 
-                Click="BtnUpLoc_Click"
+                Click="BtnUpdate_Click"
                 IsEnabled="False" 
-                Grid.Column="5" Grid.Row="0" Margin="5,10,5,9"
+                Grid.Column="5" Grid.Row="0" Margin="10"
                 Height="30" Width="80"
                 pu:ButtonHelper.ClickStyle="Sink"
                 FontFamily="{DynamicResource FontAwesome}"

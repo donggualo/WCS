@@ -75,26 +75,25 @@ namespace WindowManager
                 // 清空数据
                 DGdevice.ItemsSource = null;
 
-                string sql = @"select DEVICE 设备号, AREA 所属区域, IP, PORT 端口, 
-       (case when TYPE = 'FRT' then '固定辊台'
-			       when TYPE = 'ARF' then '摆渡车'
-				     when TYPE = 'RGV' then '运输车'
-				     when TYPE = 'AWC' then '行车'
-             when TYPE = 'PKL' then '包装线辊台'else '' end) 设备类型, REMARK 备注,
-			 (case when FLAG = 1 and TYPE = 'FRT' then '仅负责入库'
-						 when FLAG = 2 and TYPE = 'FRT' then '仅负责出库'
-						 when FLAG = 1 and TYPE = 'ARF' then '仅负责入库'
-						 when FLAG = 2 and TYPE = 'ARF' then '仅负责出库'
-						 when FLAG = 1 and TYPE = 'RGV' then '靠近入库口'
-						 when FLAG = 2 and TYPE = 'RGV' then '远离入库口'
-						 when FLAG = 1 and TYPE = 'AWC' then '靠近入库口'
-						 when FLAG = 2 and TYPE = 'AWC' then '远离入库口' else '' end) 特别属性,
-			 (case when IS_USEFUL = 0 then '失效'
-						 when IS_USEFUL = 1 then '可用' else '' end) 使用状态,
-			 (case when IS_LOCK = 0 then '空闲'
-						 when IS_LOCK = 1 then '锁定' else '' end) 工作状态, LOCK_ID 锁定单号,
-			 GAP_X X轴坐标偏差, GAP_Y Y轴坐标偏差, GAP_Z Z轴坐标偏差,
-			 LIMIT_X X轴坐标允许误差范围, LIMIT_Y Y轴坐标允许误差范围
+                string sql = @"select DEVICE, AREA, IP, PORT, REMARK,
+        (case when TYPE = 'FRT' then '固定辊台'
+			  when TYPE = 'ARF' then '摆渡车'
+			  when TYPE = 'RGV' then '运输车'
+			  when TYPE = 'AWC' then '行车'
+              when TYPE = 'PKL' then '包装线辊台'else '' end) DEV_TYPE,
+	    (case when FLAG = 1 and TYPE = 'FRT' then '仅负责入库'
+			  when FLAG = 2 and TYPE = 'FRT' then '仅负责出库'
+			  when FLAG = 1 and TYPE = 'ARF' then '仅负责入库'
+			  when FLAG = 2 and TYPE = 'ARF' then '仅负责出库'
+			  when FLAG = 1 and TYPE = 'RGV' then '靠近入库口'
+			  when FLAG = 2 and TYPE = 'RGV' then '远离入库口'
+			  when FLAG = 1 and TYPE = 'AWC' then '靠近入库口'
+			  when FLAG = 2 and TYPE = 'AWC' then '远离入库口' else '' end) DEV_DUTY,
+	    (case when IS_USEFUL = 0 then '失效'
+			  when IS_USEFUL = 1 then '可用' else '' end) DEV_USEFUL,
+		(case when IS_LOCK = 0 then '空闲'
+			  when IS_LOCK = 1 then '锁定' else '' end) DEV_WORK, LOCK_ID,
+			 GAP_X, GAP_Y, GAP_Z, LIMIT_X, LIMIT_Y 
   from wcs_config_device where 1=1";
                 if (!string.IsNullOrWhiteSpace(CBtype.Text))
                 {
@@ -115,23 +114,6 @@ namespace WindowManager
         }
 
         /// <summary>
-        /// 重连设备
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ReLinkDev_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                //DataControl._mTaskTools.LinkDevicesClient();
-            }
-            catch (Exception ex)
-            {
-                Notice.Show("重连失败：" + ex.Message, "错误", 3, MessageBoxIcon.Error);
-            }
-        }
-
-        /// <summary>
         /// 获取所选数据
         /// </summary>
         /// <param name="sender"></param>
@@ -144,35 +126,36 @@ namespace WindowManager
                 {
                     return;
                 }
+                DataRowView dr = DGdevice.SelectedItem as DataRowView;
 
-                if ((DGdevice.SelectedItem as DataRowView)["工作状态"].ToString() == "锁定")
+                if (dr["DEV_WORK"].ToString().Equals("锁定"))
                 {
                     Notice.Show("设备锁定中，暂无法修改！", "提示", 3, MessageBoxIcon.Info);
                     return;
                 }
 
-                if (string.IsNullOrWhiteSpace((DGdevice.SelectedItem as DataRowView)["工作状态"].ToString()))
+                if (string.IsNullOrWhiteSpace(dr["DEV_WORK"].ToString()))
                 {
-                    Notice.Show("设备号异常，无法修改！", "提示", 3, MessageBoxIcon.Info);
+                    Notice.Show("设备异常，无法修改！", "提示", 3, MessageBoxIcon.Info);
                     return;
                 }
 
                 W_SettingDevDetail wd = new W_SettingDevDetail(
-                    (DGdevice.SelectedItem as DataRowView)["设备号"].ToString(),
-                    (DGdevice.SelectedItem as DataRowView)["所属区域"].ToString(),
-                    (DGdevice.SelectedItem as DataRowView)["IP"].ToString(),
-                    (DGdevice.SelectedItem as DataRowView)["端口"].ToString(),
-                    (DGdevice.SelectedItem as DataRowView)["设备类型"].ToString(),
-                    (DGdevice.SelectedItem as DataRowView)["备注"].ToString(),
-                    (DGdevice.SelectedItem as DataRowView)["特别属性"].ToString(),
-                    (DGdevice.SelectedItem as DataRowView)["使用状态"].ToString(),
-                    (DGdevice.SelectedItem as DataRowView)["工作状态"].ToString(),
-                    (DGdevice.SelectedItem as DataRowView)["锁定单号"].ToString(),
-                    (DGdevice.SelectedItem as DataRowView)["X轴坐标偏差"].ToString(),
-                    (DGdevice.SelectedItem as DataRowView)["Y轴坐标偏差"].ToString(),
-                    (DGdevice.SelectedItem as DataRowView)["Z轴坐标偏差"].ToString(),
-                    (DGdevice.SelectedItem as DataRowView)["X轴坐标允许误差范围"].ToString(),
-                    (DGdevice.SelectedItem as DataRowView)["Y轴坐标允许误差范围"].ToString());
+                    dr["DEVICE"].ToString(),
+                    dr["AREA"].ToString(),
+                    dr["IP"].ToString(),
+                    dr["PORT"].ToString(),
+                    dr["DEV_TYPE"].ToString(),
+                    dr["REMARK"].ToString(),
+                    dr["DEV_DUTY"].ToString(),
+                    dr["DEV_USEFUL"].ToString(),
+                    dr["DEV_WORK"].ToString(),
+                    dr["LOCK_ID"].ToString(),
+                    dr["GAP_X"].ToString(),
+                    dr["GAP_Y"].ToString(),
+                    dr["GAP_Z"].ToString(),
+                    dr["LIMIT_X"].ToString(),
+                    dr["LIMIT_Y"].ToString());
                 wd.ShowDialog();
                 Refresh_Click(sender, e);
             }
@@ -207,7 +190,7 @@ namespace WindowManager
                 {
                     return;
                 }
-                string device = (DGdevice.SelectedItem as DataRowView)["设备号"].ToString();
+                string device = (DGdevice.SelectedItem as DataRowView)["DEVICE"].ToString();
 
                 MessageBoxResult result = MessageBoxX.Show("确认删除设备号【" + device + "】的数据？！", "提示", System.Windows.Application.Current.MainWindow, MessageBoxButton.YesNo);
                 if (result == MessageBoxResult.No)
@@ -240,13 +223,13 @@ namespace WindowManager
                 {
                     return;
                 }
-                string flag = (DGdevice.SelectedItem as DataRowView)["使用状态"].ToString();
+                string flag = (DGdevice.SelectedItem as DataRowView)["DEV_USEFUL"].ToString();
                 if (flag != "可用")
                 {
                     Notice.Show("该设备暂无法失效！", "提示", 3, MessageBoxIcon.Info);
                     return;
                 }
-                string device = (DGdevice.SelectedItem as DataRowView)["设备号"].ToString();
+                string device = (DGdevice.SelectedItem as DataRowView)["DEVICE"].ToString();
 
                 MessageBoxResult result = MessageBoxX.Show("确认失效设备号【" + device + "】的数据？！", "提示", System.Windows.Application.Current.MainWindow, MessageBoxButton.YesNo);
                 if (result == MessageBoxResult.No)
@@ -279,12 +262,12 @@ namespace WindowManager
                 {
                     return;
                 }
-                string flag = (DGdevice.SelectedItem as DataRowView)["使用状态"].ToString();
+                string flag = (DGdevice.SelectedItem as DataRowView)["DEV_USEFUL"].ToString();
                 if (flag != "失效")
                 {
                     return;
                 }
-                string device = (DGdevice.SelectedItem as DataRowView)["设备号"].ToString();
+                string device = (DGdevice.SelectedItem as DataRowView)["DEVICE"].ToString();
 
                 MessageBoxResult result = MessageBoxX.Show("确认生效设备号【" + device + "】的数据？！", "提示", System.Windows.Application.Current.MainWindow, MessageBoxButton.YesNo);
                 if (result == MessageBoxResult.No)

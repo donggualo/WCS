@@ -13,13 +13,16 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <WrapPanel Margin="10" Grid.Row="0">
-            <Label Content="作业类型：" FontSize="18"/>
-            <ComboBox x:Name="CBtype"  Width="150"
+            <TextBlock Grid.Row="0" FontSize="22" VerticalAlignment="Center">
+                        设备设置
+            </TextBlock>
+            <ComboBox x:Name="CBtype"  Width="250" Margin="20,0,0,0"
+                      pu:ComboBoxHelper.Header="设备类型："
                       pu:ComboBoxHelper.HoverBackground="LightGray"
                       pu:ComboBoxHelper.SelectedBackground="AliceBlue" FontSize="18"/>
-            <Label Content="作业区域："  FontSize="18" Margin="10,0,0,0"/>
-            
-            <ComboBox x:Name="CBarea"  Width="150"
+
+            <ComboBox x:Name="CBarea"  Width="250" Margin="10,0,0,0"
+                      pu:ComboBoxHelper.Header="作业区域："
                       pu:ComboBoxHelper.HoverBackground="LightGray"
                       pu:ComboBoxHelper.SelectedBackground="AliceBlue" FontSize="18"/>
 
@@ -33,19 +36,26 @@
                 Foreground="#FF3F3F3F"
                 pu:ButtonHelper.HoverBrush="#3F3F3F"
                 pu:ButtonHelper.CornerRadius="6"/>
-            <Button Content="重连设备" Click="ReLinkDev_Click" 
-                Margin="10,0,0,0"
-                Height="30" Width="80"
-                pu:ButtonHelper.ClickStyle="Sink"
-                FontFamily="{DynamicResource FontAwesome}"
-                pu:ButtonHelper.ButtonStyle="Hollow"
-                BorderBrush="#FF3F3F3F"
-                Foreground="#FF3F3F3F"
-                pu:ButtonHelper.HoverBrush="#3F3F3F"
-                pu:ButtonHelper.CornerRadius="6"/>
         </WrapPanel>
 
-        <DataGrid Grid.Row="1" Name="DGdevice" CanUserAddRows="False" IsReadOnly="True" MouseDoubleClick="DGdevice_DoubleClick">
+        <DataGrid Grid.Row="1" Name="DGdevice" CanUserAddRows="False" IsReadOnly="True" MouseDoubleClick="DGdevice_DoubleClick"  AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding DEVICE}" Header="设备号"/>
+                <DataGridTextColumn Binding="{Binding AREA}" Header="所属区域"/>
+                <DataGridTextColumn Binding="{Binding IP}" Header="IP"/>
+                <DataGridTextColumn Binding="{Binding PORT}" Header="端口"/>
+                <DataGridTextColumn Binding="{Binding DEV_TYPE}" Header="设备类型"/>
+                <DataGridTextColumn Binding="{Binding REMARK}" Header="备注"/>
+                <DataGridTextColumn Binding="{Binding DEV_DUTY}" Header="特别属性"/>
+                <DataGridTextColumn Binding="{Binding DEV_USEFUL}" Header="使用状态"/>
+                <DataGridTextColumn Binding="{Binding DEV_WORK}" Header="工作状态"/>
+                <DataGridTextColumn Binding="{Binding LOCK_ID}" Header="锁定单号"/>
+                <DataGridTextColumn Binding="{Binding GAP_X}" Header="X轴坐标偏差"/>
+                <DataGridTextColumn Binding="{Binding GAP_Y}" Header="Y轴坐标偏差"/>
+                <DataGridTextColumn Binding="{Binding GAP_Z}" Header="Z轴坐标偏差"/>
+                <DataGridTextColumn Binding="{Binding LIMIT_X}" Header="X轴坐标允许误差范围"/>
+                <DataGridTextColumn Binding="{Binding LIMIT_Y}" Header="Y轴坐标允许误差范围"/>
+            </DataGrid.Columns>
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="新增" Click="AddDev_Click"/>

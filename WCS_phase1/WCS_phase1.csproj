@@ -125,7 +125,9 @@
     <Resource Include="Resources\NeteaseExample\iconfont.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HttpServer\MHttpServer.csproj">
@@ -177,6 +179,16 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\wcs.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\WCSlogo.ico" />
+    <SplashScreen Include="Resources\开始图.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\logo.PNG" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\KEDAlogo.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

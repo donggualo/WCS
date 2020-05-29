@@ -5,12 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WindowManager"
         mc:Ignorable="d"
-        Title="设备明细信息" Height="450" Width="800">
+        Title="设备明细信息" d:DesignHeight="450" d:DesignWidth="800"
+        MinWidth="800" MinHeight="450" Topmost="True"
+        MaxWidth="1000" MaxHeight="560" WindowStyle="ToolWindow">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="30*"/>
+            <ColumnDefinition Width="30*"/>
+            <ColumnDefinition Width="15*"/>
+            <ColumnDefinition Width="15*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -29,8 +32,8 @@
         <Label Content="IP" Margin="10,10,230,5" Grid.Column="1"/>
         <TextBox Name="TBip" Margin="45,10,25,5" TextWrapping="Wrap" Grid.Column="1"/>
 
-        <Label Content="PORT" Margin="10,10,200,5" Grid.Column="2"/>
-        <TextBox Name="TBport" Margin="65,10,25,5" TextWrapping="Wrap" Grid.Column="2"/>
+        <Label Content="PORT" Margin="10,10,67.108,5" Grid.Column="2"/>
+        <TextBox Name="TBport" Margin="65,10,25,5" TextWrapping="Wrap" Grid.Column="2" Grid.ColumnSpan="2"/>
 
         <Label Content="所属区域" Margin="10,10,195,0" Grid.Row="1"/>
         <ComboBox Name="CBarea" Margin="75,10,25,5" Grid.Row="1"/>
@@ -38,11 +41,11 @@
         <Label Content="设备类型" Margin="10,10,195,5" Grid.Row="1" Grid.Column="1"/>
         <ComboBox Name="CBtype" Margin="75,10,25,5" Grid.Row="1" Grid.Column="1"/>
 
-        <Label Content="备  注" Margin="10,10,200,5" Grid.Row="1" Grid.Column="2"/>
-        <TextBox Name="TBmark" Margin="65,10,25,5" TextWrapping="Wrap" Grid.Column="2" Grid.Row="1" Grid.RowSpan="2"/>
+        <Label Content="备  注" Margin="10,10,67.108,5" Grid.Row="1" Grid.Column="2"/>
+        <TextBox Name="TBmark" Margin="65,10,25,5" TextWrapping="Wrap" Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
 
         <Label Content="特别属性" Margin="10,10,195,5" Grid.Row="3" Grid.Column="1"/>
-        <ComboBox Name="CBflag" Margin="75,10,110,5" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2"/>
+        <ComboBox Name="CBflag" Margin="75,10,110,5" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3"/>
 
         <Label Content="工作状态" Margin="10,10,195,5" Grid.Row="2"/>
         <ComboBox Name="CBlock" Margin="75,10,25,5" Grid.Row="2" IsReadOnly="True"/>
@@ -54,24 +57,29 @@
         <TextBox Name="TBlockid" Margin="75,10,25,5" TextWrapping="Wrap" Grid.Row="3" IsReadOnly="True"/>
 
         <Label Content="X轴坐标偏差" Margin="10,10,175,5" Grid.Row="4"/>
-        <TextBox Name="TBgapX" Text="0" Margin="90,10,25,5" TextWrapping="Wrap" Grid.Row="4"/>
+        <TextBox Name="TBgapX" Text="0" Margin="90,10,25,5" TextWrapping="Wrap" Grid.Row="4"
+                 InputMethod.IsInputMethodEnabled="False" PreviewTextInput="TB_PreviewTextInput"/>
 
         <Label Content="Y轴坐标偏差" Margin="10,10,175,5" Grid.Row="4" Grid.Column="1"/>
-        <TextBox Name="TBgapY" Text="0" Margin="90,10,25,5" TextWrapping="Wrap" Grid.Row="4" Grid.Column="1"/>
+        <TextBox Name="TBgapY" Text="0" Margin="90,10,25,5" TextWrapping="Wrap" Grid.Row="4" Grid.Column="1"
+                 InputMethod.IsInputMethodEnabled="False" PreviewTextInput="TB_PreviewTextInput"/>
 
-        <Label Content="Z轴坐标偏差" Margin="10,10,175,5" Grid.Row="4" Grid.Column="2"/>
-        <TextBox Name="TBgapZ" Text="0" Margin="90,10,25,5" TextWrapping="Wrap" Grid.Row="4" Grid.Column="2"/>
+        <Label Content="Z轴坐标偏差" Margin="10,10,42.108,5" Grid.Row="4" Grid.Column="2"/>
+        <TextBox Name="TBgapZ" Text="0" Margin="90,10,25,5" TextWrapping="Wrap" Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2"
+                 InputMethod.IsInputMethodEnabled="False" PreviewTextInput="TB_PreviewTextInput"/>
 
         <Label Content="X轴坐标允许误差范围" Margin="10,10,125,5" Grid.Row="5"/>
-        <TextBox Name="TBlimX" Text="0" Margin="140,10,25,5" TextWrapping="Wrap" Grid.Row="5"/>
+        <TextBox Name="TBlimX" Text="0" Margin="140,10,25,5" TextWrapping="Wrap" Grid.Row="5"
+                 InputMethod.IsInputMethodEnabled="False" PreviewTextInput="TB_PreviewTextInput"/>
 
         <Label Content="Y轴坐标允许误差范围" Margin="10,10,125,5" Grid.Row="5" Grid.Column="1"/>
-        <TextBox Name="TBlimY" Text="0" Margin="140,10,25,5" TextWrapping="Wrap" Grid.Row="5" Grid.Column="1"/>
+        <TextBox Name="TBlimY" Text="0" Margin="140,10,25,5" TextWrapping="Wrap" Grid.Row="5" Grid.Column="1"
+                 InputMethod.IsInputMethodEnabled="False" PreviewTextInput="TB_PreviewTextInput"/>
 
-        <Button Name="Yes" Content="确认" Margin="25,10,150,10" Grid.Column="2" Grid.Row="6" Grid.RowSpan="2" Click="Yes_Click"/>
-        <Button Name="No" Content="取消" Margin="150,10,25,10" Grid.Column="2" Grid.Row="6" Grid.RowSpan="2" Click="No_Click"/>
-        
-        <Label Content="注：单位为mm;  范围取绝对值" Foreground="red" FontSize="10" Margin="0,0,110,25" Grid.Row="5" Grid.Column="2"/>
+        <Button Name="Yes" Content="确认" Margin="25" Grid.Column="2" Grid.Row="6" Grid.RowSpan="2" Click="Yes_Click"/>
+        <Button Name="No" Content="取消" Margin="25" Grid.Column="3" Grid.Row="6" Grid.RowSpan="2" Click="No_Click"/>
+
+        <Label Content="注：单位为mm ,  范围取绝对值" Foreground="red" FontSize="10" Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2"/>
 
     </Grid>
 </Window>

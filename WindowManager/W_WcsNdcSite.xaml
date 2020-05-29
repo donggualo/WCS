@@ -18,7 +18,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Label Grid.Row="0"  Content="站点信息管理：" FontSize="22" VerticalAlignment="Center" />
+            <Label Grid.Row="0"  Content="站点信息管理" Margin="10" FontSize="22" VerticalAlignment="Center" />
             <WrapPanel Grid.Row="1" Margin="0,0,0,5">
                 <ComboBox Grid.Column="1" Name="CBdev"
                       Height="30"

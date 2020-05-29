@@ -31,7 +31,7 @@ namespace WindowManager
 
             DataContext = grid;
 
-            getRGVNameList();
+            GetRGVNameList();
             AddCombBox();
 
             new Thread(DoRefresh)
@@ -71,7 +71,7 @@ namespace WindowManager
             }
         }
 
-        private void getRGVNameList()
+        private void GetRGVNameList()
         {
             List<WCS_CONFIG_DEVICE> list = CommonSQL.GetDeviceNameList(DeviceType.运输车);
             foreach (var l in list)
@@ -84,17 +84,17 @@ namespace WindowManager
         {
             // 辊台内容
             //方式
-            CBsite1.Items.Add(RollerStatusEnum.辊台1启动.GetHashCode().ToString() + ":启动1辊台");
-            CBsite1.Items.Add(RollerStatusEnum.辊台2启动.GetHashCode().ToString() + ":启动2辊台");
-            CBsite1.Items.Add(RollerStatusEnum.辊台全启动.GetHashCode().ToString() + ":启动全辊台");
+            CBsite1.Items.Add((int)RollerStatusEnum.辊台1启动 + ":启动1辊台");
+            CBsite1.Items.Add((int)RollerStatusEnum.辊台2启动 + ":启动2辊台");
+            CBsite1.Items.Add((int)RollerStatusEnum.辊台全启动 + ":启动全辊台");
             CBsite1.SelectedIndex = 0;
             //方向
-            CBsite2.Items.Add(RollerDiretionEnum.正向.GetHashCode().ToString() + ":正向");
-            CBsite2.Items.Add(RollerDiretionEnum.反向.GetHashCode().ToString() + ":反向");
+            CBsite2.Items.Add((int)RollerDiretionEnum.正向 + ":正向");
+            CBsite2.Items.Add((int)RollerDiretionEnum.反向 + ":反向");
             CBsite2.SelectedIndex = 0;
             //类型
-            CBsite3.Items.Add(RollerTypeEnum.接货.GetHashCode().ToString() + ":接货");
-            CBsite3.Items.Add(RollerTypeEnum.送货.GetHashCode().ToString() + ":送货");
+            CBsite3.Items.Add((int)RollerTypeEnum.接货 + ":接货");
+            CBsite3.Items.Add((int)RollerTypeEnum.送货 + ":送货");
             CBsite3.SelectedIndex = 0;
             //数量
             CBsite4.Items.Add("1:货物数量1");

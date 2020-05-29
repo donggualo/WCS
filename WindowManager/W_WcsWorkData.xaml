@@ -14,13 +14,16 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <WrapPanel Margin="10" Grid.Row="0">
-            <Label Content="作业类型：" FontSize="18"/>
-            <ComboBox x:Name="CBtype"  Width="150"
+            <TextBlock Grid.Row="0" FontSize="22" VerticalAlignment="Center">
+                        作业数据
+            </TextBlock>
+            <ComboBox x:Name="CBtype"  Width="250" Margin="20,0,0,0"
+                      pu:ComboBoxHelper.Header="作业类型："
                       pu:ComboBoxHelper.HoverBackground="LightGray"
                       pu:ComboBoxHelper.SelectedBackground="AliceBlue" FontSize="18"/>
-            <Label Content="作业区域："  FontSize="18" Margin="10,0,0,0"/>
 
-            <ComboBox x:Name="CBarea"  Width="150"
+            <ComboBox x:Name="CBarea" Width="250" Margin="20,0,0,0"
+                      pu:ComboBoxHelper.Header="作业区域："
                       pu:ComboBoxHelper.HoverBackground="LightGray"
                       pu:ComboBoxHelper.SelectedBackground="AliceBlue" FontSize="18"/>
 

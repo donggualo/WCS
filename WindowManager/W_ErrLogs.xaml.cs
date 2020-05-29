@@ -16,16 +16,6 @@ namespace WindowManager
             InitializeComponent();
         }
 
-        // 设置时间格式
-        private void DataGrid_TimeFormat(object sender, DataGridAutoGeneratingColumnEventArgs e)
-        {
-            if (e.PropertyType == typeof(System.DateTime))
-            {
-                (e.Column as DataGridTextColumn).IsReadOnly = true;
-                (e.Column as DataGridTextColumn).Binding.StringFormat = "yyyy/MM/dd HH:mm:ss";
-            }
-        }
-
         /// <summary>
         /// 获取资讯
         /// </summary>
@@ -36,7 +26,7 @@ namespace WindowManager
                 // 清空数据
                 DGlog.ItemsSource = null;
 
-                string sql = @"select FUNCTION_NAME '方法名', CREATION_TIME '时间' , REMARK '说明', VALUE1 '参数1', VALUE2 '参数2', VALUE3 '参数3', MESSAGE '描述'
+                string sql = @"select FUNCTION_NAME , DATE_FORMAT(CREATION_TIME,'%Y/%m/%d %T') TIME , REMARK , VALUE1 , VALUE2 , VALUE3 , MESSAGE
                     from wcs_function_log order by CREATION_TIME desc";
                 // 获取数据
                 DGlog.ItemsSource = CommonSQL.mysql.SelectAll(sql).DefaultView;

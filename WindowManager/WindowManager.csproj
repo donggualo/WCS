@@ -62,7 +62,9 @@
     <Compile Include="Datagrid\Models\ARFDeviceModel.cs" />
     <Compile Include="Datagrid\Models\AWCDeviceModel.cs" />
     <Compile Include="Datagrid\Models\FRTDeviceModel.cs" />
+    <Compile Include="Datagrid\Models\PKLDeviceModel.cs" />
     <Compile Include="Datagrid\Models\RGVDeviceModel.cs" />
+    <Compile Include="Datagrid\PklDataGrid.cs" />
     <Compile Include="Datagrid\RgvDataGrid.cs" />
     <Compile Include="WindowCommon.cs" />
     <Compile Include="W_ARF.xaml.cs">
@@ -79,6 +81,9 @@
     </Compile>
     <Compile Include="W_NdcAgv.xaml.cs">
       <DependentUpon>W_NdcAgv.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="W_PKL.xaml.cs">
+      <DependentUpon>W_PKL.xaml</DependentUpon>
     </Compile>
     <Compile Include="W_RGV.xaml.cs">
       <DependentUpon>W_RGV.xaml</DependentUpon>
@@ -126,6 +131,10 @@
     <Page Include="W_NdcAgv.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="W_PKL.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="W_RGV.xaml">
       <SubType>Designer</SubType>

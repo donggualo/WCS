@@ -76,7 +76,7 @@ namespace WCS_phase1
             else if ("PKL".Equals(itemTag))
             {
                 tabItem.Tag = "PKL";
-                //tabItem.Content = new W_PKL();
+                tabItem.Content = new W_PKL();
             }
             else if ("AreaData".Equals(itemTag))
             {
@@ -163,7 +163,7 @@ namespace WCS_phase1
         /// </summary>
         private void CheckIn_Click(object sender, RoutedEventArgs e)
         {
-            PublicParam.IsRunTaskLogic_I = (bool)CheckIn.IsChecked;
+            PublicParam.IsDoJobIn = (bool)CheckIn.IsChecked;
         }
 
         /// <summary>
@@ -171,7 +171,7 @@ namespace WCS_phase1
         /// </summary>
         private void CheckOut_Click(object sender, RoutedEventArgs e)
         {
-            PublicParam.IsRunTaskLogic_O = (bool)CheckOut.IsChecked;
+            PublicParam.IsDoJobOut = (bool)CheckOut.IsChecked;
         }
 
         /// <summary>
@@ -179,7 +179,7 @@ namespace WCS_phase1
         /// </summary>
         private void CheckDev_Click(object sender, RoutedEventArgs e)
         {
-            PublicParam.IsRunTaskOrder = (bool)CheckDev.IsChecked;
+            PublicParam.IsDoTask = (bool)CheckDev.IsChecked;
         }
 
         /// <summary>
@@ -187,7 +187,7 @@ namespace WCS_phase1
         /// </summary>
         private void CheckAGV_Click(object sender, RoutedEventArgs e)
         {
-            PublicParam.IsRunSendAGV = (bool)CheckAGV.IsChecked;
+            PublicParam.IsDoJobAGV = (bool)CheckAGV.IsChecked;
         }
 
         /// <summary>

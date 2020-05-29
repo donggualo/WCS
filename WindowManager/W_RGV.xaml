@@ -19,7 +19,7 @@
         
         <!--操作面板-->
         <WrapPanel Margin="10,5,0,10" Grid.Row="1">
-            <Label Grid.Column="0" Content="设备："/>
+            <Label Grid.Column="0" Content="设备：" FontSize="18"/>
             <ComboBox Name="CBdev"
                       Height="30"
                       MinWidth="100"

@@ -404,16 +404,16 @@ namespace Module
         /// <summary>
         /// 初始化
         /// </summary>
-        init,
+        初始化,
 
         /// <summary>
         /// 执行中
         /// </summary>
-        excuting,
+        执行中,
 
         /// <summary>
         /// 完成
         /// </summary>
-        finish
+        完成
     }
 }

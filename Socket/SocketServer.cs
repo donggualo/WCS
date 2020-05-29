@@ -17,7 +17,7 @@ namespace Socket
         /// <summary>
         /// 刷新间隔
         /// </summary>
-        internal const int REFRESH_TIMEOUT = 3 * 1000;
+        internal const int REFRESH_TIMEOUT = 1 * 1000;
 
         public delegate void ReciveAwcDataHandler(string devName, DeviceAWC module);
         public delegate void ReciveArfDataHandler(string devName, DeviceARF module);

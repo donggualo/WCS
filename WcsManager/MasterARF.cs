@@ -101,7 +101,7 @@ namespace WcsManager
                 takesite = d.TAKE_SITE_X,
                 givesite = d.GIVE_SITE_X,
                 goodsnum = d.TAKE_NUM,
-                device = string.IsNullOrEmpty(d.DEVICE) ? null : devices.Find(c => c.devName == d.DEVICE)
+                device = string.IsNullOrEmpty(d.DEVICE) ? new DevInfoARF() : devices.Find(c => c.devName == d.DEVICE)
             });
         }
 
@@ -122,7 +122,8 @@ namespace WcsManager
                 goodsnum = goodsnum,
                 takesite = takesite,
                 givesite = givesite,
-                taskstatus = TaskStatus.init
+                taskstatus = TaskStatus.init,
+                device = new DevInfoARF()
             };
             task.Add(t);
             t.InsertDB();
@@ -139,7 +140,7 @@ namespace WcsManager
             {
                 //if (!t.activie) continue;
                 if (t.taskstatus == TaskStatus.finish) continue;
-                if (t.device == null)
+                if (string.IsNullOrEmpty(t.device.devName))
                 {
                     DevInfoARF device = FindFreeDevice(t.area, t.tasktype);
                     if (device != null)

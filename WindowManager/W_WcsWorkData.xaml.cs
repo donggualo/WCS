@@ -36,9 +36,9 @@ namespace WindowManager
             {
                 // 搜索任务类型
                 CBtype.Items.Add(" ");
-                CBtype.Items.Add(TaskTypeEnum.AGV搬运.GetHashCode().ToString() + ":" + TaskTypeEnum.AGV搬运);
-                CBtype.Items.Add(TaskTypeEnum.入库.GetHashCode().ToString() + ":" + TaskTypeEnum.入库);
-                CBtype.Items.Add(TaskTypeEnum.出库.GetHashCode().ToString() + ":" + TaskTypeEnum.出库);
+                CBtype.Items.Add((int)TaskTypeEnum.AGV搬运 + ":" + TaskTypeEnum.AGV搬运);
+                CBtype.Items.Add((int)TaskTypeEnum.入库 + ":" + TaskTypeEnum.入库);
+                CBtype.Items.Add((int)TaskTypeEnum.出库 + ":" + TaskTypeEnum.出库);
                 CBtype.SelectedIndex = 0;
 
                 // 搜索任务区域
@@ -87,7 +87,7 @@ namespace WindowManager
                 DGdetail.ItemsSource = null;
 
                 string sql = @"select JOB_ID 作业单号, AREA 作业区域, CONCAT(JOB_TYPE) 作业类型, CONCAT(JOB_STATUS) 作业状态, 
-			 TASK_ID1 WMS任务①, TASK_ID2 WMS任务②, CREATION_TIME 创建时间, UPDATE_TIME 更新时间
+			 TASK_ID1 WMS任务①, TASK_ID2 WMS任务②, DATE_FORMAT(CREATION_TIME,'%Y/%m/%d %T') 创建时间, DATE_FORMAT(UPDATE_TIME,'%Y/%m/%d %T') 更新时间
   from wcs_job_header where 1=1";
                 if (!string.IsNullOrWhiteSpace(CBtype.Text))
                 {
@@ -172,8 +172,8 @@ namespace WindowManager
 			 DEV_TO	目的对接设备,
 			 GIVE_NUM	送货数量,
 			 CONCAT(GIVE_SITE_X,'-',GIVE_SITE_Y,'-',GIVE_SITE_Z) 送货点,
-			 CREATION_TIME	创建时间,
-			 UPDATE_TIME	更新时间
+			 DATE_FORMAT(CREATION_TIME,'%Y/%m/%d %T')	创建时间,
+			 DATE_FORMAT(UPDATE_TIME,'%Y/%m/%d %T')	更新时间
   from wcs_job_detail;";
 
                 // 获取数据

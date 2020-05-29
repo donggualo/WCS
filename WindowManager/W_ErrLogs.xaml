@@ -24,7 +24,7 @@
 
         <Button Grid.Row="0" Grid.Column="1" Name="BtnRefresh" 
                 Content="刷新列表" Click="BtnRefresh_Click" 
-                 Height="30" Width="80"
+                 Height="30" Width="80" Margin="10"
                 pu:ButtonHelper.ClickStyle="Sink"
                 FontFamily="{DynamicResource FontAwesome}"
                 pu:ButtonHelper.ButtonStyle="Hollow"
@@ -34,6 +34,16 @@
                 pu:ButtonHelper.CornerRadius="6"/>
 
         <DataGrid Grid.Row="1" Grid.ColumnSpan="3" Name="DGlog"  IsReadOnly="True" 
-                  AutoGeneratingColumn="DataGrid_TimeFormat"/>
+                  AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding FUNCTION_NAME}" Header="方法名" Visibility="Hidden"/>
+                <DataGridTextColumn Binding="{Binding TIME}" Header="时间"/>
+                <DataGridTextColumn Binding="{Binding REMARK}" Header="说明"/>
+                <DataGridTextColumn Binding="{Binding MESSAGE}" Header="异常描述"/>
+                <DataGridTextColumn Binding="{Binding VALUE1}" Header="参数1"/>
+                <DataGridTextColumn Binding="{Binding VALUE2}" Header="参数2"/>
+                <DataGridTextColumn Binding="{Binding VALUE3}" Header="参数3"/>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </UserControl>

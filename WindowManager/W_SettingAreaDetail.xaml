@@ -5,12 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WindowManager"
         mc:Ignorable="d"
-        Title="区域明细信息" Height="450" Width="800">
+        Title="区域明细信息" d:DesignHeight="450" d:DesignWidth="800"
+        MinWidth="800" MinHeight="450" Topmost="True"
+        MaxWidth="1000" MaxHeight="560" WindowStyle="ToolWindow">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="30*"/>
+            <ColumnDefinition Width="30*"/>
+            <ColumnDefinition Width="15*"/>
+            <ColumnDefinition Width="15*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -27,45 +30,56 @@
         <TextBox Name="TBarea" Margin="70,10,10,10" TextWrapping="Wrap"/>
 
         <Label Content="区域描述" Margin="10,10,195,10" Grid.Column="1"/>
-        <TextBox Name="TBmark" Margin="75,10,10,10" TextWrapping="Wrap" Grid.Column="1" Grid.ColumnSpan="2"/>
+        <TextBox Name="TBmark" Margin="75,10,10,10" TextWrapping="Wrap" Grid.Column="1" Grid.ColumnSpan="3"/>
 
         <Label Content="行车安全间距" Margin="10,10,170,10" Grid.Row="1"/>
-        <TextBox Name="TBawcDS" Text="0" Margin="100,10,10,10" TextWrapping="Wrap" Grid.Row="1"/>
+        <TextBox Name="TBawcDS" Text="0" Margin="100,10,10,10" TextWrapping="Wrap" Grid.Row="1"
+                 InputMethod.IsInputMethodEnabled="False" PreviewTextInput="TB_PreviewTextInput"/>
 
         <Label Content="行车取货运输车后安全高度" Margin="10,10,100,10" Grid.Row="1" Grid.Column="1"/>
-        <TextBox Name="TBawcDT" Text="0" Margin="170,10,10,10" TextWrapping="Wrap" Grid.Row="1" Grid.Column="1"/>
+        <TextBox Name="TBawcDT" Text="0" Margin="170,10,10,10" TextWrapping="Wrap" Grid.Row="1" Grid.Column="1"
+                 InputMethod.IsInputMethodEnabled="False" PreviewTextInput="TB_PreviewTextInput"/>
 
-        <Label Content="行车放货运输车后安全高度" Margin="10,10,100,10" Grid.Row="1" Grid.Column="2"/>
-        <TextBox Name="TBawcDG" Text="0" Margin="170,10,10,10" TextWrapping="Wrap" Grid.Row="1" Grid.Column="2"/>
+        <Label Content="行车放货运输车后安全高度" Margin="10,10,100,10" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2"/>
+        <TextBox Name="TBawcDG" Text="0" Margin="29.378,10,10,10" TextWrapping="Wrap" Grid.Row="1" Grid.Column="3"
+                 InputMethod.IsInputMethodEnabled="False" PreviewTextInput="TB_PreviewTextInput"/>
 
         <Label Content="运输车安全间距" Margin="10,10,160,10" Grid.Row="2"/>
-        <TextBox Name="TBrgvDS" Text="0" Margin="110,10,10,10" TextWrapping="Wrap" Grid.Row="2"/>
+        <TextBox Name="TBrgvDS" Text="0" Margin="110,10,10,10" TextWrapping="Wrap" Grid.Row="2"
+                 InputMethod.IsInputMethodEnabled="False" PreviewTextInput="TB_PreviewTextInput"/>
 
         <Label Content="运输车对接间距" Margin="10,10,160,10" Grid.Row="2" Grid.Column="1"/>
-        <TextBox Name="TBrgvDB" Text="0" Margin="110,10,10,10" TextWrapping="Wrap" Grid.Row="2" Grid.Column="1"/>
+        <TextBox Name="TBrgvDB" Text="0" Margin="110,10,10,10" TextWrapping="Wrap" Grid.Row="2" Grid.Column="1"
+                 InputMethod.IsInputMethodEnabled="False" PreviewTextInput="TB_PreviewTextInput"/>
 
         <Label Content="运输车轨道中点" Margin="10,10,160,10" Grid.Row="3"/>
-        <TextBox Name="TBrgvPC" Text="0" Margin="110,10,10,10" TextWrapping="Wrap" Grid.Row="3"/>
+        <TextBox Name="TBrgvPC" Text="0" Margin="110,10,10,10" TextWrapping="Wrap" Grid.Row="3"
+                 InputMethod.IsInputMethodEnabled="False" PreviewTextInput="TB_PreviewTextInput"/>
 
         <Label Content="运输车对接摆渡车点位" Margin="10,10,120,10" Grid.Row="3" Grid.Column="1"/>
-        <TextBox Name="TBrgvPA" Text="0" Margin="150,10,10,10" TextWrapping="Wrap" Grid.Row="3" Grid.Column="1"/>
+        <TextBox Name="TBrgvPA" Text="0" Margin="150,10,10,10" TextWrapping="Wrap" Grid.Row="3" Grid.Column="1"
+                 InputMethod.IsInputMethodEnabled="False" PreviewTextInput="TB_PreviewTextInput"/>
 
         <Label Content="摆渡车安全间距" Margin="10,10,160,10" Grid.Row="4"/>
-        <TextBox Name="TBarfDS" Text="0" Margin="110,10,10,10" TextWrapping="Wrap" Grid.Row="4"/>
+        <TextBox Name="TBarfDS" Text="0" Margin="110,10,10,10" TextWrapping="Wrap" Grid.Row="4"
+                 InputMethod.IsInputMethodEnabled="False" PreviewTextInput="TB_PreviewTextInput"/>
 
         <Label Content="摆渡车对接运输车点位" Margin="10,10,120,10" Grid.Row="4" Grid.Column="1"/>
-        <TextBox Name="TBarfPR" Text="0" Margin="150,10,10,10" TextWrapping="Wrap" Grid.Row="4" Grid.Column="1"/>
+        <TextBox Name="TBarfPR" Text="0" Margin="150,10,10,10" TextWrapping="Wrap" Grid.Row="4" Grid.Column="1"
+                 InputMethod.IsInputMethodEnabled="False" PreviewTextInput="TB_PreviewTextInput"/>
 
         <Label Content="入库摆渡车待命点1" Margin="10,10,140,10" Grid.Row="5"/>
-        <TextBox Name="TBarfPS1" Text="0" Margin="130,10,10,10" TextWrapping="Wrap" Grid.Row="5"/>
+        <TextBox Name="TBarfPS1" Text="0" Margin="130,10,10,10" TextWrapping="Wrap" Grid.Row="5"
+                 InputMethod.IsInputMethodEnabled="False" PreviewTextInput="TB_PreviewTextInput"/>
 
         <Label Content="出库摆渡车待命点2" Margin="10,10,140,10" Grid.Row="5" Grid.Column="1"/>
-        <TextBox Name="TBarfPS2" Text="0" Margin="130,10,10,10" TextWrapping="Wrap" Grid.Row="5" Grid.Column="1"/>
+        <TextBox Name="TBarfPS2" Text="0" Margin="130,10,10,10" TextWrapping="Wrap" Grid.Row="5" Grid.Column="1"
+                 InputMethod.IsInputMethodEnabled="False" PreviewTextInput="TB_PreviewTextInput"/>
 
-        <Label Content="注：距离单位为mm； 点位为固定值" Foreground="red" FontSize="10" Margin="50,30,40,40" Grid.Row="3" Grid.Column="2" Grid.RowSpan="2"/>
+        <Label Content="注：距离单位为mm； 点位为固定值" Foreground="red" FontSize="10" Margin="50,30,40,40" Grid.Row="3" Grid.Column="2" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
 
-        <Button Name="Yes" Content="确认" Margin="25,10,150,10" Grid.Column="2" Grid.Row="6" Grid.RowSpan="2" Click="Yes_Click"/>
-        <Button Name="No" Content="取消" Margin="150,10,25,10" Grid.Column="2" Grid.Row="6" Grid.RowSpan="2" Click="No_Click"/>
+        <Button Name="Yes" Content="确认" Margin="25" Grid.Column="2" Grid.Row="6" Grid.RowSpan="2" Click="Yes_Click"/>
+        <Button Name="No" Content="取消" Margin="25" Grid.Column="3" Grid.Row="6" Grid.RowSpan="2" Click="No_Click"/>
 
     </Grid>
 </Window>

@@ -1,7 +1,9 @@
 ﻿using Panuon.UI.Silver;
 using PubResourceManager;
 using System;
+using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Input;
 
 namespace WindowManager
 {
@@ -45,6 +47,17 @@ namespace WindowManager
             TBarfPR.Text = ARF_P_RGV;
             TBarfPS1.Text = ARF_P_STAND1;
             TBarfPS2.Text = ARF_P_STAND2;
+        }
+
+        /// <summary>
+        /// 输入数字
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TB_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex re = new Regex("[^0-9]");
+            e.Handled = re.IsMatch(e.Text);
         }
 
         private void Yes_Click(object sender, RoutedEventArgs e)

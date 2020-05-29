@@ -100,7 +100,7 @@ namespace WcsManager
                 fromdev = ADS.GetDevTypeEnum(d.DEV_FROM),
                 todev = ADS.GetDevTypeEnum(d.DEV_TO),
                 goodsnum = d.TAKE_NUM,
-                device = string.IsNullOrEmpty(d.DEVICE) ? null : devices.Find(c => c.devName == d.DEVICE)
+                device = string.IsNullOrEmpty(d.DEVICE) ? new DevInfoPKL() : devices.Find(c => c.devName == d.DEVICE)
             });
         }
 
@@ -121,7 +121,8 @@ namespace WcsManager
                 goodsnum = goodsnum,
                 fromdev = fromdev,
                 todev = todev,
-                taskstatus = TaskStatus.init
+                taskstatus = TaskStatus.init,
+                device = new DevInfoPKL()
             };
             task.Add(t);
             t.InsertDB();
@@ -138,7 +139,7 @@ namespace WcsManager
             {
                 //if (!t.activie) continue;
                 if (t.taskstatus == TaskStatus.finish) continue;
-                if (t.device == null)
+                if (string.IsNullOrEmpty(t.device.devName))
                 {
                     DevInfoPKL device = FindFreeDevice(t.area);
                     if (device != null)

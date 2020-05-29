@@ -14,7 +14,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" Margin="10" FontSize="22" VerticalAlignment="Center">
-                        固定棍台
+                        固定棍台信息
         </TextBlock>
 
         <!--操作面板-->

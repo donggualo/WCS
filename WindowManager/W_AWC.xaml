@@ -13,8 +13,8 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Margin="10,0,0,0" FontSize="20" VerticalAlignment="Center" >
-        行车设备
+        <TextBlock Grid.Row="0" Margin="10" FontSize="22" VerticalAlignment="Center" >
+                        行车信息
         </TextBlock>
 
         <!--操作面板-->

@@ -28,23 +28,7 @@
                     <RowDefinition Height="100" />
                     <RowDefinition />
                 </Grid.RowDefinitions>
-                <TextBlock FontSize="55"
-                           FontWeight="Light"
-                           Foreground="White"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Top"
-                           FontFamily="Segoe UI"
-                           Margin="20,20,0,0">
-                    <Run>W </Run>
-                    <Run Foreground="#FF67DA82">C</Run>
-                    <Run >S</Run>
-                    <TextBlock.Effect>
-                        <DropShadowEffect Color="White"
-                                          ShadowDepth="0"
-                                          BlurRadius="10"
-                                          Opacity="0.5" />
-                    </TextBlock.Effect>
-                </TextBlock>
+                <Image Source="Resources/KEDAlogo.png" Margin="10,0"/>
                 <TreeView 
                     Grid.Row="1"
                     FontSize="22"
@@ -181,7 +165,7 @@
                               pu:CheckBoxHelper.BoxHeight="30"
                               pu:CheckBoxHelper.BoxWidth="70"
                               pu:CheckBoxHelper.CheckBoxStyle="Switch2" 
-                              pu:CheckBoxHelper.CheckedBackground="#FF67DA82"  Margin="0,0,20,0"/>
+                              pu:CheckBoxHelper.CheckedBackground="#FF67DA82"  Margin="40,0,20,0"/>
                     <CheckBox Name="CheckIn" Content="入库作业" Click="CheckIn_Click"
                               pu:CheckBoxHelper.BoxHeight="30"
                               pu:CheckBoxHelper.BoxWidth="70"

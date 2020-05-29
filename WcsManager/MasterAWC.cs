@@ -112,7 +112,7 @@ namespace WcsManager
                 givesiteY = d.GIVE_SITE_Y,
                 givesiteZ = d.GIVE_SITE_Z,
                 flag = (DevFlag)d.DEV_FLAG,
-                device = string.IsNullOrEmpty(d.DEVICE) ? null : devices.Find(c => c.devName == d.DEVICE)
+                device = string.IsNullOrEmpty(d.DEVICE) ? new DevInfoAWC() : devices.Find(c => c.devName == d.DEVICE)
             });
         }
 
@@ -140,7 +140,8 @@ namespace WcsManager
                 givesiteX = int.Parse(give[0]),
                 givesiteY = int.Parse(give[1]),
                 givesiteZ = int.Parse(give[2]),
-                taskstatus = TaskStatus.init
+                taskstatus = TaskStatus.init,
+                device = new DevInfoAWC()
             };
             task.Add(t);
             t.InsertDB();
@@ -157,7 +158,7 @@ namespace WcsManager
             {
                 //if (!t.activie) continue;
                 if (t.taskstatus == TaskStatus.finish) continue;
-                if (t.device == null)
+                if (string.IsNullOrEmpty(t.device.devName))
                 {
                     DevInfoAWC device = FindFreeDevice(t.area, t.flag);
                     if (device != null)

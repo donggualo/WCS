@@ -41,7 +41,7 @@ namespace WindowManager
                 DGloc.ItemsSource = null;
 
                 string sql = @"select WMS_LOC 'WMS位置', FRT_LOC '固定辊台号', ARF_LOC '摆渡车定位', RGV_LOC_1 '运输车定位(1#辊台)', RGV_LOC_2 '运输车定位(2#辊台)', 
-                                AWC_LOC_TRACK '行车轨道定位', AWC_LOC_STOCK '行车库存定位', CREATION_TIME '时间' from wcs_config_loc order by WMS_LOC";
+                                AWC_LOC_TRACK '行车轨道定位', AWC_LOC_STOCK '行车库存定位', DATE_FORMAT(CREATION_TIME,'%Y/%m/%d %T') '时间' from wcs_config_loc order by WMS_LOC";
                 // 获取数据
                 DGloc.ItemsSource = CommonSQL.mysql.SelectAll(sql).DefaultView;
             }
@@ -137,7 +137,7 @@ namespace WindowManager
                 DGloc.ItemsSource = null;
 
                 string sql = @"select AV '数据结构版本号', BN '总记录数', BC '总批号', BI '批号',
-       D1 '货位编码', D2 '行车轨道定位坐标', D3 '行车货位定位坐标', CREATION_TIME '创建时间' from wcs_loc_temp";
+       D1 '货位编码', D2 '行车轨道定位坐标', D3 '行车货位定位坐标', DATE_FORMAT(CREATION_TIME,'%Y/%m/%d %T') '创建时间' from wcs_loc_temp";
                 // 获取数据
                 DGloc.ItemsSource = CommonSQL.mysql.SelectAll(sql).DefaultView;
             }
@@ -169,7 +169,7 @@ namespace WindowManager
             }
         }
 
-        private void BtnUpLoc_Click(object sender, RoutedEventArgs e)
+        private void BtnUpdate_Click(object sender, RoutedEventArgs e)
         {
         }
 

@@ -43,8 +43,8 @@ namespace WindowManager
             {
                 // 搜索任务类型
                 CBtype.Items.Add(" ");
-                CBtype.Items.Add(TaskTypeEnum.入库.GetHashCode().ToString() + ":" + TaskTypeEnum.入库);
-                CBtype.Items.Add(TaskTypeEnum.出库.GetHashCode().ToString() + ":" + TaskTypeEnum.出库);
+                CBtype.Items.Add((int)TaskTypeEnum.入库 + ":" + TaskTypeEnum.入库);
+                CBtype.Items.Add((int)TaskTypeEnum.出库 + ":" + TaskTypeEnum.出库);
                 CBtype.SelectedIndex = 0;
 
             }
@@ -71,8 +71,8 @@ namespace WindowManager
 			 FRT 作业辊台, 
 			 WMS_LOC_FROM 来源, 
 			 WMS_LOC_TO 目的, 
-			 CREATION_TIME 创建时间, 
-			 UPDATE_TIME 更新时间
+			 DATE_FORMAT(CREATION_TIME,'%Y/%m/%d %T') 创建时间, 
+			 DATE_FORMAT(UPDATE_TIME,'%Y/%m/%d %T') 更新时间
   from wcs_wms_task where 1=1";
                 if (!string.IsNullOrWhiteSpace(CBtype.Text))
                 {

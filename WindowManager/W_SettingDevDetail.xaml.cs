@@ -4,7 +4,9 @@ using PubResourceManager;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Input;
 
 namespace WindowManager
 {
@@ -58,6 +60,17 @@ namespace WindowManager
             TBlimX.Text = LIMIT_X;
             TBlimY.Text = LIMIT_Y;
             AddCombBoxForDEV();
+        }
+
+        /// <summary>
+        /// 输入数字
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TB_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex re = new Regex("[^0-9]");
+            e.Handled = re.IsMatch(e.Text);
         }
 
         /// <summary>

@@ -13,8 +13,11 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <WrapPanel Margin="10" Grid.Row="0">
-            <Label Content="任务类型：" FontSize="18"/>
-            <ComboBox x:Name="CBtype"  Width="150"
+            <TextBlock Grid.Row="0" FontSize="22" VerticalAlignment="Center">
+                        任务数据
+            </TextBlock>
+            <ComboBox x:Name="CBtype" Width="250" Margin="20,0,0,0"
+                      pu:ComboBoxHelper.Header="任务类型："
                       pu:ComboBoxHelper.HoverBackground="LightGray"
                       pu:ComboBoxHelper.SelectedBackground="AliceBlue" FontSize="18"/>
 

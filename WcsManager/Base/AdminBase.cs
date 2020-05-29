@@ -21,11 +21,6 @@ namespace WcsManager.Base
         private readonly object _objT = new object();
 
         /// <summary>
-        /// 执行等待间隔
-        /// </summary>
-        internal const int REFRESH_TIMEOUT = 1 * 1000;
-
-        /// <summary>
         /// 线程开关
         /// </summary>
         private static bool PowerSwitch = true;
@@ -216,7 +211,7 @@ namespace WcsManager.Base
                     };
                     wt.UpdateSite();
 
-                    if (wt.taskstatus == WmsTaskStatus.init)
+                    if (wt.taskstatus == WmsTaskStatus.初始化)
                     {
                         switch (wt.tasktype)
                         {
@@ -340,7 +335,6 @@ namespace WcsManager.Base
         {
             while (PowerSwitch)
             {
-                Thread.Sleep(REFRESH_TIMEOUT);
                 lock (_objJ)
                 {
                     DoJob?.Invoke();
@@ -355,8 +349,6 @@ namespace WcsManager.Base
         {
             while (PowerSwitch)
             {
-                Thread.Sleep(REFRESH_TIMEOUT);
-
                 lock (_objT)
                 {
                     if (!PublicParam.IsDoTask) continue;
@@ -745,8 +737,8 @@ namespace WcsManager.Base
                     return;
             }
             wcs.InsertDB();
-            if (task1 != null) task1.UpdateStatus(WmsTaskStatus.excuting);
-            if (task2 != null) task2.UpdateStatus(WmsTaskStatus.excuting);
+            if (task1 != null) task1.UpdateStatus(WmsTaskStatus.执行中);
+            if (task2 != null) task2.UpdateStatus(WmsTaskStatus.执行中);
         }
 
         /// <summary>
@@ -1268,7 +1260,7 @@ namespace WcsManager.Base
                 WmsTask wms = mWmsTask.Find(c => c.taskuid == wmsid);
 
                 // 更新状态
-                wms.UpdateStatus(WmsTaskStatus.finish);
+                wms.UpdateStatus(WmsTaskStatus.完成);
 
                 // ? WMS（通知完成）
                 switch (wms.tasktype)

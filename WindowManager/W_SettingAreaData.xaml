@@ -14,8 +14,12 @@
         </Grid.RowDefinitions>
         <WrapPanel Margin="10" Grid.Row="0">
 
+            <TextBlock FontSize="22" Grid.Row="0" Grid.Column="0">
+                        区域设置
+            </TextBlock>
+
             <Button Content="刷新" Click="Refresh_Click" 
-                Margin="10,0,0,0"
+                Margin="20,0,0,0"
                 Height="30" Width="80"
                 pu:ButtonHelper.ClickStyle="Sink"
                 FontFamily="{DynamicResource FontAwesome}"
@@ -26,7 +30,22 @@
                 pu:ButtonHelper.CornerRadius="6"/>
         </WrapPanel>
 
-        <DataGrid Grid.Row="1" Name="DGarea" CanUserAddRows="False" IsReadOnly="True">
+        <DataGrid Grid.Row="1" Name="DGarea" CanUserAddRows="False" IsReadOnly="True"  AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding AREA}" Header="区域"/>
+                <DataGridTextColumn Binding="{Binding REMARK}" Header="区域描述"/>
+                <DataGridTextColumn Binding="{Binding AWC_DIS_SAFE}" Header="行车安全间距"/>
+                <DataGridTextColumn Binding="{Binding AWC_DIS_TAKE}" Header="行车取货运输车后安全高度"/>
+                <DataGridTextColumn Binding="{Binding AWC_DIS_GIVE}" Header="行车放货运输车后安全高度"/>
+                <DataGridTextColumn Binding="{Binding RGV_DIS_SAFE}" Header="运输车安全间距"/>
+                <DataGridTextColumn Binding="{Binding RGV_DIS_BUTT}" Header="运输车对接间距"/>
+                <DataGridTextColumn Binding="{Binding RGV_P_CENTER}" Header="运输车轨道中点"/>
+                <DataGridTextColumn Binding="{Binding RGV_P_ARF}" Header="运输车对接摆渡车点位"/>
+                <DataGridTextColumn Binding="{Binding ARF_DIS_SAFE}" Header="摆渡车安全间距"/>
+                <DataGridTextColumn Binding="{Binding ARF_P_RGV}" Header="摆渡车对接运输车点位"/>
+                <DataGridTextColumn Binding="{Binding ARF_P_STAND1}" Header="入库摆渡车待命点1"/>
+                <DataGridTextColumn Binding="{Binding ARF_P_STAND2}" Header="出库摆渡车待命点2"/>
+            </DataGrid.Columns>
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="新增" Click="Add_Click"/>
