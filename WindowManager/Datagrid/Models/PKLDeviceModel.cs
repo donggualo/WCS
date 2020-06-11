@@ -1,5 +1,5 @@
 ﻿using Module;
-using Module.DEV;
+using WcsManager.DevModule;
 using System;
 using System.ComponentModel;
 
@@ -14,6 +14,7 @@ namespace WindowManager.Datagrid.Models
     public class PKLDeviceModel : BaseDataGrid
     {
         private bool isconnect;
+        private bool isUseful;
         private ActionEnum actionsta;
         private DeviceEnum devicesta;
         private CommandEnum commandsta;
@@ -34,6 +35,17 @@ namespace WindowManager.Datagrid.Models
             {
                 isconnect = value;
                 OnPropertyChanged("IsConnected");
+            }
+        }
+
+        [DisplayName("启用")]
+        public bool IsUseful
+        {
+            get { return isUseful; }
+            set
+            {
+                isUseful = value;
+                OnPropertyChanged("IsUseful");
             }
         }
 
@@ -138,49 +150,54 @@ namespace WindowManager.Datagrid.Models
         {
             bool con = ADS.mSocket.IsConnected(DevName);
 
-            DevicePKL pkl = ADS.mPkl.devices.Find(c => c.devName == DevName)._;
+            DevInfoPKL pkl = ADS.mPkl.devices.Find(c => c.devName == DevName);
 
             if (isconnect != con)
             {
                 IsConnected = con;
             }
 
+            if (isUseful != pkl.isUseful)
+            {
+                IsUseful = pkl.isUseful;
+            }
+
             if (!con) return;
 
-            if (actionsta != pkl.ActionStatus)
+            if (actionsta != pkl._.ActionStatus)
             {
-                ActionStatus = pkl.ActionStatus;
+                ActionStatus = pkl._.ActionStatus;
             }
 
-            if (devicesta != pkl.DeviceStatus)
+            if (devicesta != pkl._.DeviceStatus)
             {
-                DeviceStatus = pkl.DeviceStatus;
+                DeviceStatus = pkl._.DeviceStatus;
             }
 
-            if (commandsta != pkl.CommandStatus)
+            if (commandsta != pkl._.CommandStatus)
             {
-                CommandStatus = pkl.CommandStatus;
+                CommandStatus = pkl._.CommandStatus;
             }
 
-            if (currenttask != pkl.CurrentTask)
+            if (currenttask != pkl._.CurrentTask)
             {
-                CurrentTask = pkl.CurrentTask;
+                CurrentTask = pkl._.CurrentTask;
             }
 
-            if (finishtask != pkl.FinishTask)
+            if (finishtask != pkl._.FinishTask)
             {
 
-                FinishTask = pkl.FinishTask;
+                FinishTask = pkl._.FinishTask;
             }
 
-            if (goodstatus != pkl.GoodsStatus)
+            if (goodstatus != pkl._.GoodsStatus)
             {
-                GoodsStatus = pkl.GoodsStatus;
+                GoodsStatus = pkl._.GoodsStatus;
             }
 
-            if (errormsg != pkl.ErrorMessage)
+            if (errormsg != pkl._.ErrorMessage)
             {
-                ErrorMessage = pkl.ErrorMessage;
+                ErrorMessage = pkl._.ErrorMessage;
             }
 
             UpdateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");

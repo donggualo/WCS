@@ -46,7 +46,7 @@ namespace WindowManager
 
         private void GetPKLNameList()
         {
-            List<WCS_CONFIG_DEVICE> list = CommonSQL.GetDeviceNameList(DeviceType.包装线辊台);
+            List<WCS_CONFIG_DEVICE> list = CommonSQL.GetDevInfo(DeviceType.包装线辊台);
             foreach (var l in list)
             {
                 grid.UpdateDeviceList(l.DEVICE, l.AREA);
@@ -85,6 +85,11 @@ namespace WindowManager
                     return;
                 }
                 dev = CBdev.Text;
+                if (!ADS.mSocket.IsConnected(dev))
+                {
+                    Notice.Show(dev + "已离线，无法操作！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
 
                 ADS.mPkl.devices.Find(c => c.devName == dev).StartGiveRoll();
                 Notice.Show("启动辊台 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
@@ -108,6 +113,12 @@ namespace WindowManager
                     return;
                 }
                 dev = CBdev.Text;
+                if (!ADS.mSocket.IsConnected(dev))
+                {
+                    Notice.Show(dev + "已离线，无法操作！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
+
                 ADS.mPkl.devices.Find(c => c.devName == dev).StopTask();
 
                 Notice.Show("停止辊台 指令发送成功！", "成功", 3, MessageBoxIcon.Success);

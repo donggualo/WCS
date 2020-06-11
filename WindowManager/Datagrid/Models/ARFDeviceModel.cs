@@ -1,8 +1,7 @@
 ﻿using Module;
-using Module.DEV;
 using System;
 using System.ComponentModel;
-
+using WcsManager.DevModule;
 using ADS = WcsManager.Administartor;
 
 namespace WindowManager.Datagrid.Models
@@ -14,6 +13,7 @@ namespace WindowManager.Datagrid.Models
     public class ARFDeviceModel : BaseDataGrid
     {
         private bool isconnect;
+        private bool isUseful;
         private ActionEnum actionsta;
         private DeviceEnum devicesta;
         private CommandEnum commandsta;
@@ -37,6 +37,17 @@ namespace WindowManager.Datagrid.Models
             {
                 isconnect = value;
                 OnPropertyChanged("IsConnected");
+            }
+        }
+
+        [DisplayName("启用")]
+        public bool IsUseful
+        {
+            get { return isUseful; }
+            set
+            {
+                isUseful = value;
+                OnPropertyChanged("IsUseful");
             }
         }
 
@@ -112,7 +123,7 @@ namespace WindowManager.Datagrid.Models
             }
         }
 
-        [DisplayName("棍台状态")]
+        [DisplayName("辊台状态")]
         public RollerStatusEnum RollerStatus
         {
             get { return rollersta; }
@@ -123,14 +134,14 @@ namespace WindowManager.Datagrid.Models
             }
         }
 
-        [DisplayName("棍台方向")]
+        [DisplayName("辊台方向")]
         public RollerDiretionEnum RollerDiretion
         {
             get { return rollerdir; }
             set
             {
                 rollerdir = value;
-                OnPropertyChanged("RollerDirection");
+                OnPropertyChanged("RollerDiretion");
             }
         }
 
@@ -174,65 +185,70 @@ namespace WindowManager.Datagrid.Models
         {
             bool con = ADS.mSocket.IsConnected(DevName);
 
-            DeviceARF arf = ADS.mArf.devices.Find(c => c.devName == DevName)._;
+            DevInfoARF arf = ADS.mArf.devices.Find(c => c.devName == DevName);
 
             if (isconnect != con)
             {
                 IsConnected = con;
             }
 
+            if (isUseful != arf.isUseful)
+            {
+                IsUseful = arf.isUseful;
+            }
+
             if (!con) return;
 
-            if (actionsta != arf.ActionStatus)
+            if (actionsta != arf._.ActionStatus)
             {
-                ActionStatus = arf.ActionStatus;
+                ActionStatus = arf._.ActionStatus;
             }
 
-            if (devicesta != arf.DeviceStatus)
+            if (devicesta != arf._.DeviceStatus)
             {
-                DeviceStatus = arf.DeviceStatus;
+                DeviceStatus = arf._.DeviceStatus;
             }
 
-            if (commandsta != arf.CommandStatus)
+            if (commandsta != arf._.CommandStatus)
             {
-                CommandStatus = arf.CommandStatus;
+                CommandStatus = arf._.CommandStatus;
             }
 
-            if (currenttask != arf.CurrentTask)
+            if (currenttask != arf._.CurrentTask)
             {
-                CurrentTask = arf.CurrentTask;
+                CurrentTask = arf._.CurrentTask;
             }
 
-            if (finishtask != arf.FinishTask)
+            if (finishtask != arf._.FinishTask)
             {
 
-                FinishTask = arf.FinishTask;
+                FinishTask = arf._.FinishTask;
             }
 
-            if (site != arf.CurrentSite)
+            if (site != arf._.CurrentSite)
             {
 
-                CurrentSite = arf.CurrentSite;
+                CurrentSite = arf._.CurrentSite;
             }
 
-            if (rollersta != arf.RollerStatus)
+            if (rollersta != arf._.RollerStatus)
             {
-                RollerStatus = arf.RollerStatus;
+                RollerStatus = arf._.RollerStatus;
             }
 
-            if (rollerdir != arf.RollerDiretion)
+            if (rollerdir != arf._.RollerDiretion)
             {
-                RollerDiretion = arf.RollerDiretion;
+                RollerDiretion = arf._.RollerDiretion;
             }
 
-            if (goodstatus != arf.GoodsStatus)
+            if (goodstatus != arf._.GoodsStatus)
             {
-                GoodsStatus = arf.GoodsStatus;
+                GoodsStatus = arf._.GoodsStatus;
             }
 
-            if (errormsg != arf.ErrorMessage)
+            if (errormsg != arf._.ErrorMessage)
             {
-                ErrorMessage = arf.ErrorMessage;
+                ErrorMessage = arf._.ErrorMessage;
             }
 
             UpdateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");

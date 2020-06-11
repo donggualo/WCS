@@ -21,17 +21,17 @@ namespace ToolManager
         /// <summary>
         /// To count up trace number text
         /// </summary>
-        private int countUpTraceNumber = 0;
+        //private int countUpTraceNumber = 0;
 
         /// <summary>
         /// How many trace files to keep
         /// </summary>
-        private int maxNumberOfTracefiles = 999;
+        //private int maxNumberOfTracefiles = 999;
 
         /// <summary>
         /// How many lines in one trace file
         /// </summary>
-        private int lineCountNumber = 999;
+        //private int lineCountNumber = 999999;
 
         /// <summary>
         /// Used for trace file
@@ -92,7 +92,8 @@ namespace ToolManager
         {
             TraceLogFolder = DateTime.Now.ToString("yyyy-MM-dd");
 
-            traceName = TraceLogFilePath + "/" + TraceLogFolder + "/" + TraceLogName + countUpTraceNumber + ".txt";
+            //traceName = TraceLogFilePath + "/" + TraceLogFolder + "/" + TraceLogName + countUpTraceNumber + ".txt";
+            traceName = TraceLogFilePath + "/" + TraceLogFolder + "/" + TraceLogName + ".txt";
         }
 
         /// <summary>
@@ -104,46 +105,46 @@ namespace ToolManager
             {
                 Directory.CreateDirectory(TraceLogFilePath + "/" + TraceLogFolder);
             }
-            while (File.Exists(traceName))
-            {
-                if (fileList.Count == 0)
-                    fileList.Add(new FileInfo(traceName));
-                else if (countUpTraceNumber != maxNumberOfTracefiles)
-                {
-                    countUpTraceNumber++;
-                    UpdateTraceFileName();//traceName = TraceLogName + countUpTraceNumber + ".txt";
-                    fileList.Add(new FileInfo(traceName));
-                }
-                else
-                {
-                    countUpTraceNumber = 0;
+            //while (File.Exists(traceName))
+            //{
+            //    if (fileList.Count == 0)
+            //        fileList.Add(new FileInfo(traceName));
+            //    else if (countUpTraceNumber != maxNumberOfTracefiles)
+            //    {
+            //        countUpTraceNumber++;
+            //        UpdateTraceFileName();//traceName = TraceLogName + countUpTraceNumber + ".txt";
+            //        fileList.Add(new FileInfo(traceName));
+            //    }
+            //    else
+            //    {
+            //        countUpTraceNumber = 0;
 
-                    for (int i = 0; i < fileList.Count; i++)
-                    {
-                        if (i == fileList.Count - 1)
-                        {
-                            countUpTraceNumber = i;
-                            UpdateTraceFileName();// traceName = TraceLogName + countUpTraceNumber + ".txt";
-                            File.Delete(traceName);
-                            break;
-                        }
-                        else if (fileList[i].LastWriteTime > fileList[i + 1].LastWriteTime)
-                        {
-                            countUpTraceNumber = i + 1;
-                            UpdateTraceFileName(); //traceName = TraceLogName + countUpTraceNumber + ".txt";
-                            File.Delete(traceName);
-                            break;
-                        }
-                        else if (i == 0)
-                        {
-                            countUpTraceNumber = i;
-                            UpdateTraceFileName();// traceName = TraceLogName + countUpTraceNumber + ".txt";
-                            File.Delete(traceName);
-                            break;
-                        }
-                    }
-                }
-            }
+            //        for (int i = 0; i < fileList.Count; i++)
+            //        {
+            //            if (i == fileList.Count - 1)
+            //            {
+            //                countUpTraceNumber = i;
+            //                UpdateTraceFileName();// traceName = TraceLogName + countUpTraceNumber + ".txt";
+            //                File.Delete(traceName);
+            //                break;
+            //            }
+            //            else if (fileList[i].LastWriteTime > fileList[i + 1].LastWriteTime)
+            //            {
+            //                countUpTraceNumber = i + 1;
+            //                UpdateTraceFileName(); //traceName = TraceLogName + countUpTraceNumber + ".txt";
+            //                File.Delete(traceName);
+            //                break;
+            //            }
+            //            else if (i == 0)
+            //            {
+            //                countUpTraceNumber = i;
+            //                UpdateTraceFileName();// traceName = TraceLogName + countUpTraceNumber + ".txt";
+            //                File.Delete(traceName);
+            //                break;
+            //            }
+            //        }
+            //    }
+            //}
         }
 
         /// <summary>
@@ -152,18 +153,26 @@ namespace ToolManager
         void CheckLogFile()
         {
             UpdateTraceFileName();
-            int lineCount = File.ReadLines(traceName).Count();
-            appendFile = true;
-            if (lineCount > lineCountNumber)
+            if (!File.Exists(traceName))
             {
-                if (countUpTraceNumber != maxNumberOfTracefiles)
-                    countUpTraceNumber++;
-                else
-                    countUpTraceNumber = 0;
-
-                UpdateTraceFileName();//traceName = TraceLogName + countUpTraceNumber + ".txt";
-                appendFile = false;
+                //countUpTraceNumber = 0;
+                UpdateTraceFileName();
+                SetupTraceFile();
+                WriteToLogFile("LOG START");
+                return;
             }
+            //int lineCount = File.ReadLines(traceName).Count();
+            //appendFile = true;
+            //if (lineCount > lineCountNumber)
+            //{
+            //    if (countUpTraceNumber != maxNumberOfTracefiles)
+            //        countUpTraceNumber++;
+            //    else
+            //        countUpTraceNumber = 0;
+
+            //    UpdateTraceFileName();//traceName = TraceLogName + countUpTraceNumber + ".txt";
+            //    appendFile = false;
+            //}
 
         }
 

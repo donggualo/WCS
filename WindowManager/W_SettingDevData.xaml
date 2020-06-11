@@ -36,9 +36,12 @@
                 Foreground="#FF3F3F3F"
                 pu:ButtonHelper.HoverBrush="#3F3F3F"
                 pu:ButtonHelper.CornerRadius="6"/>
+            <TextBlock Name="TBmark" Foreground="Red" Margin="5" Visibility="Hidden">
+              注：需重启调度系统才能适用变更信息！！！
+            </TextBlock>
         </WrapPanel>
 
-        <DataGrid Grid.Row="1" Name="DGdevice" CanUserAddRows="False" IsReadOnly="True" MouseDoubleClick="DGdevice_DoubleClick"  AutoGenerateColumns="False">
+        <DataGrid Grid.Row="1" Name="DGdevice" CanUserAddRows="False" IsReadOnly="True" AutoGenerateColumns="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding DEVICE}" Header="设备号"/>
                 <DataGridTextColumn Binding="{Binding AREA}" Header="所属区域"/>
@@ -59,9 +62,10 @@
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="新增" Click="AddDev_Click"/>
+                    <MenuItem Header="修改" Click="UpdateDev_Click"/>
                     <MenuItem Header="失效" Click="FailDev_Click"/>
                     <MenuItem Header="生效" Click="WorkDev_Click"/>
-                    <MenuItem Header="删除" Click="DeleteDev_Click"/>
+                    <!--<MenuItem Header="删除" Click="DeleteDev_Click"/>-->
                 </ContextMenu>
             </DataGrid.ContextMenu>
         </DataGrid>

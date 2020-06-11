@@ -51,6 +51,7 @@ namespace WcsManager
                     devName = d.DEVICE,
                     area = d.AREA,
                     isLock = d.IS_LOCK == 1 ? true : false,
+                    isUseful = d.IS_USEFUL == 1 ? true : false,
                     lockID = d.LOCK_ID,
                     flag = (DevFlag)d.FLAG,
                     gapX = d.GAP_X,
@@ -342,7 +343,7 @@ namespace WcsManager
         /// <returns></returns>
         private DevInfoAWC FindFreeDevice(string area, DevFlag flag)
         {
-            return devices.Find(c => !c.isLock && c.area.Equals(area) && c.flag == flag);
+            return devices.Find(c => !c.isLock && !c.isUseful && c.area.Equals(area) && c.flag == flag);
         }
 
         /// <summary>

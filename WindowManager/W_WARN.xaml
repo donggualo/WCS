@@ -1,0 +1,23 @@
+﻿<Window x:Class="WindowManager.W_WARN"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WindowManager"
+        xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
+        mc:Ignorable="d"
+        Title="报警详情" Width="700" Height="500" MinWidth="700" MinHeight="500" WindowStyle="ToolWindow">
+    <Grid>
+
+        <DataGrid Name="DGwarn" CanUserAddRows="False" IsReadOnly="True" 
+                  CanUserReorderColumns="False" CanUserSortColumns="False"
+                  CanUserResizeRows="False" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding DevName}" Header="名称" Width="*"/>
+                <DataGridTextColumn Binding="{Binding Error}" Header="报警信息" Width="4*"/>
+                <DataGridTextColumn Binding="{Binding Method}" Header="处理方式" Width="4*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+    </Grid>
+</Window>

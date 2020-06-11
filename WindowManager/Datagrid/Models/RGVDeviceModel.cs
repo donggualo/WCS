@@ -1,5 +1,5 @@
 ﻿using Module;
-using Module.DEV;
+using WcsManager.DevModule;
 using System;
 using System.ComponentModel;
 
@@ -14,6 +14,7 @@ namespace WindowManager.Datagrid.Models
     public class RGVDeviceModel : BaseDataGrid
     {
         private bool isconnect;
+        private bool isUseful;
         private ActionEnum actionsta;
         private DeviceEnum devicesta;
         private CommandEnum commandsta;
@@ -37,6 +38,17 @@ namespace WindowManager.Datagrid.Models
             {
                 isconnect = value;
                 OnPropertyChanged("IsConnected");
+            }
+        }
+
+        [DisplayName("启用")]
+        public bool IsUseful
+        {
+            get { return isUseful; }
+            set
+            {
+                isUseful = value;
+                OnPropertyChanged("IsUseful");
             }
         }
 
@@ -112,7 +124,7 @@ namespace WindowManager.Datagrid.Models
             }
         }
 
-        [DisplayName("棍台状态")]
+        [DisplayName("辊台状态")]
         public RollerStatusEnum RollerStatus
         {
             get { return rollersta; }
@@ -123,14 +135,14 @@ namespace WindowManager.Datagrid.Models
             }
         }
 
-        [DisplayName("棍台方向")]
+        [DisplayName("辊台方向")]
         public RollerDiretionEnum RollerDiretion
         {
             get { return rollerdir; }
             set
             {
                 rollerdir = value;
-                OnPropertyChanged("RollerDirection");
+                OnPropertyChanged("RollerDiretion");
             }
         }
 
@@ -173,65 +185,70 @@ namespace WindowManager.Datagrid.Models
         {
             bool con = ADS.mSocket.IsConnected(DevName);
 
-            DeviceRGV rgv = ADS.mRgv.devices.Find(c => c.devName == DevName)._;
+            DevInfoRGV rgv = ADS.mRgv.devices.Find(c => c.devName == DevName);
 
             if (isconnect != con)
             {
                 IsConnected = con;
             }
 
+            if (isUseful != rgv.isUseful)
+            {
+                IsUseful = rgv.isUseful;
+            }
+
             if (!con) return;
 
-            if (actionsta != rgv.ActionStatus)
+            if (actionsta != rgv._.ActionStatus)
             {
-                ActionStatus = rgv.ActionStatus;
+                ActionStatus = rgv._.ActionStatus;
             }
 
-            if (devicesta != rgv.DeviceStatus)
+            if (devicesta != rgv._.DeviceStatus)
             {
-                DeviceStatus = rgv.DeviceStatus;
+                DeviceStatus = rgv._.DeviceStatus;
             }
 
-            if (commandsta != rgv.CommandStatus)
+            if (commandsta != rgv._.CommandStatus)
             {
-                CommandStatus = rgv.CommandStatus;
+                CommandStatus = rgv._.CommandStatus;
             }
 
-            if (currenttask != rgv.CurrentTask)
+            if (currenttask != rgv._.CurrentTask)
             {
-                CurrentTask = rgv.CurrentTask;
+                CurrentTask = rgv._.CurrentTask;
             }
 
-            if (finishtask != rgv.FinishTask)
+            if (finishtask != rgv._.FinishTask)
             {
 
-                FinishTask = rgv.FinishTask;
+                FinishTask = rgv._.FinishTask;
             }
 
-            if (site != rgv.CurrentSite)
+            if (site != rgv._.CurrentSite)
             {
 
-                CurrentSite = rgv.CurrentSite;
+                CurrentSite = rgv._.CurrentSite;
             }
 
-            if (rollersta != rgv.RollerStatus)
+            if (rollersta != rgv._.RollerStatus)
             {
-                RollerStatus = rgv.RollerStatus;
+                RollerStatus = rgv._.RollerStatus;
             }
 
-            if (rollerdir != rgv.RollerDiretion)
+            if (rollerdir != rgv._.RollerDiretion)
             {
-                RollerDiretion = rgv.RollerDiretion;
+                RollerDiretion = rgv._.RollerDiretion;
             }
 
-            if (goodstatus != rgv.GoodsStatus)
+            if (goodstatus != rgv._.GoodsStatus)
             {
-                GoodsStatus = rgv.GoodsStatus;
+                GoodsStatus = rgv._.GoodsStatus;
             }
 
-            if (errormsg != rgv.ErrorMessage)
+            if (errormsg != rgv._.ErrorMessage)
             {
-                ErrorMessage = rgv.ErrorMessage;
+                ErrorMessage = rgv._.ErrorMessage;
             }
 
             UpdateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");

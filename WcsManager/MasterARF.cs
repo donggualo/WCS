@@ -50,6 +50,7 @@ namespace WcsManager
                     devName = d.DEVICE,
                     area = d.AREA,
                     isLock = d.IS_LOCK == 1 ? true : false,
+                    isUseful = d.IS_USEFUL == 1 ? true : false,
                     lockID = d.LOCK_ID,
                     taskType = (TaskTypeEnum)d.FLAG,
                     _ = new DeviceARF()
@@ -339,7 +340,7 @@ namespace WcsManager
         /// <returns></returns>
         private DevInfoARF FindFreeDevice(string area, TaskTypeEnum tasktype)
         {
-            return devices.Find(c => !c.isLock && c.area.Equals(area) && c.taskType == tasktype);
+            return devices.Find(c => !c.isLock && !c.isUseful && c.area.Equals(area) && c.taskType == tasktype);
         }
 
         /// <summary>

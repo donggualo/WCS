@@ -1,7 +1,7 @@
 ﻿using Module;
 using Module.DEV;
 using PubResourceManager;
-
+using System;
 using ADS = WcsManager.Administartor;
 
 namespace WcsManager.DevModule
@@ -30,6 +30,11 @@ namespace WcsManager.DevModule
         /// </summary>
         public string lockID;
 
+        /// <summary>
+        /// 是否使用
+        /// </summary>
+        public bool isUseful;
+
         #endregion
 
         /// <summary>
@@ -42,10 +47,34 @@ namespace WcsManager.DevModule
         /// </summary>
         public void IsLockUnlock(bool islock, string lockid = "")
         {
-            isLock = islock;
-            lockID = lockid;
+            try
+            {
+                isLock = islock;
+                lockID = lockid;
 
-            CommonSQL.UpdateDevInfo(devName, lockid, islock);
+                CommonSQL.UpdateDevInfo(devName, lockid, islock);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 更新使用状态
+        /// </summary>
+        public void UpdateUseufl(bool isuseful)
+        {
+            try
+            {
+                isUseful = isuseful;
+
+                CommonSQL.UpdateDevInfo(devName, isUseful);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
 

@@ -73,7 +73,7 @@ namespace WindowManager
 
         private void GetRGVNameList()
         {
-            List<WCS_CONFIG_DEVICE> list = CommonSQL.GetDeviceNameList(DeviceType.运输车);
+            List<WCS_CONFIG_DEVICE> list = CommonSQL.GetDevInfo(DeviceType.运输车);
             foreach (var l in list)
             {
                 grid.UpdateDeviceList(l.DEVICE, l.AREA);
@@ -144,6 +144,11 @@ namespace WindowManager
                     return;
                 }
                 dev = CBdev.Text;
+                if (!ADS.mSocket.IsConnected(dev))
+                {
+                    Notice.Show(dev + "已离线，无法操作！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
 
                 if (!WindowCommon.ConfirmAction("是否进行[定位任务]！！"))
                 {
@@ -180,7 +185,11 @@ namespace WindowManager
                     return;
                 }
                 dev = CBdev.Text;
-
+                if (!ADS.mSocket.IsConnected(dev))
+                {
+                    Notice.Show(dev + "已离线，无法操作！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
 
                 ADS.mRgv.devices.Find(c => c.devName == dev).ControlRoller(
                     Convert.ToInt32(CBsite1.Text.Substring(0, 1)),
@@ -214,6 +223,12 @@ namespace WindowManager
                     return;
                 }
                 dev = CBdev.Text;
+                if (!ADS.mSocket.IsConnected(dev))
+                {
+                    Notice.Show(dev + "已离线，无法操作！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
+
                 ADS.mRgv.devices.Find(c => c.devName == dev).StopRoller();
 
                 Notice.Show("停止辊台 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
@@ -241,7 +256,12 @@ namespace WindowManager
                     Notice.Show("请选择设备！", "提示", 3, MessageBoxIcon.Info);
                     return;
                 }
-               dev = CBdev.Text;
+                dev = CBdev.Text;
+                if (!ADS.mSocket.IsConnected(dev))
+                {
+                    Notice.Show(dev + "已离线，无法操作！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
 
                 ADS.mRgv.devices.Find(c => c.devName == dev).StopTask();
 

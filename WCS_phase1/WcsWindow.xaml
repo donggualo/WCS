@@ -198,11 +198,6 @@
                                 pu:TabControlHelper.CanRemove="True"
                                 pu:TabControlHelper.Removed="WcsTabControl_Removed"
                                 Margin="0,2,0,0">
-                        <TabItem Header="概况"
-                                 Name="Home" Tag="Home"
-                                pu:TabControlHelper.CanRemove="False">
-
-                        </TabItem>
                     </TabControl>
                 </Grid>
             </Grid>

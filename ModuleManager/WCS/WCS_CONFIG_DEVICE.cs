@@ -45,7 +45,7 @@ namespace ModuleManager.WCS
         /// <summary>
         /// 是否使用
         /// </summary>
-        public int IS_UREFUL { get; set; }
+        public int IS_USEFUL { get; set; }
 
         /// <summary>
         /// 是否锁定

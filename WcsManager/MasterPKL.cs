@@ -50,6 +50,7 @@ namespace WcsManager
                     devName = d.DEVICE,
                     area = d.AREA,
                     isLock = d.IS_LOCK == 1 ? true : false,
+                    isUseful = d.IS_USEFUL == 1 ? true : false,
                     lockID = d.LOCK_ID,
                     _ = new DevicePKL()
                 });
@@ -242,7 +243,7 @@ namespace WcsManager
         /// <returns></returns>
         private DevInfoPKL FindFreeDevice(string area)
         {
-            return devices.Find(c => !c.isLock && c.area.Equals(area));
+            return devices.Find(c => !c.isLock && !c.isUseful && c.area.Equals(area));
         }
 
         /// <summary>

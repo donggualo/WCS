@@ -199,12 +199,12 @@ namespace Socket
                         readData = bufferData.Concat(readData).ToArray();
                     }
 
+                    int size = 0;
                     // make sure we at least have one header
                     while (readData.Count() > ISocketConst.HEADTAIL_SIZE)
                     {
                         log.LOG("Read: " + BitConverter.ToString(readData));
                         DevType head = (DevType)BitConverter.ToUInt16(ShiftBytes(readData, 0, 2), 0);
-                        int size;
                         switch (head)
                         {
                             case DevType.固定辊台:
@@ -229,7 +229,8 @@ namespace Socket
 
                         if (size == 0)
                         {
-                            throw new IOException("Header key did not match!");
+                            break;
+                            //throw new IOException("Header key did not match!");
                         }
 
                         if (readData.Count() < size)
@@ -248,14 +249,19 @@ namespace Socket
                         // remove from data array
                         readData = readData.Skip(size).ToArray();
                     }
-                    // save until next round
-                    bufferData = readData;
+
+                    if (size != 0)
+                    {
+                        // save until next round
+                        bufferData = readData;
+                    }
                 }
             }
             catch (IOException e)
             {
                 // unclean disconnect from service
                 Reconnect();
+                log.LOG(e.Message + e.StackTrace);
                 Console.WriteLine(e.Message + e.StackTrace);
             }
         }

@@ -53,7 +53,7 @@ namespace WindowManager
 
         private void BtnRefresh_Click(object sender, EventArgs e)
         {
-            GetTempData();
+            GetInfo();
         }
 
         DataTable _Data;

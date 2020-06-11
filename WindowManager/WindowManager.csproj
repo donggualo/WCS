@@ -79,6 +79,9 @@
     <Compile Include="W_FRT.xaml.cs">
       <DependentUpon>W_FRT.xaml</DependentUpon>
     </Compile>
+    <Compile Include="W_INDEX.xaml.cs">
+      <DependentUpon>W_INDEX.xaml</DependentUpon>
+    </Compile>
     <Compile Include="W_NdcAgv.xaml.cs">
       <DependentUpon>W_NdcAgv.xaml</DependentUpon>
     </Compile>
@@ -102,6 +105,9 @@
     </Compile>
     <Compile Include="W_SettingLocation.xaml.cs">
       <DependentUpon>W_SettingLocation.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="W_WARN.xaml.cs">
+      <DependentUpon>W_WARN.xaml</DependentUpon>
     </Compile>
     <Compile Include="W_WcsNdcSite.xaml.cs">
       <DependentUpon>W_WcsNdcSite.xaml</DependentUpon>
@@ -127,6 +133,10 @@
     <Page Include="W_FRT.xaml">
       <SubType>Designer</SubType>
       <Generator>XamlIntelliSenseFileGenerator</Generator>
+    </Page>
+    <Page Include="W_INDEX.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="W_NdcAgv.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -157,6 +167,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="W_SettingLocation.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="W_WARN.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

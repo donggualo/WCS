@@ -1,5 +1,5 @@
 ﻿using Module;
-using Module.DEV;
+using WcsManager.DevModule;
 using System;
 using System.ComponentModel;
 
@@ -14,6 +14,7 @@ namespace WindowManager.Datagrid.Models
     public class AWCDeviceModel : BaseDataGrid
     {
         private bool isconnect;
+        private bool isUseful;
         private ActionEnum actionsta;
         private DeviceEnum devicesta;
         private CommandEnum commandsta;
@@ -36,6 +37,17 @@ namespace WindowManager.Datagrid.Models
             {
                 isconnect = value;
                 OnPropertyChanged("IsConnected");
+            }
+        }
+
+        [DisplayName("启用")]
+        public bool IsUseful
+        {
+            get { return isUseful; }
+            set
+            {
+                isUseful = value;
+                OnPropertyChanged("IsUseful");
             }
         }
 
@@ -172,67 +184,72 @@ namespace WindowManager.Datagrid.Models
         {
             bool con = ADS.mSocket.IsConnected(DevName);
 
+            DevInfoAWC awc = ADS.mAwc.devices.Find(c => c.devName == DevName);
+
             if (isconnect != con)
             {
                 IsConnected = con;
             }
 
+            if (isUseful != awc.isUseful)
+            {
+                IsUseful = awc.isUseful;
+            }
+
             if (!con) return;
 
-            DeviceAWC awc = ADS.mAwc.devices.Find(c => c.devName == DevName)._;
-
-            if (actionsta != awc.ActionStatus)
+            if (actionsta != awc._.ActionStatus)
             {
-                ActionStatus = awc.ActionStatus;
+                ActionStatus = awc._.ActionStatus;
             }
 
-            if(devicesta != awc.DeviceStatus)
+            if(devicesta != awc._.DeviceStatus)
             {
-                DeviceStatus = awc.DeviceStatus;
+                DeviceStatus = awc._.DeviceStatus;
             }
 
-            if(commandsta != awc.CommandStatus)
+            if(commandsta != awc._.CommandStatus)
             {
-                CommandStatus = awc.CommandStatus;
+                CommandStatus = awc._.CommandStatus;
             }
 
-            if (currenttask != awc.CurrentTask)
+            if (currenttask != awc._.CurrentTask)
             {
-                CurrentTask = awc.CurrentTask;
+                CurrentTask = awc._.CurrentTask;
             }
 
-            if(finishtask != awc.FinishTask)
+            if(finishtask != awc._.FinishTask)
             {
 
-                FinishTask = awc.FinishTask;
+                FinishTask = awc._.FinishTask;
             }
 
-            if (x != awc.CurrentSiteX)
+            if (x != awc._.CurrentSiteX)
             {
 
-                CurrentSiteX = awc.CurrentSiteX;
+                CurrentSiteX = awc._.CurrentSiteX;
             }
 
-            if (y != awc.CurrentSiteY)
+            if (y != awc._.CurrentSiteY)
             {
 
-                CurrentSiteY = awc.CurrentSiteY;
+                CurrentSiteY = awc._.CurrentSiteY;
             }
 
-            if (z != awc.CurrentSiteZ)
+            if (z != awc._.CurrentSiteZ)
             {
 
-                CurrentSiteZ = awc.CurrentSiteZ;
+                CurrentSiteZ = awc._.CurrentSiteZ;
             }
 
-            if (goodstatus != awc.GoodsStatus)
+            if (goodstatus != awc._.GoodsStatus)
             {
-                GoodsStatus = awc.GoodsStatus;
+                GoodsStatus = awc._.GoodsStatus;
             }
 
-            if(errormsg != awc.ErrorMessage)
+            if(errormsg != awc._.ErrorMessage)
             {
-                ErrorMessage = awc.ErrorMessage;
+                ErrorMessage = awc._.ErrorMessage;
             }
 
             UpdateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");

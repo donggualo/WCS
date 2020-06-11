@@ -55,19 +55,13 @@
     <Compile Include="NDC\SQL\WCS_NDC_TASK_TEMP.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PUB\WCS_PARAM.cs" />
-    <Compile Include="WCS\WCS_AGV_INFO.cs" />
-    <Compile Include="WCS\WCS_COMMAND_MASTER.cs" />
-    <Compile Include="WCS\WCS_COMMAND_V.cs" />
     <Compile Include="WCS\WCS_CONFIG_AREA.cs" />
     <Compile Include="WCS\WCS_CONFIG_DEVICE.cs" />
-    <Compile Include="WCS\WCS_CONFIG_DEV_GAP.cs" />
     <Compile Include="WCS\WCS_CONFIG_LOC.cs" />
     <Compile Include="WCS\WCS_FUNCTION_LOG.cs" />
     <Compile Include="WCS\WCS_JOB_DETAIL.cs" />
     <Compile Include="WCS\WCS_JOB_HEADER.cs" />
     <Compile Include="WCS\WCS_LOC_TEMP.cs" />
-    <Compile Include="WCS\WCS_TASK_INFO.cs" />
-    <Compile Include="WCS\WCS_TASK_ITEM.cs" />
     <Compile Include="WCS\WCS_WMS_TASK.cs" />
   </ItemGroup>
   <ItemGroup>

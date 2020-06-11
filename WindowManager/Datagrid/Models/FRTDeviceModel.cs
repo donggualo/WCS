@@ -1,5 +1,5 @@
 ﻿using Module;
-using Module.DEV;
+using WcsManager.DevModule;
 using System;
 using System.ComponentModel;
 
@@ -14,6 +14,7 @@ namespace WindowManager.Datagrid.Models
     public class FRTDeviceModel : BaseDataGrid
     {
         private bool isconnect;
+        private bool isUseful;
         private ActionEnum actionsta;
         private DeviceEnum devicesta;
         private CommandEnum commandsta;
@@ -36,6 +37,17 @@ namespace WindowManager.Datagrid.Models
             {
                 isconnect = value;
                 OnPropertyChanged("IsConnected");
+            }
+        }
+
+        [DisplayName("启用")]
+        public bool IsUseful
+        {
+            get { return isUseful; }
+            set
+            {
+                isUseful = value;
+                OnPropertyChanged("IsUseful");
             }
         }
 
@@ -100,7 +112,7 @@ namespace WindowManager.Datagrid.Models
             }
         }
 
-        [DisplayName("棍台状态")]
+        [DisplayName("辊台状态")]
         public RollerStatusEnum RollerStatus
         {
             get { return rollersta; }
@@ -111,14 +123,14 @@ namespace WindowManager.Datagrid.Models
             }
         }
 
-        [DisplayName("棍台方向")]
+        [DisplayName("辊台方向")]
         public RollerDiretionEnum RollerDiretion
         {
             get { return rollerdir; }
             set
             {
                 rollerdir = value;
-                OnPropertyChanged("RollerDirection");
+                OnPropertyChanged("RollerDiretion");
             }
         }
 
@@ -162,59 +174,64 @@ namespace WindowManager.Datagrid.Models
         {
             bool con = ADS.mSocket.IsConnected(DevName);
 
-            DeviceFRT frt = ADS.mFrt.devices.Find(c => c.devName == DevName)._;
+            DevInfoFRT frt = ADS.mFrt.devices.Find(c => c.devName == DevName);
 
             if (isconnect != con)
             {
                 IsConnected = con;
             }
 
+            if (isUseful != frt.isUseful)
+            {
+                IsUseful = frt.isUseful;
+            }
+
             if (!con) return;
 
-            if (actionsta != frt.ActionStatus)
+            if (actionsta != frt._.ActionStatus)
             {
-                ActionStatus = frt.ActionStatus;
+                ActionStatus = frt._.ActionStatus;
             }
 
-            if (devicesta != frt.DeviceStatus)
+            if (devicesta != frt._.DeviceStatus)
             {
-                DeviceStatus = frt.DeviceStatus;
+                DeviceStatus = frt._.DeviceStatus;
             }
 
-            if (commandsta != frt.CommandStatus)
+            if (commandsta != frt._.CommandStatus)
             {
-                CommandStatus = frt.CommandStatus;
+                CommandStatus = frt._.CommandStatus;
             }
 
-            if (currenttask != frt.CurrentTask)
+            if (currenttask != frt._.CurrentTask)
             {
-                CurrentTask = frt.CurrentTask;
+                CurrentTask = frt._.CurrentTask;
             }
 
-            if (finishtask != frt.FinishTask)
+            if (finishtask != frt._.FinishTask)
             {
 
-                FinishTask = frt.FinishTask;
+                FinishTask = frt._.FinishTask;
             }
 
-            if (rollersta != frt.RollerStatus)
+            if (rollersta != frt._.RollerStatus)
             {
-                RollerStatus = frt.RollerStatus;
+                RollerStatus = frt._.RollerStatus;
             }
 
-            if (rollerdir != frt.RollerDiretion)
+            if (rollerdir != frt._.RollerDiretion)
             {
-                RollerDiretion = frt.RollerDiretion;
+                RollerDiretion = frt._.RollerDiretion;
             }
 
-            if (goodstatus != frt.GoodsStatus)
+            if (goodstatus != frt._.GoodsStatus)
             {
-                GoodsStatus = frt.GoodsStatus;
+                GoodsStatus = frt._.GoodsStatus;
             }
 
-            if (errormsg != frt.ErrorMessage)
+            if (errormsg != frt._.ErrorMessage)
             {
-                ErrorMessage = frt.ErrorMessage;
+                ErrorMessage = frt._.ErrorMessage;
             }
 
             UpdateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");

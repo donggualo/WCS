@@ -23,6 +23,13 @@ namespace WCS_phase1
             InitializeComponent();
             admin = new ADS();
 
+            wcsTabControl.Items.Add(new TabItem()
+            {
+                Header = "概况",
+                Tag = "Home",
+                Content = new W_INDEX()
+            });
+
             CheckIn.IsChecked = PublicParam.IsDoJobIn;
             CheckOut.IsChecked = PublicParam.IsDoJobOut;
             CheckDev.IsChecked = PublicParam.IsDoTask;
@@ -40,6 +47,8 @@ namespace WCS_phase1
             {
                 if (itemTag.Equals(i.Tag))
                 {
+                    wcsTabControl.Items.Remove(i);
+                    wcsTabControl.Items.Insert(0,i);
                     i.IsSelected = true;
                     return;
                 }
@@ -50,8 +59,8 @@ namespace WCS_phase1
             //主页面
             if ("Home".Equals(itemTag))
             {
-                wcsTabControl.SelectedIndex = 0;
-                return;
+                tabItem.Tag = "Home";
+                tabItem.Content = new W_INDEX();
             }
             else if ("AWC".Equals(itemTag))
             {
@@ -119,9 +128,10 @@ namespace WCS_phase1
                 tabItem.Tag = "AGV";
                 tabItem.Content = new W_NdcAgv();
             }
-
-            wcsTabControl.Items.Add(tabItem);
-            wcsTabControl.SelectedIndex = wcsTabControl.Items.Count-1;
+            //wcsTabControl.Items.Add(tabItem);
+            //wcsTabControl.SelectedIndex = wcsTabControl.Items.Count - 1;
+            wcsTabControl.Items.Insert(0, tabItem);
+            wcsTabControl.SelectedIndex = 0;
         }
 
         private void WcsTabControl_Removed(object sender, RoutedPropertyChangedEventArgs<TabItem> e)

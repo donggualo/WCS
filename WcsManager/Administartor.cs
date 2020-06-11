@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using Module;
-using Module.DEV;
-using ModuleManager.WCS;
 using PubResourceManager;
-using Socket;
 using WcsManager.Base;
+using WcsManager.DevModule;
 
 namespace WcsManager
 {
@@ -201,5 +198,117 @@ namespace WcsManager
 
         #endregion
 
+
+        #region [ 当前设备信息]
+
+        public static List<DevItem> GetDevInfo()
+        {
+            try
+            {
+                List<DevItem> msg = new List<DevItem>();
+                if (mPkl.devices != null || mPkl.devices.Count != 0)
+                {
+                    foreach (DevInfoPKL pkl in mPkl.devices)
+                    {
+                        msg.Add(new DevItem()
+                        {
+                            Connected = mSocket.IsConnected(pkl.devName) ? "在线" : "离线",
+                            DevName = pkl.devName,
+                            Site = pkl.area,
+                            TaskStatus = Enum.GetName(typeof(TaskEnum), pkl._.CurrentTask)
+                        });
+                    }
+                }
+                if (mFrt.devices != null || mFrt.devices.Count != 0)
+                {
+                    foreach (DevInfoFRT frt in mFrt.devices)
+                    {
+                        msg.Add(new DevItem()
+                        {
+                            Connected = mSocket.IsConnected(frt.devName) ? "在线" : "离线",
+                            DevName = frt.devName,
+                            Site = frt.area,
+                            TaskStatus = Enum.GetName(typeof(TaskEnum), frt._.CurrentTask)
+                        });
+                    }
+                }
+                if (mArf.devices != null || mArf.devices.Count != 0)
+                {
+                    foreach (DevInfoARF arf in mArf.devices)
+                    {
+                        msg.Add(new DevItem()
+                        {
+                            Connected = mSocket.IsConnected(arf.devName) ? "在线" : "离线",
+                            DevName = arf.devName,
+                            Site = arf._.CurrentSite.ToString(),
+                            TaskStatus = Enum.GetName(typeof(TaskEnum), arf._.CurrentTask)
+                        });
+                    }
+                }
+                if (mRgv.devices != null || mRgv.devices.Count != 0)
+                {
+                    foreach (DevInfoRGV rgv in mRgv.devices)
+                    {
+                        msg.Add(new DevItem()
+                        {
+                            Connected = mSocket.IsConnected(rgv.devName) ? "在线" : "离线",
+                            DevName = rgv.devName,
+                            Site = rgv._.CurrentSite.ToString(),
+                            TaskStatus = Enum.GetName(typeof(TaskEnum), rgv._.CurrentTask)
+                        });
+                    }
+                }
+                if (mAwc.devices != null || mAwc.devices.Count != 0)
+                {
+                    foreach (DevInfoAWC awc in mAwc.devices)
+                    {
+                        msg.Add(new DevItem()
+                        {
+                            Connected = mSocket.IsConnected(awc.devName) ? "在线" : "离线",
+                            DevName = awc.devName,
+                            Site = string.Format(@"{0}-{1}-{2}",
+                                awc._.CurrentSiteX, awc._.CurrentSiteY, awc._.CurrentSiteZ),
+                            TaskStatus = Enum.GetName(typeof(TaskEnum), awc._.CurrentTask)
+                        });
+                    }
+                }
+                return msg;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public static List<DevError> GetDevError()
+        {
+            try
+            {
+                List<DevError> msg = new List<DevError>();
+                return msg;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        #endregion
+
     }
+}
+
+public class DevItem
+{
+    public string Connected { set; get; }
+    public string DevName { set; get; }
+    public string Site { set; get; }
+    public string TaskStatus { set; get; }
+}
+
+public class DevError
+{
+    public string DevName { set; get; }
+    public string Error { set; get; }
+    public string Method { set; get; }
 }

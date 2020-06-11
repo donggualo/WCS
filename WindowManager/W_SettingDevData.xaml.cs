@@ -8,6 +8,8 @@ using ModuleManager.WCS;
 using PubResourceManager;
 using ModuleManager;
 
+using ADS = WcsManager.Administartor;
+
 namespace WindowManager
 {
     /// <summary>
@@ -114,58 +116,6 @@ namespace WindowManager
         }
 
         /// <summary>
-        /// 获取所选数据
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void DGdevice_DoubleClick(object sender, System.EventArgs e)
-        {
-            try
-            {
-                if (DGdevice.SelectedItem == null)
-                {
-                    return;
-                }
-                DataRowView dr = DGdevice.SelectedItem as DataRowView;
-
-                if (dr["DEV_WORK"].ToString().Equals("锁定"))
-                {
-                    Notice.Show("设备锁定中，暂无法修改！", "提示", 3, MessageBoxIcon.Info);
-                    return;
-                }
-
-                if (string.IsNullOrWhiteSpace(dr["DEV_WORK"].ToString()))
-                {
-                    Notice.Show("设备异常，无法修改！", "提示", 3, MessageBoxIcon.Info);
-                    return;
-                }
-
-                W_SettingDevDetail wd = new W_SettingDevDetail(
-                    dr["DEVICE"].ToString(),
-                    dr["AREA"].ToString(),
-                    dr["IP"].ToString(),
-                    dr["PORT"].ToString(),
-                    dr["DEV_TYPE"].ToString(),
-                    dr["REMARK"].ToString(),
-                    dr["DEV_DUTY"].ToString(),
-                    dr["DEV_USEFUL"].ToString(),
-                    dr["DEV_WORK"].ToString(),
-                    dr["LOCK_ID"].ToString(),
-                    dr["GAP_X"].ToString(),
-                    dr["GAP_Y"].ToString(),
-                    dr["GAP_Z"].ToString(),
-                    dr["LIMIT_X"].ToString(),
-                    dr["LIMIT_Y"].ToString());
-                wd.ShowDialog();
-                Refresh_Click(sender, e);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        /// <summary>
         /// 新增
         /// </summary>
         /// <param name="sender"></param>
@@ -174,6 +124,7 @@ namespace WindowManager
         {
             W_SettingDevDetail wd = new W_SettingDevDetail();
             wd.ShowDialog();
+            TBmark.Visibility = Visibility.Visible;
             Refresh_Click(sender, (EventArgs)e);
         }
 
@@ -230,6 +181,7 @@ namespace WindowManager
                     return;
                 }
                 string device = (DGdevice.SelectedItem as DataRowView)["DEVICE"].ToString();
+                string devtype = (DGdevice.SelectedItem as DataRowView)["DEV_TYPE"].ToString();
 
                 MessageBoxResult result = MessageBoxX.Show("确认失效设备号【" + device + "】的数据？！", "提示", System.Windows.Application.Current.MainWindow, MessageBoxButton.YesNo);
                 if (result == MessageBoxResult.No)
@@ -237,10 +189,16 @@ namespace WindowManager
                     return;
                 }
 
-                String sqldelete = String.Format(@"update wcs_config_device set IS_USEFUL = {1} where DEVICE = '{0}'", device, 0);
-                CommonSQL.mysql.ExcuteSql(sqldelete);
+                string res = UpdateUseful(devtype, device, false);
+                if (string.IsNullOrEmpty(res))
+                {
+                    Notice.Show("失效成功！", "成功", 3, MessageBoxIcon.Success);
+                }
+                else
+                {
+                    Notice.Show("失效失败： " + res, "错误", 3, MessageBoxIcon.Error);
+                }
 
-                Notice.Show("失效成功！", "成功", 3, MessageBoxIcon.Success);
                 Refresh_Click(sender, (EventArgs)e);
             }
             catch (Exception ex)
@@ -268,6 +226,7 @@ namespace WindowManager
                     return;
                 }
                 string device = (DGdevice.SelectedItem as DataRowView)["DEVICE"].ToString();
+                string devtype = (DGdevice.SelectedItem as DataRowView)["DEV_TYPE"].ToString();
 
                 MessageBoxResult result = MessageBoxX.Show("确认生效设备号【" + device + "】的数据？！", "提示", System.Windows.Application.Current.MainWindow, MessageBoxButton.YesNo);
                 if (result == MessageBoxResult.No)
@@ -275,10 +234,16 @@ namespace WindowManager
                     return;
                 }
 
-                String sqldelete = String.Format(@"update wcs_config_device set IS_USEFUL = {1} where DEVICE = '{0}'", device, 1);
-                CommonSQL.mysql.ExcuteSql(sqldelete);
+                string res = UpdateUseful(devtype, device, true);
+                if (string.IsNullOrEmpty(res))
+                {
+                    Notice.Show("生效成功！", "成功", 3, MessageBoxIcon.Success);
+                }
+                else
+                {
+                    Notice.Show("生效失败： " + res, "错误", 3, MessageBoxIcon.Error);
+                }
 
-                Notice.Show("生效成功！", "成功", 3, MessageBoxIcon.Success);
                 Refresh_Click(sender, (EventArgs)e);
             }
             catch (Exception ex)
@@ -287,5 +252,91 @@ namespace WindowManager
             }
         }
 
+        /// <summary>
+        /// 修改
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UpdateDev_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (DGdevice.SelectedItem == null)
+                {
+                    return;
+                }
+                DataRowView dr = DGdevice.SelectedItem as DataRowView;
+
+                if (dr["DEV_WORK"].ToString().Equals("锁定"))
+                {
+                    Notice.Show("设备锁定中，暂无法修改！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(dr["DEV_WORK"].ToString()))
+                {
+                    Notice.Show("设备异常，无法修改！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
+
+                W_SettingDevDetail wd = new W_SettingDevDetail(
+                    dr["DEVICE"].ToString(),
+                    dr["AREA"].ToString(),
+                    dr["IP"].ToString(),
+                    dr["PORT"].ToString(),
+                    dr["DEV_TYPE"].ToString(),
+                    dr["REMARK"].ToString(),
+                    dr["DEV_DUTY"].ToString(),
+                    dr["DEV_USEFUL"].ToString(),
+                    dr["DEV_WORK"].ToString(),
+                    dr["LOCK_ID"].ToString(),
+                    dr["GAP_X"].ToString(),
+                    dr["GAP_Y"].ToString(),
+                    dr["GAP_Z"].ToString(),
+                    dr["LIMIT_X"].ToString(),
+                    dr["LIMIT_Y"].ToString());
+                wd.ShowDialog();
+                TBmark.Visibility = Visibility.Visible;
+                Refresh_Click(sender, e);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private string UpdateUseful(string dtype, string dname, bool useful)
+        {
+            try
+            {
+                string res = "";
+                switch (dtype)
+                {
+                    case "包装线辊台":
+                        ADS.mPkl.devices.Find(c => c.devName.Equals(dname)).UpdateUseufl(useful);
+                        break;
+                    case "固定辊台":
+                        ADS.mFrt.devices.Find(c => c.devName.Equals(dname)).UpdateUseufl(useful);
+                        break;
+                    case "摆渡车":
+                        ADS.mArf.devices.Find(c => c.devName.Equals(dname)).UpdateUseufl(useful);
+                        break;
+                    case "运输车":
+                        ADS.mRgv.devices.Find(c => c.devName.Equals(dname)).UpdateUseufl(useful);
+                        break;
+                    case "行车":
+                        ADS.mAwc.devices.Find(c => c.devName.Equals(dname)).UpdateUseufl(useful);
+                        break;
+                    default:
+                        res = "无法识别类型！";
+                        break;
+                }
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

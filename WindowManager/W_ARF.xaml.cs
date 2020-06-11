@@ -73,7 +73,7 @@ namespace WindowManager
 
         private void GetARFNameList()
         {
-            List<WCS_CONFIG_DEVICE> list = CommonSQL.GetDeviceNameList(DeviceType.摆渡车);
+            List<WCS_CONFIG_DEVICE> list = CommonSQL.GetDevInfo(DeviceType.摆渡车);
             foreach (var l in list)
             {
                 grid.UpdateDeviceList(l.DEVICE, l.AREA);
@@ -144,6 +144,11 @@ namespace WindowManager
                     return;
                 }
                 dev = CBdev.Text;
+                if (!ADS.mSocket.IsConnected(dev))
+                {
+                    Notice.Show(dev + "已离线，无法操作！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
 
                 if (!WindowCommon.ConfirmAction("是否发送定位指令！！"))
                 {
@@ -180,6 +185,12 @@ namespace WindowManager
                     return;
                 }
                 dev = CBdev.Text;
+                if (!ADS.mSocket.IsConnected(dev))
+                {
+                    Notice.Show(dev + "已离线，无法操作！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
+
                 if (!WindowCommon.ConfirmAction("是否发送滚筒启动指令！！"))
                 {
                     return;
@@ -217,6 +228,12 @@ namespace WindowManager
                     return;
                 }
                 dev = CBdev.Text;
+                if (!ADS.mSocket.IsConnected(dev))
+                {
+                    Notice.Show(dev + "已离线，无法操作！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
+
                 ADS.mArf.devices.Find(c => c.devName == dev).StopRoller();
 
                 Notice.Show("停止辊台 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
@@ -245,6 +262,12 @@ namespace WindowManager
                     return;
                 }
                 dev = CBdev.Text;
+                if (!ADS.mSocket.IsConnected(dev))
+                {
+                    Notice.Show(dev + "已离线，无法操作！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
+
                 ADS.mArf.devices.Find(c => c.devName == dev).StopTask();
 
                 Notice.Show("终止任务 指令发送成功！", "成功", 3, MessageBoxIcon.Success);

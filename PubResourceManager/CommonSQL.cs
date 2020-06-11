@@ -61,19 +61,6 @@ namespace PubResourceManager
             mysql.ExcuteSql(sql);
         }
 
-        public static List<WCS_CONFIG_DEVICE> GetDeviceNameList(string type)
-        {
-            List<WCS_CONFIG_DEVICE> list = new List<WCS_CONFIG_DEVICE>();
-            string sql = string.Format(@"select DEVICE,AREA from wcs_config_device where IS_USEFUL <> 0 and TYPE = '{0}'", type);
-            DataTable dt = mysql.SelectAll(sql);
-            if (IsNoData(dt))
-            {
-                return list;
-            }
-            list = dt.ToDataList<WCS_CONFIG_DEVICE>();
-            return list;
-        }
-
         #endregion
 
         #region [WCS]
@@ -240,7 +227,7 @@ namespace PubResourceManager
             try
             {
                 List<WCS_CONFIG_DEVICE> list = new List<WCS_CONFIG_DEVICE>();
-                string sql = string.Format(@"select * from wcs_config_device where IS_USEFUL = 1 and TYPE = '{0}'", type);
+                string sql = string.Format(@"select * from wcs_config_device where TYPE = '{0}'", type);
                 DataTable dt = mysql.SelectAll(sql);
                 if (!IsNoData(dt))
                 {
@@ -471,6 +458,23 @@ TAKE_SITE_Z= {3}, GIVE_SITE_X= {4}, GIVE_SITE_Y= {5}, GIVE_SITE_Z= {6} where ID 
             {
                 string sql = string.Format(@"update wcs_config_device set IS_LOCK = '{1}', LOCK_ID = '{2}' where DEVICE = '{0}'",
                     devname, islock ? 1 : 0, lockid);
+                mysql.ExcuteSql(sql);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 更新设备使用信息
+        /// </summary>
+        public static void UpdateDevInfo(string devname, bool isuseful)
+        {
+            try
+            {
+                string sql = string.Format(@"update wcs_config_device set IS_USEFUL = '{1}' where DEVICE = '{0}'",
+                    devname, isuseful ? 1 : 0);
                 mysql.ExcuteSql(sql);
             }
             catch (Exception ex)
