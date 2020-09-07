@@ -133,14 +133,20 @@ namespace WindowManager
             string dev = "";
             try
             {
+                if (PublicParam.IsDoTask)
+                {
+                    Notice.Show("请先关闭顶部[设备运作]！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
+
                 if (CBdev.SelectedIndex == -1)
                 {
                     Notice.Show("请选择设备！", "提示", 3, MessageBoxIcon.Info);
                     return;
                 }
-                if (string.IsNullOrEmpty(xlocation.Text.Trim()) || string.IsNullOrEmpty(ylocation.Text.Trim()) || string.IsNullOrEmpty(zlocation.Text.Trim()))
+                if (string.IsNullOrEmpty(xlocation.Text.Trim()) || string.IsNullOrEmpty(ylocation.Text.Trim()))
                 {
-                    Notice.Show("请填写目的坐标！", "提示", 3, MessageBoxIcon.Info);
+                    Notice.Show("请填写目的XY坐标！", "提示", 3, MessageBoxIcon.Info);
                     return;
                 }
                 dev = CBdev.Text;
@@ -179,14 +185,20 @@ namespace WindowManager
             string dev = "";
             try
             {
+                if (PublicParam.IsDoTask)
+                {
+                    Notice.Show("请先关闭顶部[设备运作]！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
+
                 if (CBdev.SelectedIndex == -1)
                 {
                     Notice.Show("请选择设备！", "提示", 3, MessageBoxIcon.Info);
                     return;
                 }
-                if (string.IsNullOrEmpty(xlocation.Text.Trim()) || string.IsNullOrEmpty(ylocation.Text.Trim()) || string.IsNullOrEmpty(zlocation.Text.Trim()))
+                if (string.IsNullOrEmpty(zlocation.Text.Trim()))
                 {
-                    Notice.Show("请填写目的坐标！", "提示", 3, MessageBoxIcon.Info);
+                    Notice.Show("请填写目的Z坐标！", "提示", 3, MessageBoxIcon.Info);
                     return;
                 }
                 dev = CBdev.Text;
@@ -225,14 +237,20 @@ namespace WindowManager
             string dev = "";
             try
             {
+                if (PublicParam.IsDoTask)
+                {
+                    Notice.Show("请先关闭顶部[设备运作]！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
+
                 if (CBdev.SelectedIndex == -1)
                 {
                     Notice.Show("请选择设备！", "提示", 3, MessageBoxIcon.Info);
                     return;
                 }
-                if (string.IsNullOrEmpty(xlocation.Text.Trim()) || string.IsNullOrEmpty(ylocation.Text.Trim()) || string.IsNullOrEmpty(zlocation.Text.Trim()))
+                if (string.IsNullOrEmpty(zlocation.Text.Trim()))
                 {
-                    Notice.Show("请填写目的坐标！", "提示", 3, MessageBoxIcon.Info);
+                    Notice.Show("请填写目的Z坐标！", "提示", 3, MessageBoxIcon.Info);
                     return;
                 }
                 dev = CBdev.Text;
@@ -271,6 +289,12 @@ namespace WindowManager
             string dev = "";
             try
             {
+                if (PublicParam.IsDoTask)
+                {
+                    Notice.Show("请先关闭顶部[设备运作]！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
+
                 if (CBdev.SelectedIndex == -1)
                 {
                     Notice.Show("请选择设备！", "提示", 3, MessageBoxIcon.Info);
@@ -306,6 +330,12 @@ namespace WindowManager
             string dev = "";
             try
             {
+                if (PublicParam.IsDoTask)
+                {
+                    Notice.Show("请先关闭顶部[设备运作]！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
+
                 if (CBdev.SelectedIndex == -1)
                 {
                     Notice.Show("请选择设备！", "提示", 3, MessageBoxIcon.Info);

@@ -106,6 +106,9 @@
     <Compile Include="W_SettingLocation.xaml.cs">
       <DependentUpon>W_SettingLocation.xaml</DependentUpon>
     </Compile>
+    <Compile Include="W_SettingLocData.xaml.cs">
+      <DependentUpon>W_SettingLocData.xaml</DependentUpon>
+    </Compile>
     <Compile Include="W_WARN.xaml.cs">
       <DependentUpon>W_WARN.xaml</DependentUpon>
     </Compile>
@@ -170,6 +173,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="W_SettingLocData.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="W_WARN.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -227,9 +234,9 @@
       <Project>{20AFF318-2F10-47E9-A66C-AED5B9C5E5F5}</Project>
       <Name>PubResourceManager</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Socket\Socket.csproj">
+    <ProjectReference Include="..\Socket\SocketManager.csproj">
       <Project>{AA1DAE48-F73F-4E40-9993-C7D32CA683F0}</Project>
-      <Name>Socket</Name>
+      <Name>SocketManager</Name>
     </ProjectReference>
     <ProjectReference Include="..\ToolManager\ToolManager.csproj">
       <Project>{b65231a1-c544-4279-ac1a-c62194c4ad3f}</Project>

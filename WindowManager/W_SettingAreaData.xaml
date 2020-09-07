@@ -28,6 +28,7 @@
                 Foreground="#FF3F3F3F"
                 pu:ButtonHelper.HoverBrush="#3F3F3F"
                 pu:ButtonHelper.CornerRadius="6"/>
+            <TextBlock Text="注：所有操作需重启后方可加载入流程使用！" VerticalAlignment="Bottom" Margin="20,0,0,0" Foreground="Red"/>
         </WrapPanel>
 
         <DataGrid Grid.Row="1" Name="DGarea" CanUserAddRows="False" IsReadOnly="True"  AutoGenerateColumns="False">

@@ -77,6 +77,8 @@ namespace NdcManager
             _sqlControl.InsertNdcItem(item);
 
             if (Ikey >= 60000) Ikey = 500;
+            _sqlControl.UpdateIkeyValue(Ikey);
+
             DoStartOrder(item);
 
             result = "";
@@ -179,8 +181,13 @@ namespace NdcManager
 
             if (item.PLCStatus != NDCPlcStatus.LoadReady)
             {
+                if (item.CARRIERID != 0)
+                {
+                    // 查询状态
+                    DoSelect(item.CARRIERID);
+                }
                 result = "小车未准备好接货";
-                return false;
+                return true;
             }
 
             if (!LoadItemList.Contains(item._mTask.NDCINDEX))
@@ -191,9 +198,10 @@ namespace NdcManager
             }
 
             result = taskid + "的装货已经请求过了";
-            return false;
+            return true;
         }
 
+        //public bool DoUnLoad(int taskid, int carid, out string result)
         /// <summary>
         /// 根据任务ID,进行卸货操作
         /// </summary>
@@ -201,7 +209,6 @@ namespace NdcManager
         /// <param name="carid"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        //public bool DoUnLoad(int taskid, int carid, out string result)
         public bool DoUnLoad(int taskid, out string result)
         {
             //if (taskid == 0 || carid == 0)
@@ -225,10 +232,17 @@ namespace NdcManager
                 return false;
             }
 
+            if (item.PLCStatus == NDCPlcStatus.Unloading)
+            {
+                UnLoadItemList.Remove(item._mTask.NDCINDEX);
+                result = "小车已经启动辊台了";
+                return true;
+            }
+
             if (item.PLCStatus != NDCPlcStatus.UnloadReady)
             {
                 result = "小车未准备好卸货";
-                return false;
+                return true;
             }
 
             if (!UnLoadItemList.Contains(item._mTask.NDCINDEX))
@@ -239,7 +253,7 @@ namespace NdcManager
             }
 
             result = taskid + "的卸货请求已经请求过了";
-            return false;
+            return true;
         }
 
         /// <summary>
@@ -280,7 +294,7 @@ namespace NdcManager
         /// </summary>
         /// <param name="taskid"></param>
         /// <returns></returns>
-        public bool IsExist (int taskid)
+        public bool IsExist(int taskid)
         {
             if (taskid == 0)
             {
@@ -295,6 +309,75 @@ namespace NdcManager
             {
                 return false;
             }
+        }
+
+        /// <summary>
+        /// 是否存在未装货任务
+        /// </summary>
+        /// <param name="taskid"></param>
+        /// <returns></returns>
+        public int IsExistLoad(string loadSite)
+        {
+            int id = 0;
+            if (!string.IsNullOrEmpty(loadSite))
+            {
+                NDCItem item = Items.Find(c =>
+                {
+                    return c._mTask.LOADSITE == loadSite && c.PLCStatus <= NDCPlcStatus.Loading;
+                });
+
+                if (item != null)
+                {
+                    id = item._mTask.TASKID;
+                }
+            }
+            return id;
+        }
+
+        /// <summary>
+        /// 是否存在卸货状态任务
+        /// </summary>
+        /// <returns></returns>
+        public int IsExistUnLoad(string unLoadSite)
+        {
+            int id = 0;
+            if (!string.IsNullOrEmpty(unLoadSite))
+            {
+                NDCItem item = Items.Find(c =>
+                {
+                    return ((c._mTask.UNLOADSITE == unLoadSite || c._mTask.REDIRECTSITE == unLoadSite) &&
+                    (c.PLCStatus >= NDCPlcStatus.UnloadReady && c.PLCStatus <= NDCPlcStatus.Unloading));
+                });
+
+                if (item != null)
+                {
+                    id = item._mTask.TASKID;
+                }
+            }
+            return id;
+        }
+
+        /// <summary>
+        /// 获取当前任务状态
+        /// </summary>
+        /// <param name="taskid"></param>
+        /// <returns></returns>
+        public NDCPlcStatus GetStatus(int taskid)
+        {
+            NDCPlcStatus n = NDCPlcStatus.LoadUnReady;
+            if (taskid != 0)
+            {
+                NDCItem item = Items.Find(c =>
+                {
+                    return c._mTask.TASKID == taskid;
+                });
+
+                if (item != null)
+                {
+                    n = item.PLCStatus;
+                }
+            }
+            return n;
         }
 
         /// <summary>
@@ -320,6 +403,28 @@ namespace NdcManager
             }
 
             if (item.DirectStatus == NDCItemStatus.Redirected)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 是否重定位上限
+        /// </summary>
+        /// <param name="taskid"></param>
+        /// <returns></returns>
+        public bool IsRedirectedMax(string reSite, out int t)
+        {
+            t = Items.FindAll(c => c.DirectStatus == NDCItemStatus.Redirected && c._mTask.REDIRECTSITE == reSite).Count;
+            if (string.IsNullOrEmpty(reSite))
+            {
+                return true;
+            }
+            if (t >= 2)
             {
                 return true;
             }

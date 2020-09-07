@@ -292,11 +292,15 @@ namespace PubResourceManager
         {
             try
             {
-                string sql = string.Format(@"
-             delete from wcs_wms_task where TASK_ID = '{0}';
+                int num = mysql.GetCount("wcs_wms_task", string.Format(@" TASK_ID = '{0}'", TASK_ID));
+                if (num == 0)
+                {
+                    string sql = string.Format(@"
              insert into wcs_wms_task(TASK_ID, TASK_TYPE, BARCODE, WMS_LOC_FROM, WMS_LOC_TO, FRT) values('{0}','{1}','{2}','{3}','{4}','{5}')",
-                    TASK_ID, TASK_TYPE, BARCODE, WMS_LOC_FROM, WMS_LOC_TO, FRT);
-                mysql.ExcuteSql(sql);
+                        TASK_ID, TASK_TYPE, BARCODE, WMS_LOC_FROM, WMS_LOC_TO, FRT);
+
+                    mysql.ExcuteSql(sql);
+                }
             }
             catch (Exception ex)
             {
@@ -456,7 +460,7 @@ TAKE_SITE_Z= {3}, GIVE_SITE_X= {4}, GIVE_SITE_Y= {5}, GIVE_SITE_Z= {6} where ID 
         {
             try
             {
-                string sql = string.Format(@"update wcs_config_device set IS_LOCK = '{1}', LOCK_ID = '{2}' where DEVICE = '{0}'",
+                string sql = string.Format(@"update wcs_config_device set IS_LOCK = '{1}', LOCK_ID1 = '{2}' where DEVICE = '{0}'",
                     devname, islock ? 1 : 0, lockid);
                 mysql.ExcuteSql(sql);
             }
@@ -475,6 +479,23 @@ TAKE_SITE_Z= {3}, GIVE_SITE_X= {4}, GIVE_SITE_Y= {5}, GIVE_SITE_Z= {6} where ID 
             {
                 string sql = string.Format(@"update wcs_config_device set IS_USEFUL = '{1}' where DEVICE = '{0}'",
                     devname, isuseful ? 1 : 0);
+                mysql.ExcuteSql(sql);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 更新设备使用属性
+        /// </summary>
+        public static void UpdateDevInfo(string devname, int flag)
+        {
+            try
+            {
+                string sql = string.Format(@"update wcs_config_device set FLAG = '{1}' where DEVICE = '{0}'",
+                    devname, flag);
                 mysql.ExcuteSql(sql);
             }
             catch (Exception ex)
@@ -535,6 +556,471 @@ TAKE_SITE_Z= {3}, GIVE_SITE_X= {4}, GIVE_SITE_Y= {5}, GIVE_SITE_Z= {6} where ID 
             {
                 throw ex;
             }
+        }
+
+        #endregion
+
+        #region New
+
+        /// <summary>
+        /// 更新设备锁定信息
+        /// </summary>
+        public static void UpdateDevInfo(int tt, string devname, string lockid1, string lockid2, bool islock)
+        {
+            try
+            {
+                string sql = string.Format(@"update wcs_config_device set TASK_TYPE = {1}, IS_LOCK = '{2}', LOCK_ID1 = '{3}', LOCK_ID2 = '{4}' 
+                    where DEVICE = '{0}'",
+                    devname, tt, islock ? 1 : 0, lockid1, lockid2);
+                mysql.ExcuteSql(sql);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 获取WCS坐标资讯
+        /// </summary>
+        public static WCS_CONFIG_LOC GetWcsLocByTask(string lockid)
+        {
+            try
+            {
+                string sql = string.Format(@"select * from wcs_config_loc where WMS_LOC = (
+       select case when TASK_TYPE = 2 then WMS_LOC_FROM else WMS_LOC_TO end from wcs_wms_task where TASK_ID = '{0}')", lockid);
+                DataTable dt = mysql.SelectAll(sql);
+                if (IsNoData(dt))
+                {
+                    return new WCS_CONFIG_LOC();
+                }
+                WCS_CONFIG_LOC loc = dt.ToDataEntity<WCS_CONFIG_LOC>();
+                return loc;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 获取WCS坐标资讯
+        /// </summary>
+        public static WCS_CONFIG_LOC GetWcsLoc(string wmsLoc)
+        {
+            try
+            {
+                string sql = string.Format(@"select * from wcs_config_loc where WMS_LOC = '{0}'", wmsLoc);
+                DataTable dt = mysql.SelectAll(sql);
+                if (IsNoData(dt))
+                {
+                    return new WCS_CONFIG_LOC();
+                }
+                WCS_CONFIG_LOC loc = dt.ToDataEntity<WCS_CONFIG_LOC>();
+                return loc;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 获取WCS坐标资讯
+        /// </summary>
+        public static bool UpdateWcsLoc(string WMS_LOC, string RGV_LOC_1, string RGV_LOC_2, string AWC_LOC_TRACK, string AWC_LOC_STOCK)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(WMS_LOC))
+                {
+                    return false;
+                }
+
+                string sql = string.Format(@"update wcs_config_loc set RGV_LOC_1 = '{1}', RGV_LOC_2 = '{2}', 
+                        AWC_LOC_TRACK = '{3}', AWC_LOC_STOCK = '{4}', CREATION_TIME = NOW() where WMS_LOC = '{0}'",
+                            WMS_LOC, RGV_LOC_1, RGV_LOC_2, AWC_LOC_TRACK, AWC_LOC_STOCK);
+                mysql.ExcuteSql(sql);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 获取坐标
+        /// </summary>
+        /// <param name="lockid"></param>
+        /// <returns></returns>
+        public static string GetWcsLocByName(string lockid, string name)
+        {
+            try
+            {
+                string loc = "";
+                if (!string.IsNullOrEmpty(lockid))
+                {
+                    string sql = string.Format(@"select * from wcs_config_loc where WMS_LOC = (
+       select case when TASK_TYPE = 2 then WMS_LOC_FROM else WMS_LOC_TO end from wcs_wms_task where TASK_ID = '{0}')", lockid);
+                    DataTable dt = mysql.SelectAll(sql);
+                    if (!IsNoData(dt))
+                    {
+                        loc = dt.Rows[0][name].ToString();
+                    }
+                }
+                return loc;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 获取最新流水号
+        /// </summary>
+        /// <returns></returns>
+        public static string GetSN(string value, out string box)
+        {
+            try
+            {
+                string sn = "";
+                box = "001";
+                string sql = string.Format(@"select VALUE2,VALUE3 from wcs_param where NAME = 'WMS_CODE_SN' and VALUE1 = '{0}'", value);
+                DataTable dt = mysql.SelectAll(sql);
+                if (IsNoData(dt))
+                {
+                    mysql.ExcuteSql(string.Format(@"update wcs_param set VALUE1 = '{0}', VALUE2 = 2, VALUE3 = 2 where NAME = 'WMS_CODE_SN'", value));
+                    sn = "001";
+                    box = "001";
+                }
+                else
+                {
+                    sn = dt.Rows[0]["VALUE2"].ToString().PadLeft(3, '0');
+                    sql = string.Format(@"update wcs_param set VALUE2 = (VALUE2 + 1) where NAME = 'WMS_CODE_SN'", value);
+
+                    //box = dt.Rows[0]["VALUE3"].ToString().PadLeft(3, '0');
+                    //if (box == "060")
+                    //{
+                    //    sql = string.Format(@"update wcs_param set VALUE2 = (VALUE2 + 1),VALUE3 = 1 where NAME = 'WMS_CODE_SN'", value);
+                    //}
+                    //else
+                    //{
+                    //    sql = string.Format(@"update wcs_param set VALUE2 = (VALUE2 + 1),VALUE3 = (VALUE3 + 1) where NAME = 'WMS_CODE_SN'", value);
+                    //}
+
+                    mysql.ExcuteSql(sql);
+                }
+                return sn;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 获取最新流水号
+        /// </summary>
+        /// <returns></returns>
+        public static int GetAGVid()
+        {
+            try
+            {
+                int id = 0;
+                string sql = string.Format(@"select VALUE2 from wcs_param where NAME = 'WCS_AGV_ID'");
+                DataTable dt = mysql.SelectAll(sql);
+                if (IsNoData(dt))
+                {
+                    mysql.ExcuteSql(string.Format(@"update wcs_param set VALUE2 = 2 where NAME = 'WCS_AGV_ID'"));
+                    id = 1;
+                }
+                else
+                {
+                    id = Convert.ToInt32(dt.Rows[0]["VALUE2"].ToString());
+                    int next = 1;
+                    if (id < 65535)
+                    {
+                        next = id + 1;
+                    }
+                    mysql.ExcuteSql(string.Format(@"update wcs_param set VALUE2 = '{0}' where NAME = 'WCS_AGV_ID'", next));
+                }
+                return id;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 获取WMS初始化目的区域
+        /// </summary>
+        /// <returns></returns>
+        public static string GetToArea(string code, out string taskid)
+        {
+            try
+            {
+                string area = "";
+                taskid = "";
+                string sql = string.Format(@"select TASK_ID, WMS_LOC_TO, TASK_STATUS from wcs_wms_task where TASK_TYPE = 1 and BARCODE = '{0}'", code);
+                DataTable dt = mysql.SelectAll(sql);
+                if (!IsNoData(dt))
+                {
+                    taskid = dt.Rows[0]["TASK_ID"].ToString();
+                    area = dt.Rows[0]["WMS_LOC_TO"].ToString();
+                    string sta = dt.Rows[0]["TASK_STATUS"].ToString();
+                    if (int.Parse(sta) > 1) // 已分配过库位
+                    {
+                        throw new Exception(string.Format(@"包装线辊台当前二维码[{0}]重复！", code));
+                    }
+                }
+                return area;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 是否超时入库任务
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsTimeOut(string tid)
+        {
+            try
+            {
+                bool res = false;
+                string sql = string.Format(@"select 1 from wcs_wms_task where TASK_ID = '{0}' and
+     TRUNCATE((UNIX_TIMESTAMP(NOW())-UNIX_TIMESTAMP(UPDATE_TIME))/60,0) >= 30", tid);
+                DataTable dt = mysql.SelectAll(sql);
+                if (!IsNoData(dt))
+                {
+                    res = true;
+                }
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 获取WMS待分配超时入库任务
+        /// </summary>
+        /// <returns></returns>
+        public static string GetTimeOut(string area)
+        {
+            try
+            {
+                string tid = "";
+                string sql = string.Format(@"select TASK_ID from wcs_wms_task where TASK_TYPE = 1 and TASK_STATUS = 1 and FRT = '{0}' and
+     TRUNCATE((UNIX_TIMESTAMP(NOW())-UNIX_TIMESTAMP(UPDATE_TIME))/60,0) >= 30 order by UPDATE_TIME limit 1", area);
+                DataTable dt = mysql.SelectAll(sql);
+                if (!IsNoData(dt))
+                {
+                    tid = dt.Rows[0]["TASK_ID"].ToString();
+                }
+                return tid;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 是否存在wms入库任务
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsExistsInTask(string code)
+        {
+            try
+            {
+                bool res = false;
+                string sql = string.Format(@"select 1 from wcs_wms_task where TASK_TYPE = 1 and TASK_STATUS = 2 and BARCODE = '{0}'", code);
+                DataTable dt = mysql.SelectAll(sql);
+                if (!IsNoData(dt))
+                {
+                    // 已分配过
+                    res = true;
+                }
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 获取WMS待分配入库任务
+        /// </summary>
+        /// <returns></returns>
+        public static bool GetInTask(string code, out string tid)
+        {
+            try
+            {
+                bool res = false;
+                tid = "";
+                string sql = string.Format(@"select TASK_ID from wcs_wms_task where TASK_TYPE = 1 and TASK_STATUS <> 3 and BARCODE = '{0}'", code);
+                DataTable dt = mysql.SelectAll(sql);
+                if (dt != null && dt.Rows.Count != 0)
+                {
+                    tid = dt.Rows[0]["TASK_ID"].ToString();
+                    res = true;
+                }
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 获取WMS待分配入库任务(2个)
+        /// </summary>
+        /// <returns></returns>
+        public static bool GetInTaskDouble(string area, out string tid1, out string tid2)
+        {
+            try
+            {
+                bool res = false;
+                tid1 = "";
+                tid2 = "";
+                string sql = string.Format(@"select TASK_ID from wcs_wms_task where TASK_TYPE = 1 and TASK_STATUS = 1 and 
+                    WMS_LOC_TO = '{0}' order by UPDATE_TIME limit 2", area);
+                DataTable dt = mysql.SelectAll(sql);
+                if (dt != null && dt.Rows.Count == 2)
+                {
+                    tid1 = dt.Rows[0]["TASK_ID"].ToString();
+                    tid2 = dt.Rows[1]["TASK_ID"].ToString();
+                    res = true;
+                }
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 获取WMS待执行入库任务(1-2个)
+        /// </summary>
+        /// <returns></returns>
+        public static List<WCS_WMS_TASK> GetInTaskInfo(string area)
+        {
+            try
+            {
+                List<WCS_WMS_TASK> list = new List<WCS_WMS_TASK>();
+                string sql = string.Format(@"select * from wcs_wms_task where WMS_LOC_FROM = '{0}' and TASK_TYPE = 1 and TASK_STATUS = 2 
+                    and TASK_ID not in 
+                        (select LOCK_ID1 donoID from wcs_config_device where TYPE in ('AWC','FRT') and LOCK_ID1 <>'' or LOCK_ID1 <> null
+                        UNION
+                        select LOCK_ID2 donoID from wcs_config_device where TYPE in ('AWC','FRT') and LOCK_ID2 <>'' or LOCK_ID2 <> null) 
+                        order by UPDATE_TIME LIMIT 2", area);
+                DataTable dt = mysql.SelectAll(sql);
+                if (!IsNoData(dt))
+                {
+                    list = dt.ToDataList<WCS_WMS_TASK>();
+                }
+                return list;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 获取WMS待执行出库任务(1-4个)
+        /// </summary>
+        /// <returns></returns>
+        public static List<WCS_WMS_TASK> GetOutTaskInfo(string area)
+        {
+            try
+            {
+                List<WCS_WMS_TASK> list = new List<WCS_WMS_TASK>();
+                string sql = string.Format(@"select * from wcs_wms_task where WMS_LOC_TO = '{0}' and TASK_TYPE = 2 and TASK_STATUS = 0 
+                    order by CREATION_TIME limit 4", area);
+                DataTable dt = mysql.SelectAll(sql);
+                if (!IsNoData(dt))
+                {
+                    list = dt.ToDataList<WCS_WMS_TASK>();
+                }
+                return list;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 更新WMS任务状态
+        /// </summary>
+        public static void UpdateWms(string taskid, int status, string from = "", string to = "")
+        {
+            try
+            {
+                string sql = string.Format(@"update wcs_wms_task set UPDATE_TIME = CURRENT_TIMESTAMP, TASK_STATUS = {0}", status);
+                if (!string.IsNullOrEmpty(from))
+                {
+                    sql = string.Format(@"{0}, WMS_LOC_FROM = '{1}'", sql, from);
+                }
+                if (!string.IsNullOrEmpty(to))
+                {
+                    sql = string.Format(@"{0}, WMS_LOC_TO = '{1}'", sql, to);
+                }
+                sql = string.Format(@"{0} where TASK_ID = '{1}'", sql, taskid);
+                mysql.ExcuteSql(sql);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 删任务数据
+        /// </summary>
+        public static void DeleteWms(string TASK_ID)
+        {
+            try
+            {
+                string sql = string.Format(@"
+             delete from wcs_wms_task where TASK_ID = '{0}'", TASK_ID);
+
+                mysql.ExcuteSql(sql);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 获取公共参数的内容
+        /// </summary>
+        /// <param name="mysql"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static bool GetWcsParam(string name, out List<WCS_PARAM> info)
+        {
+            info = new List<WCS_PARAM>();
+            string sql = string.Format(@"select * from wcs_param where NAME = '{0}'", name);
+            DataTable dt = mysql.SelectAll(sql);
+            if (IsNoData(dt))
+            {
+                return false;
+            }
+            info = dt.ToDataList<WCS_PARAM>();
+            return true;
         }
 
         #endregion

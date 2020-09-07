@@ -31,10 +31,28 @@
                 Foreground="#FF3F3F3F"
                 pu:ButtonHelper.HoverBrush="#3F3F3F"
                 pu:ButtonHelper.CornerRadius="6"/>
+            
+            <Button Content="测试" Click="TEST_Click" 
+                Margin="10,0,0,0" Visibility="Hidden"
+                Height="30" Width="80"
+                pu:ButtonHelper.ClickStyle="Sink"
+                FontFamily="{DynamicResource FontAwesome}"
+                pu:ButtonHelper.ButtonStyle="Hollow"
+                BorderBrush="#FF3F3F3F"
+                Foreground="#FF3F3F3F"
+                pu:ButtonHelper.HoverBrush="#3F3F3F"
+                pu:ButtonHelper.CornerRadius="6"/>
         </WrapPanel>
 
         <DataGrid Grid.Row="1" Name="DGtask" CanUserAddRows="False" IsReadOnly="True" Margin="0" 
                   AutoGeneratingColumn="DGtask_AutoGeneratingColumn">
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="分配库位" Click="GetBin_Click"/>
+                    <MenuItem Header="完成任务" Click="FIN_Click"/>
+                    <!--<MenuItem Header="删除任务" Click="Cancel_Click"/>-->
+                </ContextMenu>
+            </DataGrid.ContextMenu>
         </DataGrid>
     </Grid>
 </UserControl>

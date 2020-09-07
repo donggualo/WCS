@@ -1,13 +1,14 @@
 ﻿using Module;
-using Socket.module;
+using SocketManager.module;
 using System;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 using ToolManager;
 
-namespace Socket
+namespace SocketManager
 {
     /// <summary>
     /// Socket客户端
@@ -17,11 +18,13 @@ namespace Socket
         #region[定义]
         public delegate void ConnectionEventHandler(string host, int port);
         public delegate void ReciveDataHandler(string devName, DevType head, IBaseModule module);
+        public delegate void ReciveCodeHandler(string type, string dev, string code);
 
         // 通知
         public event ConnectionEventHandler Connected;
         public event ConnectionEventHandler Disconnected;
         public event ReciveDataHandler ReceiveData;
+        public event ReciveCodeHandler ReceiveCode;
 
         // 指令
         internal byte[] ReOrder;
@@ -32,11 +35,12 @@ namespace Socket
 
         #region[构造方法]
 
-        public SocketClient(string dev, string ip, int port, byte[] order) : base()
+        public SocketClient(string dev, string ip, int port, byte[] order, bool isScan = false) : base()
         {
             m_DevName = dev;
             m_IP = ip;
             m_Port = port;
+            m_isScan = isScan;
 
             ReOrder = order;
 
@@ -80,10 +84,11 @@ namespace Socket
                 {
                     Connected(host, port);
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
+                    log.LOG(e);
                     // don't care about error
-                    Console.WriteLine(ex.Message + ex.StackTrace);
+                    //Console.WriteLine(ex.Message + ex.StackTrace);
                 }
             }
         }
@@ -104,9 +109,10 @@ namespace Socket
 
                     tmp(m_DevName, head, message);
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    Console.WriteLine(ex.Message + ex.StackTrace);
+                    log.LOG(e);
+                    //Console.WriteLine(ex.Message + ex.StackTrace);
                 }
             }
         }
@@ -124,10 +130,11 @@ namespace Socket
                 {
                     Disconnected(host, port);
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
+                    log.LOG(e);
                     // don't care about error
-                    Console.WriteLine(ex.Message + ex.StackTrace);
+                    //Console.WriteLine(ex.Message + ex.StackTrace);
                 }
             }
         }
@@ -153,6 +160,8 @@ namespace Socket
 
                 m_Connected = true;
 
+                if (!m_Userful) return;
+
                 // 连接成功，开始异步读取数据
                 byte[] buffer = new byte[ISocketConst.BUFFER_SIZE];
                 m_Client.GetStream().BeginRead(buffer, 0, buffer.Length, ReceiverHandler, buffer);
@@ -161,7 +170,8 @@ namespace Socket
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message + e.StackTrace);
+                log.LOG(e);
+                //Console.WriteLine(e.Message + e.StackTrace);
                 m_RetryTimer = new Timer(delegate (object state)
                 {
                     m_RetryTimer = null;
@@ -188,7 +198,19 @@ namespace Socket
 
                 while (IsConnected)
                 {
-                    int bytesRead = m_Stream.Read(buffer, 0, ISocketConst.BUFFER_SIZE);
+                    if (!m_Userful || m_Stream == null) break;
+
+                    int bytesRead = 0;
+                    //try
+                    //{
+                        bytesRead = m_Stream.Read(buffer, 0, ISocketConst.BUFFER_SIZE);
+                    //}
+                    //catch (Exception ex)
+                    //{
+                    //    log.LOG(ex);
+                    //    break;
+                    //}
+
                     if (bytesRead == 0)
                     {
                         throw new IOException("No Data!");
@@ -197,6 +219,35 @@ namespace Socket
                     if (bufferData != null && bufferData.Length > 0)
                     {
                         readData = bufferData.Concat(readData).ToArray();
+                    }
+
+                    if (m_isScan)
+                    {
+                        //读取出来消息内容
+                        string code = Encoding.ASCII.GetString(readData, 0, ISocketConst.CODE_SIZE);
+                        log.LOG("Scan: " + code);
+                        //Console.WriteLine(code.Split('@').Length + ":"+code);
+                        if (!string.IsNullOrEmpty(code))
+                        {
+                            string[] str = m_DevName.Split('-');
+                            if (ReceiveCode != null)
+                            {
+                                try
+                                {
+                                    ReceiveCode(str[1], str[2], code);
+                                }
+                                catch (Exception e)
+                                {
+                                    log.LOG(e);
+                                    //Console.WriteLine(ex.Message + ex.StackTrace);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            readData = new byte[0];
+                        }
+                        continue;
                     }
 
                     int size = 0;
@@ -229,6 +280,7 @@ namespace Socket
 
                         if (size == 0)
                         {
+                            readData = new byte[0];
                             break;
                             //throw new IOException("Header key did not match!");
                         }
@@ -247,7 +299,7 @@ namespace Socket
                         }
 
                         // remove from data array
-                        readData = readData.Skip(size).ToArray();
+                        readData = new byte[0];
                     }
 
                     if (size != 0)
@@ -257,12 +309,12 @@ namespace Socket
                     }
                 }
             }
-            catch (IOException e)
+            catch (Exception e)
             {
+                log.LOG(e);
                 // unclean disconnect from service
                 Reconnect();
-                log.LOG(e.Message + e.StackTrace);
-                Console.WriteLine(e.Message + e.StackTrace);
+                //Console.WriteLine(e.Message + e.StackTrace);
             }
         }
 
@@ -292,7 +344,7 @@ namespace Socket
             catch (Exception ex)
             {
                 log.LOG(ex);
-                Console.WriteLine(ex.Message + ex.StackTrace);
+                //Console.WriteLine(ex.Message + ex.StackTrace);
             }
         }
 
@@ -308,7 +360,8 @@ namespace Socket
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message + e.StackTrace);
+                log.LOG(e);
+                //Console.WriteLine(e.Message + e.StackTrace);
             }
         }
 

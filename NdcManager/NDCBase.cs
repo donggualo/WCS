@@ -3,9 +3,7 @@ using NDC8.ACINET.ACI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using ToolManager;
 
 namespace NdcManager
@@ -148,6 +146,16 @@ namespace NdcManager
             SendNewMForRedirect(index, sta);
             log.LOG(string.Format("[Index {0}]  Redirect sent, station: {1}", index, station));
 
+        }
+
+        /// <summary>
+        /// 发送查询命令给小车PLC
+        /// </summary>
+        /// <param name="index">任务ID</param>
+        /// <param name="carid"></param>
+        internal void DoSelect(int carid)
+        {
+            SendHpilWordForPLC(carid);
         }
 
         /// <summary>
@@ -522,6 +530,17 @@ namespace NdcManager
         private void SendHpilWordForPLC(int Carid, int Param, int Value)
         {
             Message_hpil_word h1 = new Message_hpil_word(Carid, 57344, 2, Param, Value);
+
+            VCP9412.Instance.SendMessage(h1);
+        }
+
+        /// <summary>
+        /// Send _hpil message for select PLC param 
+        /// </summary>
+        /// <param name="Carid">车ID</param>
+        private void SendHpilWordForPLC(int Carid)
+        {
+            Message_hpil_word h1 = new Message_hpil_word(Carid, 57344, 1, 29, 1);
 
             VCP9412.Instance.SendMessage(h1);
         }

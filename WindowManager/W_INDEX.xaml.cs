@@ -10,6 +10,7 @@ using ModuleManager;
 
 using ADS = WcsManager.Administartor;
 using WcsManager.DevModule;
+using ModuleManager.PUB;
 
 namespace WindowManager
 {
@@ -50,6 +51,29 @@ namespace WindowManager
             {
                 DList = ADS.GetDevInfo();
                 EList = ADS.GetDevError();
+
+                if (CommonSQL.GetWcsParam("WCS_SCAN_CODE", out List<WCS_PARAM> info))
+                {
+                    foreach (WCS_PARAM item in info)
+                    {
+                        bool isOnline = ADS.mSocket.IsConnected(string.Format("{0}-{1}-{2}", "Scan", item.VALUE4, item.VALUE5));
+                        switch (item.VALUE3)
+                        {
+                            case 1:
+                                CBscan1.IsChecked = isOnline;
+                                break;
+                            case 2:
+                                CBscan2.IsChecked = isOnline;
+                                break;
+                            case 3:
+                                CBscan3.IsChecked = isOnline;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+
                 ShowData();
             }
             catch (Exception ex)

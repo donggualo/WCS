@@ -1,4 +1,4 @@
-﻿namespace Socket.module
+﻿namespace SocketManager.module
 {
     public class ISocketConst
     {
@@ -21,6 +21,8 @@
         internal const int ARF_SIZE = 20;
         internal const int FRT_SIZE = 19;
         internal const int PKL_SIZE = 12;
+
+        internal const int CODE_SIZE = 47;
 
         /// <summary>
         /// 字符串长度

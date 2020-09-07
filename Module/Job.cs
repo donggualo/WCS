@@ -55,6 +55,11 @@ namespace Module
         public DevFlag flag;
 
         /// <summary>
+        /// 完成任务 - 清除
+        /// </summary>
+        public bool Finish;
+
+        /// <summary>
         /// 插入数据库
         /// </summary>
         public void InsertDB()
@@ -401,19 +406,9 @@ namespace Module
     /// </summary>
     public enum WmsTaskStatus
     {
-        /// <summary>
-        /// 初始化
-        /// </summary>
         初始化,
-
-        /// <summary>
-        /// 执行中
-        /// </summary>
-        执行中,
-
-        /// <summary>
-        /// 完成
-        /// </summary>
+        待分配,
+        待执行,
         完成
     }
 }

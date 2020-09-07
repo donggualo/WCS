@@ -52,7 +52,8 @@
                 <DataGridTextColumn Binding="{Binding DEV_DUTY}" Header="特别属性"/>
                 <DataGridTextColumn Binding="{Binding DEV_USEFUL}" Header="使用状态"/>
                 <DataGridTextColumn Binding="{Binding DEV_WORK}" Header="工作状态"/>
-                <DataGridTextColumn Binding="{Binding LOCK_ID}" Header="锁定单号"/>
+                <DataGridTextColumn Binding="{Binding LOCK_ID1}" Header="锁定单号1"/>
+                <DataGridTextColumn Binding="{Binding LOCK_ID2}" Header="锁定单号2"/>
                 <DataGridTextColumn Binding="{Binding GAP_X}" Header="X轴坐标偏差"/>
                 <DataGridTextColumn Binding="{Binding GAP_Y}" Header="Y轴坐标偏差"/>
                 <DataGridTextColumn Binding="{Binding GAP_Z}" Header="Z轴坐标偏差"/>
@@ -61,10 +62,10 @@
             </DataGrid.Columns>
             <DataGrid.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="新增" Click="AddDev_Click"/>
-                    <MenuItem Header="修改" Click="UpdateDev_Click"/>
-                    <MenuItem Header="失效" Click="FailDev_Click"/>
-                    <MenuItem Header="生效" Click="WorkDev_Click"/>
+                    <!--<MenuItem Header="新增" Click="AddDev_Click"/>-->
+                    <!--<MenuItem Header="修改" Click="UpdateDev_Click"/>-->
+                    <MenuItem Header="停用" Click="FailDev_Click"/>
+                    <MenuItem Header="启用" Click="WorkDev_Click"/>
                     <!--<MenuItem Header="删除" Click="DeleteDev_Click"/>-->
                 </ContextMenu>
             </DataGrid.ContextMenu>

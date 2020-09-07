@@ -1,9 +1,9 @@
 ﻿using Module;
 using Module.DEV;
-using Socket.module;
+using SocketManager.module;
 using System.Runtime.InteropServices;
 
-namespace Socket.message
+namespace SocketManager.message
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct ArfRecive_S

@@ -23,6 +23,11 @@ namespace ModuleManager.WCS
         public string TYPE { get; set; }
 
         /// <summary>
+        /// 任务类型
+        /// </summary>
+        public int TASK_TYPE { get; set; }
+
+        /// <summary>
         /// 所属区域
         /// </summary>
         public string AREA { get; set; }
@@ -53,9 +58,14 @@ namespace ModuleManager.WCS
         public int IS_LOCK { get; set; }
 
         /// <summary>
-        /// 锁定单号
+        /// 锁定单号1
         /// </summary>
-        public string LOCK_ID { get; set; }
+        public string LOCK_ID1 { get; set; }
+
+        /// <summary>
+        /// 锁定单号2
+        /// </summary>
+        public string LOCK_ID2 { get; set; }
 
         /// <summary>
         /// 设备状态

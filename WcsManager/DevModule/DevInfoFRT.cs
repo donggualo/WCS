@@ -26,9 +26,14 @@ namespace WcsManager.DevModule
         public bool isLock;
 
         /// <summary>
-        /// 锁定号
+        /// 锁定号1
         /// </summary>
-        public string lockID;
+        public string lockID1;
+
+        /// <summary>
+        /// 锁定号2
+        /// </summary>
+        public string lockID2;
 
         /// <summary>
         /// 任务类型
@@ -39,6 +44,11 @@ namespace WcsManager.DevModule
         /// 是否使用
         /// </summary>
         public bool isUseful;
+
+        /// <summary>
+        /// 是否agv对接
+        /// </summary>
+        public bool isAGV;
 
         #endregion
 
@@ -54,10 +64,29 @@ namespace WcsManager.DevModule
         {
             try
             {
-                isLock = islock;
-                lockID = lockid;
-
                 CommonSQL.UpdateDevInfo(devName, lockid, islock);
+                isLock = islock;
+                lockID1 = lockid;
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 更新锁定状态
+        /// </summary>
+        public void IsLockUnlockNew(bool islock, string lockid1 = "", string lockid2 = "")
+        {
+            try
+            {
+                CommonSQL.UpdateDevInfo(0, devName, lockid1, lockid2, islock);
+                isLock = islock;
+                lockID1 = lockid1;
+                lockID2 = lockid2;
+
             }
             catch (Exception ex)
             {
@@ -72,9 +101,9 @@ namespace WcsManager.DevModule
         {
             try
             {
+                CommonSQL.UpdateDevInfo(devName, isuseful);
+                ADS.mSocket.UpdateUserful(devName, isuseful);
                 isUseful = isuseful;
-
-                CommonSQL.UpdateDevInfo(devName, isUseful);
             }
             catch (Exception ex)
             {
@@ -100,9 +129,11 @@ namespace WcsManager.DevModule
         /// </summary>
         /// <param name="tasktype"></param>
         /// <param name="goodsnum"></param>
-        public void StartTakeRoll(TaskTypeEnum tasktype, int goodsnum)
+        public void StartTakeRoll(TaskTypeEnum tasktype, int goodsnum, bool isScan = false)
         {
             byte roller = (byte)RollerStatusEnum.辊台全启动;
+            if (isScan) roller = (byte)RollerStatusEnum.辊台2启动;
+
             byte direction;
             byte take = (byte)RollerTypeEnum.接货;
             byte goods = (byte)goodsnum;
@@ -110,7 +141,7 @@ namespace WcsManager.DevModule
             switch (tasktype)
             {
                 case TaskTypeEnum.入库:
-                case TaskTypeEnum.AGV搬运:
+                case TaskTypeEnum.无:
                     direction = (byte)RollerDiretionEnum.正向;
                     break;
                 case TaskTypeEnum.出库:
@@ -160,7 +191,7 @@ namespace WcsManager.DevModule
                     return;
             }
             //                             字头    设备号 控制码  值1      值2      值3     值4      结束符
-            byte[] order = new byte[] { 0x94, 0x02, 0x01, 0x02, roller, direction, take, goodsnum, 0xFF, 0xFE };
+            byte[] order = new byte[] { 0x92, 0x02, 0x01, 0x02, roller, direction, take, goodsnum, 0xFF, 0xFE };
             ADS.mSocket.SendOrder(devName, order, true);
         }
 

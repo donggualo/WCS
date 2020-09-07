@@ -16,8 +16,8 @@ namespace ModuleManager.PUB
         public string NAME { set; get; }
 
         public string VALUE1 { set; get; }
-        public string VALUE2 { set; get; }
-        public string VALUE3 { set; get; }
+        public int VALUE2 { set; get; }
+        public int VALUE3 { set; get; }
         public string VALUE4 { set; get; }
         public string VALUE5 { set; get; }
         public string VALUE6 { set; get; }

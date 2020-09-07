@@ -1,9 +1,9 @@
 ﻿using Module;
-using Socket.message;
+using SocketManager.message;
 using System;
 using System.Diagnostics;
 
-namespace Socket.module
+namespace SocketManager.module
 {
     public static class MessageParser
     {

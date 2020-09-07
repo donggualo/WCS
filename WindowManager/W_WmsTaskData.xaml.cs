@@ -6,6 +6,8 @@ using System;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
+using WcsHttpManager;
+using ADS = WcsManager.Administartor;
 
 namespace WindowManager
 {
@@ -79,6 +81,7 @@ namespace WindowManager
                     sql = sql + string.Format(" and TASK_TYPE = '{0}'", CBtype.Text.Substring(0, 1));
                 }
 
+                sql = sql + " order by CREATION_TIME desc, UPDATE_TIME desc";
                 // 获取数据
                 DataTable dt = CommonSQL.mysql.SelectAll(sql);
                 DGtask.ItemsSource = dt.DefaultView;
@@ -97,5 +100,168 @@ namespace WindowManager
             }
         }
 
+
+        private void TEST_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // 请求WMS入库任务
+                //WmsModel wms = ADS.mHttp.DoBarcodeScanTask("A01", ADS.GetGoodsCode(DateTime.Now.ToString("yyMMdd")));
+                WmsModel wms = ADS.mHttp.DoBarcodeScanTask("A01", "@20200906001|Afpz|B10*22|Dw|Ea1|F001|G2440*0600");
+                if (wms != null && !string.IsNullOrEmpty(wms.Task_UID))
+                {
+                    CommonSQL.InsertTaskInfo(wms.Task_UID, (int)wms.Task_type, wms.Barcode, wms.W_S_Loc, wms.W_D_Loc, "");
+                    CommonSQL.UpdateWms(wms.Task_UID, (int)WmsTaskStatus.待分配);
+                }
+
+                Refresh_Click(sender, e);
+            }
+            catch (Exception ex)
+            {
+                Notice.Show(ex.Message, "错误", 3, MessageBoxIcon.Error);
+            }
+        }
+
+        private void FIN_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (DGtask.SelectedItem == null)
+                {
+                    return;
+                }
+
+                if (!WindowCommon.ConfirmAction("是否确认完成任务！！"))
+                {
+                    return;
+                }
+
+                string id = (DGtask.SelectedItem as DataRowView)["任务号"].ToString();
+                string f = (DGtask.SelectedItem as DataRowView)["来源"].ToString();
+                string t = (DGtask.SelectedItem as DataRowView)["目的"].ToString();
+                string type = (DGtask.SelectedItem as DataRowView)["任务类型"].ToString();
+
+                // 完成任务
+                string mes = null;
+                switch (type)
+                {
+                    case "入库":
+                        mes = ADS.mHttp.DoStockInFinishTask(t, id);
+                        break;
+                    case "出库":
+                        mes = ADS.mHttp.DoStockOutFinishTask(f, id);
+                        break;
+                    default:
+                        break;
+                }
+
+                if (mes.Contains("OK"))
+                {
+                    CommonSQL.UpdateWms(id, (int)WmsTaskStatus.完成);
+                    Notice.Show("成功！", "完成", 3, MessageBoxIcon.Success);
+                }
+                else
+                {
+                    Notice.Show(mes, "失败", 3, MessageBoxIcon.Warning);
+                }
+
+                Refresh_Click(sender, e);
+            }
+            catch (Exception ex)
+            {
+                Notice.Show(ex.Message, "错误", 3, MessageBoxIcon.Error);
+            }
+        }
+
+        private void GetBin_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (DGtask.SelectedItem == null)
+                {
+                    return;
+                }
+
+                if (!WindowCommon.ConfirmAction("是否请求库位分配！！"))
+                {
+                    return;
+                }
+
+                string id = (DGtask.SelectedItem as DataRowView)["任务号"].ToString();
+                string status = (DGtask.SelectedItem as DataRowView)["任务状态"].ToString();
+                string type = (DGtask.SelectedItem as DataRowView)["任务类型"].ToString();
+                if ( type == "入库")
+                {
+                    // 请求WMS入库分配
+                    if (ADS.AssignInSite("B01", id))
+                    {
+                        Notice.Show("完成！请刷新~", "分配", 3, MessageBoxIcon.Success);
+                    }
+                    else
+                    {
+                        Notice.Show("失败！", "失败", 3, MessageBoxIcon.Warning);
+                    }
+                }
+                else
+                {
+                    Notice.Show("该任务不符合分配条件！", "提示", 3, MessageBoxIcon.Info);
+                }
+
+                Refresh_Click(sender, e);
+            }
+            catch (Exception ex)
+            {
+                Notice.Show(ex.Message, "错误", 3, MessageBoxIcon.Error);
+            }
+        }
+
+        private void Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (DGtask.SelectedItem == null)
+                {
+                    return;
+                }
+
+                if (!WindowCommon.ConfirmAction("是否确认删除任务！！"))
+                {
+                    return;
+                }
+
+                string id = (DGtask.SelectedItem as DataRowView)["任务号"].ToString();
+                //string type = (DGtask.SelectedItem as DataRowView)["任务类型"].ToString();
+
+                //// 取消任务
+                //string mes = null;
+                //switch (type)
+                //{
+                //    case "入库":
+                //        mes = ADS.mHttp.DoCancelTask(WmsStatus.StockInTask, id);
+                //        break;
+                //    case "出库":
+                //        mes = ADS.mHttp.DoCancelTask(WmsStatus.StockOutTask, id);
+                //        break;
+                //    default:
+                //        break;
+                //}
+
+                //if (!string.IsNullOrEmpty(mes))
+                //{
+                    CommonSQL.DeleteWms(id);
+                    Notice.Show("成功！", "删除任务", 3, MessageBoxIcon.Success);
+                //}
+                //else
+                //{
+                //    Notice.Show(mes, "失败", 3, MessageBoxIcon.Warning);
+                //}
+
+                Refresh_Click(sender, e);
+            }
+            catch (Exception ex)
+            {
+                Notice.Show(ex.Message, "错误", 3, MessageBoxIcon.Error);
+            }
+        }
     }
 }

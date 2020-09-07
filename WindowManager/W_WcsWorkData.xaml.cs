@@ -36,7 +36,7 @@ namespace WindowManager
             {
                 // 搜索任务类型
                 CBtype.Items.Add(" ");
-                CBtype.Items.Add((int)TaskTypeEnum.AGV搬运 + ":" + TaskTypeEnum.AGV搬运);
+                CBtype.Items.Add((int)TaskTypeEnum.无 + ":" + TaskTypeEnum.无);
                 CBtype.Items.Add((int)TaskTypeEnum.入库 + ":" + TaskTypeEnum.入库);
                 CBtype.Items.Add((int)TaskTypeEnum.出库 + ":" + TaskTypeEnum.出库);
                 CBtype.SelectedIndex = 0;
@@ -107,7 +107,7 @@ namespace WindowManager
                 {
                     dr.Row[2] = (TaskTypeEnum)Convert.ToInt32(dr.Row[2]);
 
-                    if (dr.Row[2].Equals(TaskTypeEnum.AGV搬运.ToString()))
+                    if (dr.Row[2].Equals(TaskTypeEnum.无.ToString()))
                     {
                         dr.Row[3] = (WcsAgvStatus)Convert.ToInt32(dr.Row[3]);
                     }

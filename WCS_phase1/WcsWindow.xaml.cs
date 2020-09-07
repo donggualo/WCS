@@ -189,7 +189,16 @@ namespace WCS_phase1
         /// </summary>
         private void CheckDev_Click(object sender, RoutedEventArgs e)
         {
+            if (PublicParam.IsRe)
+            {
+                Notice.Show("处理基础信息后请重启，再开启调度！", "提示", 3, MessageBoxIcon.Info);
+                CheckDev.IsChecked = false;
+            }
+
             PublicParam.IsDoTask = (bool)CheckDev.IsChecked;
+
+            // 终止辊台任务
+            ADS.StopRoll();
         }
 
         /// <summary>

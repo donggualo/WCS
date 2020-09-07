@@ -1,5 +1,6 @@
 ﻿using Module;
 using Module.DEV;
+using ModuleManager.WCS;
 using PubResourceManager;
 using System;
 using ADS = WcsManager.Administartor;
@@ -31,9 +32,55 @@ namespace WcsManager.DevModule
         public string lockID;
 
         /// <summary>
+        /// 锁定目标
+        /// </summary>
+        public string lockLocWMS;
+
+        /// <summary>
+        /// 锁定运输车坐标1
+        /// </summary>
+        public int lockLocRGV1;
+
+        /// <summary>
+        /// 锁定运输车坐标2
+        /// </summary>
+        public int lockLocRGV2;
+
+        /// <summary>
         /// 设备参考
         /// </summary>
         public DevFlag flag;
+
+        /// <summary>
+        /// 任务类型
+        /// </summary>
+        public TaskTypeEnum taskType;
+
+        /// <summary>
+        /// 当前取货点X
+        /// </summary>
+        public int TakeSiteX;
+        /// <summary>
+        /// 当前取货点Y
+        /// </summary>
+        public int TakeSiteY;
+        /// <summary>
+        /// 当前取货点Z
+        /// </summary>
+        public int TakeSiteZ;
+
+        /// <summary>
+        /// 当前放货点X
+        /// </summary>
+        public int GiveSiteX;
+        /// <summary>
+        /// 当前放货点Y
+        /// </summary>
+        public int GiveSiteY;
+        /// <summary>
+        /// 当前放货点Z
+        /// </summary>
+        public int GiveSiteZ;
 
         /// <summary>
         /// X轴差距
@@ -79,10 +126,29 @@ namespace WcsManager.DevModule
         {
             try
             {
+                CommonSQL.UpdateDevInfo(devName, lockid, islock);
                 isLock = islock;
                 lockID = lockid;
 
-                CommonSQL.UpdateDevInfo(devName, lockid, islock);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 更新锁定状态
+        /// </summary>
+        public void IsLockUnlockNew(TaskTypeEnum tt, bool islock, string lockid = "")
+        {
+            try
+            {
+                CommonSQL.UpdateDevInfo((int)tt, devName, lockid, "", islock);
+                taskType = tt;
+                isLock = islock;
+                lockID = lockid;
+
             }
             catch (Exception ex)
             {
@@ -97,9 +163,9 @@ namespace WcsManager.DevModule
         {
             try
             {
+                CommonSQL.UpdateDevInfo(devName, isuseful);
+                ADS.mSocket.UpdateUserful(devName, isuseful);
                 isUseful = isuseful;
-
-                CommonSQL.UpdateDevInfo(devName, isUseful);
             }
             catch (Exception ex)
             {
@@ -107,6 +173,112 @@ namespace WcsManager.DevModule
             }
         }
 
+        /// <summary>
+        /// 坐标是否处理
+        /// </summary>
+        /// <returns></returns>
+        public bool IsOkLoc(bool isDel)
+        {
+            try
+            {
+                bool res = false;
+                if (isDel)
+                {
+                    // 清坐标
+                    lockLocWMS = "";
+
+                    lockLocRGV1 = 0;
+                    lockLocRGV2 = 0;
+
+                    TakeSiteX = 0;
+                    TakeSiteY = 0;
+                    TakeSiteZ = 0;
+
+                    GiveSiteX = 0;
+                    GiveSiteY = 0;
+                    GiveSiteZ = 0;
+
+                    res = true;
+                }
+                else
+                {
+                    if (string.IsNullOrEmpty(lockID))
+                    {
+                        // 清坐标
+                        lockLocWMS = "";
+
+                        lockLocRGV1 = 0;
+                        lockLocRGV2 = 0;
+
+                        TakeSiteX = 0;
+                        TakeSiteY = 0;
+                        TakeSiteZ = 0;
+
+                        GiveSiteX = 0;
+                        GiveSiteY = 0;
+                        GiveSiteZ = 0;
+                    }
+                    else
+                    {
+                        if (string.IsNullOrEmpty(lockLocWMS) ||
+                            lockLocRGV1 == 0 || lockLocRGV2 == 0 ||
+                            TakeSiteX == 0 || TakeSiteY == 0 || TakeSiteZ == 0 ||
+                            GiveSiteX == 0 || GiveSiteY == 0 || GiveSiteZ == 0)
+                        {
+                            WCS_CONFIG_LOC loc = CommonSQL.GetWcsLocByTask(lockID);
+                            if (loc == null || string.IsNullOrEmpty(loc.WMS_LOC) ||
+                                string.IsNullOrEmpty(loc.RGV_LOC_1) || string.IsNullOrEmpty(loc.RGV_LOC_2) ||
+                                string.IsNullOrEmpty(loc.AWC_LOC_TRACK) || string.IsNullOrEmpty(loc.AWC_LOC_STOCK))
+                            {
+                                throw new Exception("无对应作业【" + lockID + "】坐标！");
+                            }
+
+                            lockLocWMS = loc.WMS_LOC;
+                            lockLocRGV1 = int.Parse(loc.RGV_LOC_1);
+                            lockLocRGV2 = int.Parse(loc.RGV_LOC_2);
+                            string t = "";
+                            string g = "";
+                            switch (taskType)
+                            {
+                                case TaskTypeEnum.入库:
+                                    t = loc.AWC_LOC_TRACK;
+                                    g = loc.AWC_LOC_STOCK;
+                                    break;
+                                case TaskTypeEnum.出库:
+                                    t = loc.AWC_LOC_STOCK;
+                                    g = loc.AWC_LOC_TRACK;
+                                    break;
+                                default:
+                                    break;
+                            }
+                            if (!string.IsNullOrEmpty(t))
+                            {
+                                string[] ts = t.Split('-');
+                                TakeSiteX = int.Parse(ts[0]) + gapX;
+                                TakeSiteY = int.Parse(ts[1]) + gapY;
+                                TakeSiteZ = int.Parse(ts[2]) + gapZ;
+                            }
+                            if (!string.IsNullOrEmpty(g))
+                            {
+                                string[] gs = g.Split('-');
+                                GiveSiteX = int.Parse(gs[0]) + gapX;
+                                GiveSiteY = int.Parse(gs[1]) + gapY;
+                                GiveSiteZ = int.Parse(gs[2]) + gapZ;
+                            }
+                        }
+                        else
+                        {
+                            res = true;
+                        }
+                    }
+                }
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
 
         #region 任务
 

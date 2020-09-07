@@ -54,10 +54,10 @@ namespace WcsManager.DevModule
         {
             try
             {
+                CommonSQL.UpdateDevInfo(devName, lockid, islock);
                 isLock = islock;
                 lockID = lockid;
 
-                CommonSQL.UpdateDevInfo(devName, lockid, islock);
             }
             catch (Exception ex)
             {
@@ -72,9 +72,25 @@ namespace WcsManager.DevModule
         {
             try
             {
+                CommonSQL.UpdateDevInfo(devName, isuseful);
+                ADS.mSocket.UpdateUserful(devName, isuseful);
                 isUseful = isuseful;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
 
-                CommonSQL.UpdateDevInfo(devName, isUseful);
+        /// <summary>
+        /// 更新使用属性
+        /// </summary>
+        public void UpdateFlag(TaskTypeEnum flag)
+        {
+            try
+            {
+                CommonSQL.UpdateDevInfo(devName, (int)flag);
+                taskType = flag;
             }
             catch (Exception ex)
             {

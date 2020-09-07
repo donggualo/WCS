@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Socket.module
+namespace SocketManager.module
 {
     public class IMessageBase : IMessage
     {

@@ -38,8 +38,12 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Panuon.UI.Silver">
+      <HintPath>..\DLL\Panuon.UI.Silver.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -111,9 +115,13 @@
       <Project>{20AFF318-2F10-47E9-A66C-AED5B9C5E5F5}</Project>
       <Name>PubResourceManager</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Socket\Socket.csproj">
+    <ProjectReference Include="..\Socket\SocketManager.csproj">
       <Project>{AA1DAE48-F73F-4E40-9993-C7D32CA683F0}</Project>
-      <Name>Socket</Name>
+      <Name>SocketManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToolManager\ToolManager.csproj">
+      <Project>{B65231A1-C544-4279-AC1A-C62194C4AD3F}</Project>
+      <Name>ToolManager</Name>
     </ProjectReference>
     <ProjectReference Include="..\WcsHttpManager\WcsHttpManager.csproj">
       <Project>{1B6193D0-25F4-4405-883A-5999C0E8F42B}</Project>

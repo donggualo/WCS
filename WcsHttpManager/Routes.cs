@@ -81,7 +81,7 @@ namespace WcsHttpManager
                     {
                         return FailResponse(result);
                     }
-                    return OkResponse();
+                    return OkResponse(result);
                 }
             }
             catch (Exception e)
@@ -110,7 +110,7 @@ namespace WcsHttpManager
                     {
                         return FailResponse(result);
                     }
-                    return OkResponse();
+                    return OkResponse(result);
                 }
             }catch(Exception e)
             {
@@ -139,7 +139,7 @@ namespace WcsHttpManager
                     {
                         return FailResponse(result);
                     }
-                    return OkResponse();
+                    return OkResponse(result);
                 }
             }catch(Exception e)
             {
@@ -173,7 +173,6 @@ namespace WcsHttpManager
 
                     if (!WmsModelAdd(model, out string result))
                     {
-
                         return FailResponse(model.Task_UID);
                     }
                     return OkResponse(model.Task_UID);

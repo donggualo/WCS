@@ -3,7 +3,7 @@ using Module.DEV;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace Socket
+namespace SocketManager
 {
     public class SocketServer
     {
@@ -24,11 +24,13 @@ namespace Socket
         public delegate void ReciveRgvDataHandler(string devName, DeviceRGV module);
         public delegate void ReciveFrtDataHandler(string devName, DeviceFRT module);
         public delegate void RecivePklDataHandler(string devName, DevicePKL module);
+        public delegate void ReciveCodeDateHandler(string type, string dev, string code);
         public event ReciveAwcDataHandler AwcDataRecive;
         public event ReciveArfDataHandler ArfDataRecive;
         public event ReciveRgvDataHandler RgvDataRecive;
         public event ReciveFrtDataHandler FrtDataRecive;
         public event RecivePklDataHandler PklDataRecive;
+        public event ReciveCodeDateHandler CodeRecive;
 
         /// <summary>
         /// 设备组
@@ -41,10 +43,14 @@ namespace Socket
             new Thread(RefreshClient) { IsBackground = true }.Start();
         }
 
-        public void AddClient(string dev, string host, int port, byte[] refreshorder)
+        public void AddClient(string dev, string host, int port, byte[] refreshorder, bool isScan = false)
         {
-            SocketClient client = new SocketClient(dev, host, port, refreshorder);
+            SocketClient client = new SocketClient(dev, host, port, refreshorder == null ? null : GetCRCByte(refreshorder), isScan);
             client.ReceiveData += Client_ReceiveData;
+            if (isScan)
+            {
+                client.ReceiveCode += Client_ReceiveCode;
+            }
             Clients.Add(client);
         }
 
@@ -70,6 +76,11 @@ namespace Socket
                 default:
                     break;
             }
+        }
+
+        private void Client_ReceiveCode(string type, string dev, string code)
+        {
+            CodeRecive?.Invoke(type, dev, code);
         }
 
         private void RefreshClient()
@@ -99,7 +110,7 @@ namespace Socket
         {
             lock (_obj)
             {
-                Clients.Find(c => c.m_DevName == dev).SendMessage(order, isCycling);
+                Clients.Find(c => c.m_DevName == dev).SendMessage(GetCRCByte(order), isCycling);
             }
         }
 
@@ -136,9 +147,33 @@ namespace Socket
             }
         }
 
+        /// <summary>
+        /// 激活
+        /// </summary>
+        /// <param name="isUserful"></param>
+        public void UpdateUserful(string dev, bool isUserful)
+        {
+            lock (_obj)
+            {
+                foreach (SocketClient c in Clients.FindAll(c => c.m_DevName == dev))
+                {
+                    c.m_Userful = isUserful;
+                    if (!c.IsConnected)
+                    {
+                        c.Reconnect();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 连接状态
+        /// </summary>
+        /// <param name="dev"></param>
+        /// <returns></returns>
         public bool IsConnected(string dev)
         {
-            if (Clients.Exists(c=>c.m_DevName == dev))
+            if (Clients.Exists(c => c.m_DevName == dev))
             {
                 return Clients.Find(c => c.m_DevName == dev).IsConnected;
             }
@@ -147,5 +182,19 @@ namespace Socket
                 return false;
             }
         }
+
+        /// <summary>
+        /// 获得添加校验码后的结果
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <returns></returns>
+        public byte[] GetCRCByte(byte[] msg)
+        {
+            byte[] b = new byte[msg.Length + 2];
+            msg.CopyTo(b, 0);
+            CRCMethod.ToModbusCRC16Byte(msg).CopyTo(b, msg.Length);
+            return b;
+        }
+
     }
 }

@@ -79,6 +79,12 @@ namespace WindowManager
             string dev = "";
             try
             {
+                if (PublicParam.IsDoTask)
+                {
+                    Notice.Show("请先关闭顶部[设备运作]！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
+
                 if (CBdev.SelectedIndex == -1)
                 {
                     Notice.Show("请选择设备！", "提示", 3, MessageBoxIcon.Info);
@@ -88,6 +94,11 @@ namespace WindowManager
                 if (!ADS.mSocket.IsConnected(dev))
                 {
                     Notice.Show(dev + "已离线，无法操作！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
+
+                if (!WindowCommon.ConfirmAction("是否发送辊台指令！！"))
+                {
                     return;
                 }
 
@@ -107,6 +118,12 @@ namespace WindowManager
             string dev = "";
             try
             {
+                if (PublicParam.IsDoTask)
+                {
+                    Notice.Show("请先关闭顶部[设备运作]！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
+
                 if (CBdev.SelectedIndex == -1)
                 {
                     Notice.Show("请选择设备！", "提示", 3, MessageBoxIcon.Info);

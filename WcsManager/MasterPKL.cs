@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
-using Module;
+﻿using Module;
 using Module.DEV;
+using ModuleManager.NDC;
 using ModuleManager.WCS;
 using PubResourceManager;
+using System;
+using System.Collections.Generic;
+using System.Windows;
 using WcsManager.DevModule;
 using WcsManager.DevTask;
 
@@ -51,11 +54,18 @@ namespace WcsManager
                     area = d.AREA,
                     isLock = d.IS_LOCK == 1 ? true : false,
                     isUseful = d.IS_USEFUL == 1 ? true : false,
-                    lockID = d.LOCK_ID,
+                    lockID1 = d.LOCK_ID1,
+                    lockID2 = d.LOCK_ID2,
                     _ = new DevicePKL()
                 });
 
                 ADS.mSocket.AddClient(d.DEVICE, d.IP, d.PORT, DevInfoPKL.GetDataOrder());
+
+                if (d.IS_USEFUL == 0)
+                {
+                    ADS.mSocket.UpdateUserful(d.DEVICE, false);
+                }
+
             }
         }
 
@@ -132,101 +142,241 @@ namespace WcsManager
         /// <summary>
         /// 检测任务状态
         /// </summary>
-        public void DoTask()
-        {
-            if (task == null || task.Count == 0) return;
+        //public void DoTask()
+        //{
+        //    if (task == null || task.Count == 0) return;
 
-            foreach (TaskPKL t in task)
+        //    foreach (TaskPKL t in task)
+        //    {
+        //        //if (!t.activie) continue;
+        //        if (t.taskstatus == TaskStatus.finish) continue;
+        //        if (string.IsNullOrEmpty(t.device.devName))
+        //        {
+        //            DevInfoPKL device = FindFreeDevice(t.area);
+        //            if (device != null)
+        //            {
+        //                t.device = device;
+        //                t.device.IsLockUnlock(true, t.jobid);
+        //                t.UpdateDev();
+        //            }
+        //        }
+        //        else
+        //        {
+        //            // 故障&异常
+        //            if (t.device._.CommandStatus == CommandEnum.命令错误 || t.device._.DeviceStatus == DeviceEnum.设备故障)
+        //            {
+        //                continue;
+        //            }
+
+        //            switch (t.taskstatus)
+        //            {
+        //                case TaskStatus.init:
+        //                    t.UpdateStatus(TaskStatus.ongivesite);
+        //                    break;
+
+        //                case TaskStatus.totakesite:
+        //                    break;
+
+        //                case TaskStatus.ontakesite:
+        //                    break;
+
+        //                case TaskStatus.taking:
+        //                    break;
+
+        //                case TaskStatus.taked:
+        //                    break;
+
+        //                case TaskStatus.togivesite:
+        //                    break;
+
+        //                case TaskStatus.ongivesite:
+        //                    // 判断是否启动辊台送货
+        //                    if (t.giveready)
+        //                    {
+        //                        if (t.device._.GoodsStatus != GoodsEnum.辊台无货 && t.device._.ActionStatus == ActionEnum.停止)
+        //                        {
+        //                            t.device.StartGiveRoll();
+        //                        }
+
+        //                        if (t.device._.CurrentTask == TaskEnum.辊台任务)
+        //                        {
+        //                            t.UpdateStatus(TaskStatus.giving);
+        //                        }
+        //                    }
+        //                    else
+        //                    {
+        //                        // ? JOB 更新请求
+        //                        t.giveready = ADS.JobPartPKL_Give(t.jobid);
+        //                    }
+        //                    break;
+
+        //                case TaskStatus.giving:
+        //                    if (t.device._.GoodsStatus == GoodsEnum.辊台无货)
+        //                    {
+        //                        if (t.device._.ActionStatus == ActionEnum.停止)
+        //                        {
+        //                            t.UpdateStatus(TaskStatus.gived);
+        //                        }
+        //                        else
+        //                        {
+        //                            t.device.StopTask();
+        //                        }
+        //                    }
+        //                    else
+        //                    {
+        //                        t.device.StartGiveRoll();
+        //                    }
+        //                    break;
+
+        //                case TaskStatus.gived:
+        //                    // 解锁设备、完成任务
+        //                    t.device.IsLockUnlock(false);
+        //                    t.device = new DevInfoPKL();
+        //                    t.UpdateStatus(TaskStatus.finish);
+        //                    break;
+        //                default:
+        //                    break;
+        //            }
+        //        }
+        //    }
+        //}
+
+        public void DoTaskNew()
+        {
+            if (devices == null || devices.Count == 0) return;
+
+            foreach (DevInfoPKL d in devices)
             {
-                //if (!t.activie) continue;
-                if (t.taskstatus == TaskStatus.finish) continue;
-                if (string.IsNullOrEmpty(t.device.devName))
+                try
                 {
-                    DevInfoPKL device = FindFreeDevice(t.area);
-                    if (device != null)
-                    {
-                        t.device = device;
-                        t.device.IsLockUnlock(true, t.jobid);
-                        t.UpdateDev();
-                    }
-                }
-                else
-                {
-                    // 故障&异常
-                    if (t.device._.CommandStatus == CommandEnum.命令错误 || t.device._.DeviceStatus == DeviceEnum.设备故障)
+                    if (!d.isUseful || !ADS.mSocket.IsConnected(d.devName) ||
+                        d._.CommandStatus == CommandEnum.命令错误 ||
+                        d._.DeviceStatus == DeviceEnum.设备故障 ||
+                        string.IsNullOrEmpty(d.lockID2))
                     {
                         continue;
                     }
-
-                    switch (t.taskstatus)
+                    int aid = 0;
+                    if (!d.isLock)
                     {
-                        case TaskStatus.init:
-                            t.UpdateStatus(TaskStatus.ongivesite);
-                            break;
+                        if (!PublicParam.IsDoJobAGV) continue;
 
-                        case TaskStatus.totakesite:
-                            break;
-
-                        case TaskStatus.ontakesite:
-                            break;
-
-                        case TaskStatus.taking:
-                            break;
-
-                        case TaskStatus.taked:
-                            break;
-
-                        case TaskStatus.togivesite:
-                            break;
-
-                        case TaskStatus.ongivesite:
-                            // 判断是否启动辊台送货
-                            if (t.giveready)
+                        if (d._.ActionStatus == ActionEnum.停止 && d._.GoodsStatus == GoodsEnum.辊台1有货)
+                        {
+                            if (string.IsNullOrEmpty(d.lockID1))
                             {
-                                if (t.device._.GoodsStatus != GoodsEnum.辊台无货 && t.device._.ActionStatus == ActionEnum.停止)
+                                aid = ADS.mNDCControl.IsExistLoad(d.devName);
+                                if (aid == 0)
                                 {
-                                    t.device.StartGiveRoll();
+                                    // 没锁定就派车锁定
+                                    aid = CommonSQL.GetAGVid();
+                                    // NDC 任务是否存在
+                                    if (!ADS.mNDCControl.IsExist(aid))
+                                    {
+                                        // ? NDC 生成 AGV 搬运任务  
+                                        if (!ADS.mNDCControl.AddNDCTask(aid, d.devName, PublicParam.AgvUnLoadArea, out string result))
+                                        {
+                                            // LOG
+                                            CommonSQL.LogErr("PKL.DoTaskNew()", "AGV生成任务[ID，包装线辊台]", result, aid.ToString(), d.devName);
+                                            continue;
+                                        }
+                                    }
                                 }
 
-                                if (t.device._.CurrentTask == TaskEnum.辊台任务)
-                                {
-                                    t.UpdateStatus(TaskStatus.giving);
-                                }
+                                if (aid != 0) d.IsLockUnlockNew(true, aid.ToString(), d.lockID2);
                             }
                             else
                             {
-                                // ? JOB 更新请求
-                                t.giveready = ADS.JobPartPKL_Give(t.jobid);
+                                d.IsLockUnlockNew(true, d.lockID1, d.lockID2);
                             }
-                            break;
-
-                        case TaskStatus.giving:
-                            if (t.device._.GoodsStatus == GoodsEnum.辊台无货)
-                            {
-                                if (t.device._.ActionStatus == ActionEnum.停止)
-                                {
-                                    t.UpdateStatus(TaskStatus.gived);
-                                }
-                                else
-                                {
-                                    t.device.StopTask();
-                                }
-                            }
-                            else
-                            {
-                                t.device.StartGiveRoll();
-                            }
-                            break;
-
-                        case TaskStatus.gived:
-                            // 解锁设备、完成任务
-                            t.device.IsLockUnlock(false);
-                            t.device = null;
-                            t.UpdateStatus(TaskStatus.finish);
-                            break;
-                        default:
-                            break;
+                        }
                     }
+                    else
+                    {
+                        if (string.IsNullOrEmpty(d.lockID1))
+                        {
+                            // 解锁
+                            d.IsLockUnlockNew(false);
+                            continue;
+                        }
+                        else
+                        {
+                            aid = Convert.ToInt32(d.lockID1);
+
+                            // NDC 任务是否存在
+                            if (!ADS.mNDCControl.IsExist(aid))
+                            {
+                                // 解锁
+                                d.IsLockUnlockNew(false);
+                                continue;
+                            }
+
+                            // NDC 任务状态
+                            switch (ADS.mNDCControl.GetStatus(aid))
+                            {
+                                case NDCPlcStatus.LoadUnReady:
+                                case NDCPlcStatus.LoadReady:
+                                    if (d._.ActionStatus == ActionEnum.停止 && d._.GoodsStatus == GoodsEnum.辊台1有货)
+                                    {
+                                        // NDC 请求 AGV 启动辊台装货
+                                        if (!ADS.mNDCControl.DoLoad(aid, out string result))
+                                        {
+                                            // LOG
+                                            CommonSQL.LogErr("PKL.DoTaskNew()", "AGV辊台装货[ID]", result, aid.ToString());
+                                        }
+                                    }
+                                    break;
+                                case NDCPlcStatus.Loading:
+                                    if (d._.ActionStatus == ActionEnum.停止 && d._.GoodsStatus == GoodsEnum.辊台1有货)
+                                    {
+                                        d.StartGiveRoll();
+                                    }
+                                    break;
+                                case NDCPlcStatus.Loaded:
+                                case NDCPlcStatus.UnloadUnReady:
+                                    // NDC 任务是否需要重定向
+                                    if (!ADS.mNDCControl.IsRedirected(aid))
+                                    {
+                                        // 获取WMS任务目的区域
+                                        string area = ADS.GetInAreaWMS(d.area, d.lockID2, out string tid);
+                                        string frt = ADS.mFrt.GetRightFRT(area, TaskTypeEnum.入库);
+
+                                        if (string.IsNullOrEmpty(area) || string.IsNullOrEmpty(frt)) break;
+
+                                        // NDC 更新 AGV搬运卸货点 
+                                        if (!ADS.mNDCControl.DoReDerect(aid, frt, out string result))
+                                        {
+                                            // LOG
+                                            CommonSQL.LogErr("PKL.DoTaskNew()", "AGV更新卸货点[ID]", result, aid.ToString());
+                                            break;
+                                        }
+
+                                        // 更新
+                                        CommonSQL.UpdateWms(tid, (int)WmsTaskStatus.待分配);
+                                    }
+                                    else
+                                    {
+                                        // 解锁
+                                        d.IsLockUnlockNew(false);
+                                    }
+                                    break;
+                                default:
+                                    // 解锁
+                                    d.IsLockUnlockNew(false);
+                                    break;
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (ex.ToString().Contains("重复"))
+                    {
+                        MessageBox.Show(d.devName + ex.ToString());
+                    }
+                    // LOG
+                    CommonSQL.LogErr("PKL.DoTaskNew()", "包装线作业[设备]", (ex.Message + ex.Source), d.devName);
+                    continue;
                 }
             }
         }
@@ -270,6 +420,66 @@ namespace WcsManager
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// 结束任务
+        /// </summary>
+        /// <param name="jobid"></param>
+        public void OverTask(string jobid)
+        {
+            if (task.Exists(c => c.jobid == jobid))
+            {
+                TaskPKL t = task.Find(c => c.jobid == jobid);
+                if (string.IsNullOrEmpty(t.device.devName))
+                {
+                    // 解锁设备
+                    t.device.IsLockUnlock(false);
+                }
+                task.RemoveAll(c => c.jobid == jobid);
+            }
+        }
+
+
+        /// <summary>
+        /// 扫码数据处理
+        /// </summary>
+        /// <param name="devName"></param>
+        /// <param name="code"></param>
+        public void GetCode(string devName, string code)
+        {
+            try
+            {
+                if (!code.StartsWith("@") || code.Split('@').Length != 2) return;
+
+                if (devices.Exists(c => c.devName == devName))
+                {
+                    DevInfoPKL p = devices.Find(c => c.devName == devName);
+
+                    if (p.lockID2 != code)
+                    {
+                        //是否存在任务
+                        if (!CommonSQL.IsExistsInTask(code))
+                        {
+                            // 请求WMS分配
+                            if (ADS.AssignInArea(p.area, code))
+                            {
+                                p.IsLockUnlockNew(p.isLock, p.lockID1, code);
+                            }
+                        }
+                        else
+                        {
+                            throw new Exception(string.Format("读取二维码[{0}]异常.",code));
+                        }
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                // LOG
+                CommonSQL.LogErr("PKL.DoTaskNew()", "包装线作业[设备]", (ex.Message + ex.Source), devName);
+            }
         }
 
         #endregion

@@ -104,35 +104,16 @@
                     </TreeViewItem>
                     <TreeViewItem
                         FontSize="20"
-                        Header="作业任务"
-                        IsExpanded="False"
-                        Padding="10,0,0,0"
-                        pu:TreeViewHelper.ItemIcon="&#xf013;">
-                        <TreeViewItem
-                            Tag="WorkData"
-                            Header="WCS作业"
-                            MouseDoubleClick="TreeView_MouseDoubleClick"
-                            FontSize="20"
-                            Padding="20,0,0,0"/>
-                        <TreeViewItem
-                            Tag="TaskData"
-                            Header="WMS任务"
-                            MouseDoubleClick="TreeView_MouseDoubleClick"
-                            FontSize="20"
-                            Padding="20,0,0,0"/>
-                    </TreeViewItem>
-                    <TreeViewItem
-                        FontSize="20"
                         Header="基础设置"
                         IsExpanded="False"
                         Padding="10,0,0,0"
                         pu:TreeViewHelper.ItemIcon="&#xf013;">
-                        <TreeViewItem
+                        <!--<TreeViewItem
                             Tag="AreaData"
                             Header="区域"
                             MouseDoubleClick="TreeView_MouseDoubleClick"
                             FontSize="20"
-                            Padding="20,0,0,0"/>
+                            Padding="20,0,0,0"/>-->
                         <TreeViewItem
                             Tag="DevData"
                             Header="设备"
@@ -146,6 +127,13 @@
                             FontSize="20"
                             Padding="20,0,0,0"/>
                     </TreeViewItem>
+                    <TreeViewItem
+                        Tag="TaskData"
+                        MouseDoubleClick="TreeView_MouseDoubleClick"
+                        FontSize="20"
+                        Header="WMS任务"
+                        Padding="10,0,0,0"
+                        pu:TreeViewHelper.ItemIcon="&#xf022;" />
                     <TreeViewItem
                         Tag="ErrLogs"
                         MouseDoubleClick="TreeView_MouseDoubleClick"
@@ -161,7 +149,7 @@
                     <RowDefinition />
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10">
-                    <CheckBox Name="CheckAGV" Content="AGV搬运" Click="CheckAGV_Click"
+                    <CheckBox Name="CheckAGV" Content="搬运作业" Click="CheckAGV_Click"
                               pu:CheckBoxHelper.BoxHeight="30"
                               pu:CheckBoxHelper.BoxWidth="70"
                               pu:CheckBoxHelper.CheckBoxStyle="Switch2" 

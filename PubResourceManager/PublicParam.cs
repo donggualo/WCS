@@ -38,6 +38,14 @@ namespace PubResourceManager
         /// </summary>
         public static string AgvUnLoadArea = "FRTinit";
 
+
+
+        /// <summary>
+        /// 设备修改重启开关
+        /// </summary>
+        public static bool IsRe = false;
+
+
         #endregion
     }
 }

@@ -26,9 +26,14 @@ namespace WcsManager.DevModule
         public bool isLock;
 
         /// <summary>
-        /// 锁定号
+        /// 锁定号(AGV)
         /// </summary>
-        public string lockID;
+        public string lockID1;
+
+        /// <summary>
+        /// 二维码
+        /// </summary>
+        public string lockID2;
 
         /// <summary>
         /// 是否使用
@@ -49,10 +54,29 @@ namespace WcsManager.DevModule
         {
             try
             {
-                isLock = islock;
-                lockID = lockid;
-
                 CommonSQL.UpdateDevInfo(devName, lockid, islock);
+                isLock = islock;
+                lockID1 = lockid;
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 更新锁定状态
+        /// </summary>
+        public void IsLockUnlockNew(bool islock, string lockid1 = "", string lockid2 = "")
+        {
+            try
+            {
+                CommonSQL.UpdateDevInfo(0, devName, lockid1, lockid2, islock);
+                isLock = islock;
+                lockID1 = lockid1;
+                lockID2 = lockid2;
+
             }
             catch (Exception ex)
             {
@@ -67,9 +91,9 @@ namespace WcsManager.DevModule
         {
             try
             {
+                CommonSQL.UpdateDevInfo(devName, isuseful);
+                ADS.mSocket.UpdateUserful(devName, isuseful);
                 isUseful = isuseful;
-
-                CommonSQL.UpdateDevInfo(devName, isUseful);
             }
             catch (Exception ex)
             {
@@ -97,7 +121,7 @@ namespace WcsManager.DevModule
         {
             //                             字头    设备号 控制码  值1    结束符
             byte[] order = new byte[] { 0x82, 0x01, 0x01, 0x02, 0x01, 0xFF, 0xFE };
-            ADS.mSocket.SendOrder(devName, order, true);
+            ADS.mSocket.SendOrder(devName, order, false);
         }
 
         /// <summary>

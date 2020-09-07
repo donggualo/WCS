@@ -26,6 +26,9 @@ namespace WindowManager.Datagrid.Models
         private int errormsg;
         private string datetime;
 
+        private bool isScan1;
+        private bool isScan2;
+
 
         #region info
 
@@ -87,6 +90,28 @@ namespace WindowManager.Datagrid.Models
             {
                 commandsta = value;
                 OnPropertyChanged("CommandStatus");
+            }
+        }
+
+        [DisplayName("扫到码1")]
+        public bool IsScan1
+        {
+            get { return isScan1; }
+            set
+            {
+                isScan1 = value;
+                OnPropertyChanged("IsScan1");
+            }
+        }
+
+        [DisplayName("扫到码2")]
+        public bool IsScan2
+        {
+            get { return isScan2; }
+            set
+            {
+                isScan2 = value;
+                OnPropertyChanged("IsScan2");
             }
         }
 
@@ -233,6 +258,10 @@ namespace WindowManager.Datagrid.Models
             {
                 ErrorMessage = frt._.ErrorMessage;
             }
+
+            IsScan1 = !string.IsNullOrEmpty(frt.lockID1);
+
+            IsScan2 = !string.IsNullOrEmpty(frt.lockID2);
 
             UpdateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 

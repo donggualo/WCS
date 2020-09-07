@@ -27,6 +27,8 @@ namespace WindowManager.Datagrid.Models
         private int z;
         private string datetime;
 
+        private string wmsloc;
+
         #region info
 
         [DisplayName("连接")]
@@ -98,6 +100,17 @@ namespace WindowManager.Datagrid.Models
             {
                 currenttask = value;
                 OnPropertyChanged("CurrentTask");
+            }
+        }
+
+        [DisplayName("作业坐标")]
+        public string WMSloc
+        {
+            get { return wmsloc; }
+            set
+            {
+                wmsloc = value;
+                OnPropertyChanged("WMSloc");
             }
         }
 
@@ -253,6 +266,12 @@ namespace WindowManager.Datagrid.Models
             }
 
             UpdateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+
+            if (wmsloc != awc.lockLocWMS)
+            {
+                WMSloc = awc.lockLocWMS;
+            }
 
         }
 

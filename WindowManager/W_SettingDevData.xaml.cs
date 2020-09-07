@@ -91,10 +91,10 @@ namespace WindowManager
 			  when FLAG = 2 and TYPE = 'RGV' then '远离入库口'
 			  when FLAG = 1 and TYPE = 'AWC' then '靠近入库口'
 			  when FLAG = 2 and TYPE = 'AWC' then '远离入库口' else '' end) DEV_DUTY,
-	    (case when IS_USEFUL = 0 then '失效'
-			  when IS_USEFUL = 1 then '可用' else '' end) DEV_USEFUL,
-		(case when IS_LOCK = 0 then '空闲'
-			  when IS_LOCK = 1 then '锁定' else '' end) DEV_WORK, LOCK_ID,
+	    (case when IS_USEFUL = 0 then '停用'
+			  when IS_USEFUL = 1 then '启用' else '' end) DEV_USEFUL,
+		(case when IS_LOCK = 0 then '解锁'
+			  when IS_LOCK = 1 then '锁定' else '' end) DEV_WORK, LOCK_ID1, LOCK_ID2,
 			 GAP_X, GAP_Y, GAP_Z, LIMIT_X, LIMIT_Y 
   from wcs_config_device where 1=1";
                 if (!string.IsNullOrWhiteSpace(CBtype.Text))
@@ -170,12 +170,18 @@ namespace WindowManager
         {
             try
             {
+                if (PublicParam.IsDoTask)
+                {
+                    Notice.Show("请先关闭顶部[设备运作]！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
+
                 if (DGdevice.SelectedItem == null)
                 {
                     return;
                 }
                 string flag = (DGdevice.SelectedItem as DataRowView)["DEV_USEFUL"].ToString();
-                if (flag != "可用")
+                if (flag != "启用")
                 {
                     Notice.Show("该设备暂无法失效！", "提示", 3, MessageBoxIcon.Info);
                     return;
@@ -192,6 +198,7 @@ namespace WindowManager
                 string res = UpdateUseful(devtype, device, false);
                 if (string.IsNullOrEmpty(res))
                 {
+                    PublicParam.IsRe = true;
                     Notice.Show("失效成功！", "成功", 3, MessageBoxIcon.Success);
                 }
                 else
@@ -216,12 +223,18 @@ namespace WindowManager
         {
             try
             {
+                if (PublicParam.IsDoTask)
+                {
+                    Notice.Show("请先关闭顶部[设备运作]！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
+
                 if (DGdevice.SelectedItem == null)
                 {
                     return;
                 }
                 string flag = (DGdevice.SelectedItem as DataRowView)["DEV_USEFUL"].ToString();
-                if (flag != "失效")
+                if (flag != "停用")
                 {
                     return;
                 }
@@ -237,6 +250,7 @@ namespace WindowManager
                 string res = UpdateUseful(devtype, device, true);
                 if (string.IsNullOrEmpty(res))
                 {
+                    PublicParam.IsRe = true;
                     Notice.Show("生效成功！", "成功", 3, MessageBoxIcon.Success);
                 }
                 else

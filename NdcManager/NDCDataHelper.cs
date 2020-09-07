@@ -134,7 +134,7 @@ namespace NdcManager
         {
             ControlRunning = false;
 
-            if (Ikey >= 60000) Ikey = 500;
+            if (Ikey >= 60000) Ikey = 1;
             _sqlControl.UpdateIkeyValue(Ikey);
 
             foreach(NDCItem item in Items)
@@ -316,7 +316,7 @@ namespace NdcManager
         }
 
         /// <summary>
-        /// 
+        /// 更新默认信息
         /// </summary>
         private void RefreshInitGrid()
         {
@@ -367,7 +367,7 @@ namespace NdcManager
                 ndcItem.SetSMessage(message);
                 if (ndcItem.StatusInfo != "")
                 {
-                    Console.WriteLine(ndcItem.StatusInfo);
+                    //Console.WriteLine(ndcItem.StatusInfo);
                     log.LOG(ndcItem.StatusInfo);
                 }
                 CheckMagic(ndcItem, message);
@@ -376,7 +376,7 @@ namespace NdcManager
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                //Console.WriteLine(e.Message);
                 log.LOG(e.Message);
             }
 
@@ -408,7 +408,7 @@ namespace NdcManager
                 ndcItem.SetBMessage(message);
                 if (ndcItem.TaskInfo != "")
                 {
-                    Console.WriteLine(ndcItem.TaskInfo);
+                    //Console.WriteLine(ndcItem.TaskInfo);
                     log.LOG(ndcItem.TaskInfo);
                 }
                 CheckStatus(ndcItem, message);
@@ -417,7 +417,7 @@ namespace NdcManager
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                //Console.WriteLine(e.Message);
                 log.LOG(e.Message);
             }
         }
@@ -439,7 +439,7 @@ namespace NdcManager
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                //Console.WriteLine(e.Message);
                 log.LOG(e.Message);
             }
         }
@@ -599,7 +599,7 @@ namespace NdcManager
         /// <param name="v"></param>
         private void CheckPlc(NDCItem item, Message_vpil v)
         {
-            Console.WriteLine("PLC:" + v.PlcLp1 + " Value:" + v.Value1);
+            //Console.WriteLine("PLC:" + v.PlcLp1 + " Value:" + v.Value1);
             if (v.PlcLp1 == 29 && v.Value1 == 1)
             {
                 //装货中

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Socket.Properties {
+namespace SocketManager.Properties {
     using System;
     
     

@@ -22,14 +22,34 @@ namespace WcsManager.DevModule
         public string area;
 
         /// <summary>
+        /// 任务类型
+        /// </summary>
+        public TaskTypeEnum taskType;
+
+        /// <summary>
         /// 是否锁定
         /// </summary>
         public bool isLock;
 
         /// <summary>
-        /// 锁定号
+        /// 锁定号1
         /// </summary>
-        public string lockID;
+        public string lockID1;
+
+        /// <summary>
+        /// 锁定号2
+        /// </summary>
+        public string lockID2;
+
+        /// <summary>
+        /// 当前接获点
+        /// </summary>
+        public int TakeSite;
+
+        /// <summary>
+        /// 当前送货点
+        /// </summary>
+        public int GiveSite;
 
         /// <summary>
         /// 设备参考
@@ -65,10 +85,30 @@ namespace WcsManager.DevModule
         {
             try
             {
-                isLock = islock;
-                lockID = lockid;
-
                 CommonSQL.UpdateDevInfo(devName, lockid, islock);
+                isLock = islock;
+                lockID1 = lockid;
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 更新锁定状态
+        /// </summary>
+        public void IsLockUnlockNew(TaskTypeEnum tt, bool islock, string lockid1 = "", string lockid2 = "")
+        {
+            try
+            {
+                CommonSQL.UpdateDevInfo((int)tt, devName, lockid1, lockid2, islock);
+                taskType = tt;
+                isLock = islock;
+                lockID1 = lockid1;
+                lockID2 = lockid2;
+
             }
             catch (Exception ex)
             {
@@ -83,9 +123,9 @@ namespace WcsManager.DevModule
         {
             try
             {
+                CommonSQL.UpdateDevInfo(devName, isuseful);
+                ADS.mSocket.UpdateUserful(devName, isuseful);
                 isUseful = isuseful;
-
-                CommonSQL.UpdateDevInfo(devName, isUseful);
             }
             catch (Exception ex)
             {

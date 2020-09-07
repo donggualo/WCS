@@ -50,8 +50,16 @@ namespace WindowManager
         /// </summary>
         private void Add_Click(object sender, RoutedEventArgs e)
         {
+            if (PublicParam.IsDoTask)
+            {
+                Notice.Show("请先关闭顶部[设备运作]！", "提示", 3, MessageBoxIcon.Info);
+                return;
+            }
+
             W_SettingAreaDetail wd = new W_SettingAreaDetail();
             wd.ShowDialog();
+
+            PublicParam.IsRe = true;
             Refresh_Click(sender, e);
         }
 
@@ -60,6 +68,12 @@ namespace WindowManager
         /// </summary>
         private void Update_Click(object sender, RoutedEventArgs e)
         {
+            if (PublicParam.IsDoTask)
+            {
+                Notice.Show("请先关闭顶部[设备运作]！", "提示", 3, MessageBoxIcon.Info);
+                return;
+            }
+
             if (DGarea.SelectedItem == null)
             {
                 return;
@@ -80,6 +94,8 @@ namespace WindowManager
                 dr["ARF_P_STAND1"].ToString(),
                 dr["ARF_P_STAND2"].ToString());
             wd.ShowDialog();
+
+            PublicParam.IsRe = true;
             Refresh_Click(sender, e);
         }
 
@@ -90,6 +106,12 @@ namespace WindowManager
         {
             try
             {
+                if (PublicParam.IsDoTask)
+                {
+                    Notice.Show("请先关闭顶部[设备运作]！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
+
                 if (DGarea.SelectedItem == null)
                 {
                     return;
@@ -105,6 +127,7 @@ namespace WindowManager
                 String sqldelete = String.Format(@"delete from wcs_config_area where AREA = '{0}'", area);
                 CommonSQL.mysql.ExcuteSql(sqldelete);
 
+                PublicParam.IsRe = true;
                 Notice.Show("删除成功！", "成功", 3, MessageBoxIcon.Success);
                 Refresh_Click(sender, e);
             }

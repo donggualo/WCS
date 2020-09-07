@@ -15,6 +15,7 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -38,9 +39,23 @@
                 Foreground="#FF3F3F3F"
                 pu:ButtonHelper.HoverBrush="#3F3F3F"
                 pu:ButtonHelper.CornerRadius="6"/>
-        <Button Content="导入Excel" Visibility="Hidden"
-                Click="BtnExport_Click" 
+
+        <Button Content="坐标修改" 
+                Click="BtnModify_Click" 
                 Grid.Column="2" 
+                Grid.Row="0" 
+                Margin="10" Height="30" Width="80"
+                pu:ButtonHelper.ClickStyle="Sink"
+                FontFamily="{DynamicResource FontAwesome}"
+                pu:ButtonHelper.ButtonStyle="Hollow"
+                BorderBrush="#FF3F3F3F"
+                Foreground="#FF3F3F3F"
+                pu:ButtonHelper.HoverBrush="#3F3F3F"
+                pu:ButtonHelper.CornerRadius="6"/>
+        
+        <Button Content="导入Excel" Visibility="Visible"
+                Click="BtnExport_Click" 
+                Grid.Column="3" 
                 Grid.Row="0" 
                 Margin="10"
                 Height="30" Width="80"
@@ -51,11 +66,12 @@
                 Foreground="#FF3F3F3F"
                 pu:ButtonHelper.HoverBrush="#3F3F3F"
                 pu:ButtonHelper.CornerRadius="6"/>
-        <Button Content="保存数据"  Visibility="Hidden"
+        
+        <Button Content="保存数据"  Visibility="Visible"
                 Name="BtnInsertDB" 
                 Click="BtnInsertDB_Click" 
                 IsEnabled="False" 
-                Grid.Column="3" Grid.Row="0" Margin="10"
+                Grid.Column="4" Grid.Row="0" Margin="10"
                 Height="30" Width="80"
                 pu:ButtonHelper.ClickStyle="Sink"
                 FontFamily="{DynamicResource FontAwesome}"
@@ -66,9 +82,9 @@
                 pu:ButtonHelper.CornerRadius="6" />
 
         <Button Content="获取数据" 
-                Name="BtnGetData" 
-                Click="BtnGetData_Click" 
-                Grid.Column="4" Grid.Row="0" Margin="10"
+                Name="BtnGetData" Visibility="Hidden"
+                Click="BtnGetData_Click" IsEnabled="False"
+                Grid.Column="5" Grid.Row="0" Margin="10"
                 Height="30" Width="80"
                 pu:ButtonHelper.ClickStyle="Sink"
                 FontFamily="{DynamicResource FontAwesome}"
@@ -77,11 +93,12 @@
                 Foreground="#FF3F3F3F"
                 pu:ButtonHelper.HoverBrush="#3F3F3F"
                 pu:ButtonHelper.CornerRadius="6" />
+        
         <Button Content="更新坐标" 
-                Name="BtnUpLoc" 
+                Name="BtnUpLoc"  Visibility="Hidden"
                 Click="BtnUpdate_Click"
                 IsEnabled="False" 
-                Grid.Column="5" Grid.Row="0" Margin="10"
+                Grid.Column="6" Grid.Row="0" Margin="10"
                 Height="30" Width="80"
                 pu:ButtonHelper.ClickStyle="Sink"
                 FontFamily="{DynamicResource FontAwesome}"
@@ -94,7 +111,7 @@
         <DataGrid Name="DGloc"  
                   IsReadOnly="True" 
                   AutoGeneratingColumn="DataGrid_TimeFormat" 
-                  Grid.ColumnSpan="7" 
+                  Grid.ColumnSpan="8" 
                   Grid.Row="1"/>
     </Grid>
 </UserControl>

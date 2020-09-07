@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using Module;
+using ModuleManager.WCS;
 using PubResourceManager;
+using WcsHttpManager;
 using WcsManager.Base;
 using WcsManager.DevModule;
 
@@ -176,6 +179,25 @@ namespace WcsManager
             return mArf.IsTaskConform(jobid, TaskStatus.taking);
         }
 
+
+
+
+        /// <summary>
+        /// 固定辊台对接摆渡车点位
+        /// </summary>
+        /// <returns></returns>
+        public static int FRTbuttARF(string frt)
+        {
+            try
+            {
+                return CommonSQL.GetArfByFrt(frt);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         #endregion
 
 
@@ -214,7 +236,7 @@ namespace WcsManager
                         {
                             Connected = mSocket.IsConnected(pkl.devName) ? "在线" : "离线",
                             DevName = pkl.devName,
-                            Site = pkl.area,
+                            Site = Enum.GetName(typeof(GoodsEnum), pkl._.GoodsStatus),
                             TaskStatus = Enum.GetName(typeof(TaskEnum), pkl._.CurrentTask)
                         });
                     }
@@ -227,7 +249,7 @@ namespace WcsManager
                         {
                             Connected = mSocket.IsConnected(frt.devName) ? "在线" : "离线",
                             DevName = frt.devName,
-                            Site = frt.area,
+                            Site = Enum.GetName(typeof(GoodsEnum), frt._.GoodsStatus),
                             TaskStatus = Enum.GetName(typeof(TaskEnum), frt._.CurrentTask)
                         });
                     }
@@ -240,7 +262,7 @@ namespace WcsManager
                         {
                             Connected = mSocket.IsConnected(arf.devName) ? "在线" : "离线",
                             DevName = arf.devName,
-                            Site = arf._.CurrentSite.ToString(),
+                            Site = string.Format(@"[ {0} ], {1}", arf._.CurrentSite.ToString(), Enum.GetName(typeof(GoodsEnum), arf._.GoodsStatus)),
                             TaskStatus = Enum.GetName(typeof(TaskEnum), arf._.CurrentTask)
                         });
                     }
@@ -253,7 +275,7 @@ namespace WcsManager
                         {
                             Connected = mSocket.IsConnected(rgv.devName) ? "在线" : "离线",
                             DevName = rgv.devName,
-                            Site = rgv._.CurrentSite.ToString(),
+                            Site = string.Format(@"[ {0} ], {1}", rgv._.CurrentSite.ToString(), Enum.GetName(typeof(GoodsEnum), rgv._.GoodsStatus)),
                             TaskStatus = Enum.GetName(typeof(TaskEnum), rgv._.CurrentTask)
                         });
                     }
@@ -266,8 +288,8 @@ namespace WcsManager
                         {
                             Connected = mSocket.IsConnected(awc.devName) ? "在线" : "离线",
                             DevName = awc.devName,
-                            Site = string.Format(@"{0}-{1}-{2}",
-                                awc._.CurrentSiteX, awc._.CurrentSiteY, awc._.CurrentSiteZ),
+                            Site = string.Format(@"[ {0}-{1}-{2} ], {3}",
+                                awc._.CurrentSiteX, awc._.CurrentSiteY, awc._.CurrentSiteZ, Enum.GetName(typeof(AwcGoodsEnum), awc._.GoodsStatus)),
                             TaskStatus = Enum.GetName(typeof(TaskEnum), awc._.CurrentTask)
                         });
                     }
@@ -286,6 +308,291 @@ namespace WcsManager
             {
                 List<DevError> msg = new List<DevError>();
                 return msg;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        #endregion
+
+
+
+        #region [ WMS & NEW ]
+
+        public static void StopRoll()
+        {
+            try
+            {
+                mRgv.StopALLRoll();
+                mArf.StopALLRoll();
+                mFrt.StopALLRoll();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 获取最新货物编码
+        /// </summary>
+        /// <returns></returns>
+        public static string GetGoodsCode(string day)
+        {
+            try
+            {
+                //day = "202008";
+                string sn = CommonSQL.GetSN(day, out string box);
+                // @流水号|A产品名称|B型号|C批号|D颜色|E等级|F箱号|G规格
+                //return string.Format(@"@{0}|Afptc|B1200800|C{1}|Dw|Ea|F{2}|G1200800",
+                //    sn, day, box);
+                return string.Format(@"@20200906{0}|Afpz|B12*18|Dw|Ea2|F001|G2440*0600", sn);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 获取最新初始化入库任务目的区域
+        /// </summary>
+        /// <returns></returns>
+        public static string GetInAreaWMS(string from, string code, out string taskid)
+        {
+            try
+            {
+                string area = CommonSQL.GetToArea(code, out taskid);
+                if (string.IsNullOrEmpty(area))
+                {
+                    // 请求WMS任务
+                    WmsModel wms = mHttp.DoBarcodeScanTask(from, code);
+                    if (wms != null && !string.IsNullOrEmpty(wms.Task_UID))
+                    {
+                        // 写入数据库
+                        CommonSQL.InsertTaskInfo(wms.Task_UID, (int)wms.Task_type, wms.Barcode, wms.W_S_Loc, wms.W_D_Loc, "");
+
+                        area = wms.W_D_Loc;
+                    }
+                }
+                return area;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 获取最早待执行入库任务
+        /// </summary>
+        /// <returns></returns>
+        public static bool GetInTaskWMS(string from, int num, out string[] taskid)
+        {
+            try
+            {
+                bool res = false;
+                taskid = new string[num];
+                List<WCS_WMS_TASK> task = CommonSQL.GetInTaskInfo(from);
+                switch (num)
+                {
+                    case 1:
+                        if (task != null || task.Count != 0)
+                        {
+                            taskid[0] = task[0].TASK_ID;
+                            res = true;
+                        }
+                        break;
+                    case 2:
+                        if (task != null || task.Count == 2)
+                        {
+                            taskid[0] = task[0].TASK_ID;
+                            taskid[1] = task[1].TASK_ID;
+                            res = true;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 获取最早待执行出库任务
+        /// </summary>
+        /// <returns></returns>
+        public static int GetOutTaskWMS(string to, out string[] taskid)
+        {
+            try
+            {
+                // 等待WMS请求秒数  3min
+                int WMSs = 180;
+
+                int res = 0;
+                List<WCS_WMS_TASK> task = CommonSQL.GetOutTaskInfo(to);
+                taskid = new string[task.Count];
+
+                int s = 0;
+                if (task != null && task.Count > 0)
+                {
+                    TimeSpan ts = DateTime.Now.Subtract(task[0].CREATION_TIME);
+                    s = Convert.ToInt32(ts.TotalSeconds);
+                    task.Sort(SortOutTaskWMS);
+                }
+
+                switch (task.Count)
+                {
+                    case 1:
+                        if (s < WMSs) break;
+
+                        taskid[0] = task[0].TASK_ID;
+                        res = 1;
+                        break;
+                    case 2:
+                        if (s < WMSs) break;
+
+                        taskid[0] = task[0].TASK_ID;
+                        taskid[1] = task[1].TASK_ID;
+                        res = 2;
+                        break;
+                    case 3:
+                        if (s < WMSs) break;
+
+                        taskid[0] = task[0].TASK_ID;
+                        taskid[1] = task[1].TASK_ID;
+                        taskid[2] = task[2].TASK_ID;
+                        res = 3;
+                        break;
+                    case 4:
+                        taskid[0] = task[0].TASK_ID;
+                        taskid[1] = task[1].TASK_ID;
+                        taskid[2] = task[2].TASK_ID;
+                        taskid[3] = task[3].TASK_ID;
+                        res = 4;
+                        break;
+                    default:
+                        break;
+                }
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 出库任务排序
+        /// </summary>
+        /// <param name="t1"></param>
+        /// <param name="t2"></param>
+        /// <returns></returns>
+        private static int SortOutTaskWMS(WCS_WMS_TASK t1, WCS_WMS_TASK t2)
+        {
+            // -1:t1在前； 0:同序； 1:t2在前；
+            int res = 0;
+            if (t1 == null && t2 == null) return 0;
+            else if (t1 != null && t2 == null) return 1;
+            else if (t1 == null && t2 != null) return -1;
+
+            string[] t1_loc = t1.WMS_LOC_FROM.Split('-'); 
+            string[] t2_loc = t2.WMS_LOC_FROM.Split('-'); 
+
+            // 对比X
+            if (int.Parse(t1_loc[1]) == int.Parse(t2_loc[1]))
+            {
+                // X 相等对比 Y
+                if (int.Parse(t1_loc[2]) == int.Parse(t2_loc[2]))
+                {
+                    // Y 相等对比 Z
+                    if (int.Parse(t1_loc[3]) >= int.Parse(t2_loc[3]))
+                    {
+                        res = -1;
+                    }
+                    else
+                    {
+                        res = 1;
+                    }
+                }
+                else if (int.Parse(t1_loc[2]) > int.Parse(t2_loc[2]))
+                {
+                    res = -1;
+                }
+                else
+                {
+                    res = 1;
+                }
+            }
+            else if (int.Parse(t1_loc[1]) > int.Parse(t2_loc[1]))
+            {
+                res = -1;
+            }
+            else
+            {
+                res = 1;
+            }
+
+            return res;
+        }
+
+        /// <summary>
+        /// WMS分配库区
+        /// </summary>
+        /// <returns></returns>
+        public static bool AssignInArea(string area, string code)
+        {
+            try
+            {
+                bool res = false;
+                WmsModel wms = null;
+                if (!string.IsNullOrEmpty(area) && !string.IsNullOrEmpty(code))
+                { 
+                    // 请求WMS任务
+                    wms = mHttp.DoBarcodeScanTask(area, code);
+                    if (wms != null && !string.IsNullOrEmpty(wms.Task_UID))
+                    {
+                        // 写入数据库
+                        CommonSQL.InsertTaskInfo(wms.Task_UID, (int)wms.Task_type, wms.Barcode, wms.W_S_Loc, wms.W_D_Loc, "");
+
+                        res = true;
+                    }
+                }
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// WMS分配库位
+        /// </summary>
+        /// <returns></returns>
+        public static bool AssignInSite(string area, string tid)
+        {
+            try
+            {
+                bool res = false;
+                WmsModel wms = null;
+                if (!string.IsNullOrEmpty(area) && !string.IsNullOrEmpty(tid))
+                {
+                    // 请求WMS任务
+                    wms = mHttp.DoReachStockinPosTask(area, tid);
+                    if (wms != null && !string.IsNullOrEmpty(wms.Task_UID))
+                    {
+                        CommonSQL.UpdateWms(wms.Task_UID, (int)WmsTaskStatus.待执行, wms.W_S_Loc, wms.W_D_Loc);
+                        res = true;
+                    }
+                }
+                return res;
             }
             catch (Exception ex)
             {

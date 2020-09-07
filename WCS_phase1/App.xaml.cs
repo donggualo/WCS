@@ -11,6 +11,8 @@ namespace WCS_phase1
     /// </summary>
     public partial class Application : System.Windows.Application
     {
+        #region 异常捕获
+
         protected override void OnStartup(StartupEventArgs e)
         {
             //app.Run()时触发
@@ -19,6 +21,9 @@ namespace WCS_phase1
             //注册Application_Error ——全局异常捕获
             this.DispatcherUnhandledException += new System.Windows.Threading.DispatcherUnhandledExceptionEventHandler(App_DispatcherUnhandledException);
 
+            //  当某个异常未被捕获时出现。主要指的是非UI线程
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+
             #if DEBUG
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
             #endif
@@ -26,16 +31,41 @@ namespace WCS_phase1
 
         Log log;
 
+        void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            //可以记录日志并转向错误bug窗口友好提示用户
+            if (e.ExceptionObject is System.Exception)
+            {
+                if (log == null) log = new Log("app_error");
+                Exception ex = (System.Exception)e.ExceptionObject;
+                MessageBox.Show("确认后自动重启，异常提示：\n" + ex.Message + "\n" + ex.Source, "Error");
+                //Notice.Show("妈的！发现异常：\n" + ex.Message, "错误", 3, MessageBoxIcon.Error);
+                log.LOG(ex.Message + ex.StackTrace);
+                //////开启新的实例
+                System.Diagnostics.Process.Start(System.Windows.Forms.Application.ExecutablePath);
+
+                //////关闭当前实例
+                System.Diagnostics.Process.GetCurrentProcess().Kill();
+            }
+        }
+
         void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             if (log == null) log = new Log("app_error");
-            MessageBox.Show("妈的！发现异常：\n" + e.Exception.Message+e.Exception.Source, "Error");
+            MessageBox.Show("确认后自动重启，发现异常：\n" + e.Exception.Message + e.Exception.Source, "Error");
             //Notice.Show("妈的！发现异常：\n" + e.Exception.Message + "\n来源：" + e.Exception.Source, "错误", 3, MessageBoxIcon.Error);
             //处理完后，需要将 Handler = true 表示已处理过此异常
             e.Handled = true;
             log.LOG(e.Exception.Message + e.Exception.StackTrace);
+
+            //////开启新的实例
+            System.Diagnostics.Process.Start(System.Windows.Forms.Application.ExecutablePath);
+
+            //////关闭当前实例
+            System.Diagnostics.Process.GetCurrentProcess().Kill();
         }
 
+        #endregion
 
         #region 单开应用
 

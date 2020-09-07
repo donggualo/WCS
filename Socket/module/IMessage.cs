@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Socket.module
+namespace SocketManager.module
 {
     public interface IMessage
     {

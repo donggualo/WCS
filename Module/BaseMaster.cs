@@ -8,7 +8,7 @@ namespace Module
     /// </summary>
     public enum TaskTypeEnum
     {
-        AGV搬运,
+        无,
         入库,
         出库
     }

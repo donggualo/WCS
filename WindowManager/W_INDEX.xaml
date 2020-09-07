@@ -8,9 +8,12 @@
              d:DesignHeight="500" d:DesignWidth="800">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="9*"/>
-            <ColumnDefinition Width="11*"/>
-            <ColumnDefinition Width="80*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -35,16 +38,30 @@
 
         <Label Grid.Row="2" Content="设备状态：" VerticalContentAlignment="Center"/>
 
-            <DataGrid Grid.Row="3" Grid.ColumnSpan="3"  Name="DGd" CanUserAddRows="False" IsReadOnly="True" AutoGenerateColumns="False"
+        <DataGrid Grid.Row="3" Grid.ColumnSpan="6"  Name="DGd" CanUserAddRows="False" IsReadOnly="True" AutoGenerateColumns="False"
                       LoadingRow="DGd_LoadingRow" CanUserResizeRows="False"
                       CanUserReorderColumns="False" CanUserSortColumns="False">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Binding="{Binding Connected}" Header="连接" Width="*"/>
-                    <DataGridTextColumn Binding="{Binding DevName}" Header="名称" Width="*"/>
-                    <DataGridTextColumn Binding="{Binding Site}" Header="位置" Width="2*"/>
-                    <DataGridTextColumn Binding="{Binding TaskStatus}" Header="状态" Width="2*"/>
-                </DataGrid.Columns>
-            </DataGrid>
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding Connected}" Header="连接" Width="*"/>
+                <DataGridTextColumn Binding="{Binding DevName}" Header="名称" Width="*"/>
+                <DataGridTextColumn Binding="{Binding Site}" Header="状态" Width="2*"/>
+                <DataGridTextColumn Binding="{Binding TaskStatus}" Header="任务" Width="2*"/>
+            </DataGrid.Columns>
+        </DataGrid>
 
+        <CheckBox Grid.Column="3" Content="扫码器-1" Grid.Row="1" 
+            Name="CBscan1" Visibility="Visible" IsHitTestVisible="False"
+            pu:CheckBoxHelper.CheckedBackground="#FF67DA82"
+            pu:CheckBoxHelper.CheckBoxStyle="Switch"/>
+        
+        <CheckBox Grid.Column="4" Content="扫码器-2" Grid.Row="1" 
+            Name="CBscan2" Visibility="Visible" IsHitTestVisible="False"
+            pu:CheckBoxHelper.CheckedBackground="#FF67DA82"
+            pu:CheckBoxHelper.CheckBoxStyle="Switch"/>
+        
+        <CheckBox Grid.Column="5" Content="扫码器-3" Grid.Row="1" 
+            Name="CBscan3" Visibility="Visible" IsHitTestVisible="False"
+            pu:CheckBoxHelper.CheckedBackground="#FF67DA82"
+            pu:CheckBoxHelper.CheckBoxStyle="Switch"/>
     </Grid>
 </UserControl>

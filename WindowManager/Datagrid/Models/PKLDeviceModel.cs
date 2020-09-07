@@ -24,6 +24,8 @@ namespace WindowManager.Datagrid.Models
         private int errormsg;
         private string datetime;
 
+        private bool isScan;
+
 
         #region info
 
@@ -85,6 +87,17 @@ namespace WindowManager.Datagrid.Models
             {
                 commandsta = value;
                 OnPropertyChanged("CommandStatus");
+            }
+        }
+
+        [DisplayName("扫到码")]
+        public bool IsScan
+        {
+            get { return isScan; }
+            set
+            {
+                isScan = value;
+                OnPropertyChanged("IsScan");
             }
         }
 
@@ -152,15 +165,10 @@ namespace WindowManager.Datagrid.Models
 
             DevInfoPKL pkl = ADS.mPkl.devices.Find(c => c.devName == DevName);
 
-            if (isconnect != con)
-            {
-                IsConnected = con;
-            }
 
-            if (isUseful != pkl.isUseful)
-            {
-                IsUseful = pkl.isUseful;
-            }
+            IsConnected = con;
+
+            IsUseful = pkl.isUseful;
 
             if (!con) return;
 
@@ -199,6 +207,9 @@ namespace WindowManager.Datagrid.Models
             {
                 ErrorMessage = pkl._.ErrorMessage;
             }
+
+
+            IsScan = !string.IsNullOrEmpty(pkl.lockID2);
 
             UpdateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 

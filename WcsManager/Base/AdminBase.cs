@@ -1,13 +1,14 @@
 ﻿using Module;
+using ModuleManager.PUB;
+using ModuleManager.WCS;
+using NdcManager;
+using PubResourceManager;
+using SocketManager;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using ModuleManager.WCS;
-using PubResourceManager;
-using Socket;
+using System.Windows.Forms;
 using WcsHttpManager;
-using WcsManager.DevModule;
-using NdcManager;
 
 namespace WcsManager.Base
 {
@@ -19,6 +20,11 @@ namespace WcsManager.Base
 
         private readonly object _objJ = new object();
         private readonly object _objT = new object();
+
+        /// <summary>
+        /// 执行等待间隔
+        /// </summary>
+        internal const int REFRESH_TIMEOUT = 2 * 1000;
 
         /// <summary>
         /// 线程开关
@@ -133,37 +139,57 @@ namespace WcsManager.Base
         {
             if (!init)
             {
-                init = true;
+                header:
+                try
+                {
+                    init = true;
 
-                ID = CommonSQL.GetNewJobDetailID();
+                    //ID = CommonSQL.GetNewJobDetailID();
 
-                mSocket = new SocketServer();
+                    mSocket = new SocketServer();
 
-                mNDCControl = new NDCControl();
+                    mNDCControl = new NDCControl();
 
-                mHttpServer = new HttpServerControl();
+                    mHttpServer = new HttpServerControl();
 
-                mHttp = new HttpControl();
+                    mHttp = new HttpControl();
 
-                mArf = new MasterARF();
-                mAwc = new MasterAWC();
-                mFrt = new MasterFRT();
-                mRgv = new MasterRGV();
-                mPkl = new MasterPKL();
+                    mDis = new MasterDistance();
 
-                mDis = new MasterDistance();
+                    mArf = new MasterARF();
+                    mAwc = new MasterAWC();
+                    mFrt = new MasterFRT();
+                    mRgv = new MasterRGV();
+                    mPkl = new MasterPKL();
 
-                mWmsTask = new List<WmsTask>();
+                    //mWmsTask = new List<WmsTask>();
 
-                mTempInJob = new List<FrtTempJob>();
-                mTempOutJob = new List<AwcTempTask>();
-                mTempAgvJob = new List<AgvTempTask>();
+                    //mTempInJob = new List<FrtTempJob>();
+                    //mTempOutJob = new List<AwcTempTask>();
+                    //mTempAgvJob = new List<AgvTempTask>();
 
-                mInJob = new List<Job>();
-                mOutJob = new List<Job>();
-                mAgvJob = new List<Job>();
+                    //mInJob = new List<Job>();
+                    //mOutJob = new List<Job>();
+                    //mAgvJob = new List<Job>();
 
-                InitData();
+                    //InitData();
+
+                    AddCode();
+                }
+                catch (Exception ex)
+                {
+                    DialogResult res = MessageBox.Show("异常提示：\n" + ex.Message, "Error", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+                    if (res == DialogResult.Cancel)
+                    {
+                        BeforeClose();
+                        System.Environment.Exit(0);
+                    }
+                    else
+                    {
+                        BeforeClose();
+                        goto header;
+                    }
+                }
 
                 mHttpServer.WmsModelAdd += AddWmsTask;
 
@@ -172,18 +198,24 @@ namespace WcsManager.Base
                 mSocket.ArfDataRecive += mArf.UpdateDevice;
                 mSocket.FrtDataRecive += mFrt.UpdateDevice;
                 mSocket.PklDataRecive += mPkl.UpdateDevice;
+                mSocket.CodeRecive += GetCode;
 
-                DoJob += DoWcsJobIn;
-                DoJob += DoWcsJobOut;
-                DoJob += DoAgvJob;
+                //DoJob += DoWcsJobIn;
+                //DoJob += DoWcsJobOut;
+                //DoJob += DoAgvJob;
 
-                DoTask += mAwc.DoTask;
-                DoTask += mRgv.DoTask;
-                DoTask += mArf.DoTask;
-                DoTask += mFrt.DoTask;
-                DoTask += mPkl.DoTask;
+                //DoTask += mAwc.DoTask;
+                //DoTask += mRgv.DoTask;
+                //DoTask += mArf.DoTask;
+                //DoTask += mFrt.DoTask;
+                //DoTask += mPkl.DoTask;
 
-                new Thread(RunJob).Start();
+                DoTask += mAwc.DoTaskNew;
+                DoTask += mRgv.DoTaskNew;
+                DoTask += mFrt.DoTaskNew;
+                DoTask += mPkl.DoTaskNew;
+
+                //new Thread(RunJob).Start();
                 new Thread(RunTask).Start();
             }
         }
@@ -215,7 +247,7 @@ namespace WcsManager.Base
                     {
                         switch (wt.tasktype)
                         {
-                            case TaskTypeEnum.AGV搬运:
+                            case TaskTypeEnum.无:
                                 AddAgvTempTask(wt);
                                 break;
                             case TaskTypeEnum.入库:
@@ -250,7 +282,7 @@ namespace WcsManager.Base
                     };
                     switch ((TaskTypeEnum)header.JOB_TYPE)
                     {
-                        case TaskTypeEnum.AGV搬运:
+                        case TaskTypeEnum.无:
                             j.agvstatus = (WcsAgvStatus)header.JOB_STATUS;
                             mAgvJob.Add(j);
                             break;
@@ -335,6 +367,7 @@ namespace WcsManager.Base
         {
             while (PowerSwitch)
             {
+                Thread.Sleep(REFRESH_TIMEOUT);
                 lock (_objJ)
                 {
                     DoJob?.Invoke();
@@ -349,6 +382,7 @@ namespace WcsManager.Base
         {
             while (PowerSwitch)
             {
+                Thread.Sleep(REFRESH_TIMEOUT);
                 lock (_objT)
                 {
                     if (!PublicParam.IsDoTask) continue;
@@ -370,31 +404,41 @@ namespace WcsManager.Base
                 PublicParam.IsDoTask = false;
                 PowerSwitch = false;
 
-                if (DoJob != null)
+                if (mNDCControl != null)
                 {
-                    DoJob -= DoWcsJobIn;
-                    DoJob -= DoWcsJobOut;
-                    DoJob -= DoAgvJob;
+                    mNDCControl.Close();
                 }
+
+                //if (DoJob != null)
+                //{
+                //    DoJob -= DoWcsJobIn;
+                //    DoJob -= DoWcsJobOut;
+                //    DoJob -= DoAgvJob;
+                //}
 
                 if (DoTask != null)
                 {
-                    DoTask -= mAwc.DoTask;
-                    DoTask -= mRgv.DoTask;
-                    DoTask -= mArf.DoTask;
-                    DoTask -= mFrt.DoTask;
-                    DoTask -= mPkl.DoTask;
+                    //DoTask -= mAwc.DoTask;
+                    //DoTask -= mRgv.DoTask;
+                    //DoTask -= mArf.DoTask;
+                    //DoTask -= mFrt.DoTask;
+                    //DoTask -= mPkl.DoTask;
+
+                    DoTask -= mAwc.DoTaskNew;
+                    DoTask -= mRgv.DoTaskNew;
+                    DoTask -= mFrt.DoTaskNew;
+                    DoTask -= mPkl.DoTaskNew;
                 }
 
                 if (mSocket != null)
                 {
+                    mSocket.Close();
                     if (mAwc != null) mSocket.AwcDataRecive -= mAwc.UpdateDevice;
                     if (mRgv != null) mSocket.RgvDataRecive -= mRgv.UpdateDevice;
                     if (mArf != null) mSocket.ArfDataRecive -= mArf.UpdateDevice;
                     if (mFrt != null) mSocket.FrtDataRecive -= mFrt.UpdateDevice;
                     if (mPkl != null) mSocket.PklDataRecive -= mPkl.UpdateDevice;
-
-                    mSocket.Close();
+                    mSocket.CodeRecive -= GetCode;
                 }
 
                 if (mHttpServer != null)
@@ -688,7 +732,7 @@ namespace WcsManager.Base
                 AgvTempTask agv = mTempAgvJob.Find(c => c.pkl == pkl && c.CanStart());
                 task = agv.task;
                 // 库区辊台任务
-                mFrt.AddTask(jobid, agv.areaWH, TaskTypeEnum.AGV搬运, 1, DevType.AGV, DevType.空设备);
+                mFrt.AddTask(jobid, agv.areaWH, TaskTypeEnum.无, 1, DevType.AGV, DevType.空设备);
 
                 mTempAgvJob.Remove(agv);
 
@@ -719,7 +763,7 @@ namespace WcsManager.Base
             };
             switch (type)
             {
-                case TaskTypeEnum.AGV搬运:
+                case TaskTypeEnum.无:
                     wcs.jobid = "A" + wcs.jobid;
                     mAgvJob.Add(wcs);
                     break;
@@ -737,8 +781,8 @@ namespace WcsManager.Base
                     return;
             }
             wcs.InsertDB();
-            if (task1 != null) task1.UpdateStatus(WmsTaskStatus.执行中);
-            if (task2 != null) task2.UpdateStatus(WmsTaskStatus.执行中);
+            if (task1 != null) task1.UpdateStatus(WmsTaskStatus.待分配);
+            if (task2 != null) task2.UpdateStatus(WmsTaskStatus.待分配);
         }
 
         /// <summary>
@@ -751,6 +795,7 @@ namespace WcsManager.Base
             // 生成任务
             CheckFrtTempJob();
 
+            mInJob.RemoveAll(c => c.Finish);
             // 运行任务
             if (mInJob == null || mInJob.Count == 0) return;
             foreach (Job j in mInJob)
@@ -895,8 +940,15 @@ namespace WcsManager.Base
                         // ? WMS 通知完成
                         if (j.wmstask1 != null) FinishWms(j.wmstask1.taskuid);
                         if (j.wmstask2 != null) FinishWms(j.wmstask2.taskuid);
+                        // 清除
+                        mFrt.OverTask(j.jobid);
+                        mArf.OverTask(j.jobid);
+                        mRgv.OverTask(j.jobid);
+                        mAwc.OverTask(j.jobid);
                         // ? 备份
                         CommonSQL.Backup(j.jobid);
+
+                        j.Finish = true;
                         break;
 
                     default:
@@ -921,6 +973,7 @@ namespace WcsManager.Base
                 }
             }
 
+            mOutJob.RemoveAll(c => c.Finish);
             // 运行任务
             if (mOutJob == null || mOutJob.Count == 0) return;
             foreach (Job j in mOutJob)
@@ -999,8 +1052,15 @@ namespace WcsManager.Base
                         // ? WMS 通知完成
                         if (j.wmstask1 != null) FinishWms(j.wmstask1.taskuid);
                         if (j.wmstask2 != null) FinishWms(j.wmstask2.taskuid);
+                        // 清除
+                        mFrt.OverTask(j.jobid);
+                        mArf.OverTask(j.jobid);
+                        mRgv.OverTask(j.jobid);
+                        mAwc.OverTask(j.jobid);
                         // ?备份
                         CommonSQL.Backup(j.jobid);
+
+                        j.Finish = true;
                         break;
                     default:
                         break;
@@ -1024,10 +1084,11 @@ namespace WcsManager.Base
                     // 同一包装线区域仅存留 1个 搬运作业
                     if (mAgvJob.FindAll(c => c.area == m.area && c.agvstatus == WcsAgvStatus.init).Count >= 1) return;
 
-                    AddWcsJob(TaskTypeEnum.AGV搬运, m.area, null, null);
+                    AddWcsJob(TaskTypeEnum.无, m.area, null, null);
                 }
             }
 
+            mAgvJob.RemoveAll(c => c.Finish);
             // 运行任务
             if (mAgvJob == null || mAgvJob.Count == 0) return;
             foreach (Job j in mAgvJob)
@@ -1040,7 +1101,7 @@ namespace WcsManager.Base
                 {
                     case WcsAgvStatus.init:
                         // 包装线辊台任务
-                        mPkl.AddTask(j.jobid, j.area, TaskTypeEnum.AGV搬运, 1, DevType.空设备, DevType.AGV);
+                        mPkl.AddTask(j.jobid, j.area, TaskTypeEnum.无, 1, DevType.空设备, DevType.AGV);
                         j.UpdateStatus((int)WcsAgvStatus.pktoagv);
                         break;
 
@@ -1100,7 +1161,7 @@ namespace WcsManager.Base
                             }
                         }
 
-                        if (mFrt.IsTaskConform(j.jobid, TaskTypeEnum.AGV搬运, TaskStatus.taking))
+                        if (mFrt.IsTaskConform(j.jobid, TaskTypeEnum.无, TaskStatus.taking))
                         {
                             // ? NDC 请求 AGV 启动辊台卸货
                             if (!mNDCControl.DoUnLoad(aID, out string result))
@@ -1111,7 +1172,7 @@ namespace WcsManager.Base
                             }
                         }
 
-                        if (mFrt.IsTaskConform(j.jobid, TaskTypeEnum.AGV搬运, TaskStatus.finish))
+                        if (mFrt.IsTaskConform(j.jobid, TaskTypeEnum.无, TaskStatus.finish))
                         {
                             j.UpdateStatus((int)WcsAgvStatus.finish);
                         }
@@ -1120,6 +1181,11 @@ namespace WcsManager.Base
                     case WcsAgvStatus.finish:
                         // ? WMS 生成货位入库任务
                         AddWmsInTask_Site(mFrt.GetFrtArea(j.jobid), mFrt.GetFrtName(j.jobid), j.wmstask1.taskuid);
+                        // 清除
+                        mPkl.OverTask(j.jobid);
+                        mFrt.OverTask(j.jobid);
+
+                        j.Finish = true;
                         break;
                     default:
                         break;
@@ -1150,30 +1216,30 @@ namespace WcsManager.Base
         {
             try
             {
-                if (wms.Task_type == WmsStatus.StockOutTask)
-                {
-                    AddAwcTempJob(new WmsTask()
-                    {
-                        taskuid = wms.Task_UID,
-                        tasktype = TaskTypeEnum.出库,
-                        barcode = wms.Barcode,
-                        takesite = wms.W_S_Loc,
-                        //givesite = wms.W_D_Loc
-                        givesite = wms.W_S_Loc.Split('-')[0]
-                    });
-                }
-                else if (wms.Task_type == WmsStatus.Cancel)
-                {
-                    // ? WMS 取消任务
-                }
+                //if (wms.Task_type == WmsStatus.StockOutTask)
+                //{
+                //    AddAwcTempJob(new WmsTask()
+                //    {
+                //        taskuid = wms.Task_UID,
+                //        tasktype = TaskTypeEnum.出库,
+                //        barcode = wms.Barcode,
+                //        takesite = wms.W_S_Loc,
+                //        //givesite = wms.W_D_Loc
+                //        givesite = wms.W_S_Loc.Split('-')[0]
+                //    });
+                //}
+                //else if (wms.Task_type == WmsStatus.Cancel)
+                //{
+                //}
 
-                result = "";
+                CommonSQL.InsertTaskInfo(wms.Task_UID, (int)wms.Task_type, wms.Barcode, wms.W_S_Loc, wms.W_S_Loc.Split('-')[0], "");
+                result = "OK:" + wms.Task_UID;
                 return true;
             }
             catch (Exception ex)
             {
                 // LOG
-                CommonSQL.LogErr("AddWmsOutTask()", "WMS出库任务[任务ID]", ex.Message, wms.Task_UID);
+                CommonSQL.LogErr("AddWmsTask()", "WMS任务[任务ID]", ex.Message, wms.Task_UID);
                 result = ex.Message;
                 return false;
             }
@@ -1199,7 +1265,7 @@ namespace WcsManager.Base
                 AddAgvTempTask(new WmsTask()
                 {
                     taskuid = wms.Task_UID,
-                    tasktype = TaskTypeEnum.AGV搬运,
+                    tasktype = TaskTypeEnum.无,
                     barcode = wms.Barcode,
                     takesite = wms.W_S_Loc,
                     givesite = wms.W_D_Loc
@@ -1287,7 +1353,7 @@ namespace WcsManager.Base
             WmsStatus ws;
             switch (tt)
             {
-                case TaskTypeEnum.AGV搬运:
+                case TaskTypeEnum.无:
                 case TaskTypeEnum.入库:
                     ws = WmsStatus.StockInTask;
                     break;
@@ -1310,7 +1376,7 @@ namespace WcsManager.Base
             WmsStatus ws;
             switch (tt)
             {
-                case TaskTypeEnum.AGV搬运:
+                case TaskTypeEnum.无:
                 case TaskTypeEnum.入库:
                     ws = WmsStatus.StockInTask;
                     break;
@@ -1379,6 +1445,43 @@ namespace WcsManager.Base
 
 
         #region [ 其他 ]
+
+        /// <summary>
+        /// 加载扫码器信息
+        /// </summary>
+        private void AddCode()
+        {
+            if (CommonSQL.GetWcsParam("WCS_SCAN_CODE", out List<WCS_PARAM> info))
+            {
+                foreach (WCS_PARAM item in info)
+                {
+                    mSocket.AddClient(string.Format("{0}-{1}-{2}","Scan", item.VALUE4, item.VALUE5), item.VALUE1, item.VALUE2, null, true);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 获取二维码
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="dev"></param>
+        /// <param name="code"></param>
+        public void GetCode(string type, string dev, string code)
+        {
+            //MessageBox.Show(type + " ---- " + dev + " ---- " + code);
+            //return;
+            switch (type)
+            {
+                case DeviceType.包装线辊台:
+                    mPkl.GetCode(dev, code);
+                    break;
+                case DeviceType.固定辊台:
+                    mFrt.GetCode(dev, code);
+                    break;
+                default:
+                    break;
+            }
+        }
 
         /// <summary>
         /// 设备信息转换

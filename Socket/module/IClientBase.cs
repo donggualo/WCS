@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Threading;
 using ToolManager;
 
-namespace Socket.module
+namespace SocketManager.module
 {
     public abstract class IClientBase : IDisposable
     {
@@ -25,6 +25,12 @@ namespace Socket.module
         internal string m_IP;
         internal int m_Port;
         internal bool m_Connected;
+        internal bool m_isScan; // 扫码器
+
+        /// <summary>
+        /// 是否激活
+        /// </summary>
+        internal bool m_Userful = true;
 
         internal NetworkStream m_Stream;
 
@@ -56,12 +62,15 @@ namespace Socket.module
         {
             try
             {
+                if (!m_Userful) return;
+
                 m_Client = new TcpClient();
                 m_Client.BeginConnect(ip, port, new AsyncCallback(ConnectCallback), null);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message + ex.StackTrace);
+                log.LOG(ex);
+                //Console.WriteLine(ex.Message + ex.StackTrace);
             }
         }
 

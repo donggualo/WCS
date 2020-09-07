@@ -173,5 +173,10 @@ namespace WindowManager
         {
         }
 
+        private void BtnModify_Click(object sender, RoutedEventArgs e)
+        {
+            W_SettingLocData wd = new W_SettingLocData();
+            wd.ShowDialog();
+        }
     }
 }
