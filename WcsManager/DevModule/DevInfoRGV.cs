@@ -109,6 +109,11 @@ namespace WcsManager.DevModule
                 lockID1 = lockid1;
                 lockID2 = lockid2;
 
+                if (tt == TaskTypeEnum.无)
+                {
+                    GiveSite = 0;
+                    TakeSite = 0;
+                }
             }
             catch (Exception ex)
             {

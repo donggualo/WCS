@@ -3,6 +3,8 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
 using ToolManager;
+using WindowManager;
+using ADS = WcsManager.Administartor;
 
 namespace WCS_phase1
 {
@@ -38,11 +40,14 @@ namespace WCS_phase1
             {
                 if (log == null) log = new Log("app_error");
                 Exception ex = (System.Exception)e.ExceptionObject;
-                MessageBox.Show("确认后自动重启，异常提示：\n" + ex.Message + "\n" + ex.Source, "Error");
-                //Notice.Show("妈的！发现异常：\n" + ex.Message, "错误", 3, MessageBoxIcon.Error);
                 log.LOG(ex.Message + ex.StackTrace);
-                //////开启新的实例
-                System.Diagnostics.Process.Start(System.Windows.Forms.Application.ExecutablePath);
+                ADS.BeforeClose();
+
+                if (WindowCommon.ConfirmAction("是否重启，发现异常：\n" + ex.Message + ex.Source))
+                {
+                    //////开启新的实例
+                    System.Diagnostics.Process.Start(System.Windows.Forms.Application.ExecutablePath);
+                }
 
                 //////关闭当前实例
                 System.Diagnostics.Process.GetCurrentProcess().Kill();
@@ -52,14 +57,16 @@ namespace WCS_phase1
         void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             if (log == null) log = new Log("app_error");
-            MessageBox.Show("确认后自动重启，发现异常：\n" + e.Exception.Message + e.Exception.Source, "Error");
-            //Notice.Show("妈的！发现异常：\n" + e.Exception.Message + "\n来源：" + e.Exception.Source, "错误", 3, MessageBoxIcon.Error);
+            ADS.BeforeClose();
             //处理完后，需要将 Handler = true 表示已处理过此异常
             e.Handled = true;
             log.LOG(e.Exception.Message + e.Exception.StackTrace);
 
-            //////开启新的实例
-            System.Diagnostics.Process.Start(System.Windows.Forms.Application.ExecutablePath);
+            if (WindowCommon.ConfirmAction("是否重启，发现异常：\n" + e.Exception.Message + e.Exception.StackTrace))
+            {
+                //////开启新的实例
+                System.Diagnostics.Process.Start(System.Windows.Forms.Application.ExecutablePath);
+            }
 
             //////关闭当前实例
             System.Diagnostics.Process.GetCurrentProcess().Kill();

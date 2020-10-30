@@ -545,7 +545,6 @@ namespace WcsManager
                     DevInfoARF a = devices.Find(c => c.area == area && c.taskType == tt && c.isUseful);
 
                     if (ADS.mSocket.IsConnected(a.devName) &&
-                        a._.GoodsStatus != GoodsEnum.辊台满货 &&
                         a._.CommandStatus != CommandEnum.命令错误 && a._.DeviceStatus != DeviceEnum.设备故障)
                     {
                         if (a._.CurrentTask == TaskEnum.辊台任务 && a._.FinishTask == TaskEnum.辊台任务)
@@ -658,8 +657,7 @@ namespace WcsManager
 
                         if (a.isLock)
                         {
-                            if (a._.GoodsStatus == GoodsEnum.辊台无货 &&
-                               (a._.ActionStatus == ActionEnum.停止 || a._.FinishTask == TaskEnum.辊台任务))
+                            if (a._.GoodsStatus == GoodsEnum.辊台无货 && a._.RollerStatus == RollerStatusEnum.辊台停止)
                             {
                                 // 停止&解锁
                                 a.StopTask();

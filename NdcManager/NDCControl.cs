@@ -186,8 +186,9 @@ namespace NdcManager
                     // 查询状态
                     DoSelect(item.CARRIERID);
                 }
-                result = "小车未准备好接货";
-                return true;
+                //result = "小车未准备好接货";
+                result = "";
+                return false;
             }
 
             if (!LoadItemList.Contains(item._mTask.NDCINDEX))
@@ -345,9 +346,19 @@ namespace NdcManager
             {
                 NDCItem item = Items.Find(c =>
                 {
-                    return ((c._mTask.UNLOADSITE == unLoadSite || c._mTask.REDIRECTSITE == unLoadSite) &&
-                    (c.PLCStatus >= NDCPlcStatus.UnloadReady && c.PLCStatus <= NDCPlcStatus.Unloading));
+                    return ( c._mTask.REDIRECTSITE == unLoadSite &&
+                    (c.PLCStatus == NDCPlcStatus.UnloadReady || c.PLCStatus == NDCPlcStatus.Unloading));
                 });
+
+                //if (item == null && unLoadSite == "FRT02")
+                //{
+                //    item = Items.Find(c =>
+                //    {
+                //        return (!c.IsFinish && (c._mTask.UNLOADSITE == "FRTinit" && string.IsNullOrEmpty(c._mTask.REDIRECTSITE)) &&
+                //        (c.PLCStatus == NDCPlcStatus.UnloadReady || c.PLCStatus == NDCPlcStatus.Unloading) &&
+                //        c.DirectStatus == NDCItemStatus.Redirected);
+                //    });
+                //}
 
                 if (item != null)
                 {
@@ -402,7 +413,7 @@ namespace NdcManager
                 return false;
             }
 
-            if (item.DirectStatus == NDCItemStatus.Redirected)
+            if (item.DirectStatus == NDCItemStatus.Redirected || !string.IsNullOrEmpty(item._mTask.REDIRECTSITE))
             {
                 return true;
             }
@@ -419,11 +430,12 @@ namespace NdcManager
         /// <returns></returns>
         public bool IsRedirectedMax(string reSite, out int t)
         {
-            t = Items.FindAll(c => c.DirectStatus == NDCItemStatus.Redirected && c._mTask.REDIRECTSITE == reSite).Count;
             if (string.IsNullOrEmpty(reSite))
             {
-                return true;
+                t = 0;
+                return false;
             }
+            t = Items.FindAll(c => c._mTask.REDIRECTSITE == reSite && c.PLCStatus != NDCPlcStatus.Unloading).Count;
             if (t >= 2)
             {
                 return true;

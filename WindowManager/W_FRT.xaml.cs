@@ -225,5 +225,45 @@ namespace WindowManager
             }
         }
 
+        /// <summary>
+        /// 接货到扫码辊台
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BTNlinkAGV_Click(object sender, RoutedEventArgs e)
+        {
+            string dev = "";
+            try
+            {
+                if (PublicParam.IsDoTask)
+                {
+                    Notice.Show("请先关闭顶部[设备运作]！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
+
+                if (CBdev.SelectedIndex == -1)
+                {
+                    Notice.Show("请选择设备！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
+                dev = CBdev.Text;
+                if (!ADS.mSocket.IsConnected(dev))
+                {
+                    Notice.Show(dev + "已离线，无法操作！", "提示", 3, MessageBoxIcon.Info);
+                    return;
+                }
+
+                // 只启动辊台2扫码
+                ADS.mFrt.devices.Find(c => c.devName == dev).StartTakeRoll(TaskTypeEnum.入库, 1, true);
+
+                Notice.Show("辊台任务 指令发送成功！", "成功", 3, MessageBoxIcon.Success);
+            }
+            catch (Exception ex)
+            {
+                Notice.Show("指令发送失败：" + ex.Message, "错误", 3, MessageBoxIcon.Error);
+                // LOG
+                CommonSQL.LogErr("BTNlinkAGV_Click()", "固定辊台界面接货扫码[设备号]", ex.Message, dev);
+            }
+        }
     }
 }

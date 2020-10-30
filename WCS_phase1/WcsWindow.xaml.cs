@@ -159,7 +159,7 @@ namespace WCS_phase1
             });
             if (result == MessageBoxResult.Yes || result == MessageBoxResult.OK)
             {
-                admin.BeforeClose();
+                ADS.BeforeClose();
                 System.Environment.Exit(0);
             }
             else

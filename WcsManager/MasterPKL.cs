@@ -249,17 +249,19 @@ namespace WcsManager
             {
                 try
                 {
+                    bool isCanWork = true;
                     if (!d.isUseful || !ADS.mSocket.IsConnected(d.devName) ||
                         d._.CommandStatus == CommandEnum.命令错误 ||
                         d._.DeviceStatus == DeviceEnum.设备故障 ||
                         string.IsNullOrEmpty(d.lockID2))
                     {
-                        continue;
+                        isCanWork = false;
+                        //continue;
                     }
                     int aid = 0;
                     if (!d.isLock)
                     {
-                        if (!PublicParam.IsDoJobAGV) continue;
+                        if (!PublicParam.IsDoJobAGV || !isCanWork) continue;
 
                         if (d._.ActionStatus == ActionEnum.停止 && d._.GoodsStatus == GoodsEnum.辊台1有货)
                         {
@@ -295,6 +297,7 @@ namespace WcsManager
                     {
                         if (string.IsNullOrEmpty(d.lockID1))
                         {
+                            if (!isCanWork) continue;
                             // 解锁
                             d.IsLockUnlockNew(false);
                             continue;
@@ -306,6 +309,7 @@ namespace WcsManager
                             // NDC 任务是否存在
                             if (!ADS.mNDCControl.IsExist(aid))
                             {
+                                if (!isCanWork) continue;
                                 // 解锁
                                 d.IsLockUnlockNew(false);
                                 continue;
@@ -316,17 +320,24 @@ namespace WcsManager
                             {
                                 case NDCPlcStatus.LoadUnReady:
                                 case NDCPlcStatus.LoadReady:
+                                    if (!isCanWork) break;
+
                                     if (d._.ActionStatus == ActionEnum.停止 && d._.GoodsStatus == GoodsEnum.辊台1有货)
                                     {
                                         // NDC 请求 AGV 启动辊台装货
                                         if (!ADS.mNDCControl.DoLoad(aid, out string result))
                                         {
                                             // LOG
-                                            CommonSQL.LogErr("PKL.DoTaskNew()", "AGV辊台装货[ID]", result, aid.ToString());
+                                            if (!string.IsNullOrEmpty(result))
+                                            {
+                                                CommonSQL.LogErr("PKL.DoTaskNew()", "AGV辊台装货[ID]", result, aid.ToString());
+                                            }
                                         }
                                     }
                                     break;
                                 case NDCPlcStatus.Loading:
+                                    if (!isCanWork) break;
+
                                     if (d._.ActionStatus == ActionEnum.停止 && d._.GoodsStatus == GoodsEnum.辊台1有货)
                                     {
                                         d.StartGiveRoll();
@@ -335,7 +346,7 @@ namespace WcsManager
                                 case NDCPlcStatus.Loaded:
                                 case NDCPlcStatus.UnloadUnReady:
                                     // NDC 任务是否需要重定向
-                                    if (!ADS.mNDCControl.IsRedirected(aid))
+                                    if (!ADS.mNDCControl.IsRedirected(aid) && !string.IsNullOrEmpty(d.lockID2))
                                     {
                                         // 获取WMS任务目的区域
                                         string area = ADS.GetInAreaWMS(d.area, d.lockID2, out string tid);
@@ -361,6 +372,7 @@ namespace WcsManager
                                     }
                                     break;
                                 default:
+                                    if (!isCanWork) break;
                                     // 解锁
                                     d.IsLockUnlockNew(false);
                                     break;
@@ -370,10 +382,10 @@ namespace WcsManager
                 }
                 catch (Exception ex)
                 {
-                    if (ex.ToString().Contains("重复"))
-                    {
-                        MessageBox.Show(d.devName + ex.ToString());
-                    }
+                    //if (ex.ToString().Contains("重复"))
+                    //{
+                    //    MessageBox.Show(d.devName + ex.ToString());
+                    //}
                     // LOG
                     CommonSQL.LogErr("PKL.DoTaskNew()", "包装线作业[设备]", (ex.Message + ex.Source), d.devName);
                     continue;
@@ -455,6 +467,11 @@ namespace WcsManager
                 if (devices.Exists(c => c.devName == devName))
                 {
                     DevInfoPKL p = devices.Find(c => c.devName == devName);
+
+                    //if (p._.ActionStatus == ActionEnum.运行中)
+                    //{
+                    //    throw new Exception(string.Format("辊台未停止，不处理扫码.", code));
+                    //}
 
                     if (p.lockID2 != code)
                     {

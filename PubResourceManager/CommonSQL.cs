@@ -794,7 +794,7 @@ TAKE_SITE_Z= {3}, GIVE_SITE_X= {4}, GIVE_SITE_Y= {5}, GIVE_SITE_Z= {6} where ID 
             {
                 bool res = false;
                 string sql = string.Format(@"select 1 from wcs_wms_task where TASK_ID = '{0}' and
-     TRUNCATE((UNIX_TIMESTAMP(NOW())-UNIX_TIMESTAMP(UPDATE_TIME))/60,0) >= 30", tid);
+     TRUNCATE((UNIX_TIMESTAMP(NOW())-UNIX_TIMESTAMP(UPDATE_TIME))/60,0) >= 10", tid);
                 DataTable dt = mysql.SelectAll(sql);
                 if (!IsNoData(dt))
                 {

@@ -130,7 +130,7 @@ namespace NdcManager.DataGrid.Models
             }
         }
 
-        [DisplayName("接货")]
+        [DisplayName("卸货")]
         public bool HasUnLoad
         {
             get

@@ -25,10 +25,12 @@ namespace PubResourceManager
         {
             try
             {
-                MySqlDataAdapter mySqlDataAdapter = new MySqlDataAdapter(sql, conn);
-                DataSet dataSet = new DataSet();
-                mySqlDataAdapter.Fill(dataSet, "Table");
-                return dataSet.Tables[0];
+                using (MySqlDataAdapter mySqlDataAdapter = new MySqlDataAdapter(sql, conn))
+                {
+                    DataSet dataSet = new DataSet();
+                    mySqlDataAdapter.Fill(dataSet, "Table");
+                    return dataSet.Tables[0];
+                }
             }
             catch (Exception ex)
             {
@@ -46,11 +48,13 @@ namespace PubResourceManager
         {
             try
             {
-                MySqlConnection sqlcon = new MySqlConnection(conn);
-                sqlcon.Open();
-                MySqlCommand mySqlCommand = new MySqlCommand(sql, sqlcon);
-                mySqlCommand.ExecuteNonQuery();
-                sqlcon.Close();
+                using (MySqlConnection sqlcon = new MySqlConnection(conn))
+                {
+                    sqlcon.Open();
+                    MySqlCommand mySqlCommand = new MySqlCommand(sql, sqlcon);
+                    mySqlCommand.ExecuteNonQuery();
+                    sqlcon.Close();
+                }
             }
             catch (Exception ex)
             {

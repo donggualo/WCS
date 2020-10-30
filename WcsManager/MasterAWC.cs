@@ -1126,6 +1126,51 @@ namespace WcsManager
         }
 
 
+        /// <summary>
+        /// 是否能取消行车出库任务
+        /// </summary>
+        /// <returns></returns>
+        public bool IsCanDelOut(string tid)
+        {
+            try
+            {
+                bool res = true;
+                if (devices.Exists(c => c.lockID == tid))
+                {
+                    DevInfoAWC a = devices.Find(c => c.lockID == tid);
+                    if (a._.ActionStatus == ActionEnum.停止)
+                    {
+                        if (a.isLock || a._.GoodsStatus == AwcGoodsEnum.有货)
+                        {
+                            res = false;
+                        }
+                    }
+                    else
+                    {
+                        if (a.isLock || a._.GoodsStatus == AwcGoodsEnum.有货 || a._.CurrentTask != AwcTaskEnum.取货任务)
+                        {
+                            res = false;
+                        }
+                    }
+
+                    // 清任务
+                    if (res)
+                    {
+                        if (ADS.mRgv.IsUnlock(tid))
+                        {
+                            a.StopTask();
+                            a.IsLockUnlockNew(TaskTypeEnum.无, false);
+                        }
+                    }
+                }
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
 
 
         /// <summary>

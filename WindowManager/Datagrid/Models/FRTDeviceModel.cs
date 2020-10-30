@@ -265,6 +265,10 @@ namespace WindowManager.Datagrid.Models
 
             UpdateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 
+            if (frt._.CurrentTask == TaskEnum.辊台任务 && frt._.FinishTask == TaskEnum.辊台任务 && frt._.RollerStatus == RollerStatusEnum.辊台停止)
+            {
+                frt.StopRoller();
+            }
         }
 
         public FRTDeviceModel(string dev,string area)

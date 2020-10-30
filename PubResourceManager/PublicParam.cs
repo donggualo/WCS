@@ -45,7 +45,6 @@ namespace PubResourceManager
         /// </summary>
         public static bool IsRe = false;
 
-
         #endregion
     }
 }

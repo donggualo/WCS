@@ -815,15 +815,17 @@ namespace WcsManager
                                                 break;
                                         }
                                     }
-                                    else
+
+                                    if (d.taskType == TaskTypeEnum.无)
                                     {
-                                        //int site = ADS.mDis.GetRgvButtP(d.area);
-                                        //if (site == 0) throw new Exception("无对应运输车-摆渡车对接点！");
-                                        //if (d._.ActionStatus == ActionEnum.停止 && d._.GoodsStatus == GoodsEnum.辊台无货)
-                                        //{
-                                        //    // 定位对接点
-                                        //    d.ToSite(site);
-                                        //}
+                                        int site = ADS.mDis.GetRgvButtP(d.area);
+                                        if (site == 0) throw new Exception("无对应运输车-摆渡车对接点！");
+                                        if (PublicParam.IsDoJobIn &&
+                                            d._.ActionStatus == ActionEnum.停止 && d._.GoodsStatus == GoodsEnum.辊台无货)
+                                        {
+                                            // 定位对接点
+                                            d.ToSite(site);
+                                        }
 
                                         // 远车解锁
                                         //if (!IsUnlock(d.area, DevFlag.远离入库口)) continue;
@@ -868,7 +870,7 @@ namespace WcsManager
                                                         d.StartTakeRoll(d.taskType, 1);
                                                         break;
                                                     case GoodsEnum.辊台1有货:
-                                                        if (d.GiveSite != 0) break;
+                                                        //if (d.GiveSite != 0) break;
                                                         if (ADS.GetInTaskWMS(d.area, 1, out tasks))
                                                         {
                                                             if (rgvS == 0) break;
@@ -933,9 +935,14 @@ namespace WcsManager
                                                         }
                                                         break;
                                                     case GoodsEnum.辊台满货:
-                                                        if (d.GiveSite != 0) break;
+                                                        //if (d.GiveSite != 0) break;
                                                         if (ADS.GetInTaskWMS(d.area, 2, out tasks))
                                                         {
+                                                            if (tasks == null || tasks.Length < 2)
+                                                            {
+                                                                throw new Exception("待执行任务不足！！");
+                                                            }
+
                                                             if (rgvS == 0) break;
                                                             if (rgvS == -1) // 远车不用了
                                                             {
@@ -1064,6 +1071,7 @@ namespace WcsManager
                                                     case GoodsEnum.辊台中间有货:
                                                         // 解任务
                                                         d.StopTask();
+                                                        d.GiveSite = 0;
                                                         d.IsLockUnlockNew(d.taskType, true);
                                                         break;
                                                     case GoodsEnum.辊台1有货:
@@ -1071,6 +1079,7 @@ namespace WcsManager
                                                         {
                                                             // 解任务
                                                             d.StopTask();
+                                                            d.GiveSite = 0;
                                                             d.IsLockUnlockNew(d.taskType, true);
                                                         }
                                                         else
@@ -1084,6 +1093,7 @@ namespace WcsManager
                                                         {
                                                             // 解任务
                                                             d.StopTask();
+                                                            d.GiveSite = 0;
                                                             d.IsLockUnlockNew(d.taskType, true);
                                                         }
                                                         else
@@ -1097,6 +1107,7 @@ namespace WcsManager
                                                         {
                                                             // 解任务
                                                             d.StopTask();
+                                                            d.GiveSite = 0;
                                                             d.IsLockUnlockNew(d.taskType, true);
                                                         }
                                                         else
@@ -1143,6 +1154,7 @@ namespace WcsManager
                                                 d.StopRoller();
                                                 // 锁定
                                                 d.IsLockUnlockNew(d.taskType, true);
+                                                d.GiveSite = 0;
                                                 goto InTask;
                                             }
                                             else
@@ -1209,6 +1221,7 @@ namespace WcsManager
                                                             d.StopRoller();
                                                             // 锁定
                                                             d.IsLockUnlockNew(d.taskType, true);
+                                                            d.GiveSite = 0;
                                                             goto InTask;
                                                         }
                                                         else
@@ -2067,6 +2080,8 @@ namespace WcsManager
                         {
                             if (r._.ActionStatus == ActionEnum.停止)
                             {
+                                r.TakeSite = 0;
+                                r.GiveSite = 0;
                                 res = true;
                             }
                         }
@@ -2074,6 +2089,8 @@ namespace WcsManager
                         {
                             if (r.isLock)
                             {
+                                r.TakeSite = 0;
+                                r.GiveSite = 0;
                                 res = true;
                             }
                             else
@@ -2105,6 +2122,8 @@ namespace WcsManager
                                     // 停止 & 锁定
                                     r.StopTask();
                                     r.IsLockUnlockNew(r.taskType, true, r.lockID1, r.lockID2);
+                                    r.TakeSite = 0;
+                                    r.GiveSite = 0;
                                     res = true;
                                 }
                                 else
@@ -2268,10 +2287,12 @@ namespace WcsManager
                     if (r.lockID1 == lockid)
                     {
                         r.IsLockUnlockNew(r.taskType, r.isLock, "", r.lockID2);
+                        res = true;
                     }
                     if (r.lockID2 == lockid)
                     {
                         r.IsLockUnlockNew(r.taskType, r.isLock, r.lockID1, "");
+                        res = true;
                     }
                 }
                 return res;
@@ -2388,7 +2409,7 @@ namespace WcsManager
 
                         if (r.isLock)
                         {
-                            if (r._.GoodsStatus == GoodsEnum.辊台无货 && r._.ActionStatus == ActionEnum.停止)
+                            if (r._.GoodsStatus == GoodsEnum.辊台无货 && r._.RollerStatus == RollerStatusEnum.辊台停止)
                             {
                                 // 停止&解锁
                                 r.StopTask();

@@ -234,8 +234,9 @@ namespace WcsManager
                     {
                         msg.Add(new DevItem()
                         {
-                            Connected = mSocket.IsConnected(pkl.devName) ? "在线" : "离线",
-                            DevName = pkl.devName,
+                            Connected = string.Format("{0} - {1}", mSocket.IsConnected(pkl.devName) ? "在线" : "离线",
+                                Enum.GetName(typeof(DeviceEnum), pkl._.DeviceStatus)),
+                            DevName = "包装线辊台-" + pkl.devName,
                             Site = Enum.GetName(typeof(GoodsEnum), pkl._.GoodsStatus),
                             TaskStatus = Enum.GetName(typeof(TaskEnum), pkl._.CurrentTask)
                         });
@@ -247,8 +248,9 @@ namespace WcsManager
                     {
                         msg.Add(new DevItem()
                         {
-                            Connected = mSocket.IsConnected(frt.devName) ? "在线" : "离线",
-                            DevName = frt.devName,
+                            Connected = string.Format("{0} - {1}", mSocket.IsConnected(frt.devName) ? "在线" : "离线",
+                                Enum.GetName(typeof(DeviceEnum), frt._.DeviceStatus)),
+                            DevName = "固定辊台-" + frt.devName,
                             Site = Enum.GetName(typeof(GoodsEnum), frt._.GoodsStatus),
                             TaskStatus = Enum.GetName(typeof(TaskEnum), frt._.CurrentTask)
                         });
@@ -260,8 +262,9 @@ namespace WcsManager
                     {
                         msg.Add(new DevItem()
                         {
-                            Connected = mSocket.IsConnected(arf.devName) ? "在线" : "离线",
-                            DevName = arf.devName,
+                            Connected = string.Format("{0} - {1}", mSocket.IsConnected(arf.devName) ? "在线" : "离线",
+                                Enum.GetName(typeof(DeviceEnum), arf._.DeviceStatus)),
+                            DevName = "摆渡车-" + arf.devName,
                             Site = string.Format(@"[ {0} ], {1}", arf._.CurrentSite.ToString(), Enum.GetName(typeof(GoodsEnum), arf._.GoodsStatus)),
                             TaskStatus = Enum.GetName(typeof(TaskEnum), arf._.CurrentTask)
                         });
@@ -273,8 +276,9 @@ namespace WcsManager
                     {
                         msg.Add(new DevItem()
                         {
-                            Connected = mSocket.IsConnected(rgv.devName) ? "在线" : "离线",
-                            DevName = rgv.devName,
+                            Connected = string.Format("{0} - {1}", mSocket.IsConnected(rgv.devName) ? "在线" : "离线",
+                                Enum.GetName(typeof(DeviceEnum), rgv._.DeviceStatus)),
+                            DevName = "运输车-" + rgv.devName,
                             Site = string.Format(@"[ {0} ], {1}", rgv._.CurrentSite.ToString(), Enum.GetName(typeof(GoodsEnum), rgv._.GoodsStatus)),
                             TaskStatus = Enum.GetName(typeof(TaskEnum), rgv._.CurrentTask)
                         });
@@ -286,8 +290,9 @@ namespace WcsManager
                     {
                         msg.Add(new DevItem()
                         {
-                            Connected = mSocket.IsConnected(awc.devName) ? "在线" : "离线",
-                            DevName = awc.devName,
+                            Connected = string.Format("{0} - {1}", mSocket.IsConnected(awc.devName) ? "在线" : "离线",
+                                Enum.GetName(typeof(DeviceEnum), awc._.DeviceStatus)),
+                            DevName = "行车-" + awc.devName,
                             Site = string.Format(@"[ {0}-{1}-{2} ], {3}",
                                 awc._.CurrentSiteX, awc._.CurrentSiteY, awc._.CurrentSiteZ, Enum.GetName(typeof(AwcGoodsEnum), awc._.GoodsStatus)),
                             TaskStatus = Enum.GetName(typeof(TaskEnum), awc._.CurrentTask)
@@ -502,8 +507,8 @@ namespace WcsManager
             else if (t1 != null && t2 == null) return 1;
             else if (t1 == null && t2 != null) return -1;
 
-            string[] t1_loc = t1.WMS_LOC_FROM.Split('-'); 
-            string[] t2_loc = t2.WMS_LOC_FROM.Split('-'); 
+            string[] t1_loc = t1.WMS_LOC_FROM.Split('-');
+            string[] t2_loc = t2.WMS_LOC_FROM.Split('-');
 
             // 对比X
             if (int.Parse(t1_loc[1]) == int.Parse(t2_loc[1]))
@@ -553,7 +558,7 @@ namespace WcsManager
                 bool res = false;
                 WmsModel wms = null;
                 if (!string.IsNullOrEmpty(area) && !string.IsNullOrEmpty(code))
-                { 
+                {
                     // 请求WMS任务
                     wms = mHttp.DoBarcodeScanTask(area, code);
                     if (wms != null && !string.IsNullOrEmpty(wms.Task_UID))

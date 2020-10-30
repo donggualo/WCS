@@ -230,31 +230,30 @@ namespace WindowManager
                 }
 
                 string id = (DGtask.SelectedItem as DataRowView)["任务号"].ToString();
-                //string type = (DGtask.SelectedItem as DataRowView)["任务类型"].ToString();
+                string type = (DGtask.SelectedItem as DataRowView)["任务类型"].ToString();
 
-                //// 取消任务
-                //string mes = null;
-                //switch (type)
-                //{
-                //    case "入库":
-                //        mes = ADS.mHttp.DoCancelTask(WmsStatus.StockInTask, id);
-                //        break;
-                //    case "出库":
-                //        mes = ADS.mHttp.DoCancelTask(WmsStatus.StockOutTask, id);
-                //        break;
-                //    default:
-                //        break;
-                //}
+                // 取消任务
+                string mes = null;
+                switch (type)
+                {
+                    case "入库":
+                        Notice.Show("入库任务不允许撤销！", "提示", 3, MessageBoxIcon.Info);
+                        return;
+                        //mes = ADS.mHttp.DoCancelTask(WmsStatus.StockInTask, id);
+                        //break;
+                    case "出库":
+                        // 行车判断
+                        if (ADS.mAwc.IsCanDelOut(id))
+                        {
+                            mes = ADS.mHttp.DoCancelTask(WmsStatus.StockOutTask, id);
+                        }
+                        break;
+                    default:
+                        break;
+                }
 
-                //if (!string.IsNullOrEmpty(mes))
-                //{
-                    CommonSQL.DeleteWms(id);
-                    Notice.Show("成功！", "删除任务", 3, MessageBoxIcon.Success);
-                //}
-                //else
-                //{
-                //    Notice.Show(mes, "失败", 3, MessageBoxIcon.Warning);
-                //}
+                CommonSQL.DeleteWms(id);
+                Notice.Show("成功！", "删除任务", 3, MessageBoxIcon.Success);
 
                 Refresh_Click(sender, e);
             }

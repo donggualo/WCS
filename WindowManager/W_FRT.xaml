@@ -83,6 +83,16 @@
                     Foreground="#FF3F3F3F"
                     pu:ButtonHelper.HoverBrush="#3F3F3F"
                     pu:ButtonHelper.CornerRadius="6" />
+            <Button  Height="30" Margin="5,0,5,0"
+                    Width="180" Name="BTNlinkAGV" Click="BTNlinkAGV_Click"
+                    Content="&#xf069; 入库方向接货到扫码辊台"
+                    pu:ButtonHelper.ClickStyle="Sink"
+                    FontFamily="{DynamicResource FontAwesome}"
+                    pu:ButtonHelper.ButtonStyle="Hollow"
+                    BorderBrush="#FF3F3F3F"
+                    Foreground="#FF3F3F3F"
+                    pu:ButtonHelper.HoverBrush="#3F3F3F"
+                    pu:ButtonHelper.CornerRadius="6" />
         </WrapPanel>
 
         <!--设备列表-->

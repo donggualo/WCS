@@ -395,7 +395,7 @@ namespace WcsManager.Base
         /// <summary>
         /// 关闭操作
         /// </summary>
-        public bool BeforeClose()
+        public static bool BeforeClose()
         {
             if (init)
             {
@@ -1212,7 +1212,7 @@ namespace WcsManager.Base
         /// <summary>
         /// 添加 WMS 任务(出库/取消)
         /// </summary>
-        public bool AddWmsTask(WmsModel wms, out string result)
+        public static bool AddWmsTask(WmsModel wms, out string result)
         {
             try
             {
@@ -1466,7 +1466,7 @@ namespace WcsManager.Base
         /// <param name="type"></param>
         /// <param name="dev"></param>
         /// <param name="code"></param>
-        public void GetCode(string type, string dev, string code)
+        public static void GetCode(string type, string dev, string code)
         {
             //MessageBox.Show(type + " ---- " + dev + " ---- " + code);
             //return;

@@ -99,7 +99,7 @@ namespace WindowManager
         }
         private void DGd_LoadingRow(object sender, DataGridRowEventArgs e)
         {
-            if ((e.Row.Item as DevItem).Connected.Equals("离线"))
+            if ((e.Row.Item as DevItem).Connected.Contains("离线") || (e.Row.Item as DevItem).Connected.Contains("故障"))
             {
                 e.Row.Foreground = new SolidColorBrush(Colors.IndianRed);
             }

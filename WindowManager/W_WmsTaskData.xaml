@@ -50,7 +50,7 @@
                 <ContextMenu>
                     <MenuItem Header="分配库位" Click="GetBin_Click"/>
                     <MenuItem Header="完成任务" Click="FIN_Click"/>
-                    <!--<MenuItem Header="删除任务" Click="Cancel_Click"/>-->
+                    <MenuItem Header="撤销任务" Click="Cancel_Click"/>
                 </ContextMenu>
             </DataGrid.ContextMenu>
         </DataGrid>

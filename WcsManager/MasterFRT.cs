@@ -397,6 +397,13 @@ namespace WcsManager
                                                 d.StartTakeRoll(d.taskType, 1, true);
                                                 d.isAGV = true;
                                             }
+                                            else
+                                            {
+                                                if (!string.IsNullOrEmpty(d.lockID1))
+                                                {
+                                                    d.IsLockUnlockNew(false);
+                                                }
+                                            }
                                             break;
                                         case GoodsEnum.辊台中间有货:
                                         case GoodsEnum.辊台2有货:
@@ -705,12 +712,31 @@ namespace WcsManager
                         {
                             frt = d.devName;
 
-                            if ((t == 0 && d._.GoodsStatus != GoodsEnum.辊台无货) ||
-                                (t == 1 &&
-                                ((d._.ActionStatus == ActionEnum.停止 && d._.GoodsStatus == GoodsEnum.辊台无货) ||
-                                 (d._.ActionStatus == ActionEnum.运行中 && d._.GoodsStatus != GoodsEnum.辊台满货))))
+                            if (t == 0)
                             {
-                                break;
+                                if (d._.GoodsStatus != GoodsEnum.辊台无货) return frt;
+                            }
+                            else
+                            {
+                                switch (d._.RollerStatus)
+                                {
+                                    case RollerStatusEnum.辊台停止:
+                                        if (d._.GoodsStatus == GoodsEnum.辊台无货)
+                                        {
+                                            return frt;
+                                        }
+                                        break;
+                                    case RollerStatusEnum.辊台1启动:
+                                        break;
+                                    case RollerStatusEnum.辊台2启动:
+                                        if (d._.GoodsStatus == GoodsEnum.辊台无货 || d._.GoodsStatus == GoodsEnum.辊台2有货)
+                                        {
+                                            return frt;
+                                        }
+                                        break;
+                                    case RollerStatusEnum.辊台全启动:
+                                        break;
+                                }
                             }
                         }
                     }
@@ -812,6 +838,11 @@ namespace WcsManager
                 if (devices.Exists(c => c.devName == devName))
                 {
                     DevInfoFRT f = devices.Find(c => c.devName == devName);
+
+                    //if (f._.ActionStatus == ActionEnum.运行中 || f._.RollerStatus != RollerStatusEnum.辊台停止)
+                    //{
+                    //    throw new Exception(string.Format("辊台未停止，不处理扫码.", code));
+                    //}
 
                     //是否满足任务
                     if (CommonSQL.GetInTask(code, out string tid))
