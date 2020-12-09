@@ -395,8 +395,7 @@ namespace WcsManager
                                                 }
                                                 else
                                                 {
-                                                    if (IsSafeDis(d.area, d.flag == DevFlag.远离入库口 ? DevFlag.靠近入库口 : DevFlag.远离入库口,
-                                                        d._.CurrentSiteX - d.gapX, d.GiveSiteX - d.gapX))
+                                                    if (IsSafeDis(d.area, d.flag, d._.CurrentSiteX - d.gapX, d.GiveSiteX - d.gapX))
                                                     {
                                                         // 定位
                                                         d.ToSite(d.GiveSiteX, d.GiveSiteY);
@@ -452,8 +451,7 @@ namespace WcsManager
                                                 }
                                                 else
                                                 {
-                                                    if (IsSafeDis(d.area, d.flag == DevFlag.远离入库口 ? DevFlag.靠近入库口 : DevFlag.远离入库口, 
-                                                        d._.CurrentSiteX - d.gapX, d.TakeSiteX - d.gapX))
+                                                    if (IsSafeDis(d.area, d.flag, d._.CurrentSiteX - d.gapX, d.TakeSiteX - d.gapX))
                                                     {
                                                         // 定位
                                                         d.ToSite(d.TakeSiteX, d.TakeSiteY);
@@ -530,8 +528,7 @@ namespace WcsManager
                                                 }
                                                 else
                                                 {
-                                                    if (IsSafeDis(d.area, d.flag == DevFlag.远离入库口 ? DevFlag.靠近入库口 : DevFlag.远离入库口,
-                                                        d._.CurrentSiteX - d.gapX, d.GiveSiteX - d.gapX))
+                                                    if (IsSafeDis(d.area, d.flag, d._.CurrentSiteX - d.gapX, d.GiveSiteX - d.gapX))
                                                     {
                                                         // 定位
                                                         d.ToSite(d.GiveSiteX, d.GiveSiteY);
@@ -591,8 +588,7 @@ namespace WcsManager
                                                 }
                                                 else
                                                 {
-                                                    if (IsSafeDis(d.area, d.flag == DevFlag.远离入库口 ? DevFlag.靠近入库口 : DevFlag.远离入库口, 
-                                                        d._.CurrentSiteX - d.gapX, d.TakeSiteX - d.gapX))
+                                                    if (IsSafeDis(d.area, d.flag, d._.CurrentSiteX - d.gapX, d.TakeSiteX - d.gapX))
                                                     {
                                                         // 定位
                                                         d.ToSite(d.TakeSiteX, d.TakeSiteY);
@@ -931,8 +927,7 @@ namespace WcsManager
                         }
                         else
                         {
-                            if (IsSafeDis(a.area, df == DevFlag.远离入库口 ? DevFlag.靠近入库口 : DevFlag.远离入库口, 
-                                a._.CurrentSiteX - a.gapX, x - a.gapX))
+                            if (IsSafeDis(a.area, df, a._.CurrentSiteX - a.gapX, x - a.gapX))
                             {
                                 a.ToSite(x, y);
                             }
@@ -959,54 +954,66 @@ namespace WcsManager
             try
             {
                 bool res = false;
-                if (devices.Exists(c => c.area == area && c.flag == df))
+                switch (df)
                 {
-                    DevInfoAWC a = devices.Find(c => c.area == area && c.flag == df);
-                    if (a.isUseful)
-                    {
-                        if (ADS.mSocket.IsConnected(a.devName) && a._.CommandStatus == CommandEnum.命令正常 && a._.DeviceStatus == DeviceEnum.设备正常)
+                    case DevFlag.不参考:
+                        res = true;
+                        break;
+                    case DevFlag.靠近入库口:
+                    case DevFlag.远离入库口:
+                        df = df == DevFlag.远离入库口 ? DevFlag.靠近入库口 : DevFlag.远离入库口;
+                        if (devices.Exists(c => c.area == area && c.flag == df))
                         {
-                            int disOK = 6000;
-
-                            int dis = ADS.mDis.GetAwcSafeDis(a.area);
-                            if (dis == 0) throw new Exception("无对应行车安全距离！");
-
-                            tx = tx + a.gapX;
-                            if (Math.Abs(tx - a._.CurrentSiteX) >= disOK)
+                            DevInfoAWC a = devices.Find(c => c.area == area && c.flag == df);
+                            if (a.isUseful)
                             {
-                                res = true;
-                            }
-                            else
-                            {
-                                if (a._.ActionStatus == ActionEnum.停止)
+                                if (ADS.mSocket.IsConnected(a.devName) && a._.CommandStatus == CommandEnum.命令正常 && a._.DeviceStatus == DeviceEnum.设备正常)
                                 {
-                                    if (string.IsNullOrEmpty(a.lockID))
+                                    int disOK = 6000;
+
+                                    int dis = ADS.mDis.GetAwcSafeDis(a.area);
+                                    if (dis == 0) throw new Exception("无对应行车安全距离！");
+
+                                    tx = tx + a.gapX;
+                                    if (Math.Abs(tx - a._.CurrentSiteX) >= disOK)
                                     {
-                                        a.ToSite(df == DevFlag.靠近入库口 ? (tx - dis) : (tx + dis), a._.CurrentSiteY);
+                                        res = true;
                                     }
-                                }
-                                else
-                                {
-                                    if (a._.CurrentTask == AwcTaskEnum.定位任务 && string.IsNullOrEmpty(a.lockID))
+                                    else
                                     {
-                                        cx = cx + a.gapX;
-                                        if (Math.Abs(cx - a._.CurrentSiteX) >= disOK)
+                                        if (a._.ActionStatus == ActionEnum.停止)
                                         {
-                                            res = true;
+                                            if (string.IsNullOrEmpty(a.lockID))
+                                            {
+                                                a.ToSite(df == DevFlag.靠近入库口 ? (tx - dis) : (tx + dis), a._.CurrentSiteY);
+                                            }
                                         }
                                         else
                                         {
-                                            a.ToSite(df == DevFlag.靠近入库口 ? (tx - dis) : (tx + dis), a._.CurrentSiteY);
+                                            if (a._.CurrentTask == AwcTaskEnum.定位任务 && string.IsNullOrEmpty(a.lockID))
+                                            {
+                                                cx = cx + a.gapX;
+                                                if (Math.Abs(cx - a._.CurrentSiteX) >= disOK)
+                                                {
+                                                    res = true;
+                                                }
+                                                else
+                                                {
+                                                    a.ToSite(df == DevFlag.靠近入库口 ? (tx - dis) : (tx + dis), a._.CurrentSiteY);
+                                                }
+                                            }
                                         }
                                     }
                                 }
                             }
+                            else
+                            {
+                                res = true;
+                            }
                         }
-                    }
-                    else
-                    {
-                        res = true;
-                    }
+                        break;
+                    default:
+                        break;
                 }
                 return res;
             }
